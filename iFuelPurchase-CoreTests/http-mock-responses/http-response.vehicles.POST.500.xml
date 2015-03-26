@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<http-response statusCode="500">
+  <annotation name="Server error response"
+              host="example.com"
+              port="80"
+              scheme="http"
+              uri-path="/fp/users/U1123409100/vehicles"
+              request-method="POST">This is the description for this mock response.</annotation>
+  <headers>
+    <header name="Content-Length" value="0" />
+  </headers>
+  <cookies />
+  <body />
+</http-response>

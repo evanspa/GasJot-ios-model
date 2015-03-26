@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<http-response statusCode="200">
+  <annotation name="POST success"
+              host="example.com"
+              port="80"
+              scheme="http"
+              uri-path="/fp/login"
+              request-method="POST">This is the description for this mock response.</annotation>
+  <headers>
+    <header name="Content-Type" value="application/vnd.fp.user-v0.0.1+json" />
+    <header name="Content-Language" value="en-US" />
+    <header name="Last-Modified" value="Tue, 02 Sep 2014 8:03:12 GMT" />
+    <header name="Location" value="http://example.com/fp/users/U1123409100" />
+    <header name="fp-auth-token" value="1092348123049OLSDFJLIE001234" />
+  </headers>
+  <cookies />
+  <body>
+    <![CDATA[
+      { "user/name": "Paul Evans",
+        "user/email": "evansp2@gmail.com",
+        "user/username": "evansp2",
+        "user/creation-date": "Tue, 02 Sep 2014 8:03:12 GMT",
+        "_links": {
+          "vehicles": {
+            "href": "http://example.com/fp/users/U1123409100/vehicles",
+            "type": "application/vnd.fp.vehicle-v0.0.1+json"},
+          "fuelstations": {
+            "href": "http://example.com/fp/users/U1123409100/fuelstations",
+            "type": "application/vnd.fp.fuelstation-v0.0.1+json"},
+          "fuelpurchase-logs": {
+            "href": "http://example.com/fp/users/U1123409100/fplogs",
+            "type": "application/vnd.fp.fplog-v0.0.1+json"},
+          "environment-logs": {
+            "href": "http://example.com/fp/users/U1123409100/envlogs",
+            "type": "application/vnd.fp.envlog-v0.0.1+json"}},
+        "_embedded": [
+          { "media-type": "application/vnd.fp.vehicle-v0.0.1+json",
+            "location": "http://example.com/fp/users/U1123409100/vehicles/V429",
+            "last-modified": "Fri, 06 Sep 2014 10:34:22 GMT",
+            "payload": {
+              "fpvehicle/name": "My Mazda",
+              "fpvehicle/date-added": "Fri, 06 Sep 2014 10:34:22 GMT",
+              "_links": {}}},
+          { "media-type": "application/vnd.fp.vehicle-v0.0.1+json",
+            "location": "http://example.com/fp/users/U1123409100/vehicles/V430",
+            "last-modified": "Sun, 07 Sep 2014 01:15:57 GMT",
+            "payload": {
+              "fpvehicle/name": "My 300zx",
+              "fpvehicle/date-added": "Sun, 07 Sep 2014 01:15:57 GMT",
+              "_links": {}}}]}
+    ]]>
+  </body>
+</http-response>

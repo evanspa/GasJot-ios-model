@@ -1,0 +1,30 @@
+Came across an interesting bug.  Steps to produce:
+1. Create a new fp log
+2. On fuel station chooser, create a new fuel station, and then select it.
+(at this point, the "create new fplog" screen has a reference to this fuel
+station main entity in memory)
+3. (in the background, a remote master sync, then prune occurred; now, the fuel
+station exists in master correctly; but no longer exists in main)
+4. User finishes data-input for new fp log record and taps 'Done'
+5. CoordDao's 'saveNewFuelPurchaseLog' invoked.  In this function, in a db txn,
+we first copy-down the user, vehicle and fuel station entities to master.  The
+problem is, with our in-memory fuel station entity (passed to
+saveNewFuelPurchaseLog), it has a local main id, but it does not have a global
+ID (because when the user created it, and selected it, it had not yet been
+synced). The implementation of the 'copy-master-to-main' function was such that
+it first tried to find, from the main table, the ACTUAL local main id of the
+in-memory fuel station entity passed to it.  Because it had been pruned, this returned nil.  So
+copy-master-to-main then simply used the fuelStation in-memory object
+to insert it into main.  At this point we're hosed; we have an inconsistent
+database.  We have a row in fuel station main that is meant to be a synced fuel
+station, but its global ID is nil.  So, what *should* copy-master-to-main have
+done?  Well, it should have thrown an exception because the application allowed
+to get itself into an inconsistent state.  I.e., we should NOT have allowed a
+prune to run.  copy-master-to-main should have checked, after getting a nil back
+for checking the presence for a physical local main id, if the entitie's global
+ID was nil, and if so, should have thrown an NSInconsistency exception.  (I've
+udpated it to do this).  I've also updated CoordDao to NOT to a system prune as
+part of its async work; instead, the application's delegate will do a system
+prune upon application termination, and application launch.  This way, prunes
+will not occur during the running of the app, and thus situations such as these
+won't be possible anymore.

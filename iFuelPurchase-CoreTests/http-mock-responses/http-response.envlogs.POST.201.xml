@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<http-response statusCode="201">
+  <annotation name="New Environment Log Remote Sync"
+    host="example.com"
+    port="80"
+    scheme="http"
+    uri-path="/fp/users/U8890209302/envlogs"
+    request-method="POST">Successful remote sync of newly-added environment log.</annotation>
+  <headers>
+    <header name="Location" value="http://example.com/fp/users/U8890209302/envlogs/ENVL001" />
+    <header name="Cache-Control" value="no-cache" />
+    <header name="Vary" value="Accept, Accept-Charset, Accept-Language" />
+    <header name="fp-auth-token" value="23409582345-093284590-2345LKJDFLSDFLK" />
+    <header name="Last-Modified" value="Fri, 06 Sep 2014 10:34:22 GMT" />
+    <header name="Content-Type" value="application/vnd.fp.envlog-v0.0.1+json" />
+  </headers>
+  <body>
+    <![CDATA[
+      { "fpenvironmentlog/odometer": "95648",
+        "fpenvironmentlog/reported-avg-mpg": "26.2",
+        "fpenvironmentlog/reported-avg-mph": "28.4",
+        "fpenvironmentlog/outside-temp": "75",
+        "fpenvironmentlog/log-date": "Sun, 27 Oct 2014 09:17:18 GMT" }
+    ]]>
+  </body>
+</http-response>

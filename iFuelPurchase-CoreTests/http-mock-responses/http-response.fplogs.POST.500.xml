@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<http-response statusCode="500">
+  <annotation name="New Fuel Purchase Log Remote Sync"
+    host="example.com"
+    port="80"
+    scheme="http"
+    uri-path="/fp/users/U8890209302/fplogs"
+    request-method="POST">Server Error</annotation>
+  <headers>
+    <header name="Content-Length" value="0" />
+  </headers>
+  <body />
+</http-response>

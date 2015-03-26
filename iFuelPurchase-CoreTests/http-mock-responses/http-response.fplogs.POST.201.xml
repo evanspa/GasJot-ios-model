@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<http-response statusCode="201">
+  <annotation name="New Fuel Purchase Log Remote Sync"
+    host="example.com"
+    port="80"
+    scheme="http"
+    uri-path="/fp/users/U8890209302/fplogs"
+    request-method="POST">Successful remote sync of newly-added fuel purchase log.</annotation>
+  <headers>
+    <header name="Location" value="http://example.com/fp/users/U8890209302/fplogs/FPL001" />
+    <header name="Cache-Control" value="no-cache" />
+    <header name="Vary" value="Accept, Accept-Charset, Accept-Language" />
+    <header name="fp-auth-token" value="23409582345-093284590-2345LKJDFLSDFLK" />
+    <header name="Last-Modified" value="Fri, 06 Sep 2014 10:34:22 GMT" />
+    <header name="Content-Type" value="application/vnd.fp.fplog-v0.0.1+json" />
+  </headers>
+  <body>
+    <![CDATA[
+      { "fpfuelpurchaselog/num-gallons": "15.2",
+        "fpfuelpurchaselog/octane": "93",
+        "fpfuelpurchaselog/gallon-price": "3.85",
+        "fpfuelpurchaselog/got-car-wash": "NO",
+        "fpfuelpurchaselog/carwash-per-gallon-discount": "0.08",
+        "fpfuelpurchaselog/log-date": "Sun, 12 Oct 2014 09:49:03 GMT" }
+    ]]>
+  </body>
+</http-response>

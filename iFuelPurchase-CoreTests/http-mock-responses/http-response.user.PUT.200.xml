@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<http-response statusCode="204">
+  <annotation name="sample success response"
+              host="example.com"
+              port="80"
+              scheme="http"
+              uri-path="/fp/users/U8890209302"
+              request-method="PUT">This is the description for this mock response.</annotation>
+  <headers>
+    <header name="Expires" value="Fri, 02 Dec 1995 12:00:03 GMT" />
+    <header name="Cache-Control" value="no-cache" />
+    <header name="Content-Type" value="application/vnd.fp.user-v0.0.1+json" />
+    <header name="Last-Modified" value="Wed, 03 Sep 2014 9:04:02 GMT" />
+    <header name="Content-Language" value="en-US" />
+  </headers>
+  <cookies>
+    <cookie name="C1"
+            value="C1-val"
+            path="/"
+            secure="true"
+            domain=".paulevans.name"
+            expires="Sat, 16-Nov-2013 15:00:00 GMT" />
+  </cookies>
+  <body>
+    <![CDATA[
+      { "user/name": "Paul Evans",
+        "user/email": "paul.evans@example.com",
+        "user/username": "pevans",
+        "user/creation-date": "Tue, 02 Sep 2014 8:03:12 GMT",
+        "_links": {
+          "self": {
+            "href":"http://example.com/fp/users/U8890209302"},
+          "vehicles": {
+            "href": "http://example.com/fp/users/U8890209302/vehicles"},
+          "fuelstations": {
+            "href": "http://example.com/fp/users/U8890209302/fuelstations"},
+          "fuelpurchase-logs": {
+            "href": "http://example.com/fp/users/U8890209302/fplogs",
+            "type": "application/vnd.fp.fplog-v0.0.1+json"},
+          "environment-logs": {
+            "href": "http://example.com/fp/users/U8890209302/envlogs",
+            "type": "application/vnd.fp.envlog-v0.0.1+json"}}}
+    ]]>
+  </body>
+</http-response>

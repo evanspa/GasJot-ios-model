@@ -1,0 +1,2 @@
+(+) Needed to manually REMOVE '-l"sqlite3"' entry from Pods.debug.xcconfig and
+Pods.release.xcconfig

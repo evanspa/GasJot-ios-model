@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<http-response statusCode="204">
+  <annotation name="sample success response"
+              host="example.com"
+              port="80"
+              scheme="http"
+              uri-path="/fp/changelog"
+              request-method="GET">This is the description for this mock response.</annotation>
+  <headers>
+    <header name="Cache-Control" value="no-cache" />
+    <header name="Content-Type" value="application/json" />
+    <header name="Last-Modified" value="Wed, 03 Sep 2014 9:04:02 GMT" />
+    <header name="Content-Language" value="en-US" />
+  </headers>
+  <body>
+    <![CDATA[
+      { "edits": [
+            { "href": "http://example.com/fp/users/U8890209302/vehicles/V281029929",
+              "media-type": "application/vnd.fp.vehicle-v0.0.1+json" },
+            { "href": "http://example.com/fp/users/U8890209302/vehicles/V281029929/envlogs/ENV19023481",
+              "media-type": "application/vnd.fp.envlog-v0.0.1+json" }
+          ],
+        "deletions": [
+            { "href": "http://example.com/fp/users/U8890209302/vehicles/V281029929/fplogs/FP8810223481",
+              "media-type": "application/vnd.fp.fplog-v0.0.1+json" }
+          ] }
+    ]]>
+  </body>
+</http-response>

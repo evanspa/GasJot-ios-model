@@ -1,0 +1,26 @@
+Selecting an "available" entity talking-points:
+--------------------------------------------------------------------------------
+So, when selecting the user instance from the database, we first try against
+main, with the condition that edit-in-progress is YES, and all other flags are
+NO.  But what about the state when the user exists in main, and its
+sync-in-progress flag is YES, and all other flags are NO?  What should I do?
+Here's what I think: return the user from the main store, but, there should be
+an application-rule that says: "If an entity's sync-in-progress flag is YES,
+then it cannot be updated to be marked as edit-in-progress."  There will be a
+notification to indicate when an entity has been synced (i.e., copied to remote
+master, and local master); when the application gets this notification, its
+response can be to simply go to local master, fetch the entity, and refresh the
+current GUI screen.  Yeah - that works.  And remember, to reiterate, if a user
+in the app is on a screen that presents a table-view of entities, and one of
+them is marked as 'sync-in-progress', sure, the user can tap on it to view its
+details, but the "Edit" button should be grayed-out.
+
+On notifications:
+--------------------------------------------------------------------------------
+Perhaps I should incorporate structure to the text messages that make up a
+notification.  For example, the notification message indicating that a
+particular entity was synced successfully could be: "synced:1902348109342" - the
+integer part would be the local identifier of the entity that was synced.  So,
+in the application, if the user just happened to be looking at a screen that was
+dispaying the entity in question, the screen could repaint itself or display a
+transient dialog message to indicate the state change of the entity.

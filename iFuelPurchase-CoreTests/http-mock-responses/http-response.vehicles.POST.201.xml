@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<http-response statusCode="201">
+  <annotation name="post success"
+              host="example.com"
+              port="80"
+              scheme="http"
+              uri-path="/fp/users/U8890209302/vehicles"
+              request-method="POST">This is the description for this mock response.</annotation>
+  <headers>
+    <header name="Content-Type" value="application/vnd.fp.vehicle-v0.0.1+json" />
+    <header name="Content-Language" value="en-US" />
+    <header name="Last-Modified" value="Fri, 06 Sep 2014 10:34:22 GMT" />
+    <header name="Location" value="http://example.com/fp/users/U8890209302/vehicles/V0191" />
+    <header name="fp-auth-token" value="1092348123049OLSDFJLIE001235" />
+  </headers>
+  <cookies />
+  <body>
+    <![CDATA[
+      { "fpvehicle/name": "My Bimmer",
+        "fpvehicle/date-added": "Fri, 06 Sep 2014 10:34:22 GMT",
+        "_links": {}}
+    ]]>
+  </body>
+</http-response>

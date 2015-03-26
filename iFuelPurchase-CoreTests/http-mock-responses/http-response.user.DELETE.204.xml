@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<http-response statusCode="204">
+  <annotation name="sample success response"
+              host="example.com"
+              port="80"
+              scheme="http"
+              uri-path="/fp/users/U8890209302"
+              request-method="DELETE">This is the description for this mock response.</annotation>
+  <headers>
+    <header name="Expires" value="Fri, 02 Dec 1995 12:00:03 GMT" />
+    <header name="Cache-Control" value="no-cache" />
+  </headers>
+  <cookies>
+    <cookie name="C1"
+            value="C1-val"
+            path="/"
+            secure="true"
+            domain=".paulevans.name"
+            expires="Sat, 16-Nov-2013 15:00:00 GMT" />
+  </cookies>
+  <body></body>
+</http-response>

@@ -1,0 +1,3 @@
+{ "_links": {
+    "users": { "href": "http://example.com/fp/users" },
+    "login": { "href": "http://example.com/fp/login" }}}
