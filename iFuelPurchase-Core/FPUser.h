@@ -1,6 +1,6 @@
 //
 //  FPUser.h
-//  iFuelPurchase-Core
+//  PEFuelPurchase-Model
 //
 //  Created by Evans, Paul on 7/26/14.
 //  Copyright (c) 2014 Paul Evans. All rights reserved.

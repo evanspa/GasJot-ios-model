@@ -1,6 +1,6 @@
 //
 //  FPCoordDaoTestContext.m
-//  iFuelPurchase-Core
+//  PEFuelPurchase-Model
 //
 //  Created by Evans, Paul on 1/5/15.
 //  Copyright (c) 2015 Paul Evans. All rights reserved.
@@ -15,7 +15,7 @@
 #import <CocoaLumberjack/DDTTYLogger.h>
 #import <UIKit/UIDevice.h>
 #import "FPAuthTokenDelegateForTesting.h"
-#import <fuelpurchase-common/FPTransactionCodes.h>
+#import <PEFuelPurchase-Common/FPTransactionCodes.h>
 #import "FPCoordinatorDao+AdditionsForTesting.h"
 #import "FPLogging.h"
 

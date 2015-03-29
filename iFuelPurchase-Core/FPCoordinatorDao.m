@@ -1,13 +1,13 @@
 //
 //  FPCoordinatorDao.m
-//  iFuelPurchase-Core
+//  PEFuelPurchase-Model
 //
 //  Created by Evans, Paul on 8/17/14.
 //  Copyright (c) 2014 Paul Evans. All rights reserved.
 //
 
 #import <CoreLocation/CoreLocation.h>
-#import <fuelpurchase-common/FPTransactionCodes.h>
+#import <PEFuelPurchase-Common/FPTransactionCodes.h>
 #import <CocoaLumberjack/DDLog.h>
 #import "FPCoordinatorDao.h"
 #import "FPErrorDomainsAndCodes.h"

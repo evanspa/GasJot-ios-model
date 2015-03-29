@@ -1,6 +1,6 @@
 //
 //  FPCoordinatorDao.h
-//  iFuelPurchase-Core
+//  PEFuelPurchase-Model
 //
 //  Created by Evans, Paul on 8/17/14.
 //  Copyright (c) 2014 Paul Evans. All rights reserved.
@@ -10,7 +10,7 @@
 #import <PEHateoas-Client/HCCharset.h>
 #import <PEAppTransaction-Logger/TLTransaction.h>
 #import <PEAppTransaction-Logger/TLTransactionManager.h>
-#import <fuelpurchase-common/FPAuthTokenDelegate.h>
+#import <PEFuelPurchase-Common/FPAuthTokenDelegate.h>
 #import "FPRemoteStoreSyncConflictDelegate.h"
 #import "FPRemoteMasterDao.h"
 #import "FPLocalDao.h"

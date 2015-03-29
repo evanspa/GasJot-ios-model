@@ -1,6 +1,6 @@
 //
 //  FPFuelStation.h
-//  iFuelPurchase-Core
+//  PEFuelPurchase-Model
 //
 //  Created by Evans, Paul on 9/4/14.
 //  Copyright (c) 2014 Paul Evans. All rights reserved.
