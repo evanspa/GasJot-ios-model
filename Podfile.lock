@@ -41,7 +41,7 @@ PODS:
     - FMDB (~> 2.5)
     - PEHateoas-Client (~> 1.0.1)
     - PEObjc-Commons (~> 1.0.1)
-  - PEFuelPurchase-Common (1.0.0):
+  - PEFuelPurchase-Common (1.0.1):
     - PEHateoas-Client (~> 1.0.1)
   - PEHateoas-Client (1.0.1):
     - AFNetworking (~> 2.5.1)
@@ -63,7 +63,7 @@ DEPENDENCIES:
   - FMDB (~> 2.5)
   - Kiwi (~> 2.3.1)
   - PEAppTransaction-Logger (~> 1.0.1)
-  - PEFuelPurchase-Common (~> 1.0.0)
+  - PEFuelPurchase-Common (~> 1.0.1)
   - PEHateoas-Client (~> 1.0.1)
   - PEWire-Control (~> 1.0.1)
   - UICKeyChainStore (~> 2.0.4)
@@ -77,7 +77,7 @@ SPEC CHECKSUMS:
   Kiwi: 73e1400209055ee9c8ba78c6012b6b642d0fb9f7
   OHHTTPStubs: e6ecc3fd4fa11b2cfb5f4823421bddc95a82913d
   PEAppTransaction-Logger: 30436d3904ec7f1a1fdab771aa7130befe34a150
-  PEFuelPurchase-Common: d57e39e00908474c998fac2392d57abd6912cb26
+  PEFuelPurchase-Common: 03f5c67d89b092a8bba9d089b1aedcb817e790e3
   PEHateoas-Client: 3f6334964945d6abbe81f25c04392b98269e9120
   PEObjc-Commons: 2bab8aa6545df045571785d818362cdfa0094a63
   PEWire-Control: 44ecccd9e81b04df2086db257103cda9f99d3a8c

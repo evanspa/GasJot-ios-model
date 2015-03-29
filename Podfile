@@ -2,7 +2,7 @@ source 'https://github.com/CocoaPods/Specs.git'
 
 platform :ios, '8.1'
 
-pod 'PEFuelPurchase-Common', '~> 1.0.0'
+pod 'PEFuelPurchase-Common', '~> 1.0.1'
 pod 'FMDB', '~> 2.5'
 pod 'PEHateoas-Client', '~> 1.0.1'
 pod 'PEAppTransaction-Logger', '~> 1.0.1'
