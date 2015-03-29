@@ -1,0 +1,87 @@
+PODS:
+  - AFNetworking (2.5.2):
+    - AFNetworking/NSURLConnection (= 2.5.2)
+    - AFNetworking/NSURLSession (= 2.5.2)
+    - AFNetworking/Reachability (= 2.5.2)
+    - AFNetworking/Security (= 2.5.2)
+    - AFNetworking/Serialization (= 2.5.2)
+    - AFNetworking/UIKit (= 2.5.2)
+  - AFNetworking/NSURLConnection (2.5.2):
+    - AFNetworking/Reachability
+    - AFNetworking/Security
+    - AFNetworking/Serialization
+  - AFNetworking/NSURLSession (2.5.2):
+    - AFNetworking/Reachability
+    - AFNetworking/Security
+    - AFNetworking/Serialization
+  - AFNetworking/Reachability (2.5.2)
+  - AFNetworking/Security (2.5.2)
+  - AFNetworking/Serialization (2.5.2)
+  - AFNetworking/UIKit (2.5.2):
+    - AFNetworking/NSURLConnection
+    - AFNetworking/NSURLSession
+  - AWPagedArray (0.3.0)
+  - CocoaLumberjack (1.9.2):
+    - CocoaLumberjack/Extensions (= 1.9.2)
+  - CocoaLumberjack/Core (1.9.2)
+  - CocoaLumberjack/Extensions (1.9.2):
+    - CocoaLumberjack/Core
+  - FMDB (2.5):
+    - FMDB/standard (= 2.5)
+  - FMDB/common (2.5)
+  - FMDB/standard (2.5):
+    - FMDB/common
+  - KissXML (5.0)
+  - Kiwi (2.3.1)
+  - OHHTTPStubs (3.1.11):
+    - OHHTTPStubs/Core (= 3.1.11)
+  - OHHTTPStubs/Core (3.1.11)
+  - PEAppTransaction-Logger (1.0.1):
+    - CocoaLumberjack (~> 1.9)
+    - FMDB (~> 2.5)
+    - PEHateoas-Client (~> 1.0.1)
+    - PEObjc-Commons (~> 1.0.1)
+  - PEFuelPurchase-Common (1.0.0):
+    - PEHateoas-Client (~> 1.0.1)
+  - PEHateoas-Client (1.0.1):
+    - AFNetworking (~> 2.5.1)
+    - CocoaLumberjack (~> 1.9)
+    - PEObjc-Commons (~> 1.0.1)
+  - PEObjc-Commons (1.0.1):
+    - AWPagedArray (~> 0.3.0)
+  - PEWire-Control (1.0.1):
+    - OHHTTPStubs (~> 3.1.10)
+    - PEObjc-Commons (~> 1.0.1)
+    - PEXML-Utils (~> 1.0.1)
+  - PEXML-Utils (1.0.1):
+    - KissXML (~> 5.0)
+    - PEObjc-Commons (~> 1.0.1)
+  - UICKeyChainStore (2.0.4)
+
+DEPENDENCIES:
+  - CocoaLumberjack (~> 1.9)
+  - FMDB (~> 2.5)
+  - Kiwi (~> 2.3.1)
+  - PEAppTransaction-Logger (~> 1.0.1)
+  - PEFuelPurchase-Common (~> 1.0.0)
+  - PEHateoas-Client (~> 1.0.1)
+  - PEWire-Control (~> 1.0.1)
+  - UICKeyChainStore (~> 2.0.4)
+
+SPEC CHECKSUMS:
+  AFNetworking: fefbce9660acb17f48ae0011292d4da0f457bf36
+  AWPagedArray: c66f6186321cd37bff0a26e714f157f5d27009e9
+  CocoaLumberjack: 205769c032b5fef85b92472046bcc8b7e7c8a817
+  FMDB: 0efa188cf0dd1ce82c27a478cd5f5fa245308677
+  KissXML: e537c38b18ede903ee6de45953a9bd86c131ebe9
+  Kiwi: 73e1400209055ee9c8ba78c6012b6b642d0fb9f7
+  OHHTTPStubs: e6ecc3fd4fa11b2cfb5f4823421bddc95a82913d
+  PEAppTransaction-Logger: 30436d3904ec7f1a1fdab771aa7130befe34a150
+  PEFuelPurchase-Common: d57e39e00908474c998fac2392d57abd6912cb26
+  PEHateoas-Client: 3f6334964945d6abbe81f25c04392b98269e9120
+  PEObjc-Commons: 2bab8aa6545df045571785d818362cdfa0094a63
+  PEWire-Control: 44ecccd9e81b04df2086db257103cda9f99d3a8c
+  PEXML-Utils: 9f2f9c83da7116f3a398dbfa1544d8ef4342dc69
+  UICKeyChainStore: 2399076d0950e20fe859b8f817548cf6ca542dd7
+
+COCOAPODS: 0.35.0

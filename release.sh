@@ -1,6 +1,6 @@
 #!/bin/bash
 
-readonly projectName="iFuelPurchase-Core"
+readonly projectName="PEFuelPurchase-Model"
 readonly version="$1"
 readonly tagLabel="${projectName}-v${version}"
 

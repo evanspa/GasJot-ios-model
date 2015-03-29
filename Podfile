@@ -1,9 +1,8 @@
 source 'https://github.com/CocoaPods/Specs.git'
-source 'https://evanspa@bitbucket.org/evanspa/evans-cocoapod-specs.git'
 
 platform :ios, '8.1'
 
-pod 'fuelpurchase-common', '~> 1.0.0'
+pod 'PEFuelPurchase-Common', '~> 1.0.0'
 pod 'FMDB', '~> 2.5'
 pod 'PEHateoas-Client', '~> 1.0.1'
 pod 'PEAppTransaction-Logger', '~> 1.0.1'
