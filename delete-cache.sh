@@ -1,3 +1,3 @@
 #!/bin/bash
-rm -rf ~/Library/Developer/Xcode/DerivedData/iFuelPurchase-Core*
+rm -rf ~/Library/Developer/Xcode/DerivedData/PEFuelPurchase-Model*
 rm -rf ~/Library/Developer/Xcode/DerivedData/ModuleCache
