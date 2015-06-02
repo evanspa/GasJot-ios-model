@@ -30,13 +30,6 @@ FOUNDATION_EXPORT NSString * const LAST_MODIFIED_HEADER;
          authTokenParamName:(NSString *)authTokenParamName
                   authToken:(NSString *)authToken
         errorMaskHeaderName:(NSString *)errorMaskHeaderName
-            txnIdHeaderName:(NSString *)txnIdHeaderName
-userAgentDeviceMakeHeaderName:(NSString *)userAgentDeviceMakeHeaderName
-userAgentDeviceOSHeaderName:(NSString *)userAgentDeviceOSHeaderName
-userAgentDeviceOSVersionHeaderName:(NSString *)userAgentDeviceOSVersionHeaderName
-        userAgentDeviceMake:(NSString *)userAgentDeviceMake
-          userAgentDeviceOS:(NSString *)userAgentDeviceOS
-   userAgentDeviceOSVersion:(NSString *)userAgentDeviceOSVersion
  establishSessionHeaderName:(NSString *)establishHeaderSessionName
         authTokenHeaderName:(NSString *)authTokenHeaderName
 bundleHoldingApiJsonResource:(NSBundle *)bundle
@@ -48,7 +41,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
       fuelStationSerializer:(FPFuelStationSerializer *)fuelStationSerializer
   fuelPurchaseLogSerializer:(FPFuelPurchaseLogSerializer *)fuelPurchaseLogSerializer
    environmentLogSerializer:(FPEnvironmentLogSerializer *)environmentLogSerializer
-   allowInvalidCertificates:(BOOL)allowInvalidCertifications;
+   allowInvalidCertificates:(BOOL)allowInvalidCertificates;
 
 #pragma mark - Properties
 

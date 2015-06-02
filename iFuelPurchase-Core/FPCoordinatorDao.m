@@ -7,7 +7,6 @@
 //
 
 #import <CoreLocation/CoreLocation.h>
-#import <PEFuelPurchase-Common/FPTransactionCodes.h>
 #import <CocoaLumberjack/DDLog.h>
 #import "FPCoordinatorDao.h"
 #import "FPErrorDomainsAndCodes.h"
@@ -32,7 +31,6 @@
   NSString *_fuelStationResMtVersion;
   NSString *_fuelPurchaseLogResMtVersion;
   NSString *_environmentLogResMtVersion;
-  TLTransactionManager *_txnManager;
   id<FPRemoteStoreSyncConflictDelegate> _conflictDelegate;
   id<FPAuthTokenDelegate> _authTokenDelegate;
   dispatch_queue_t _serialQueue;
@@ -52,13 +50,6 @@
               authTokenParamName:(NSString *)authTokenParamName
                        authToken:(NSString *)authToken
              errorMaskHeaderName:(NSString *)errorMaskHeaderName
-                 txnIdHeaderName:(NSString *)txnIdHeaderName
-   userAgentDeviceMakeHeaderName:(NSString *)userAgentDeviceMakeHeaderName
-     userAgentDeviceOSHeaderName:(NSString *)userAgentDeviceOSHeaderName
-userAgentDeviceOSVersionHeaderName:(NSString *)userAgentDeviceOSVersionHeaderName
-             userAgentDeviceMake:(NSString *)userAgentDeviceMake
-               userAgentDeviceOS:(NSString *)userAgentDeviceOS
-        userAgentDeviceOSVersion:(NSString *)userAgentDeviceOSVersion
       establishSessionHeaderName:(NSString *)establishHeaderSessionName
      authTokenResponseHeaderName:(NSString *)authTokenHeaderName
     bundleHoldingApiJsonResource:(NSBundle *)bundle
@@ -69,12 +60,11 @@ userAgentDeviceOSVersionHeaderName:(NSString *)userAgentDeviceOSVersionHeaderNam
          fuelStationResMtVersion:(NSString *)fuelStationResMtVersion
      fuelPurchaseLogResMtVersion:(NSString *)fuelPurchaseLogResMtVersion
       environmentLogResMtVersion:(NSString *)environmentLogResMtVersion
-              transactionManager:(TLTransactionManager *)txnManager
       remoteSyncConflictDelegate:(id<FPRemoteStoreSyncConflictDelegate>)conflictDelegate
                authTokenDelegate:(id<FPAuthTokenDelegate>)authTokenDelegate
  errorBlkForBackgroundProcessing:(PELMDaoErrorBlk)bgProcessingErrorBlk
                    bgEditActorId:(NSNumber *)bgEditActorId
-        allowInvalidCertificates:(BOOL)allowInvalidCertifications {
+        allowInvalidCertificates:(BOOL)allowInvalidCertificates {
   self = [super init];
   if (self) {
     _serialQueue = dispatch_queue_create("name.paulevans.fuelpurchase.bgprocessing",
@@ -120,13 +110,6 @@ userAgentDeviceOSVersionHeaderName:(NSString *)userAgentDeviceOSVersionHeaderNam
            authTokenParamName:authTokenParamName
                     authToken:authToken
           errorMaskHeaderName:errorMaskHeaderName
-              txnIdHeaderName:txnIdHeaderName
-userAgentDeviceMakeHeaderName:userAgentDeviceMakeHeaderName
-  userAgentDeviceOSHeaderName:userAgentDeviceOSHeaderName
-userAgentDeviceOSVersionHeaderName:userAgentDeviceOSVersionHeaderName
-          userAgentDeviceMake:userAgentDeviceMake
-            userAgentDeviceOS:userAgentDeviceOS
-     userAgentDeviceOSVersion:userAgentDeviceOSVersion
    establishSessionHeaderName:establishHeaderSessionName
           authTokenHeaderName:authTokenHeaderName
  bundleHoldingApiJsonResource:bundle
@@ -138,8 +121,7 @@ userAgentDeviceOSVersionHeaderName:userAgentDeviceOSVersionHeaderName
         fuelStationSerializer:fuelStationSerializer
     fuelPurchaseLogSerializer:fuelPurchaseLogSerializer
      environmentLogSerializer:environmentLogSerializer
-     allowInvalidCertificates:allowInvalidCertifications];
-    _txnManager = txnManager;
+     allowInvalidCertificates:allowInvalidCertificates];
     _conflictDelegate = conflictDelegate;
     _authTokenDelegate = authTokenDelegate;
     _bgProcessingErrorBlk = bgProcessingErrorBlk;
@@ -321,13 +303,11 @@ userAgentDeviceOSVersionHeaderName:userAgentDeviceOSVersionHeaderName
   };
   PELMRemoteMasterDeletionBlk remoteMasterDeletionExistingBlk =
       ^(PELMMainSupport *unsyncedUser,
-        NSString *transactionId,
         PELMRemoteMasterBusyBlk remoteStoreBusyHandler,
         PELMRemoteMasterAuthReqdBlk authReqdHandler,
         PELMRemoteMasterCompletionHandler remoteStoreComplHandler,
         dispatch_queue_t backgroundQueue) {
     [_remoteMasterDao deleteUser:(FPUser *)unsyncedUser
-                   transactionId:transactionId
                     asynchronous:NO
                          timeout:_timeout
                  remoteStoreBusy:remoteStoreBusyHandler
@@ -337,13 +317,11 @@ userAgentDeviceOSVersionHeaderName:userAgentDeviceOSVersionHeaderName
   };
   PELMRemoteMasterSaveBlk remoteMasterSaveExistingBlk =
       ^(PELMMainSupport *unsyncedUser,
-        NSString *transactionId,
         PELMRemoteMasterBusyBlk remoteStoreBusyHandler,
         PELMRemoteMasterAuthReqdBlk authReqdHandler,
         PELMRemoteMasterCompletionHandler remoteStoreComplHandler,
         dispatch_queue_t backgroundQueue) {
     [_remoteMasterDao saveExistingUser:(FPUser *)unsyncedUser
-                         transactionId:transactionId
                           asynchronous:NO
                                timeout:_timeout
                        remoteStoreBusy:remoteStoreBusyHandler
@@ -354,15 +332,11 @@ userAgentDeviceOSVersionHeaderName:userAgentDeviceOSVersionHeaderName
   [PELMUtils flushUnsyncedChangesToEntity:user
                          systemFlushCount:_flushToRemoteMasterCount
                   contextForNotifications:self
-                       transactionManager:_txnManager
-                              syncTxnUsecase:FPTxnSyncUser
-                   syncInitiatedTxnUsecaseEvent:FPTxnSyncUserEvtInitiated
                        remoteStoreBusyBlk:remoteStoreBusyBlk
                             cancelSyncBlk:^(PELMMainSupport *unsyncedUser){[_localDao cancelSyncForUser:(FPUser *)unsyncedUser
                                                                                             editActorId:editActorId
                                                                                                   error:_bgProcessingErrorBlk];}
                         markAsConflictBlk:markAsConflictBlk
-                     syncRespReceivedTxnUsecaseEvent:FPTxnSyncUserEvtSaveToRemoteRespReceived
         markAsSyncCompleteForNewEntityBlk:nil // because new users are always created in real-time, in main-thread of application
    markAsSyncCompleteForExistingEntityBlk:^(PELMMainSupport *unsyncedUser){[_localDao markAsSyncCompleteForUser:(FPUser *)unsyncedUser
                                                                                                     editActorId:editActorId
@@ -372,8 +346,7 @@ userAgentDeviceOSVersionHeaderName:userAgentDeviceOSVersionHeaderName
                entityGoneNotificationName:FPUserDeleted
                 physicallyDeleteEntityBlk:^(PELMMainSupport *unsyncedUser){[_localDao cascadeDeleteUser:(FPUser *)unsyncedUser
                                                                                                   error:_bgProcessingErrorBlk];}
-                   syncAttemptedTxnUsecaseEvent:FPTxnSyncUserEvtRemoteAttempted
-                      authRequiredHandler:[self authReqdBlk]
+                     authRequiredHandler:[self authReqdBlk]
                           newAuthTokenBlk:^(NSString *newAuthTkn){[self processNewAuthToken:newAuthTkn forUsernameOrEmail:[user usernameOrEmail]];}
                 backgroundProcessingQueue:_serialQueue
                     remoteMasterDeleteBlk:remoteMasterDeletionExistingBlk
@@ -395,13 +368,11 @@ userAgentDeviceOSVersionHeaderName:userAgentDeviceOSVersionHeaderName
   };
   PELMRemoteMasterDeletionBlk remoteMasterDeletionExistingBlk =
   ^(PELMMainSupport *unsyncedVehicle,
-    NSString *transactionId,
     PELMRemoteMasterBusyBlk remoteStoreBusyHandler,
     PELMRemoteMasterAuthReqdBlk authReqdHandler,
     PELMRemoteMasterCompletionHandler remoteStoreComplHandler,
     dispatch_queue_t backgroundQueue) {
     [_remoteMasterDao deleteVehicle:(FPVehicle *)unsyncedVehicle
-                      transactionId:transactionId
                        asynchronous:NO
                             timeout:_timeout
                     remoteStoreBusy:remoteStoreBusyHandler
@@ -411,13 +382,11 @@ userAgentDeviceOSVersionHeaderName:userAgentDeviceOSVersionHeaderName
   };
   PELMRemoteMasterSaveBlk remoteMasterSaveExistingBlk =
   ^(PELMMainSupport *unsyncedVehicle,
-    NSString *transactionId,
     PELMRemoteMasterBusyBlk remoteStoreBusyHandler,
     PELMRemoteMasterAuthReqdBlk authReqdHandler,
     PELMRemoteMasterCompletionHandler remoteStoreComplHandler,
     dispatch_queue_t backgroundQueue) {
     [_remoteMasterDao saveExistingVehicle:(FPVehicle *)unsyncedVehicle
-                            transactionId:transactionId
                              asynchronous:NO
                                   timeout:_timeout
                           remoteStoreBusy:remoteStoreBusyHandler
@@ -427,7 +396,6 @@ userAgentDeviceOSVersionHeaderName:userAgentDeviceOSVersionHeaderName
   };
   PELMRemoteMasterSaveBlk remoteMasterSaveNewBlk =
   ^(PELMMainSupport *unsyncedVehicle,
-    NSString *transactionId,
     PELMRemoteMasterBusyBlk remoteStoreBusyHandler,
     PELMRemoteMasterAuthReqdBlk authReqdHandler,
     PELMRemoteMasterCompletionHandler remoteStoreComplHandler,
@@ -435,7 +403,6 @@ userAgentDeviceOSVersionHeaderName:userAgentDeviceOSVersionHeaderName
     DDLogDebug(@"{%lu} - About to call remoteMasterDao / saveNewVehicle on thread: [%@]", (unsigned long)_flushToRemoteMasterCount, [NSThread currentThread]);
     [_remoteMasterDao saveNewVehicle:(FPVehicle *)unsyncedVehicle
                              forUser:user
-                       transactionId:transactionId
                         asynchronous:NO
                              timeout:_timeout
                      remoteStoreBusy:remoteStoreBusyHandler
@@ -446,15 +413,11 @@ userAgentDeviceOSVersionHeaderName:userAgentDeviceOSVersionHeaderName
   [PELMUtils flushUnsyncedChangesToEntity:vehicle
                          systemFlushCount:_flushToRemoteMasterCount
                   contextForNotifications:self
-                       transactionManager:_txnManager
-                              syncTxnUsecase:FPTxnSyncVehicle
-                   syncInitiatedTxnUsecaseEvent:FPTxnSyncVehicleEvtInitiated
                        remoteStoreBusyBlk:remoteStoreBusyBlk
                             cancelSyncBlk:^(PELMMainSupport *unsyncedVehicle){[_localDao cancelSyncForVehicle:(FPVehicle *)unsyncedVehicle
                                                                                                   editActorId:editActorId
                                                                                                         error:_bgProcessingErrorBlk];}
                         markAsConflictBlk:markAsConflictBlk
-                     syncRespReceivedTxnUsecaseEvent:FPTxnSyncVehicleEvtSaveToRemoteRespReceived
         markAsSyncCompleteForNewEntityBlk:^(PELMMainSupport *unsyncedVehicle){[_localDao markAsSyncCompleteForNewVehicle:(FPVehicle *)unsyncedVehicle
                                                                                                                  forUser:user
                                                                                                              editActorId:editActorId
@@ -467,7 +430,6 @@ userAgentDeviceOSVersionHeaderName:userAgentDeviceOSVersionHeaderName
                entityGoneNotificationName:FPVehicleDeleted
                 physicallyDeleteEntityBlk:^(PELMMainSupport *unsyncedVehicle){[_localDao cascadeDeleteVehicle:(FPVehicle *)unsyncedVehicle
                                                                                                         error:_bgProcessingErrorBlk];}
-                   syncAttemptedTxnUsecaseEvent:FPTxnSyncVehicleEvtSaveToRemoteStoreAttempted
                       authRequiredHandler:[self authReqdBlk]
                           newAuthTokenBlk:^(NSString *newAuthTkn){[self processNewAuthToken:newAuthTkn forUsernameOrEmail:[user usernameOrEmail]];}
                 backgroundProcessingQueue:_serialQueue
@@ -491,13 +453,11 @@ userAgentDeviceOSVersionHeaderName:userAgentDeviceOSVersionHeaderName
   };
   PELMRemoteMasterDeletionBlk remoteMasterDeletionExistingBlk =
   ^(PELMMainSupport *unsyncedFuelStation,
-    NSString *transactionId,
     PELMRemoteMasterBusyBlk remoteStoreBusyHandler,
     PELMRemoteMasterAuthReqdBlk authReqdHandler,
     PELMRemoteMasterCompletionHandler remoteStoreComplHandler,
     dispatch_queue_t backgroundQueue) {
     [_remoteMasterDao deleteFuelStation:(FPFuelStation *)unsyncedFuelStation
-                          transactionId:transactionId
                            asynchronous:NO
                                 timeout:_timeout
                         remoteStoreBusy:remoteStoreBusyHandler
@@ -507,13 +467,11 @@ userAgentDeviceOSVersionHeaderName:userAgentDeviceOSVersionHeaderName
   };
   PELMRemoteMasterSaveBlk remoteMasterSaveExistingBlk =
   ^(PELMMainSupport *unsyncedFuelStation,
-    NSString *transactionId,
     PELMRemoteMasterBusyBlk remoteStoreBusyHandler,
     PELMRemoteMasterAuthReqdBlk authReqdHandler,
     PELMRemoteMasterCompletionHandler remoteStoreComplHandler,
     dispatch_queue_t backgroundQueue) {
     [_remoteMasterDao saveExistingFuelStation:(FPFuelStation *)unsyncedFuelStation
-                                transactionId:transactionId
                                  asynchronous:NO
                                       timeout:_timeout
                               remoteStoreBusy:remoteStoreBusyHandler
@@ -523,7 +481,6 @@ userAgentDeviceOSVersionHeaderName:userAgentDeviceOSVersionHeaderName
   };
   PELMRemoteMasterSaveBlk remoteMasterSaveNewBlk =
   ^(PELMMainSupport *unsyncedFuelStation,
-    NSString *transactionId,
     PELMRemoteMasterBusyBlk remoteStoreBusyHandler,
     PELMRemoteMasterAuthReqdBlk authReqdHandler,
     PELMRemoteMasterCompletionHandler remoteStoreComplHandler,
@@ -531,7 +488,6 @@ userAgentDeviceOSVersionHeaderName:userAgentDeviceOSVersionHeaderName
     DDLogDebug(@"{%lu} - About to call remoteMasterDao / saveNewFuelStation on thread: [%@]", (unsigned long)_flushToRemoteMasterCount, [NSThread currentThread]);
     [_remoteMasterDao saveNewFuelStation:(FPFuelStation *)unsyncedFuelStation
                                  forUser:user
-                           transactionId:transactionId
                             asynchronous:NO
                                  timeout:_timeout
                          remoteStoreBusy:remoteStoreBusyHandler
@@ -542,15 +498,11 @@ userAgentDeviceOSVersionHeaderName:userAgentDeviceOSVersionHeaderName
   [PELMUtils flushUnsyncedChangesToEntity:fuelStation
                          systemFlushCount:_flushToRemoteMasterCount
                   contextForNotifications:self
-                       transactionManager:_txnManager
-                              syncTxnUsecase:FPTxnSyncFuelStation
-                   syncInitiatedTxnUsecaseEvent:FPTxnSyncFuelStationEvtInitiated
                        remoteStoreBusyBlk:remoteStoreBusyBlk
                             cancelSyncBlk:^(PELMMainSupport *unsyncedFuelStation){[_localDao cancelSyncForFuelStation:(FPFuelStation *)unsyncedFuelStation
                                                                                                           editActorId:editActorId
                                                                                                                 error:_bgProcessingErrorBlk];}
                         markAsConflictBlk:markAsConflictBlk
-                     syncRespReceivedTxnUsecaseEvent:FPTxnSyncFuelStationEvtSaveToRemoteRespReceived
         markAsSyncCompleteForNewEntityBlk:^(PELMMainSupport *unsyncedFuelStation){[_localDao markAsSyncCompleteForNewFuelStation:(FPFuelStation *)unsyncedFuelStation
                                                                                                                          forUser:user
                                                                                                                      editActorId:editActorId
@@ -563,7 +515,6 @@ userAgentDeviceOSVersionHeaderName:userAgentDeviceOSVersionHeaderName
                entityGoneNotificationName:FPFuelStationDeleted
                 physicallyDeleteEntityBlk:^(PELMMainSupport *unsyncedFuelStation){[_localDao cascadeDeleteFuelStation:(FPFuelStation *)unsyncedFuelStation
                                                                                                                 error:_bgProcessingErrorBlk];}
-                   syncAttemptedTxnUsecaseEvent:FPTxnSyncFuelStationEvtSaveToRemoteStoreAttempted
                       authRequiredHandler:[self authReqdBlk]
                           newAuthTokenBlk:^(NSString *newAuthTkn){[self processNewAuthToken:newAuthTkn
                                                                          forUsernameOrEmail:[user usernameOrEmail]];}
@@ -590,13 +541,11 @@ userAgentDeviceOSVersionHeaderName:userAgentDeviceOSVersionHeaderName
   };
   PELMRemoteMasterDeletionBlk remoteMasterDeletionExistingBlk =
   ^(PELMMainSupport *unsyncedFuelPurchaseLog,
-    NSString *transactionId,
     PELMRemoteMasterBusyBlk remoteStoreBusyHandler,
     PELMRemoteMasterAuthReqdBlk authReqdHandler,
     PELMRemoteMasterCompletionHandler remoteStoreComplHandler,
     dispatch_queue_t backgroundQueue) {
     [_remoteMasterDao deleteFuelPurchaseLog:(FPFuelPurchaseLog *)unsyncedFuelPurchaseLog
-                              transactionId:transactionId
                                asynchronous:NO
                                     timeout:_timeout
                             remoteStoreBusy:remoteStoreBusyHandler
@@ -606,13 +555,11 @@ userAgentDeviceOSVersionHeaderName:userAgentDeviceOSVersionHeaderName
   };
   PELMRemoteMasterSaveBlk remoteMasterSaveExistingBlk =
   ^(PELMMainSupport *unsyncedFuelPurchaseLog,
-    NSString *transactionId,
     PELMRemoteMasterBusyBlk remoteStoreBusyHandler,
     PELMRemoteMasterAuthReqdBlk authReqdHandler,
     PELMRemoteMasterCompletionHandler remoteStoreComplHandler,
     dispatch_queue_t backgroundQueue) {
     [_remoteMasterDao saveExistingFuelPurchaseLog:(FPFuelPurchaseLog *)unsyncedFuelPurchaseLog
-                                    transactionId:transactionId
                                      asynchronous:NO
                                           timeout:_timeout
                                   remoteStoreBusy:remoteStoreBusyHandler
@@ -622,7 +569,6 @@ userAgentDeviceOSVersionHeaderName:userAgentDeviceOSVersionHeaderName
   };
   PELMRemoteMasterSaveBlk remoteMasterSaveNewBlk =
   ^(PELMMainSupport *unsyncedFuelPurchaseLog,
-    NSString *transactionId,
     PELMRemoteMasterBusyBlk remoteStoreBusyHandler,
     PELMRemoteMasterAuthReqdBlk authReqdHandler,
     PELMRemoteMasterCompletionHandler remoteStoreComplHandler,
@@ -630,7 +576,6 @@ userAgentDeviceOSVersionHeaderName:userAgentDeviceOSVersionHeaderName
     DDLogDebug(@"{%lu} - About to call remoteMasterDao / saveNewFuelPurchaseLog on thread: [%@]", (unsigned long)_flushToRemoteMasterCount, [NSThread currentThread]);
     [_remoteMasterDao saveNewFuelPurchaseLog:(FPFuelPurchaseLog *)unsyncedFuelPurchaseLog
                                      forUser:user
-                               transactionId:transactionId
                                 asynchronous:NO
                                      timeout:_timeout
                              remoteStoreBusy:remoteStoreBusyHandler
@@ -641,15 +586,11 @@ userAgentDeviceOSVersionHeaderName:userAgentDeviceOSVersionHeaderName
   [PELMUtils flushUnsyncedChangesToEntity:fuelPurchaseLog
                          systemFlushCount:_flushToRemoteMasterCount
                   contextForNotifications:self
-                       transactionManager:_txnManager
-                              syncTxnUsecase:FPTxnSyncFpLog
-                   syncInitiatedTxnUsecaseEvent:FPTxnSyncFpLogEvtInitiated
                        remoteStoreBusyBlk:remoteStoreBusyBlk
                             cancelSyncBlk:^(PELMMainSupport *unsyncedFuelPurchaseLog){[_localDao cancelSyncForFuelPurchaseLog:(FPFuelPurchaseLog *)unsyncedFuelPurchaseLog
                                                                                                                   editActorId:editActorId
                                                                                                                         error:_bgProcessingErrorBlk];}
                         markAsConflictBlk:markAsConflictBlk
-                     syncRespReceivedTxnUsecaseEvent:FPTxnSyncFpLogEvtSaveToRemoteRespReceived
         markAsSyncCompleteForNewEntityBlk:^(PELMMainSupport *unsyncedFuelPurchaseLog){[_localDao markAsSyncCompleteForNewFuelPurchaseLog:(FPFuelPurchaseLog *)unsyncedFuelPurchaseLog
                                                                                                                                  forUser:user
                                                                                                                              editActorId:editActorId
@@ -662,7 +603,6 @@ userAgentDeviceOSVersionHeaderName:userAgentDeviceOSVersionHeaderName
                entityGoneNotificationName:FPFuelPurchaseLogDeleted
                 physicallyDeleteEntityBlk:^(PELMMainSupport *unsyncedFuelPurchaseLog){[_localDao cascadeDeleteFuelPurchaseLog:(FPFuelPurchaseLog *)unsyncedFuelPurchaseLog
                                                                                                                         error:_bgProcessingErrorBlk];}
-                   syncAttemptedTxnUsecaseEvent:FPTxnSyncFpLogEvtSaveToRemoteStoreAttempted
                       authRequiredHandler:[self authReqdBlk]
                           newAuthTokenBlk:^(NSString *newAuthTkn){[self processNewAuthToken:newAuthTkn forUsernameOrEmail:[user usernameOrEmail]];}
                 backgroundProcessingQueue:_serialQueue
@@ -687,13 +627,11 @@ userAgentDeviceOSVersionHeaderName:userAgentDeviceOSVersionHeaderName
   };
   PELMRemoteMasterDeletionBlk remoteMasterDeletionExistingBlk =
   ^(PELMMainSupport *unsyncedEnvironmentLog,
-    NSString *transactionId,
     PELMRemoteMasterBusyBlk remoteStoreBusyHandler,
     PELMRemoteMasterAuthReqdBlk authReqdHandler,
     PELMRemoteMasterCompletionHandler remoteStoreComplHandler,
     dispatch_queue_t backgroundQueue) {
     [_remoteMasterDao deleteEnvironmentLog:(FPEnvironmentLog *)unsyncedEnvironmentLog
-                             transactionId:transactionId
                               asynchronous:NO
                                    timeout:_timeout
                            remoteStoreBusy:remoteStoreBusyHandler
@@ -703,13 +641,11 @@ userAgentDeviceOSVersionHeaderName:userAgentDeviceOSVersionHeaderName
   };
   PELMRemoteMasterSaveBlk remoteMasterSaveExistingBlk =
   ^(PELMMainSupport *unsyncedEnvironmentLog,
-    NSString *transactionId,
     PELMRemoteMasterBusyBlk remoteStoreBusyHandler,
     PELMRemoteMasterAuthReqdBlk authReqdHandler,
     PELMRemoteMasterCompletionHandler remoteStoreComplHandler,
     dispatch_queue_t backgroundQueue) {
     [_remoteMasterDao saveExistingEnvironmentLog:(FPEnvironmentLog *)unsyncedEnvironmentLog
-                                   transactionId:transactionId
                                     asynchronous:NO
                                          timeout:_timeout
                                  remoteStoreBusy:remoteStoreBusyHandler
@@ -719,7 +655,6 @@ userAgentDeviceOSVersionHeaderName:userAgentDeviceOSVersionHeaderName
   };
   PELMRemoteMasterSaveBlk remoteMasterSaveNewBlk =
   ^(PELMMainSupport *unsyncedEnvironmentLog,
-    NSString *transactionId,
     PELMRemoteMasterBusyBlk remoteStoreBusyHandler,
     PELMRemoteMasterAuthReqdBlk authReqdHandler,
     PELMRemoteMasterCompletionHandler remoteStoreComplHandler,
@@ -727,7 +662,6 @@ userAgentDeviceOSVersionHeaderName:userAgentDeviceOSVersionHeaderName
     DDLogDebug(@"{%lu} - About to call remoteMasterDao / saveNewEnvironmentLog on thread: [%@]", (unsigned long)_flushToRemoteMasterCount, [NSThread currentThread]);
     [_remoteMasterDao saveNewEnvironmentLog:(FPEnvironmentLog *)unsyncedEnvironmentLog
                                     forUser:user
-                              transactionId:transactionId
                                asynchronous:NO
                                     timeout:_timeout
                             remoteStoreBusy:remoteStoreBusyHandler
@@ -738,15 +672,11 @@ userAgentDeviceOSVersionHeaderName:userAgentDeviceOSVersionHeaderName
   [PELMUtils flushUnsyncedChangesToEntity:environmentLog
                          systemFlushCount:_flushToRemoteMasterCount
                   contextForNotifications:self
-                       transactionManager:_txnManager
-                              syncTxnUsecase:FPTxnSyncEnvLog
-                   syncInitiatedTxnUsecaseEvent:FPTxnSyncEnvLogEvtInitiated
                        remoteStoreBusyBlk:remoteStoreBusyBlk
                             cancelSyncBlk:^(PELMMainSupport *unsyncedEnvironmentLog){[_localDao cancelSyncForEnvironmentLog:(FPEnvironmentLog *)unsyncedEnvironmentLog
                                                                                                                 editActorId:editActorId
                                                                                                                       error:_bgProcessingErrorBlk];}
                         markAsConflictBlk:markAsConflictBlk
-                     syncRespReceivedTxnUsecaseEvent:FPTxnSyncEnvLogEvtSaveToRemoteRespReceived
         markAsSyncCompleteForNewEntityBlk:^(PELMMainSupport *unsyncedEnvironmentLog){[_localDao markAsSyncCompleteForNewEnvironmentLog:(FPEnvironmentLog *)unsyncedEnvironmentLog
                                                                                                                                forUser:user
                                                                                                                            editActorId:editActorId
@@ -759,7 +689,6 @@ userAgentDeviceOSVersionHeaderName:userAgentDeviceOSVersionHeaderName
                entityGoneNotificationName:FPEnvironmentLogDeleted
                 physicallyDeleteEntityBlk:^(PELMMainSupport *unsyncedEnvironmentLog){[_localDao cascadeDeleteEnvironmentLog:(FPEnvironmentLog *)unsyncedEnvironmentLog
                                                                                                                       error:_bgProcessingErrorBlk];}
-                   syncAttemptedTxnUsecaseEvent:FPTxnSyncEnvLogEvtSaveToRemoteStoreAttempted
                       authRequiredHandler:[self authReqdBlk]
                           newAuthTokenBlk:^(NSString *newAuthTkn){[self processNewAuthToken:newAuthTkn
                                                                          forUsernameOrEmail:[user usernameOrEmail]];}
@@ -882,7 +811,6 @@ userAgentDeviceOSVersionHeaderName:userAgentDeviceOSVersionHeaderName
 }
 
 - (void)immediateRemoteSyncSaveNewUser:(FPUser *)user
-                           transaction:(TLTransaction *)txn
                        remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                      completionHandler:(FPSavedNewEntityCompletionHandler)complHandler
                  localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler {
@@ -896,12 +824,9 @@ userAgentDeviceOSVersionHeaderName:userAgentDeviceOSVersionHeaderName
       [_localDao saveNewUser:respUser error:localSaveErrorHandler];
       [self processNewAuthToken:newAuthTkn forUsernameOrEmail:[respUser usernameOrEmail]];
     };
-    [txn logWithUsecaseEvent:@(FPTxnCreateUserEvtRemoteAttemptRespReceived) error:localSaveErrorHandler];
     complHandler(respUser, err);
   };
-  [txn logWithUsecaseEvent:@(FPTxnCreateUserEvtRemoteAttempted) error:localSaveErrorHandler];
   [_remoteMasterDao saveNewUser:user
-                  transactionId:[txn guid]
                    asynchronous:YES
                         timeout:_timeout
                 remoteStoreBusy:busyHandler
@@ -912,7 +837,6 @@ userAgentDeviceOSVersionHeaderName:userAgentDeviceOSVersionHeaderName
 
 - (void)loginWithUsernameOrEmail:(NSString *)usernameOrEmail
                         password:(NSString *)password
-                     transaction:(TLTransaction *)txn
                  remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                completionHandler:(FPFetchedEntityCompletionHandler)complHandler
            localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler {
@@ -920,8 +844,6 @@ userAgentDeviceOSVersionHeaderName:userAgentDeviceOSVersionHeaderName
   ^(NSString *newAuthTkn, NSString *globalId, id resourceModel, NSDictionary *rels,
     NSDate *lastModified, BOOL isConflict, BOOL gone, BOOL notFound, BOOL movedPermanently,
     BOOL notModified, NSError *err, NSHTTPURLResponse *httpResp) {
-    [txn logWithUsecaseEvent:@(FPTxnLoginEvtRemoteAttemptRespReceived)
-                       error:localSaveErrorHandler];
     FPUser *user = (FPUser *)resourceModel;
     if (user) {
       [_localDao persistDeepUserFromRemoteMaster:user error:localSaveErrorHandler];
@@ -935,11 +857,8 @@ userAgentDeviceOSVersionHeaderName:userAgentDeviceOSVersionHeaderName
                                      userInfo:nil];
     complHandler(nil, error);
   };
-  [txn logWithUsecaseEvent:@(FPTxnLoginEvtRemoteAttempted)
-                     error:localSaveErrorHandler];
   [_remoteMasterDao loginWithUsernameOrEmail:usernameOrEmail
                                     password:password
-                               transactionId:[txn guid]
                                 asynchronous:YES
                                      timeout:_timeout
                              remoteStoreBusy:busyHandler

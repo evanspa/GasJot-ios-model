@@ -186,7 +186,6 @@ NSInteger const FPForegroundActorId = 1;
                      NSString *username,
                      NSString *password,
                      FPCoordinatorDao *coordDao,
-                     TLTransaction *txn,
                      void (^waitBlock)(void)) {
     [self newMocker](Two01MockResponseFile, 0, 0);
     FPUser *user = [coordDao userWithName:name
@@ -197,7 +196,6 @@ NSInteger const FPForegroundActorId = 1;
     FPSavedNewEntityCompletionHandler complHandler = ^(FPUser *savedUser, NSError *error) { };
     PELMDaoErrorBlk localDaoErrHandler = ^(NSError *error, int code, NSString *msg) { };
     [coordDao immediateRemoteSyncSaveNewUser:user
-                                 transaction:txn
                              remoteStoreBusy:[self newRemoteStoreBusyBlkMaker]()
                            completionHandler:complHandler
                        localSaveErrorHandler:localDaoErrHandler];
@@ -209,14 +207,13 @@ NSInteger const FPForegroundActorId = 1;
 }
 
 - (FPCoordTestingFreshJoeSmithMaker)newFreshJoeSmithMaker {
-  return ^ FPUser * (FPCoordinatorDao *coordDao, TLTransaction *txn, void (^waitBlock)(void)) {
+  return ^ FPUser * (FPCoordinatorDao *coordDao, void (^waitBlock)(void)) {
     return [self newFreshUserMaker](@"http-response.users.POST.201",
                                     @"Joe Smith",
                                     @"joe.smith@example.com",
                                     @"smithjoe",
                                     @"pa55w0rd",
                                     coordDao,
-                                    txn,
                                     waitBlock);
   };
 }
@@ -249,31 +246,7 @@ NSInteger const FPForegroundActorId = 1;
   [coordDao setFlushToRemoteMasterCount:0];
 }
 
-- (TLTransactionManager *)newTxnManager {
-  NSURL *txnsSqlLiteDataFileUrl =
-    [_testBundle URLForResource:@"transactions-sqlite-datafile-for-testing"
-                  withExtension:@"data"];
-  HCRelationExecutor *relExecutor =
-    [[HCRelationExecutor alloc] initWithDefaultAcceptCharset:[HCCharset UTF8]
-                                       defaultAcceptLanguage:@"en-US"
-                                   defaultContentTypeCharset:[HCCharset UTF8]
-                                    allowInvalidCertificates:NO];
-  TLTransactionManager *txnMg =
-    [[TLTransactionManager alloc] initWithDataFilePath:[txnsSqlLiteDataFileUrl absoluteString]
-                                   userAgentDeviceMake:@"iPhone5,2"
-                                     userAgentDeviceOS:@"iPhone OS"
-                              userAgentDeviceOSVersion:@"7.0.2"
-                                      relationExecutor:relExecutor
-                                            authScheme:@"token-scheme"
-                                    authTokenParamName:@"auth-token"
-                                    contentTypeCharset:[HCCharset UTF8]
-                                    apptxnResMtVersion:@"0.0.1"
-                              apptxnMediaSubtypePrefix:@"vnd.fp."
-                                                 error:[self newLocalSaveErrBlkMaker]()];
-  return txnMg;
-}
-
-- (FPCoordinatorDao *)newStoreCoordWithTxnManager:(TLTransactionManager *)txnMgr {
+- (FPCoordinatorDao *)newStoreCoord {
   NSURL *localSqlLiteDataFileUrl =
   [_testBundle URLForResource:@"sqlite-datafile-for-testing"
                 withExtension:@"data"];
@@ -300,13 +273,6 @@ NSInteger const FPForegroundActorId = 1;
                                            authTokenParamName:@"fp-token"
                                                     authToken:nil
                                           errorMaskHeaderName:@"fp-error-mask"
-                                              txnIdHeaderName:@"fp-transaction-id"
-                                userAgentDeviceMakeHeaderName:@"fp-user-agent-device-make"
-                                  userAgentDeviceOSHeaderName:@"fp-user-agent-device-os"
-                           userAgentDeviceOSVersionHeaderName:@"fp-user-agent-device-version"
-                                          userAgentDeviceMake:[PEUtils deviceMake]
-                                            userAgentDeviceOS:[[UIDevice currentDevice] systemName]
-                                     userAgentDeviceOSVersion:[[UIDevice currentDevice] systemVersion]
                                    establishSessionHeaderName:@"fp-establish-session"
                                   authTokenResponseHeaderName:@"fp-auth-token"
                                  bundleHoldingApiJsonResource:_testBundle
@@ -316,8 +282,7 @@ NSInteger const FPForegroundActorId = 1;
                                           vehicleResMtVersion:@"0.0.1"
                                       fuelStationResMtVersion:@"0.0.1"
                                   fuelPurchaseLogResMtVersion:@"0.0.1"
-                                   environmentLogResMtVersion:@"0.0.1"
-                                           transactionManager:txnMgr
+                                   environmentLogResMtVersion:@"0.0.1"                                        
                                    remoteSyncConflictDelegate:nil
                                             authTokenDelegate:authTokenDelegate
                               errorBlkForBackgroundProcessing:[self newLocalFetchErrBlkMaker]()

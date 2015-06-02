@@ -12,7 +12,6 @@
 		1800C9D019A8D80400ECD51A /* FPAuthTokenDelegateForTesting.m in Sources */ = {isa = PBXBuildFile; fileRef = 1800C9CF19A8D80400ECD51A /* FPAuthTokenDelegateForTesting.m */; };
 		1800C9D419A8DAA100ECD51A /* FPNotificationNames.m in Sources */ = {isa = PBXBuildFile; fileRef = 1800C9D319A8DAA100ECD51A /* FPNotificationNames.m */; };
 		1800C9D619A8DF7400ECD51A /* sqlite-datafile-for-testing.data in Resources */ = {isa = PBXBuildFile; fileRef = 1800C9D519A8DF7400ECD51A /* sqlite-datafile-for-testing.data */; };
-		1800C9D819A8DFD000ECD51A /* transactions-sqlite-datafile-for-testing.data in Resources */ = {isa = PBXBuildFile; fileRef = 1800C9D719A8DFD000ECD51A /* transactions-sqlite-datafile-for-testing.data */; };
 		1800C9DC19A8E21B00ECD51A /* FPCoordinatorDao+AdditionsForTesting.m in Sources */ = {isa = PBXBuildFile; fileRef = 1800C9DB19A8E21B00ECD51A /* FPCoordinatorDao+AdditionsForTesting.m */; };
 		1800C9E719A8E4E900ECD51A /* PELMUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 1800C9E619A8E4E900ECD51A /* PELMUtils.m */; };
 		1800C9EB19A8E75C00ECD51A /* PELMDDL.m in Sources */ = {isa = PBXBuildFile; fileRef = 1800C9EA19A8E75C00ECD51A /* PELMDDL.m */; };
@@ -105,7 +104,6 @@
 		1800C9D219A8DAA100ECD51A /* FPNotificationNames.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FPNotificationNames.h; sourceTree = "<group>"; };
 		1800C9D319A8DAA100ECD51A /* FPNotificationNames.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FPNotificationNames.m; sourceTree = "<group>"; };
 		1800C9D519A8DF7400ECD51A /* sqlite-datafile-for-testing.data */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "sqlite-datafile-for-testing.data"; sourceTree = "<group>"; };
-		1800C9D719A8DFD000ECD51A /* transactions-sqlite-datafile-for-testing.data */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "transactions-sqlite-datafile-for-testing.data"; sourceTree = "<group>"; };
 		1800C9DA19A8E21B00ECD51A /* FPCoordinatorDao+AdditionsForTesting.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "FPCoordinatorDao+AdditionsForTesting.h"; sourceTree = "<group>"; };
 		1800C9DB19A8E21B00ECD51A /* FPCoordinatorDao+AdditionsForTesting.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "FPCoordinatorDao+AdditionsForTesting.m"; sourceTree = "<group>"; };
 		1800C9E519A8E4E900ECD51A /* PELMUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PELMUtils.h; sourceTree = "<group>"; };
@@ -400,7 +398,6 @@
 				1803BC8A198436BF00225613 /* InfoPlist.strings */,
 				1800C9C519A83F7900ECD51A /* fpapi-resource.json */,
 				1800C9D519A8DF7400ECD51A /* sqlite-datafile-for-testing.data */,
-				1800C9D719A8DFD000ECD51A /* transactions-sqlite-datafile-for-testing.data */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -939,7 +936,6 @@
 				1800C9D619A8DF7400ECD51A /* sqlite-datafile-for-testing.data in Resources */,
 				18D8C11A19C3EF90006C65F9 /* json-strings in Resources */,
 				1800C9ED19A9974800ECD51A /* http-mock-responses in Resources */,
-				1800C9D819A8DFD000ECD51A /* transactions-sqlite-datafile-for-testing.data in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

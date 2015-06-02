@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <FMDB/FMDatabaseQueue.h>
 #import <FMDB/FMResultSet.h>
-#import <PEAppTransaction-Logger/TLTransactionManager.h>
+#import <PEHateoas-Client/HCAuthentication.h>
 #import "PELMMainSupport.h"
 
 /**
@@ -46,14 +46,12 @@ typedef void (^PELMRemoteMasterBusyBlk)(NSDate *);
 typedef void (^PELMRemoteMasterAuthReqdBlk)(HCAuthentication *);
 
 typedef void (^PELMRemoteMasterDeletionBlk)(PELMMainSupport *,
-                                            NSString *,
                                             PELMRemoteMasterBusyBlk,
                                             PELMRemoteMasterAuthReqdBlk,
                                             PELMRemoteMasterCompletionHandler,
                                             dispatch_queue_t);
 
 typedef void (^PELMRemoteMasterSaveBlk)(PELMMainSupport *,
-                                        NSString *,
                                         PELMRemoteMasterBusyBlk,
                                         PELMRemoteMasterAuthReqdBlk,
                                         PELMRemoteMasterCompletionHandler,
@@ -92,20 +90,15 @@ void (^LogSyncLocal)(NSString *, NSInteger);
 + (void)flushUnsyncedChangesToEntity:(PELMMainSupport *)unsyncedEntity
                     systemFlushCount:(NSInteger)systemFlushCount
              contextForNotifications:(NSObject *)contextForNotifications
-                  transactionManager:(TLTransactionManager *)txnManager
-                      syncTxnUsecase:(NSInteger)syncTxnUsecase
-        syncInitiatedTxnUsecaseEvent:(NSInteger)syncInitiatedTxnUsecaseEvent
                   remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
                        cancelSyncBlk:(void(^)(PELMMainSupport *))cancelSyncBlk
                    markAsConflictBlk:(void(^)(id, PELMMainSupport *))markAsConflictBlk
-     syncRespReceivedTxnUsecaseEvent:(NSInteger)syncRespReceivedUsecaseEvent
    markAsSyncCompleteForNewEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCompleteForNewEntityBlk
 markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCompleteForExistingEntityBlk
         syncCompleteNotificationName:(NSString *)syncCompleteNotificationName
           syncFailedNotificationName:(NSString *)syncFailedNotificationName
           entityGoneNotificationName:(NSString *)entityGoneNotificationName
            physicallyDeleteEntityBlk:(void(^)(PELMMainSupport *))physicallyDeleteEntityBlk
-        syncAttemptedTxnUsecaseEvent:(NSInteger)syncAttemptedTxnUsecaseEvent
                  authRequiredHandler:(PELMRemoteMasterAuthReqdBlk)authRequiredHandler
                      newAuthTokenBlk:(void(^)(NSString *))newAuthTokenBlk
            backgroundProcessingQueue:(dispatch_queue_t)backgroundProcessingQueue

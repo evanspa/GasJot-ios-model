@@ -8,8 +8,6 @@
 
 #import <Foundation/Foundation.h>
 #import <PEHateoas-Client/HCCharset.h>
-#import <PEAppTransaction-Logger/TLTransaction.h>
-#import <PEAppTransaction-Logger/TLTransactionManager.h>
 #import <PEFuelPurchase-Common/FPAuthTokenDelegate.h>
 #import "FPRemoteStoreSyncConflictDelegate.h"
 #import "FPRemoteMasterDao.h"
@@ -51,13 +49,6 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
               authTokenParamName:(NSString *)authTokenParamName
                        authToken:(NSString *)authToken
              errorMaskHeaderName:(NSString *)errorMaskHeaderName
-                 txnIdHeaderName:(NSString *)txnIdHeaderName
-   userAgentDeviceMakeHeaderName:(NSString *)userAgentDeviceMakeHeaderName
-     userAgentDeviceOSHeaderName:(NSString *)userAgentDeviceOSHeaderName
-userAgentDeviceOSVersionHeaderName:(NSString *)userAgentDeviceOSVersionHeaderName
-             userAgentDeviceMake:(NSString *)userAgentDeviceMake
-               userAgentDeviceOS:(NSString *)userAgentDeviceOS
-        userAgentDeviceOSVersion:(NSString *)userAgentDeviceOSVersion
       establishSessionHeaderName:(NSString *)establishHeaderSessionName
      authTokenResponseHeaderName:(NSString *)authTokenHeaderName
     bundleHoldingApiJsonResource:(NSBundle *)bundle
@@ -68,7 +59,6 @@ userAgentDeviceOSVersionHeaderName:(NSString *)userAgentDeviceOSVersionHeaderNam
          fuelStationResMtVersion:(NSString *)fuelStationResMtVersion
      fuelPurchaseLogResMtVersion:(NSString *)fuelPurchaseLogResMtVersion
       environmentLogResMtVersion:(NSString *)environmentLogResMtVersion
-              transactionManager:(TLTransactionManager *)txnManager
       remoteSyncConflictDelegate:(id<FPRemoteStoreSyncConflictDelegate>)conflictDelegate
                authTokenDelegate:(id<FPAuthTokenDelegate>)authTokenDelegate
  errorBlkForBackgroundProcessing:(PELMDaoErrorBlk)bgProcessingErrorBlk
@@ -119,7 +109,6 @@ userAgentDeviceOSVersionHeaderName:(NSString *)userAgentDeviceOSVersionHeaderNam
             creationDate:(NSDate *)creationDate;
 
 - (void)immediateRemoteSyncSaveNewUser:(FPUser *)user
-                           transaction:(TLTransaction *)txn
                        remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                      completionHandler:(FPSavedNewEntityCompletionHandler)complHandler
                  localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler;
@@ -128,7 +117,6 @@ userAgentDeviceOSVersionHeaderName:(NSString *)userAgentDeviceOSVersionHeaderNam
 
 - (void)loginWithUsernameOrEmail:(NSString *)usernameOrEmail
                         password:(NSString *)password
-                     transaction:(TLTransaction *)txn
                  remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                completionHandler:(FPFetchedEntityCompletionHandler)complHandler
            localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler;

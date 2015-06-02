@@ -18,8 +18,8 @@ typedef void (^(^FPCoordTestingNewLocalBgErrBlkMaker)(void))(NSError *, int, NSS
 typedef void (^(^FPCoordTestingNewRemoteStoreBusyBlkMaker)(void))(NSDate *);
 typedef void (^(^FPCoordTestingNew1ErrArgComplHandlerBlkMaker)(void))(FPUser *, NSError *);
 typedef NSNumber * (^FPCoordTestingNumValueFetcher)(FPCoordinatorDao *, NSString *, NSString *, NSNumber *);
-typedef FPUser *(^FPCoordTestingFreshUserMaker)(NSString *, NSString *, NSString *, NSString *, NSString *, FPCoordinatorDao *, TLTransaction *, void (^)(void));
-typedef FPUser * (^FPCoordTestingFreshJoeSmithMaker)(FPCoordinatorDao *, TLTransaction *, void (^waitBlock)(void));
+typedef FPUser *(^FPCoordTestingFreshUserMaker)(NSString *, NSString *, NSString *, NSString *, NSString *, FPCoordinatorDao *, void (^)(void));
+typedef FPUser * (^FPCoordTestingFreshJoeSmithMaker)(FPCoordinatorDao *, void (^waitBlock)(void));
 typedef FPToggler * (^FPCoordTestingObserver)(NSArray *);
 typedef void (^FPCoordTestingExpectedNumberOfEntitiesAsserter)(FPCoordinatorDao *, NSString *, int);
 typedef NSNumber *(^FPCoordTestingNumEntitiesComputer)(NSString *);
@@ -77,7 +77,6 @@ FOUNDATION_EXPORT NSInteger const FPForegroundActorId;
 - (void)startTimerForAsyncWorkWithInterval:(NSInteger)timerInterval
                                   coordDao:(FPCoordinatorDao *)coordDao;
 
-- (TLTransactionManager *)newTxnManager;
-- (FPCoordinatorDao *)newStoreCoordWithTxnManager:(TLTransactionManager *)txnMgr;
+- (FPCoordinatorDao *)newStoreCoord;
 
 @end

@@ -28,7 +28,6 @@ SPEC_BEGIN(FPCoordinatorDaoSpec_7)
 
 __block FPCoordDaoTestContext *_coordTestCtx;
 __block FPCoordinatorDao *_coordDao;
-__block TLTransactionManager *_txnMgr;
 __block FPCoordTestingNumEntitiesComputer _numEntitiesBlk;
 __block FPCoordTestingMocker _mocker;
 __block FPCoordTestingFlusher _flusher;
@@ -59,8 +58,7 @@ describe(@"FPCoordinatorDao", ^{
     [DDLog addLogger:[DDASLLogger sharedInstance]];
     [DDLog addLogger:[DDTTYLogger sharedInstance]];
     _coordTestCtx = [[FPCoordDaoTestContext alloc] initWithTestBundle:[NSBundle bundleForClass:[self class]]];
-    _txnMgr = [_coordTestCtx newTxnManager];
-    _coordDao = [_coordTestCtx newStoreCoordWithTxnManager:_txnMgr];
+    _coordDao = [_coordTestCtx newStoreCoord];
     [_coordDao deleteAllUsers:^(NSError *error, int code, NSString *msg) { [_coordTestCtx setErrorDeletingUser:YES]; }];
     _numEntitiesBlk = [_coordTestCtx newNumEntitiesComputerWithCoordDao:_coordDao];
     _mocker = [_coordTestCtx newMocker];
@@ -74,14 +72,11 @@ describe(@"FPCoordinatorDao", ^{
   
   context(@"Tests", ^{
     it(@"Can fetch an existing user (login)", ^{
-      TLTransaction *txn = [_txnMgr transactionWithUsecase:@(FPTxnLogin)
-                                                     error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       FPUser *user = [_coordDao userWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
       [user shouldBeNil];
       _mocker(@"http-response.users.POST.200", 0, 0);
       [_coordDao loginWithUsernameOrEmail:@"evansp2"
                                  password:@"1n53cur3"
-                              transaction:txn
                           remoteStoreBusy:[_coordTestCtx newRemoteStoreBusyBlkMaker]()
                         completionHandler:[_coordTestCtx new1ErrArgComplHandlerBlkMaker]()
                     localSaveErrorHandler:[_coordTestCtx newLocalSaveErrBlkMaker]()];

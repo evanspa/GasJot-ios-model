@@ -24,13 +24,6 @@ NSString * const LAST_MODIFIED_HEADER = @"last-modified";
   NSString *_authScheme;
   NSString *_authTokenParamName;
   NSString *_errorMaskHeaderName;
-  NSString *_txnIdHeaderName;
-  NSString *_userAgentDeviceMakeHeaderName;
-  NSString *_userAgentDeviceOSHeaderName;
-  NSString *_userAgentDeviceOSVersionHeaderName;
-  NSString *_userAgentDeviceMake;
-  NSString *_userAgentDeviceOS;
-  NSString *_userAgentDeviceOSVersion;
   NSString *_establishSessionHeaderName;
   NSString *_authTokenHeaderName;
   NSDictionary *_restApiRelations;
@@ -51,13 +44,6 @@ NSString * const LAST_MODIFIED_HEADER = @"last-modified";
          authTokenParamName:(NSString *)authTokenParamName
                   authToken:(NSString *)authToken
         errorMaskHeaderName:(NSString *)errorMaskHeaderName
-            txnIdHeaderName:(NSString *)txnIdHeaderName
-userAgentDeviceMakeHeaderName:(NSString *)userAgentDeviceMakeHeaderName
-userAgentDeviceOSHeaderName:(NSString *)userAgentDeviceOSHeaderName
-userAgentDeviceOSVersionHeaderName:(NSString *)userAgentDeviceOSVersionHeaderName
-        userAgentDeviceMake:(NSString *)userAgentDeviceMake
-          userAgentDeviceOS:(NSString *)userAgentDeviceOS
-   userAgentDeviceOSVersion:(NSString *)userAgentDeviceOSVersion
  establishSessionHeaderName:(NSString *)establishHeaderSessionName
         authTokenHeaderName:(NSString *)authTokenHeaderName
 bundleHoldingApiJsonResource:(NSBundle *)bundle
@@ -69,25 +55,18 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
       fuelStationSerializer:(FPFuelStationSerializer *)fuelStationSerializer
   fuelPurchaseLogSerializer:(FPFuelPurchaseLogSerializer *)fuelPurchaseLogSerializer
    environmentLogSerializer:(FPEnvironmentLogSerializer *)environmentLogSerializer
-   allowInvalidCertificates:(BOOL)allowInvalidCertifications {
+   allowInvalidCertificates:(BOOL)allowInvalidCertificates {
   self = [super init];
   if (self) {
     _relationExecutor = [[HCRelationExecutor alloc]
                           initWithDefaultAcceptCharset:acceptCharset
                                  defaultAcceptLanguage:acceptLanguage
                              defaultContentTypeCharset:contentTypeCharset
-                              allowInvalidCertificates:allowInvalidCertifications];
+                              allowInvalidCertificates:allowInvalidCertificates];
     _authScheme = authScheme;
     _authTokenParamName = authTokenParamName;
     _authToken = authToken;
     _errorMaskHeaderName = errorMaskHeaderName;
-    _txnIdHeaderName = txnIdHeaderName;
-    _userAgentDeviceMakeHeaderName = userAgentDeviceMakeHeaderName;
-    _userAgentDeviceOSHeaderName = userAgentDeviceOSHeaderName;
-    _userAgentDeviceOSVersionHeaderName = userAgentDeviceOSVersionHeaderName;
-    _userAgentDeviceMake = userAgentDeviceMake;
-    _userAgentDeviceOS = userAgentDeviceOS;
-    _userAgentDeviceOSVersion = userAgentDeviceOSVersion;
     _establishSessionHeaderName = establishHeaderSessionName;
     _authTokenHeaderName = authTokenHeaderName;
     _restApiRelations =
@@ -210,7 +189,6 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
 - (void)doPostToRelation:(HCRelation *)relation
       resourceModelParam:(id)resourceModelParam
               serializer:(id<HCResourceSerializer>)serializer
-           transactionId:(NSString *)transactionId
             asynchronous:(BOOL)asynchronous
                  timeout:(NSInteger)timeout
          remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
@@ -218,8 +196,6 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
        completionHandler:(PELMRemoteMasterCompletionHandler)complHandler
 queueForCompletionHandler:(dispatch_queue_t)queue
             otherHeaders:(NSDictionary *)otherHeaders {
-  NSMutableDictionary *headers = [self otherHeaders:transactionId];
-  [headers addEntriesFromDictionary:otherHeaders];
   [_relationExecutor
     doPostForTargetResource:[relation target]
          resourceModelParam:resourceModelParam
@@ -236,15 +212,7 @@ queueForCompletionHandler:(dispatch_queue_t)queue
            unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
           connectionFailure:[self newConnFailureBlk:complHandler]
                     timeout:timeout
-               otherHeaders:headers];
-}
-
-- (NSMutableDictionary *)otherHeaders:(NSString *)transactionId {
-  return [NSMutableDictionary dictionaryWithDictionary:
-         @{_txnIdHeaderName : transactionId,
-           _userAgentDeviceMakeHeaderName : _userAgentDeviceMake,
-           _userAgentDeviceOSHeaderName : _userAgentDeviceOS,
-           _userAgentDeviceOSVersionHeaderName : _userAgentDeviceOSVersion}];
+               otherHeaders:otherHeaders];
 }
 
 #pragma mark - General Operations
@@ -257,7 +225,6 @@ queueForCompletionHandler:(dispatch_queue_t)queue
 
 - (void)saveNewVehicle:(FPVehicle *)vehicle
                forUser:(FPUser *)user
-         transactionId:(NSString *)transactionId
           asynchronous:(BOOL)asynchronous
                timeout:(NSInteger)timeout
        remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
@@ -267,7 +234,6 @@ queueForCompletionHandler:(dispatch_queue_t)queue {
   [self doPostToRelation:[[user relations] objectForKey:FPVehiclesRelation]
       resourceModelParam:vehicle
               serializer:_vehicleSerializer
-           transactionId:transactionId
             asynchronous:asynchronous
                  timeout:timeout
          remoteStoreBusy:busyHandler
@@ -278,7 +244,6 @@ queueForCompletionHandler:queue
 }
 
 - (void)saveExistingVehicle:(FPVehicle *)vehicle
-              transactionId:(NSString *)transactionId
                asynchronous:(BOOL)asynchronous
                     timeout:(NSInteger)timeout
             remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
@@ -300,11 +265,10 @@ queueForCompletionHandler:queue
                   conflict:[self newConflictBlk:complHandler]
          connectionFailure:[self newConnFailureBlk:complHandler]
                    timeout:timeout
-              otherHeaders:[self otherHeaders:transactionId]];
+              otherHeaders:@{}];
 }
 
 - (void)deleteVehicle:(FPVehicle *)vehicle
-        transactionId:(NSString *)transactionId
          asynchronous:(BOOL)asynchronous
               timeout:(NSInteger)timeout
       remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
@@ -325,14 +289,13 @@ queueForCompletionHandler:(dispatch_queue_t)queue {
                     conflict:[self newConflictBlk:complHandler]
            connectionFailure:[self newConnFailureBlk:complHandler]
                      timeout:timeout
-                otherHeaders:[self otherHeaders:transactionId]];
+                otherHeaders:@{}];
 }
 
 #pragma mark - FuelStation Operations
 
 - (void)saveNewFuelStation:(FPFuelStation *)fuelStation
                    forUser:(FPUser *)user
-             transactionId:(NSString *)transactionId
               asynchronous:(BOOL)asynchronous
                    timeout:(NSInteger)timeout
            remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
@@ -342,7 +305,6 @@ queueForCompletionHandler:(dispatch_queue_t)queue {
   [self doPostToRelation:[[user relations] objectForKey:FPFuelStationsRelation]
       resourceModelParam:fuelStation
               serializer:_fuelStationSerializer
-           transactionId:transactionId
             asynchronous:asynchronous
                  timeout:timeout
          remoteStoreBusy:busyHandler
@@ -353,7 +315,6 @@ queueForCompletionHandler:queue
 }
 
 - (void)saveExistingFuelStation:(FPFuelStation *)fuelStation
-                  transactionId:(NSString *)transactionId
                    asynchronous:(BOOL)asynchronous
                         timeout:(NSInteger)timeout
                 remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
@@ -375,11 +336,10 @@ queueForCompletionHandler:queue
                   conflict:[self newConflictBlk:complHandler]
          connectionFailure:[self newConnFailureBlk:complHandler]
                    timeout:timeout
-              otherHeaders:[self otherHeaders:transactionId]];
+              otherHeaders:@{}];
 }
 
 - (void)deleteFuelStation:(FPFuelStation *)fuelStation
-            transactionId:(NSString *)transactionId
              asynchronous:(BOOL)asynchronous
                   timeout:(NSInteger)timeout
           remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
@@ -400,14 +360,13 @@ queueForCompletionHandler:(dispatch_queue_t)queue {
                     conflict:[self newConflictBlk:complHandler]
            connectionFailure:[self newConnFailureBlk:complHandler]
                      timeout:timeout
-                otherHeaders:[self otherHeaders:transactionId]];
+                otherHeaders:@{}];
 }
 
 #pragma mark - Fuel Purchase Log Operations
 
 - (void)saveNewFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
                        forUser:(FPUser *)user
-                 transactionId:(NSString *)transactionId
                   asynchronous:(BOOL)asynchronous
                        timeout:(NSInteger)timeout
                remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
@@ -417,7 +376,6 @@ queueForCompletionHandler:(dispatch_queue_t)queue {
   [self doPostToRelation:[[user relations] objectForKey:FPFuelPurchaseLogsRelation]
       resourceModelParam:fuelPurchaseLog
               serializer:_fuelPurchaseLogSerializer
-           transactionId:transactionId
             asynchronous:asynchronous
                  timeout:timeout
          remoteStoreBusy:busyHandler
@@ -428,7 +386,6 @@ queueForCompletionHandler:queue
 }
 
 - (void)saveExistingFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
-                      transactionId:(NSString *)transactionId
                        asynchronous:(BOOL)asynchronous
                             timeout:(NSInteger)timeout
                     remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
@@ -450,11 +407,10 @@ queueForCompletionHandler:queue
    conflict:[self newConflictBlk:complHandler]
    connectionFailure:[self newConnFailureBlk:complHandler]
    timeout:timeout
-   otherHeaders:[self otherHeaders:transactionId]];
+   otherHeaders:@{}];
 }
 
 - (void)deleteFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
-                transactionId:(NSString *)transactionId
                  asynchronous:(BOOL)asynchronous
                       timeout:(NSInteger)timeout
               remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
@@ -475,14 +431,13 @@ queueForCompletionHandler:queue
    conflict:[self newConflictBlk:complHandler]
    connectionFailure:[self newConnFailureBlk:complHandler]
    timeout:timeout
-   otherHeaders:[self otherHeaders:transactionId]];
+   otherHeaders:@{}];
 }
 
 #pragma mark - Environment Log Operations
 
 - (void)saveNewEnvironmentLog:(FPEnvironmentLog *)environmentLog
                       forUser:(FPUser *)user
-                transactionId:(NSString *)transactionId
                  asynchronous:(BOOL)asynchronous
                       timeout:(NSInteger)timeout
               remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
@@ -492,7 +447,6 @@ queueForCompletionHandler:queue
   [self doPostToRelation:[[user relations] objectForKey:FPEnvironmentLogsRelation]
       resourceModelParam:environmentLog
               serializer:_environmentLogSerializer
-           transactionId:transactionId
             asynchronous:asynchronous
                  timeout:timeout
          remoteStoreBusy:busyHandler
@@ -503,7 +457,6 @@ queueForCompletionHandler:queue
 }
 
 - (void)saveExistingEnvironmentLog:(FPEnvironmentLog *)environmentLog
-                     transactionId:(NSString *)transactionId
                       asynchronous:(BOOL)asynchronous
                            timeout:(NSInteger)timeout
                    remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
@@ -525,11 +478,10 @@ queueForCompletionHandler:queue
    conflict:[self newConflictBlk:complHandler]
    connectionFailure:[self newConnFailureBlk:complHandler]
    timeout:timeout
-   otherHeaders:[self otherHeaders:transactionId]];
+   otherHeaders:@{}];
 }
 
 - (void)deleteEnvironmentLog:(FPEnvironmentLog *)environmentLog
-               transactionId:(NSString *)transactionId
                 asynchronous:(BOOL)asynchronous
                      timeout:(NSInteger)timeout
              remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
@@ -550,14 +502,13 @@ queueForCompletionHandler:queue
    conflict:[self newConflictBlk:complHandler]
    connectionFailure:[self newConnFailureBlk:complHandler]
    timeout:timeout
-   otherHeaders:[self otherHeaders:transactionId]];
+   otherHeaders:@{}];
 }
 
 
 #pragma mark - User Operations
 
 - (void)saveNewUser:(FPUser *)user
-      transactionId:(NSString *)transactionId
        asynchronous:(BOOL)asynchronous
             timeout:(NSInteger)timeout
     remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
@@ -567,7 +518,6 @@ queueForCompletionHandler:(dispatch_queue_t)queue {
   [self doPostToRelation:[_restApiRelations objectForKey:FPUsersRelation]
       resourceModelParam:user
               serializer:_userSerializer
-           transactionId:transactionId
             asynchronous:asynchronous
                  timeout:timeout
          remoteStoreBusy:busyHandler
@@ -578,7 +528,6 @@ queueForCompletionHandler:queue
 }
 
 - (void)saveExistingUser:(FPUser *)user
-           transactionId:(NSString *)transactionId
             asynchronous:(BOOL)asynchronous
                  timeout:(NSInteger)timeout
          remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
@@ -600,19 +549,18 @@ queueForCompletionHandler:(dispatch_queue_t)queue {
                   conflict:[self newConflictBlk:complHandler]
          connectionFailure:[self newConnFailureBlk:complHandler]
                    timeout:timeout
-              otherHeaders:[self otherHeaders:transactionId]];
+              otherHeaders:@{}];
 }
 
 - (void)loginWithUsernameOrEmail:(NSString *)usernameOrEmail
                         password:(NSString *)password
-                   transactionId:(NSString *)transactionId
                     asynchronous:(BOOL)asynchronous
                          timeout:(NSInteger)timeout
                  remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                     authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
                completionHandler:(PELMRemoteMasterCompletionHandler)complHandler
        queueForCompletionHandler:(dispatch_queue_t)queue {
-  NSMutableDictionary *headers = [self otherHeaders:transactionId];
+  NSMutableDictionary *headers = [NSMutableDictionary new];
   [headers setObject:@"true" forKey:_establishSessionHeaderName];
   PELMLoginUser *loginUser = [[PELMLoginUser alloc] init];
   [loginUser setUsernameOrEmail:usernameOrEmail];
@@ -620,7 +568,6 @@ queueForCompletionHandler:(dispatch_queue_t)queue {
   [self doPostToRelation:[_restApiRelations objectForKey:FPLoginRelation]
       resourceModelParam:loginUser
               serializer:_loginSerializer
-           transactionId:transactionId
             asynchronous:asynchronous
                  timeout:timeout
          remoteStoreBusy:busyHandler
@@ -631,7 +578,6 @@ queueForCompletionHandler:queue
 }
 
 - (void)deleteUser:(FPUser *)user
-     transactionId:(NSString *)transactionId
       asynchronous:(BOOL)asynchronous
            timeout:(NSInteger)timeout
    remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
@@ -652,7 +598,7 @@ queueForCompletionHandler:(dispatch_queue_t)queue {
                     conflict:[self newConflictBlk:complHandler]
            connectionFailure:[self newConnFailureBlk:complHandler]
                      timeout:timeout
-                otherHeaders:[self otherHeaders:transactionId]];
+                otherHeaders:@{}];
 }
 
 @end
