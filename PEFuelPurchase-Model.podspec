@@ -11,6 +11,7 @@ Pod::Spec.new do |s|
   s.public_header_files = '**/*.h'
   s.exclude_files = "**/*Tests/*.*"
   s.requires_arc = true
+  s.dependency 'PEObjc-Commons', '~> 1.0.1'
   s.dependency 'PEFuelPurchase-Common', '~> 1.0.2'
   s.dependency 'FMDB', '~> 2.5'
   s.dependency 'PEHateoas-Client', '~> 1.0.2'

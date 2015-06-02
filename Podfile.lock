@@ -59,6 +59,7 @@ DEPENDENCIES:
   - Kiwi (~> 2.3.1)
   - PEFuelPurchase-Common (~> 1.0.2)
   - PEHateoas-Client (~> 1.0.2)
+  - PEObjc-Commons (~> 1.0.1)
   - PEWire-Control (~> 1.0.1)
   - UICKeyChainStore (~> 2.0.4)
 
