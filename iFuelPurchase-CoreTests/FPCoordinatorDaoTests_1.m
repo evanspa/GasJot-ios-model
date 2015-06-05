@@ -57,7 +57,7 @@ describe(@"FPCoordinatorDao", ^{
         });
       // First we need to create a vehicle and fuel station.
       FPVehicle *vehicle =
-        [_coordDao vehicleWithName:@"Volkswagen CC" dateAdded:[NSDate date]];
+      [_coordDao vehicleWithName:@"Volkswagen CC" defaultOctane:@87 fuelCapacity:[NSDecimalNumber decimalNumberWithString:@"19.0"]];
       [_coordDao saveNewVehicle:vehicle forUser:user error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       FPEnvironmentLog *envLog =
         [_coordDao environmentLogWithOdometer:[NSDecimalNumber decimalNumberWithString:@"95648"]

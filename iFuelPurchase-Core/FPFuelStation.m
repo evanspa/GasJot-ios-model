@@ -21,7 +21,7 @@
                         mediaType:(HCMediaType *)mediaType
                         relations:(NSDictionary *)relations
                       deletedDate:(NSDate *)deletedDate
-                     lastModified:(NSDate *)lastModified
+                        updatedAt:(NSDate *)updatedAt
              dateCopiedFromMaster:(NSDate *)dateCopiedFromMaster
                    editInProgress:(BOOL)editInProgress
                       editActorId:(NSNumber *)editActorId
@@ -36,8 +36,7 @@
                             state:(NSString *)state
                               zip:(NSString *)zip
                          latitude:(NSDecimalNumber *)latitude
-                        longitude:(NSDecimalNumber *)longitude
-                        dateAdded:(NSDate *)dateAdded {
+                        longitude:(NSDecimalNumber *)longitude {
   self = [super initWithLocalMainIdentifier:localMainIdentifier
                       localMasterIdentifier:localMasterIdentifier
                            globalIdentifier:globalIdentifier
@@ -46,7 +45,7 @@
                                   mediaType:mediaType
                                   relations:relations
                                 deletedDate:deletedDate
-                               lastModified:lastModified
+                                  updatedAt:updatedAt
                        dateCopiedFromMaster:dateCopiedFromMaster
                              editInProgress:editInProgress
                                 editActorId:editActorId
@@ -63,7 +62,6 @@
     _zip = zip;
     _latitude = latitude;
     _longitude = longitude;
-    _dateAdded = dateAdded;
   }
   return self;
 }
@@ -77,7 +75,6 @@
                                    zip:(NSString *)zip
                               latitude:(NSDecimalNumber *)latitude
                              longitude:(NSDecimalNumber *)longitude
-                             dateAdded:(NSDate *)dateAdded
                              mediaType:(HCMediaType *)mediaType {
   return [FPFuelStation fuelStationWithName:name
                                      street:street
@@ -86,11 +83,10 @@
                                         zip:zip
                                    latitude:latitude
                                   longitude:longitude
-                                  dateAdded:dateAdded
                            globalIdentifier:nil
                                   mediaType:mediaType
                                   relations:nil
-                               lastModified:nil];
+                               updatedAt:nil];
 }
 
 + (FPFuelStation *)fuelStationWithName:(NSString *)name
@@ -100,18 +96,17 @@
                                    zip:(NSString *)zip
                               latitude:(NSDecimalNumber *)latitude
                              longitude:(NSDecimalNumber *)longitude
-                             dateAdded:(NSDate *)dateAdded
                       globalIdentifier:(NSString *)globalIdentifier
                              mediaType:(HCMediaType *)mediaType
                              relations:(NSDictionary *)relations
-                          lastModified:(NSDate *)lastModified {
+                          updatedAt:(NSDate *)updatedAt {
   return [[FPFuelStation alloc] initWithLocalMainIdentifier:nil
                                       localMasterIdentifier:nil
                                            globalIdentifier:globalIdentifier
                                                   mediaType:mediaType
                                                   relations:relations
                                                 deletedDate:nil
-                                               lastModified:lastModified
+                                               updatedAt:updatedAt
                                        dateCopiedFromMaster:nil
                                              editInProgress:NO
                                                 editActorId:nil
@@ -126,8 +121,7 @@
                                                       state:state
                                                         zip:zip
                                                    latitude:latitude
-                                                  longitude:longitude
-                                                  dateAdded:dateAdded];
+                                                  longitude:longitude];
 }
 
 + (FPFuelStation *)fuelStationWithLocalMasterIdentifier:(NSNumber *)localMasterIdentifier {
@@ -137,7 +131,7 @@
                                                   mediaType:nil
                                                   relations:nil
                                                 deletedDate:nil
-                                               lastModified:nil
+                                               updatedAt:nil
                                        dateCopiedFromMaster:nil
                                              editInProgress:NO
                                                 editActorId:nil
@@ -152,8 +146,7 @@
                                                       state:nil
                                                         zip:nil
                                                    latitude:nil
-                                                  longitude:nil
-                                                  dateAdded:nil];
+                                                  longitude:nil];
 }
 
 #pragma mark - Methods
@@ -167,7 +160,6 @@
   [self setZip:[fuelStation zip]];
   [self setLatitude:[fuelStation latitude]];
   [self setLongitude:[fuelStation longitude]];
-  [self setDateAdded:[fuelStation dateAdded]];
 }
 
 - (CLLocation *)location {
@@ -183,8 +175,7 @@
 - (BOOL)isEqualToFuelStation:(FPFuelStation *)fuelStation {
   if (!fuelStation) { return NO; }
   if ([super isEqualToMainSupport:fuelStation]) {
-    return [PEUtils isString:[self name] equalTo:[fuelStation name]] &&
-      [PEUtils isDate:[self dateAdded] msprecisionEqualTo:[fuelStation dateAdded]];
+    return [PEUtils isString:[self name] equalTo:[fuelStation name]];
   }
   return NO;
 }
@@ -205,15 +196,13 @@
   [[self state] hash] ^
   [[self zip] hash] ^
   [[self latitude] hash] ^
-  [[self longitude] hash] ^
-  [[self dateAdded] hash];
+  [[self longitude] hash];
 }
 
 - (NSString *)description {
   return [NSString stringWithFormat:@"%@, name: [%@], street: [%@], city: [%@], state: [%@], zip: [%@], latitude: [%@], \
-longitude: [%@], date added: [{%@}, {%f}]",
-          [super description], _name, _street, _city, _state, _zip, _latitude, _longitude, _dateAdded,
-          [_dateAdded timeIntervalSince1970]];
+longitude: [%@]]",
+          [super description], _name, _street, _city, _state, _zip, _latitude, _longitude];
 }
 
 @end

@@ -86,7 +86,6 @@ describe(@"FPCoordinatorDao", ^{
       [[[user name] should] equal:@"Paul Evans"];
       [[[user email] should] equal:@"evansp2@gmail.com"];
       [[[user username] should] equal:@"evansp2"];
-      [[[user creationDate] should] equal:[HCUtils rfc7231DateFromString:@"Tue, 02 Sep 2014 8:03:12 GMT"]];
       NSDictionary *rels = [user relations];
       [[rels should] haveCountOf:4];
       assertRelation(FPVehiclesRelation,
@@ -113,15 +112,14 @@ describe(@"FPCoordinatorDao", ^{
                      [[FPKnownMediaTypes environmentLogMediaTypeWithVersion:@"0.0.1"] description],
                      @"http://example.com/fp/users/U1123409100/envlogs",
                      rels);
-      NSArray *vehicles = [_coordDao vehiclesForUser:user pageSize:5 error:[_coordTestCtx newLocalFetchErrBlkMaker]()];
+      NSArray *vehicles = [_coordDao vehiclesForUser:user error:[_coordTestCtx newLocalFetchErrBlkMaker]()];
       [vehicles shouldNotBeNil];
       [[vehicles should] haveCountOf:2];
-      FPVehicle *vehicle = [vehicles objectAtIndex:1];
+      FPVehicle *vehicle = [vehicles objectAtIndex:0];
       [[[vehicle globalIdentifier] should] equal:@"http://example.com/fp/users/U1123409100/vehicles/V429"];
       [[[vehicle mediaType] should] equal:[HCMediaType MediaTypeFromString:@"application/vnd.fp.vehicle-v0.0.1+json"]];
-      [[[vehicle lastModified] should] equal:[HCUtils rfc7231DateFromString:@"Fri, 06 Sep 2014 10:34:22 GMT"]];
       [[[vehicle name] should] equal:@"My Mazda"];
-      [[[vehicle dateAdded] should] equal:[HCUtils rfc7231DateFromString:@"Fri, 06 Sep 2014 10:34:22 GMT"]];
+      [[[vehicle updatedAt] should] equal:[HCUtils rfc7231DateFromString:@"Fri, 05 Sep 2014 10:34:22 GMT"]];
       rels = [vehicle relations];
       [[rels should] haveCountOf:0];
     });

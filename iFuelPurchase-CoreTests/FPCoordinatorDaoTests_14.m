@@ -58,8 +58,7 @@ describe(@"FPCoordinatorDao", ^{
       user = [_coordDao userWithName:@"Joe Smith"
                                email:@"joe.smith@example.com"
                             username:@"smithjoe"
-                            password:@"pa55w0rd"
-                        creationDate:[NSDate date]];
+                            password:@"pa55w0rd"];
       [_coordDao immediateRemoteSyncSaveNewUser:user
                                remoteStoreBusy:[_coordTestCtx newRemoteStoreBusyBlkMaker]()
                              completionHandler:[_coordTestCtx new1ErrArgComplHandlerBlkMaker]()

@@ -9,7 +9,6 @@
   <headers>
     <header name="Content-Type" value="application/vnd.fp.vehicle-v0.0.1+json" />
     <header name="Content-Language" value="en-US" />
-    <header name="Last-Modified" value="Fri, 06 Sep 2014 10:34:22 GMT" />
     <header name="Location" value="http://example.com/fp/users/U8890209302/vehicles/V0191" />
     <header name="fp-auth-token" value="1092348123049OLSDFJLIE001235" />
   </headers>
@@ -17,7 +16,8 @@
   <body>
     <![CDATA[
       { "fpvehicle/name": "My Bimmer",
-        "fpvehicle/date-added": "Fri, 06 Sep 2014 10:34:22 GMT",
+        "fpvehicle/created-at": 1409913262000,
+        "fpvehicle/updated-at": 1409913262000,
         "_links": {}}
     ]]>
   </body>

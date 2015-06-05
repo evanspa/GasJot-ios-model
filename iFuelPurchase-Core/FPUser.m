@@ -34,7 +34,7 @@ NSString * const FPAppTransactionSetRelation = @"apptxnset";
                         mediaType:(HCMediaType *)mediaType
                         relations:(NSDictionary *)relations
                       deletedDate:(NSDate *)deletedDate
-                     lastModified:(NSDate *)lastModified
+                     updatedAt:(NSDate *)updatedAt
              dateCopiedFromMaster:(NSDate *)dateCopiedFromMaster
                    editInProgress:(BOOL)editInProgress
                       editActorId:(NSNumber *)editActorId
@@ -46,8 +46,7 @@ NSString * const FPAppTransactionSetRelation = @"apptxnset";
                              name:(NSString *)name
                             email:(NSString *)email
                          username:(NSString *)username
-                         password:(NSString *)password
-                     creationDate:(NSDate *)creationDate {
+                         password:(NSString *)password {
   self = [super initWithLocalMainIdentifier:localMainIdentifier
                       localMasterIdentifier:localMasterIdentifier
                            globalIdentifier:globalIdentifier
@@ -56,7 +55,7 @@ NSString * const FPAppTransactionSetRelation = @"apptxnset";
                                   mediaType:mediaType
                                   relations:relations
                                 deletedDate:deletedDate
-                               lastModified:lastModified
+                               updatedAt:updatedAt
                        dateCopiedFromMaster:dateCopiedFromMaster
                              editInProgress:editInProgress
                                 editActorId:editActorId
@@ -70,7 +69,6 @@ NSString * const FPAppTransactionSetRelation = @"apptxnset";
     _email = email;
     _username = username;
     _password = password;
-    _creationDate = creationDate;
     _vehicles = [NSMutableArray array];
     _fuelStations = [NSMutableArray array];
     _fuelPurchaseLogs = [NSMutableArray array];
@@ -85,35 +83,32 @@ NSString * const FPAppTransactionSetRelation = @"apptxnset";
                    email:(NSString *)email
                 username:(NSString *)username
                 password:(NSString *)password
-            creationDate:(NSDate *)creationDate
                mediaType:(HCMediaType *)mediaType {
   return [FPUser userWithName:name
                         email:email
                      username:username
                      password:password
-                 creationDate:creationDate
              globalIdentifier:nil
                     mediaType:mediaType
                     relations:nil
-                 lastModified:nil];
+                    updatedAt:nil];
 }
 
 + (FPUser *)userWithName:(NSString *)name
                    email:(NSString *)email
                 username:(NSString *)username
                 password:(NSString *)password
-            creationDate:(NSDate *)creationDate
         globalIdentifier:(NSString *)globalIdentifier
                mediaType:(HCMediaType *)mediaType
                relations:(NSDictionary *)relations
-            lastModified:(NSDate *)lastModified {
+            updatedAt:(NSDate *)updatedAt {
   return [[FPUser alloc] initWithLocalMainIdentifier:nil
                                localMasterIdentifier:nil
                                     globalIdentifier:globalIdentifier
                                            mediaType:mediaType
                                            relations:relations
                                          deletedDate:nil
-                                        lastModified:lastModified
+                                           updatedAt:updatedAt
                                 dateCopiedFromMaster:nil
                                       editInProgress:NO
                                          editActorId:nil
@@ -125,8 +120,7 @@ NSString * const FPAppTransactionSetRelation = @"apptxnset";
                                                 name:name
                                                email:email
                                             username:username
-                                            password:password
-                                        creationDate:creationDate];
+                                            password:password];
 }
 
 #pragma mark - Methods
@@ -137,7 +131,6 @@ NSString * const FPAppTransactionSetRelation = @"apptxnset";
   [self setEmail:[user email]];
   [self setPassword:[user password]];
   [self setUsername:[user username]];
-  [self setCreationDate:[user creationDate]];
 }
 
 - (void)addVehicle:(FPVehicle *)vehicle {
@@ -197,8 +190,7 @@ NSString * const FPAppTransactionSetRelation = @"apptxnset";
     return [PEUtils isString:[self name] equalTo:[user name]] &&
       [PEUtils isString:[self email] equalTo:[user email]] &&
       [PEUtils isString:[self username] equalTo:[user username]] &&
-      [PEUtils isString:[self password] equalTo:[user password]] &&
-      [PEUtils isDate:[self creationDate] msprecisionEqualTo:[user creationDate]];
+      [PEUtils isString:[self password] equalTo:[user password]];
   }
   return NO;
 }
@@ -216,16 +208,14 @@ NSString * const FPAppTransactionSetRelation = @"apptxnset";
     [[self name] hash] ^
     [[self email] hash] ^
     [[self username] hash] ^
-    [[self password] hash] ^
-    [[self creationDate] hash];
+    [[self password] hash];
 }
 
 - (NSString *)description {
   return [NSString stringWithFormat:@"%@, name: [%@], email: [%@], \
-username: [%@], password: [%@], creation date: [{%@}, {%f}]",
+username: [%@], password: [%@]",
           [super description],
-          _name, _email, _username, _password,
-          _creationDate, [_creationDate timeIntervalSince1970]];
+          _name, _email, _username, _password];
 }
 
 @end

@@ -21,7 +21,7 @@
                         mediaType:(HCMediaType *)mediaType
                         relations:(NSDictionary *)relations
                       deletedDate:(NSDate *)deletedDate
-                     lastModified:(NSDate *)lastModified
+                        updatedAt:(NSDate *)updatedAt
              dateCopiedFromMaster:(NSDate *)dateCopiedFromMaster
                    editInProgress:(BOOL)editInProgress
                       editActorId:(NSNumber *)editActorId
@@ -45,7 +45,7 @@
                                   mediaType:mediaType
                                   relations:relations
                                 deletedDate:deletedDate
-                               lastModified:lastModified
+                                  updatedAt:updatedAt
                        dateCopiedFromMaster:dateCopiedFromMaster
                              editInProgress:editInProgress
                                 editActorId:editActorId
@@ -84,7 +84,7 @@
                              globalIdentifier:nil
                                     mediaType:mediaType
                                     relations:nil
-                                 lastModified:nil];
+                                 updatedAt:nil];
 }
 
 + (FPEnvironmentLog *)envLogWithOdometer:(NSDecimalNumber *)odometer
@@ -96,14 +96,14 @@
                         globalIdentifier:(NSString *)globalIdentifier
                                mediaType:(HCMediaType *)mediaType
                                relations:(NSDictionary *)relations
-                            lastModified:(NSDate *)lastModified {
+                               updatedAt:(NSDate *)updatedAt {
   return [[FPEnvironmentLog alloc] initWithLocalMainIdentifier:nil
                                          localMasterIdentifier:nil
                                               globalIdentifier:globalIdentifier
                                                      mediaType:mediaType
                                                      relations:relations
                                                    deletedDate:nil
-                                                  lastModified:lastModified
+                                                     updatedAt:updatedAt
                                           dateCopiedFromMaster:nil
                                                 editInProgress:NO
                                                    editActorId:nil

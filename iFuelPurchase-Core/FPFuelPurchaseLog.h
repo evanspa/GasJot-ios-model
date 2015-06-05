@@ -19,7 +19,7 @@
                         mediaType:(HCMediaType *)mediaType
                         relations:(NSDictionary *)relations
                       deletedDate:(NSDate *)deletedDate
-                     lastModified:(NSDate *)lastModified
+                        updatedAt:(NSDate *)updatedAt
              dateCopiedFromMaster:(NSDate *)dateCopiedFromMaster
                    editInProgress:(BOOL)editInProgress
                       editActorId:(NSNumber *)editActorId
@@ -35,7 +35,7 @@
                       gallonPrice:(NSDecimalNumber *)gallonPrice
                        gotCarWash:(BOOL)gotCarWash
          carWashPerGallonDiscount:(NSDecimalNumber *)carWashPerGallonDiscount
-                          logDate:(NSDate *)logDate;
+                      purchasedAt:(NSDate *)purchasedAt;
 
 #pragma mark - Creation Functions
 
@@ -44,7 +44,7 @@
                                          gallonPrice:(NSDecimalNumber *)gallonPrice
                                           gotCarWash:(BOOL)gotCarWash
                             carWashPerGallonDiscount:(NSDecimalNumber *)carWashPerGallonDiscount
-                                             logDate:(NSDate *)logDate
+                                         purchasedAt:(NSDate *)purchasedAt
                                            mediaType:(HCMediaType *)mediaType;
 
 + (FPFuelPurchaseLog *)fuelPurchaseLogWithNumGallons:(NSDecimalNumber *)numGallons
@@ -52,11 +52,11 @@
                                          gallonPrice:(NSDecimalNumber *)gallonPrice
                                           gotCarWash:(BOOL)gotCarWash
                             carWashPerGallonDiscount:(NSDecimalNumber *)carWashPerGallonDiscount
-                                             logDate:(NSDate *)logDate
+                                         purchasedAt:(NSDate *)purchasedAt
                                     globalIdentifier:(NSString *)globalIdentifier
                                            mediaType:(HCMediaType *)mediaType
                                            relations:(NSDictionary *)relations
-                                        lastModified:(NSDate *)lastModified;
+                                           updatedAt:(NSDate *)updatedAt;
 
 #pragma mark - Methods
 
@@ -78,7 +78,7 @@
 
 @property (nonatomic) NSDecimalNumber *carWashPerGallonDiscount;
 
-@property (nonatomic) NSDate *logDate;
+@property (nonatomic) NSDate *purchasedAt;
 
 #pragma mark - Equality
 

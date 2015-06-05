@@ -119,6 +119,9 @@ markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCom
 + (NSDecimalNumber *)decimalNumberFromResultSet:(FMResultSet *)rs
                                      columnName:(NSString *)columnName;
 
++ (NSDate *)dateFromResultSet:(FMResultSet *)rs
+                   columnName:(NSString *)columnName;
+
 #pragma mark - Properties
 
 @property (nonatomic, readonly) FMDatabaseQueue *databaseQueue;
@@ -181,6 +184,23 @@ markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCom
                             pageSize:(NSInteger)pageSize
                    pageBoundaryWhere:(NSString *)pageBoundaryWhere
                      pageBoundaryArg:(id)pageBoundaryArg
+                   entityMasterTable:(NSString *)entityMasterTable
+      masterEntityResultSetConverter:(entityFromResultSetBlk)masterEntityResultSetConverter
+                     entityMainTable:(NSString *)entityMainTable
+        mainEntityResultSetConverter:(entityFromResultSetBlk)mainEntityResultSetConverter
+                   comparatorForSort:(NSComparisonResult(^)(id, id))comparatorForSort
+                 orderByDomainColumn:(NSString *)orderByDomainColumn
+        orderByDomainColumnDirection:(NSString *)orderByDomainColumnDirection
+                                  db:(FMDatabase *)db
+                               error:(PELMDaoErrorBlk)errorBlk;
+
++ (NSArray *)entitiesForParentEntity:(PELMModelSupport *)parentEntity
+               parentEntityMainTable:(NSString *)parentEntityMainTable
+         parentEntityMainRsConverter:(entityFromResultSetBlk)parentEntityMainRsConverter
+          parentEntityMasterIdColumn:(NSString *)parentEntityMasterIdColumn
+            parentEntityMainIdColumn:(NSString *)parentEntityMainIdColumn
+                               where:(NSString *)where
+                            whereArg:(id)whereArg
                    entityMasterTable:(NSString *)entityMasterTable
       masterEntityResultSetConverter:(entityFromResultSetBlk)masterEntityResultSetConverter
                      entityMainTable:(NSString *)entityMainTable
@@ -488,10 +508,6 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                                error:(PELMDaoErrorBlk)errorBlk;
 
 #pragma mark - Helpers
-
-+ (NSString *)sqliteTextFromDate:(NSDate *)date;
-
-+ (NSDate *)dateFromSqliteText:(NSString *)dateText;
 
 - (NSNumber *)numEntitiesFromTable:(NSString *)table
                              error:(PELMDaoErrorBlk)errorBlk;

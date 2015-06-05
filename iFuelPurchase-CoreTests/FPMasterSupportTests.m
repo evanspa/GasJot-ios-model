@@ -28,7 +28,7 @@ describe(@"FPMasterSupport", ^{
                                                      mediaType:[HCMediaType MediaTypeFromString:@"application/json"]
                                                      relations:nil
                                                    deletedDate:now
-                                                  lastModified:now];
+                                                  updatedAt:now];
       ms2 =
         [[PELMMasterSupport alloc] initWithLocalMainIdentifier:[NSNumber numberWithInt:0]
                                          localMasterIdentifier:[NSNumber numberWithInt:0]
@@ -38,7 +38,7 @@ describe(@"FPMasterSupport", ^{
                                                      mediaType:[HCMediaType MediaTypeFromString:@"application/json"]
                                                      relations:nil
                                                    deletedDate:now
-                                                  lastModified:now];
+                                                  updatedAt:now];
     });
     
     it(@"Works for 2 equal objects", ^{
@@ -61,7 +61,7 @@ describe(@"FPMasterSupport", ^{
     });
     
     it(@"Works when last update dates are different", ^{
-      [ms1 setLastModified:[NSDate dateWithTimeIntervalSinceNow:5000]];
+      [ms1 setUpdatedAt:[NSDate dateWithTimeIntervalSinceNow:5000]];
       [[ms1 shouldNot] equal:ms2];
     });
   });

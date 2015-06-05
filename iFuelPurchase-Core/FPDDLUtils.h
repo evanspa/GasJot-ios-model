@@ -31,7 +31,6 @@ FOUNDATION_EXPORT NSString * const COL_USR_NAME;
 FOUNDATION_EXPORT NSString * const COL_USR_EMAIL;
 FOUNDATION_EXPORT NSString * const COL_USR_USERNAME;
 FOUNDATION_EXPORT NSString * const COL_USR_PASSWORD_HASH;
-FOUNDATION_EXPORT NSString * const COL_USR_CREATION_DT;
 
 //##############################################################################
 // Vehicle Entity (main and master)
@@ -41,7 +40,8 @@ FOUNDATION_EXPORT NSString * const TBL_MASTER_VEHICLE;
 FOUNDATION_EXPORT NSString * const TBL_MAIN_VEHICLE;
 // ----Columns------------------------------------------------------------------
 FOUNDATION_EXPORT NSString * const COL_VEH_NAME;
-FOUNDATION_EXPORT NSString * const COL_VEH_DT_ADDED;
+FOUNDATION_EXPORT NSString * const COL_VEH_DEFAULT_OCTANE;
+FOUNDATION_EXPORT NSString * const COL_VEH_FUEL_CAPACITY;
 
 //##############################################################################
 // Fuel Station Entity (main and master)
@@ -57,7 +57,6 @@ FOUNDATION_EXPORT NSString * const COL_FUELST_STATE;
 FOUNDATION_EXPORT NSString * const COL_FUELST_ZIP;
 FOUNDATION_EXPORT NSString * const COL_FUELST_LATITUDE;
 FOUNDATION_EXPORT NSString * const COL_FUELST_LONGITUDE;
-FOUNDATION_EXPORT NSString * const COL_FUELST_DT_ADDED;
 
 //##############################################################################
 // Fuel Purchase Log Entity (main and master)
@@ -71,7 +70,7 @@ FOUNDATION_EXPORT NSString * const COL_FUELPL_PRICE_PER_GALLON;
 FOUNDATION_EXPORT NSString * const COL_FUELPL_OCTANE;
 FOUNDATION_EXPORT NSString * const COL_FUELPL_GOT_CAR_WASH;
 FOUNDATION_EXPORT NSString * const COL_FUELPL_CAR_WASH_PER_GALLON_DISCOUNT;
-FOUNDATION_EXPORT NSString * const COL_FUELPL_LOG_DT;
+FOUNDATION_EXPORT NSString * const COL_FUELPL_PURCHASED_AT;
 // ----Aliases used in SELECT statements----------------------------------------
 FOUNDATION_EXPORT NSString * const FUELPL_ALIAS_VEHICLE_GLOBAL_ID;
 FOUNDATION_EXPORT NSString * const FUELPL_ALIAS_FUELSTATION_GLOBAL_ID;

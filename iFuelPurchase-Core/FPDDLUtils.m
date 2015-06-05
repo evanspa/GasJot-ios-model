@@ -30,7 +30,6 @@ NSString * const COL_USR_NAME = @"name";
 NSString * const COL_USR_EMAIL = @"email";
 NSString * const COL_USR_USERNAME = @"username";
 NSString * const COL_USR_PASSWORD_HASH = @"password_hash";
-NSString * const COL_USR_CREATION_DT = @"creation_date";
 
 //##############################################################################
 // Vehicle Entity (main and master)
@@ -40,7 +39,8 @@ NSString * const TBL_MASTER_VEHICLE = @"master_vehicle";
 NSString * const TBL_MAIN_VEHICLE = @"main_vehicle";
 // ----Columns------------------------------------------------------------------
 NSString * const COL_VEH_NAME = @"name";
-NSString * const COL_VEH_DT_ADDED = @"date_added";
+NSString * const COL_VEH_DEFAULT_OCTANE = @"default_octane";
+NSString * const COL_VEH_FUEL_CAPACITY = @"fuel_capacity";
 
 //##############################################################################
 // Fuel Station Entity (main and master)
@@ -56,7 +56,6 @@ NSString * const COL_FUELST_STATE = @"state";
 NSString * const COL_FUELST_ZIP = @"zip";
 NSString * const COL_FUELST_LATITUDE = @"latitude";
 NSString * const COL_FUELST_LONGITUDE = @"longitude";
-NSString * const COL_FUELST_DT_ADDED = @"date_added";
 
 //##############################################################################
 // Fuel Purchase Log Entity (main and master)
@@ -70,7 +69,7 @@ NSString * const COL_FUELPL_PRICE_PER_GALLON = @"price_per_gallon";
 NSString * const COL_FUELPL_OCTANE = @"octane";
 NSString * const COL_FUELPL_GOT_CAR_WASH = @"got_car_wash";
 NSString * const COL_FUELPL_CAR_WASH_PER_GALLON_DISCOUNT = @"car_wash_discount";
-NSString * const COL_FUELPL_LOG_DT = @"log_date";
+NSString * const COL_FUELPL_PURCHASED_AT = @"purchased_at";
 // ----Aliases used in SELECT statements----------------------------------------
 NSString * const FUELPL_ALIAS_VEHICLE_GLOBAL_ID = @"fuelpl_vehicle_global_id";
 NSString * const FUELPL_ALIAS_FUELSTATION_GLOBAL_ID = @"fuelpl_fuelstatoin_global_id";
@@ -103,13 +102,13 @@ NSString * const ENVL_ALIAS_VEHICLE_GLOBAL_ID = @"fuelpl_vehicle_global_id";
 %@ INTEGER, \
 %@ TEXT UNIQUE NOT NULL, \
 %@ TEXT, \
-%@ TEXT, \
-%@ TEXT, \
+%@ INTEGER, \
+%@ INTEGER, \
 %@ INTEGER, \
 %@ TEXT, \
 %@ TEXT, \
 %@ INTEGER, \
-%@ TEXT, \
+%@ INTEGER, \
 %@ REAL, \
 FOREIGN KEY (%@) REFERENCES %@(%@), \
 FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MASTER_ENV_LOG,
@@ -118,7 +117,7 @@ FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MASTER_ENV_LOG,
                    COL_MASTER_VEHICLE_ID,         // col3
                    COL_GLOBAL_ID,                 // col4
                    COL_MEDIA_TYPE,                // col5
-                   COL_MST_LAST_MODIFIED,         // col6
+                   COL_MST_UPDATED_AT,         // col6
                    COL_MST_DELETED_DT,            // col7
                    COL_ENVL_ODOMETER_READING,     // col8
                    COL_ENVL_MPG_READING,          // col9
@@ -141,13 +140,13 @@ FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MASTER_ENV_LOG,
 %@ INTEGER, \
 %@ TEXT UNIQUE, \
 %@ TEXT, \
-%@ TEXT, \
-%@ TEXT, \
+%@ INTEGER, \
+%@ INTEGER, \
 %@ INTEGER, \
 %@ TEXT, \
 %@ TEXT, \
 %@ INTEGER, \
-%@ TEXT, \
+%@ INTEGER, \
 %@ REAL, \
 %@ INTEGER, \
 %@ INTEGER, \
@@ -163,7 +162,7 @@ FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MAIN_ENV_LOG,
                    COL_MAIN_VEHICLE_ID,                // col3
                    COL_GLOBAL_ID,                      // col4
                    COL_MEDIA_TYPE,                     // col5
-                   COL_MAN_MASTER_LAST_MODIFIED,       // col6
+                   COL_MAN_MASTER_UPDATED_AT,       // col6
                    COL_MAN_DT_COPIED_DOWN_FROM_MASTER, // col7
                    COL_ENVL_ODOMETER_READING,          // col8
                    COL_ENVL_MPG_READING,               // col9
@@ -196,14 +195,14 @@ FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MAIN_ENV_LOG,
 %@ INTEGER, \
 %@ TEXT UNIQUE NOT NULL, \
 %@ TEXT, \
-%@ TEXT, \
-%@ TEXT, \
+%@ INTEGER, \
+%@ INTEGER, \
 %@ TEXT, \
 %@ TEXT, \
 %@ INTEGER, \
 %@ INTEGER, \
 %@ TEXT, \
-%@ TEXT, \
+%@ INTEGER, \
 FOREIGN KEY (%@) REFERENCES %@(%@), \
 FOREIGN KEY (%@) REFERENCES %@(%@), \
 FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MASTER_FUELPURCHASE_LOG,
@@ -213,14 +212,14 @@ FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MASTER_FUELPURCHASE_LOG,
                    COL_MASTER_FUELSTATION_ID,               // col4
                    COL_GLOBAL_ID,                           // col5
                    COL_MEDIA_TYPE,                          // col6
-                   COL_MST_LAST_MODIFIED,                   // col7
+                   COL_MST_UPDATED_AT,                   // col7
                    COL_MST_DELETED_DT,                      // col8
                    COL_FUELPL_NUM_GALLONS,                  // col9
                    COL_FUELPL_PRICE_PER_GALLON,             // col10
                    COL_FUELPL_OCTANE,                       // col11
                    COL_FUELPL_GOT_CAR_WASH,                 // col12
                    COL_FUELPL_CAR_WASH_PER_GALLON_DISCOUNT, // col13
-                   COL_FUELPL_LOG_DT,                       // col14
+                   COL_FUELPL_PURCHASED_AT,                       // col14
                    COL_MASTER_USER_ID,                      // fk1, col1
                    TBL_MASTER_USER,                         // fk1, tbl-ref
                    COL_LOCAL_ID,                            // fk1, tbl-ref col1
@@ -240,14 +239,14 @@ FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MASTER_FUELPURCHASE_LOG,
 %@ INTEGER, \
 %@ TEXT UNIQUE, \
 %@ TEXT, \
-%@ TEXT, \
-%@ TEXT, \
+%@ INTEGER, \
+%@ INTEGER, \
 %@ TEXT, \
 %@ TEXT, \
 %@ INTEGER, \
 %@ INTEGER, \
 %@ TEXT, \
-%@ TEXT, \
+%@ INTEGER, \
 %@ INTEGER, \
 %@ INTEGER, \
 %@ INTEGER, \
@@ -264,14 +263,14 @@ FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MAIN_FUELPURCHASE_LOG,
                    COL_MAIN_FUELSTATION_ID,                 // col4
                    COL_GLOBAL_ID,                           // col5
                    COL_MEDIA_TYPE,                          // col6
-                   COL_MAN_MASTER_LAST_MODIFIED,            // col7
+                   COL_MAN_MASTER_UPDATED_AT,            // col7
                    COL_MAN_DT_COPIED_DOWN_FROM_MASTER,      // col8
                    COL_FUELPL_NUM_GALLONS,                  // col9
                    COL_FUELPL_PRICE_PER_GALLON,             // col10
                    COL_FUELPL_OCTANE,                       // col11
                    COL_FUELPL_GOT_CAR_WASH,                 // col12
                    COL_FUELPL_CAR_WASH_PER_GALLON_DISCOUNT, // col13
-                   COL_FUELPL_LOG_DT,                       // col14
+                   COL_FUELPL_PURCHASED_AT,                       // col14
                    COL_MAN_EDIT_IN_PROGRESS,                // col15
                    COL_MAN_SYNC_IN_PROGRESS,                // col16
                    COL_MAN_SYNCED,                          // col17
@@ -298,21 +297,20 @@ FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MAIN_FUELPURCHASE_LOG,
 %@ INTEGER, \
 %@ TEXT UNIQUE NOT NULL, \
 %@ TEXT, \
-%@ TEXT, \
-%@ TEXT, \
+%@ INTEGER, \
+%@ INTEGER, \
 %@ TEXT, \
 %@ TEXT, \
 %@ TEXT, \
 %@ TEXT, \
 %@ REAL, \
 %@ REAL, \
-%@ TEXT, \
 FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MASTER_FUEL_STATION,
                    COL_LOCAL_ID,           // col1
                    COL_MASTER_USER_ID,     // col2
                    COL_GLOBAL_ID,          // col3
                    COL_MEDIA_TYPE,         // col4
-                   COL_MST_LAST_MODIFIED,  // col5
+                   COL_MST_UPDATED_AT,  // col5
                    COL_MST_DELETED_DT,     // col6
                    COL_FUELST_NAME,        // col7
                    COL_FUELST_CITY,        // col8
@@ -320,7 +318,6 @@ FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MASTER_FUEL_STATION,
                    COL_FUELST_ZIP,         // col10
                    COL_FUELST_LATITUDE,    // col11
                    COL_FUELST_LONGITUDE,   // col12
-                   COL_FUELST_DT_ADDED,    // col13
                    COL_MASTER_USER_ID,     // fk1, col1
                    TBL_MASTER_USER,        // fk1, tbl-ref
                    COL_LOCAL_ID];          // fk1, tbl-ref col1
@@ -332,15 +329,14 @@ FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MASTER_FUEL_STATION,
 %@ INTEGER, \
 %@ TEXT UNIQUE, \
 %@ TEXT, \
-%@ TEXT, \
-%@ TEXT, \
+%@ INTEGER, \
+%@ INTEGER, \
 %@ TEXT, \
 %@ TEXT, \
 %@ TEXT, \
 %@ TEXT, \
 %@ REAL, \
 %@ REAL, \
-%@ TEXT, \
 %@ INTEGER, \
 %@ INTEGER, \
 %@ INTEGER, \
@@ -353,7 +349,7 @@ FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MAIN_FUEL_STATION,
                    COL_MAIN_USER_ID,                   // col2
                    COL_GLOBAL_ID,                      // col3
                    COL_MEDIA_TYPE,                     // col4
-                   COL_MAN_MASTER_LAST_MODIFIED,       // col5
+                   COL_MAN_MASTER_UPDATED_AT,       // col5
                    COL_MAN_DT_COPIED_DOWN_FROM_MASTER, // col6
                    COL_FUELST_NAME,                    // col7
                    COL_FUELST_CITY,                    // col8
@@ -361,7 +357,6 @@ FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MAIN_FUEL_STATION,
                    COL_FUELST_ZIP,                     // col10
                    COL_FUELST_LATITUDE,                // col11
                    COL_FUELST_LONGITUDE,               // col12
-                   COL_FUELST_DT_ADDED,                // col13
                    COL_MAN_EDIT_IN_PROGRESS,           // col14
                    COL_MAN_SYNC_IN_PROGRESS,           // col15
                    COL_MAN_SYNCED,                     // col16
@@ -382,19 +377,21 @@ FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MAIN_FUEL_STATION,
 %@ INTEGER, \
 %@ TEXT UNIQUE NOT NULL, \
 %@ TEXT, \
+%@ INTEGER, \
+%@ INTEGER, \
 %@ TEXT, \
-%@ TEXT, \
-%@ TEXT, \
+%@ INTEGER, \
 %@ TEXT, \
 FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MASTER_VEHICLE,
                    COL_LOCAL_ID,           // col1
                    COL_MASTER_USER_ID,     // col2
                    COL_GLOBAL_ID,          // col3
                    COL_MEDIA_TYPE,         // col4
-                   COL_MST_LAST_MODIFIED,  // col5
+                   COL_MST_UPDATED_AT,  // col5
                    COL_MST_DELETED_DT,     // col6
                    COL_VEH_NAME,           // col7
-                   COL_VEH_DT_ADDED,       // col8
+                   COL_VEH_DEFAULT_OCTANE,       // col8
+                   COL_VEH_FUEL_CAPACITY,   // col9
                    COL_MASTER_USER_ID,     // fk1, col1
                    TBL_MASTER_USER,        // fk1, tbl-ref
                    COL_LOCAL_ID];          // fk1, tbl-ref col1
@@ -413,11 +410,12 @@ FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MASTER_VEHICLE,
 %@ INTEGER, \
 %@ TEXT UNIQUE, \
 %@ TEXT, \
-%@ TEXT, \
-%@ TEXT, \
+%@ INTEGER, \
+%@ INTEGER, \
 %@ TEXT, \
 %@ TEXT, \
 %@ INTEGER, \
+%@ TEXT, \
 %@ INTEGER, \
 %@ INTEGER, \
 %@ INTEGER, \
@@ -429,10 +427,11 @@ FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MAIN_VEHICLE,
                    COL_MAIN_USER_ID,                   // col2
                    COL_GLOBAL_ID,                      // col3
                    COL_MEDIA_TYPE,                     // col4
-                   COL_MAN_MASTER_LAST_MODIFIED,       // col5
+                   COL_MAN_MASTER_UPDATED_AT,       // col5
                    COL_MAN_DT_COPIED_DOWN_FROM_MASTER, // col6
                    COL_VEH_NAME,                       // col7
-                   COL_VEH_DT_ADDED,                   // col8
+                   COL_VEH_DEFAULT_OCTANE,                   // col8
+                   COL_VEH_FUEL_CAPACITY,
                    COL_MAN_EDIT_IN_PROGRESS,           // col9
                    COL_MAN_SYNC_IN_PROGRESS,           // col10
                    COL_MAN_SYNCED,                     // col11
@@ -459,9 +458,8 @@ FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MAIN_VEHICLE,
 %@ INTEGER PRIMARY KEY, \
 %@ TEXT UNIQUE NOT NULL, \
 %@ TEXT, \
-%@ TEXT, \
-%@ TEXT, \
-%@ TEXT, \
+%@ INTEGER, \
+%@ INTEGER, \
 %@ TEXT, \
 %@ TEXT, \
 %@ TEXT, \
@@ -469,13 +467,12 @@ FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MAIN_VEHICLE,
                    COL_LOCAL_ID,           // col1
                    COL_GLOBAL_ID,          // col2
                    COL_MEDIA_TYPE,         // col3
-                   COL_MST_LAST_MODIFIED,  // col4
+                   COL_MST_UPDATED_AT,  // col4
                    COL_MST_DELETED_DT,     // col5
                    COL_USR_NAME,           // col6
                    COL_USR_EMAIL,          // col7
                    COL_USR_USERNAME,       // col8
-                   COL_USR_PASSWORD_HASH,  // col9
-                   COL_USR_CREATION_DT];   // col10
+                   COL_USR_PASSWORD_HASH]; // col9
 }
 
 + (NSString *)mainUserDDL {
@@ -484,9 +481,8 @@ FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MAIN_VEHICLE,
 %@ INTEGER, \
 %@ TEXT UNIQUE, \
 %@ TEXT, \
-%@ TEXT, \
-%@ TEXT, \
-%@ TEXT, \
+%@ INTEGER, \
+%@ INTEGER, \
 %@ TEXT, \
 %@ TEXT, \
 %@ TEXT, \
@@ -504,13 +500,12 @@ FOREIGN KEY (%@) REFERENCES %@(%@))",
                    COL_MASTER_USER_ID,                 // col2
                    COL_GLOBAL_ID,                      // col3
                    COL_MEDIA_TYPE,                     // col4
-                   COL_MAN_MASTER_LAST_MODIFIED,       // col5
+                   COL_MAN_MASTER_UPDATED_AT,       // col5
                    COL_MAN_DT_COPIED_DOWN_FROM_MASTER, // col6
                    COL_USR_NAME,                       // col7
                    COL_USR_EMAIL,                      // col8
                    COL_USR_USERNAME,                   // col9
                    COL_USR_PASSWORD_HASH,              // col10
-                   COL_USR_CREATION_DT,                // col11
                    COL_MAN_EDIT_IN_PROGRESS,           // col12
                    COL_MAN_SYNC_IN_PROGRESS,           // col13
                    COL_MAN_SYNCED,                     // col14

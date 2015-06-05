@@ -57,8 +57,7 @@ describe(@"FPCoordinatorDao", ^{
       user = [_coordDao userWithName:@"Joe Smith"
                                email:@"joe.smith@example.com"
                             username:@"smithjoe"
-                            password:@"pa55w0rd"
-                        creationDate:[NSDate date]];
+                            password:@"pa55w0rd"];
       [_coordDao immediateRemoteSyncSaveNewUser:user
                                 remoteStoreBusy:[_coordTestCtx newRemoteStoreBusyBlkMaker]()
                               completionHandler:[_coordTestCtx new1ErrArgComplHandlerBlkMaker]()
@@ -70,7 +69,7 @@ describe(@"FPCoordinatorDao", ^{
       [[_numEntitiesBlk(TBL_MASTER_USER) should] equal:[NSNumber numberWithInt:1]];
       user = [_coordDao userWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
       // Now lets create a vehicle
-      FPVehicle *vehicle = [_coordDao vehicleWithName:@"My Bimmer" dateAdded:[NSDate date]];
+      FPVehicle *vehicle = [_coordDao vehicleWithName:@"My Bimmer" defaultOctane:@87 fuelCapacity:[NSDecimalNumber decimalNumberWithString:@"20.5"]];
       [_coordDao saveNewVehicle:vehicle forUser:user error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       // our user had to have been copied down to main from master in order for the
       // new vehicle to have been saved to its main_vehicle table
@@ -89,7 +88,7 @@ describe(@"FPCoordinatorDao", ^{
       [[_numEntitiesBlk(TBL_MAIN_USER) should] equal:[NSNumber numberWithInt:0]]; // pruned
       [[_numEntitiesBlk(TBL_MASTER_USER) should] equal:[NSNumber numberWithInt:1]];
       // now lets edit the vehicle
-      vehicle = [[_coordDao vehiclesForUser:user pageSize:5 error:[_coordTestCtx newLocalSaveErrBlkMaker]()] objectAtIndex:0];
+      vehicle = [[_coordDao vehiclesForUser:user error:[_coordTestCtx newLocalSaveErrBlkMaker]()] objectAtIndex:0];
       BOOL prepareForEditSuccess =
         [_coordDao prepareVehicleForEdit:vehicle
                                  forUser:user
@@ -126,7 +125,6 @@ describe(@"FPCoordinatorDao", ^{
       [[_numEntitiesBlk(TBL_MAIN_USER) should] equal:[NSNumber numberWithInt:0]]; // pruned
       [[_numEntitiesBlk(TBL_MASTER_USER) should] equal:[NSNumber numberWithInt:1]];
       [[[[[_coordDao vehiclesForUser:user
-                           pageSize:5
                               error:[_coordTestCtx newLocalFetchErrBlkMaker]()]
           objectAtIndex:0] name] should] equal:@"My Blue Bimmer"];
     });

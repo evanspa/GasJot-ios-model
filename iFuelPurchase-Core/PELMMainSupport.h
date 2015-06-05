@@ -20,7 +20,7 @@
                         mediaType:(HCMediaType *)mediaType
                         relations:(NSDictionary *)relations
                       deletedDate:(NSDate *)deletedDate
-                     lastModified:(NSDate *)lastModified
+                        updatedAt:(NSDate *)updatedAt
              dateCopiedFromMaster:(NSDate *)dateCopiedFromMaster
                    editInProgress:(BOOL)editInProgress
                       editActorId:(NSNumber *)editActorId

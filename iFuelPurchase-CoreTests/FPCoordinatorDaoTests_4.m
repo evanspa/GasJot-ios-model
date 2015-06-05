@@ -67,7 +67,7 @@ describe(@"FPCoordinatorDao", ^{
       [[_numEntitiesBlk(TBL_MAIN_VEHICLE) should] equal:[NSNumber numberWithInt:0]];
       [[_numEntitiesBlk(TBL_MASTER_VEHICLE) should] equal:[NSNumber numberWithInt:2]];
       [[theValue([_coordDao numVehiclesForUser:user error:[_coordTestCtx newLocalFetchErrBlkMaker]()]) should] equal:theValue(2)];
-      FPVehicle *vehicle = [_coordDao vehiclesForUser:user pageSize:1 error:[_coordTestCtx newLocalFetchErrBlkMaker]()][0];
+      FPVehicle *vehicle = [_coordDao vehiclesForUser:user error:[_coordTestCtx newLocalFetchErrBlkMaker]()][0];
       [vehicle shouldNotBeNil]; // sanity check
       BOOL prepareForEditSuccess =
         [_coordDao prepareVehicleForEdit:vehicle
@@ -143,11 +143,10 @@ describe(@"FPCoordinatorDao", ^{
       [[_numEntitiesBlk(TBL_MAIN_VEHICLE) should] equal:[NSNumber numberWithInt:1]];
       [[_numEntitiesBlk(TBL_MASTER_VEHICLE) should] equal:[NSNumber numberWithInt:2]];
       // sanity checking (making sure 2 are returned)
-      NSArray *vehicles = [_coordDao vehiclesForUser:user pageSize:10 error:[_coordTestCtx newLocalFetchErrBlkMaker]()];
+      NSArray *vehicles = [_coordDao vehiclesForUser:user error:[_coordTestCtx newLocalFetchErrBlkMaker]()];
       [[vehicles should] haveCountOf:2];
       [[theValue([_coordDao numVehiclesForUser:user error:[_coordTestCtx newLocalFetchErrBlkMaker]()]) should] equal:theValue(2)];
-      // make sure paginating works (i.e., asking for pageSize=1)
-      vehicle = [_coordDao vehiclesForUser:user pageSize:1 error:[_coordTestCtx newLocalFetchErrBlkMaker]()][0];
+      vehicle = vehicles[1];
       [[[vehicle name] should] equal:@"300ZX Edit 1"];
       [[theValue([vehicle editCount]) should] equal:theValue(2)];
       [[theValue([vehicle editInProgress]) should] beNo];
@@ -203,7 +202,7 @@ describe(@"FPCoordinatorDao", ^{
                               editActorId:@(FPForegroundActorId)
                                     error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       // 1 more sanity check
-      vehicle = [_coordDao vehiclesForUser:user pageSize:1 error:[_coordTestCtx newLocalFetchErrBlkMaker]()][0];
+      vehicle = [_coordDao vehiclesForUser:user error:[_coordTestCtx newLocalFetchErrBlkMaker]()][1];
       [[[vehicle name] should] equal:@"300ZX Edit 1"];
       [[theValue([vehicle editCount]) should] equal:theValue(5)];
       [[theValue([vehicle editInProgress]) should] beNo];

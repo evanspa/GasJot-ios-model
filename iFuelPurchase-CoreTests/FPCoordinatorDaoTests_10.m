@@ -88,7 +88,7 @@ describe(@"FPCoordinatorDao", ^{
       [[[user name] should] equal:@"Paul Evans"];
       [[[user email] should] equal:@"paul.evans@example.com"];
       [[[user username] should] equal:@"pevans"];
-      [[[user lastModified] should] equal:[HCUtils rfc7231DateFromString:@"Wed, 03 Sep 2014 9:04:02 GMT"]];
+      [[[user updatedAt] should] equal:[HCUtils rfc7231DateFromString:@"Wed, 03 Sep 2014 9:04:02 GMT"]];
       //toggler = _observer(@[FPSystemPruningComplete]);
       //[[expectFutureValue(theValue([toggler value])) shouldEventuallyBeforeTimingOutAfter(60)] beYes];
       [_coordDao pruneAllSyncedEntitiesWithError:[_coordTestCtx newLocalSaveErrBlkMaker]()];

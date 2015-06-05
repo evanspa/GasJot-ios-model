@@ -8,13 +8,14 @@
 
 #import "FPVehicleSerializer.h"
 #import "FPVehicle.h"
+#import <PEObjc-Commons/NSDictionary+PEAdditions.h>
 #import <PEObjc-Commons/NSMutableDictionary+PEAdditions.h>
 #import <PEHateoas-Client/HCUtils.h>
 
-NSString * const FPVehicleNameKey           = @"fpvehicle/name";
-NSString * const FPVehicleFuelCapacity      = @"fpvehicle/fuel-capacity";
-NSString * const FPVehicleMinRequiredOctane = @"fpvehicle/min-redq-octane";
-NSString * const FPVehicleDateAddedKey      = @"fpvehicle/date-added";
+NSString * const FPVehicleNameKey          = @"fpvehicle/name";
+NSString * const FPVehicleDefaultOctaneKey = @"fpvehicle/default-octane";
+NSString * const FPVehicleFuelCapacityKey  = @"fpvehicle/fuel-capacity";
+NSString * const FPVehicleUpdatedAtKey     = @"fpvehicle/updated-at";
 
 @implementation FPVehicleSerializer
 
@@ -24,8 +25,8 @@ NSString * const FPVehicleDateAddedKey      = @"fpvehicle/date-added";
   FPVehicle *vehicle = (FPVehicle *)resourceModel;
   NSMutableDictionary *vehicleDict = [NSMutableDictionary dictionary];
   [vehicleDict setObjectIfNotNull:[vehicle name] forKey:FPVehicleNameKey];
-  [vehicleDict setObjectIfNotNull:[HCUtils rfc7231StringFromDate:[vehicle dateAdded]]
-                           forKey:FPVehicleDateAddedKey];
+  [vehicleDict setObjectIfNotNull:[vehicle defaultOctane] forKey:FPVehicleDefaultOctaneKey];
+  [vehicleDict setObjectIfNotNull:[vehicle fuelCapacity] forKey:FPVehicleFuelCapacityKey];
   return vehicleDict;
 }
 
@@ -36,12 +37,13 @@ NSString * const FPVehicleDateAddedKey      = @"fpvehicle/date-added";
                         mediaType:(HCMediaType *)mediaType
                          location:(NSString *)location
                      lastModified:(NSDate *)lastModified {
-  return [FPVehicle vehicleWithName:[resDict objectForKey:FPVehicleNameKey]
-                          dateAdded:[HCUtils rfc7231DateFromString:[resDict objectForKey:FPVehicleDateAddedKey]]
+    return [FPVehicle vehicleWithName:[resDict objectForKey:FPVehicleNameKey]
+                      defaultOctane:resDict[FPVehicleDefaultOctaneKey]
+                       fuelCapacity:resDict[FPVehicleFuelCapacityKey]
                    globalIdentifier:location
                           mediaType:mediaType
                           relations:relations
-                       lastModified:lastModified];
+                          updatedAt:[resDict dateSince1970ForKey:FPVehicleUpdatedAtKey]];
 }
 
 @end

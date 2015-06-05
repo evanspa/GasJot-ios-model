@@ -191,8 +191,7 @@ NSInteger const FPForegroundActorId = 1;
     FPUser *user = [coordDao userWithName:name
                                     email:email
                                  username:username
-                                 password:password
-                             creationDate:[NSDate date]];
+                                 password:password];
     FPSavedNewEntityCompletionHandler complHandler = ^(FPUser *savedUser, NSError *error) { };
     PELMDaoErrorBlk localDaoErrHandler = ^(NSError *error, int code, NSString *msg) { };
     [coordDao immediateRemoteSyncSaveNewUser:user

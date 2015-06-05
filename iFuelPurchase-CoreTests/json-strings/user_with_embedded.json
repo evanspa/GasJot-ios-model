@@ -22,12 +22,10 @@
             "last-modified": "Fri, 06 Sep 2014 10:34:22 GMT",
             "payload": {
                 "fpvehicle/name": "My Mazda",
-                "fpvehicle/date-added": "Fri, 06 Sep 2014 10:34:22 GMT",
                 "_links": {}}},
           { "media-type": "application/vnd.fp.vehicle-v0.0.1+json",
             "location": "http://example.com/fp/users/U1123409100/vehicles/V430",
             "last-modified": "Sun, 07 Sep 2014 01:15:57 GMT",
             "payload": {
                 "fpvehicle/name": "My 300zx",
-                "fpvehicle/date-added": "Sun, 07 Sep 2014 01:15:57 GMT",
                 "_links": {}}}]}}

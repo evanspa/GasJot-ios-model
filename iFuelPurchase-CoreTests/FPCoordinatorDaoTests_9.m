@@ -72,7 +72,7 @@ describe(@"FPCoordinatorDao", ^{
       [_coordDao markAsDoneEditingUser:user
                            editActorId:@(FPForegroundActorId)
                                  error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
-      FPVehicle *vehicle = [_coordDao vehicleWithName:@"My Bimmer" dateAdded:[NSDate date]];
+      FPVehicle *vehicle = [_coordDao vehicleWithName:@"My Bimmer" defaultOctane:@87 fuelCapacity:[NSDecimalNumber decimalNumberWithString:@"20.5"]];
       [_coordDao saveNewVehicle:vehicle forUser:user error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       // the following will prevent syncing w/remote master on first timer fire
       prepareForEditSuccess =

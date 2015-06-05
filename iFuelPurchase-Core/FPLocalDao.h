@@ -95,17 +95,7 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
 - (NSInteger)numVehiclesForUser:(FPUser *)user
                           error:(PELMDaoErrorBlk)errorBlk;
 
-- (NSInteger)numVehiclesForUser:(FPUser *)user
-                      newerThan:(NSDate *)newerThan
-                          error:(PELMDaoErrorBlk)errorBlk;
-
 - (NSArray *)vehiclesForUser:(FPUser *)user
-                    pageSize:(NSInteger)pageSize
-                       error:(PELMDaoErrorBlk)errorBlk;
-
-- (NSArray *)vehiclesForUser:(FPUser *)user
-                    pageSize:(NSInteger)pageSize
-             beforeDateAdded:(NSDate *)beforeDateAdded
                        error:(PELMDaoErrorBlk)errorBlk;
 
 - (FPUser *)userForVehicle:(FPVehicle *)vehicle
@@ -173,17 +163,7 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
 - (NSInteger)numFuelStationsForUser:(FPUser *)user
                               error:(PELMDaoErrorBlk)errorBlk;
 
-- (NSInteger)numFuelStationsForUser:(FPUser *)user
-                          newerThan:(NSDate *)newerThan
-                              error:(PELMDaoErrorBlk)errorBlk;
-
 - (NSArray *)fuelStationsForUser:(FPUser *)user
-                        pageSize:(NSInteger)pageSize
-                           error:(PELMDaoErrorBlk)errorBlk;
-
-- (NSArray *)fuelStationsForUser:(FPUser *)user
-                        pageSize:(NSInteger)pageSize
-                 beforeDateAdded:(NSDate *)beforeDateAdded
                            error:(PELMDaoErrorBlk)errorBlk;
 
 - (FPUser *)userForFuelStation:(FPFuelStation *)fuelStation

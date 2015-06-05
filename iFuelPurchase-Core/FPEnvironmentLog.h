@@ -19,7 +19,7 @@
                         mediaType:(HCMediaType *)mediaType
                         relations:(NSDictionary *)relations
                       deletedDate:(NSDate *)deletedDate
-                     lastModified:(NSDate *)lastModified
+                        updatedAt:(NSDate *)updatedAt
              dateCopiedFromMaster:(NSDate *)dateCopiedFromMaster
                    editInProgress:(BOOL)editInProgress
                       editActorId:(NSNumber *)editActorId
@@ -55,7 +55,7 @@
                         globalIdentifier:(NSString *)globalIdentifier
                                mediaType:(HCMediaType *)mediaType
                                relations:(NSDictionary *)relations
-                            lastModified:(NSDate *)lastModified;
+                               updatedAt:(NSDate *)updatedAt;
 
 #pragma mark - Methods
 

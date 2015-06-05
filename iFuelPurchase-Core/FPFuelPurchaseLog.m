@@ -21,7 +21,7 @@
                         mediaType:(HCMediaType *)mediaType
                         relations:(NSDictionary *)relations
                       deletedDate:(NSDate *)deletedDate
-                     lastModified:(NSDate *)lastModified
+                     updatedAt:(NSDate *)updatedAt
              dateCopiedFromMaster:(NSDate *)dateCopiedFromMaster
                    editInProgress:(BOOL)editInProgress
                       editActorId:(NSNumber *)editActorId
@@ -37,7 +37,7 @@
                       gallonPrice:(NSDecimalNumber *)gallonPrice
                        gotCarWash:(BOOL)gotCarWash
          carWashPerGallonDiscount:(NSDecimalNumber *)carWashPerGallonDiscount
-                          logDate:(NSDate *)logDate {
+                          purchasedAt:(NSDate *)purchasedAt {
   self = [super initWithLocalMainIdentifier:localMainIdentifier
                       localMasterIdentifier:localMasterIdentifier
                            globalIdentifier:globalIdentifier
@@ -46,7 +46,7 @@
                                   mediaType:mediaType
                                   relations:relations
                                 deletedDate:deletedDate
-                               lastModified:lastModified
+                               updatedAt:updatedAt
                        dateCopiedFromMaster:dateCopiedFromMaster
                              editInProgress:editInProgress
                                 editActorId:editActorId
@@ -63,7 +63,7 @@
     _octane = octane;
     _gotCarWash = gotCarWash;
     _carWashPerGallonDiscount = carWashPerGallonDiscount;
-    _logDate = logDate;
+    _purchasedAt = purchasedAt;
   }
   return self;
 }
@@ -75,18 +75,18 @@
                                          gallonPrice:(NSDecimalNumber *)gallonPrice
                                           gotCarWash:(BOOL)gotCarWash
                             carWashPerGallonDiscount:(NSDecimalNumber *)carWashPerGallonDiscount
-                                             logDate:(NSDate *)logDate
+                                             purchasedAt:(NSDate *)purchasedAt
                                            mediaType:(HCMediaType *)mediaType {
   return [FPFuelPurchaseLog fuelPurchaseLogWithNumGallons:numGallons
                                                    octane:octane
                                               gallonPrice:gallonPrice
                                                gotCarWash:gotCarWash
                                  carWashPerGallonDiscount:carWashPerGallonDiscount
-                                                  logDate:logDate
+                                              purchasedAt:purchasedAt
                                          globalIdentifier:nil
                                                 mediaType:mediaType
                                                 relations:nil
-                                             lastModified:nil];
+                                                updatedAt:nil];
 }
 
 + (FPFuelPurchaseLog *)fuelPurchaseLogWithNumGallons:(NSDecimalNumber *)numGallons
@@ -94,18 +94,18 @@
                                          gallonPrice:(NSDecimalNumber *)gallonPrice
                                           gotCarWash:(BOOL)gotCarWash
                             carWashPerGallonDiscount:(NSDecimalNumber *)carWashPerGallonDiscount
-                                             logDate:(NSDate *)logDate
+                                         purchasedAt:(NSDate *)purchasedAt
                                     globalIdentifier:(NSString *)globalIdentifier
                                            mediaType:(HCMediaType *)mediaType
                                            relations:(NSDictionary *)relations
-                                        lastModified:(NSDate *)lastModified {
+                                           updatedAt:(NSDate *)updatedAt {
   return [[FPFuelPurchaseLog alloc] initWithLocalMainIdentifier:nil
                                           localMasterIdentifier:nil
                                                globalIdentifier:globalIdentifier
                                                       mediaType:mediaType
                                                       relations:relations
                                                     deletedDate:nil
-                                                   lastModified:lastModified
+                                                      updatedAt:updatedAt
                                            dateCopiedFromMaster:nil
                                                  editInProgress:NO
                                                     editActorId:nil
@@ -121,7 +121,7 @@
                                                     gallonPrice:gallonPrice
                                                      gotCarWash:gotCarWash
                                        carWashPerGallonDiscount:carWashPerGallonDiscount
-                                                        logDate:logDate];
+                                                    purchasedAt:purchasedAt];
 }
 
 #pragma mark - Methods
@@ -133,7 +133,7 @@
   [self setGallonPrice:[fuelPurchaseLog gallonPrice]];
   [self setGotCarWash:[fuelPurchaseLog gotCarWash]];
   [self setCarWashPerGallonDiscount:[fuelPurchaseLog carWashPerGallonDiscount]];
-  [self setLogDate:[fuelPurchaseLog logDate]];
+  [self setPurchasedAt:[fuelPurchaseLog purchasedAt]];
 }
 
 #pragma mark - Equality
@@ -146,7 +146,7 @@
       [PEUtils isNumProperty:@selector(gallonPrice) equalFor:self and:fuelPurchaseLog] &&
       [PEUtils isBoolProperty:@selector(gotCarWash) equalFor:self and:fuelPurchaseLog] &&
       [PEUtils isNumProperty:@selector(carWashPerGallonDiscount) equalFor:self and:fuelPurchaseLog] &&
-      [PEUtils isDate:[self logDate] msprecisionEqualTo:[fuelPurchaseLog logDate]];
+      [PEUtils isDate:[self purchasedAt] msprecisionEqualTo:[fuelPurchaseLog purchasedAt]];
   }
   return NO;
 }
@@ -166,7 +166,7 @@
     [[self gallonPrice] hash] ^
     [[self gallonPrice] hash] ^
     [[self carWashPerGallonDiscount] hash] ^
-    [[self logDate] hash];
+    [[self purchasedAt] hash];
 }
 
 - (NSString *)description {
@@ -178,7 +178,7 @@ log date: [%@]", [super description],
           _gallonPrice,
           _gotCarWash,
           _carWashPerGallonDiscount,
-          _logDate];
+          _purchasedAt];
 }
 
 @end

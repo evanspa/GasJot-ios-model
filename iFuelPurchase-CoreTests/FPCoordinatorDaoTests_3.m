@@ -62,8 +62,7 @@ describe(@"FPCoordinatorDao", ^{
                                  state:@"NC"
                                    zip:@"28277"
                               latitude:nil
-                             longitude:nil
-                             dateAdded:[NSDate date]];
+                             longitude:nil];
       [_coordDao saveNewFuelStation:fuelStation forUser:user error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       fuelStation =
         [_coordDao fuelStationWithName:@"Stewarts"
@@ -72,8 +71,7 @@ describe(@"FPCoordinatorDao", ^{
                                  state:@"NY"
                                    zip:@"12309"
                               latitude:nil
-                             longitude:nil
-                             dateAdded:[NSDate date]];
+                             longitude:nil];
       [_coordDao saveNewFuelStation:fuelStation forUser:user error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       FPToggler *toggler = _observer(@[FPFuelStationCoordinateComputeSuccess, FPFuelStationCoordinateComputeFailed]);
       [_coordTestCtx startTimerForAsyncWorkWithInterval:1 coordDao:_coordDao];
@@ -81,7 +79,6 @@ describe(@"FPCoordinatorDao", ^{
       [[expectFutureValue(theValue([toggler totalObservedCount]))
         shouldEventuallyBeforeTimingOutAfter(60)] equal:theValue(2)];
       NSArray *fuelStations = [_coordDao fuelStationsForUser:user
-                                                    pageSize:5
                                                        error:[_coordTestCtx newLocalFetchErrBlkMaker]()];
       [[fuelStations should] haveCountOf:2];
       fuelStation = fuelStations[0];

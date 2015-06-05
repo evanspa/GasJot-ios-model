@@ -30,7 +30,7 @@ FOUNDATION_EXPORT NSString * const FPAppTransactionSetRelation;
                         mediaType:(HCMediaType *)mediaType
                         relations:(NSDictionary *)relations
                       deletedDate:(NSDate *)deletedDate
-                     lastModified:(NSDate *)lastModified
+                        updatedAt:(NSDate *)updatedAt
              dateCopiedFromMaster:(NSDate *)dateCopiedFromMaster
                    editInProgress:(BOOL)editInProgress
                       editActorId:(NSNumber *)editActorId
@@ -42,8 +42,7 @@ FOUNDATION_EXPORT NSString * const FPAppTransactionSetRelation;
                              name:(NSString *)name
                             email:(NSString *)email
                          username:(NSString *)username
-                         password:(NSString *)password
-                     creationDate:(NSDate *)creationDate;
+                         password:(NSString *)password;
 
 #pragma mark - Creation Functions
 
@@ -51,18 +50,16 @@ FOUNDATION_EXPORT NSString * const FPAppTransactionSetRelation;
                    email:(NSString *)email
                 username:(NSString *)username
                 password:(NSString *)password
-            creationDate:(NSDate *)creationDate
                mediaType:(HCMediaType *)mediaType;
 
 + (FPUser *)userWithName:(NSString *)name
                    email:(NSString *)email
                 username:(NSString *)username
                 password:(NSString *)password
-            creationDate:(NSDate *)creationDate
         globalIdentifier:(NSString *)globalIdentifier
                mediaType:(HCMediaType *)mediaType
                relations:(NSDictionary *)relations
-            lastModified:(NSDate *)lastModified;
+               updatedAt:(NSDate *)updatedAt;
 
 #pragma mark - Methods
 
@@ -95,8 +92,6 @@ FOUNDATION_EXPORT NSString * const FPAppTransactionSetRelation;
 @property (nonatomic) NSString *username;
 
 @property (nonatomic) NSString *password;
-
-@property (nonatomic) NSDate *creationDate;
 
 #pragma mark - Known Relation Names
 

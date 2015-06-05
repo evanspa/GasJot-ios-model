@@ -9,7 +9,6 @@
   <headers>
     <header name="Cache-Control" value="no-cache" />
     <header name="Content-Type" value="application/json" />
-    <header name="Last-Modified" value="Wed, 03 Sep 2014 9:04:02 GMT" />
     <header name="Content-Language" value="en-US" />
   </headers>
   <body>

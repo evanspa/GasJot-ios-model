@@ -11,16 +11,17 @@
     <header name="Cache-Control" value="no-cache" />
     <header name="Vary" value="Accept, Accept-Charset, Accept-Language" />
     <header name="fp-auth-token" value="23409582345-093284590-2345LKJDFLSDFLK" />
-    <header name="Last-Modified" value="Fri, 06 Sep 2014 10:34:22 GMT" />
     <header name="Content-Type" value="application/vnd.fp.envlog-v0.0.1+json" />
   </headers>
   <body>
     <![CDATA[
-      { "fpenvironmentlog/odometer": "95648",
-        "fpenvironmentlog/reported-avg-mpg": "26.2",
-        "fpenvironmentlog/reported-avg-mph": "28.4",
-        "fpenvironmentlog/outside-temp": "75",
-        "fpenvironmentlog/log-date": "Sun, 27 Oct 2014 09:17:18 GMT" }
+      { "envlog/odometer": "95648",
+        "envlog/reported-avg-mpg": "26.2",
+        "envlog/reported-avg-mph": "28.4",
+        "envlog/reported-outside-temp": "75",
+        "envlog/logged-at": 1414919838000,
+        "envlog/created-at": 1414919840000,
+        "envlog/updated-at": 1414919840000 }
     ]]>
   </body>
 </http-response>

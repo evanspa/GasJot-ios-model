@@ -31,21 +31,6 @@
 		1824817419B95E2700A71C97 /* FPEnvironmentLog.m in Sources */ = {isa = PBXBuildFile; fileRef = 1824817319B95E2700A71C97 /* FPEnvironmentLog.m */; };
 		18417F401AA179D3007B8489 /* FPLoginSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 18417F3F1AA179D3007B8489 /* FPLoginSerializer.m */; };
 		18417F441AA17FDD007B8489 /* PELMLoginUser.m in Sources */ = {isa = PBXBuildFile; fileRef = 18417F431AA17FDD007B8489 /* PELMLoginUser.m */; };
-		18417F451AA185CD007B8489 /* FPCoordinatorDaoTests_4.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBC91A5CD9D800747936 /* FPCoordinatorDaoTests_4.m */; };
-		18417F461AA18C2A007B8489 /* FPCoordinatorDaoTests_1.m in Sources */ = {isa = PBXBuildFile; fileRef = 182267E11A5BA75200242806 /* FPCoordinatorDaoTests_1.m */; };
-		18417F471AA18C2A007B8489 /* FPCoordinatorDaoTests_2.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBC61A5CD98A00747936 /* FPCoordinatorDaoTests_2.m */; };
-		18417F481AA18C2A007B8489 /* FPCoordinatorDaoTests_3.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBC81A5CD9D800747936 /* FPCoordinatorDaoTests_3.m */; };
-		18417F491AA18C2A007B8489 /* FPCoordinatorDaoTests_5.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBCA1A5CD9D800747936 /* FPCoordinatorDaoTests_5.m */; };
-		18417F4A1AA18C2A007B8489 /* FPCoordinatorDaoTests_6.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBCB1A5CD9D800747936 /* FPCoordinatorDaoTests_6.m */; };
-		18417F4B1AA18C2A007B8489 /* FPCoordinatorDaoTests_7.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBCC1A5CD9D800747936 /* FPCoordinatorDaoTests_7.m */; };
-		18417F4C1AA18C2A007B8489 /* FPCoordinatorDaoTests_8.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBDA1A5CF12C00747936 /* FPCoordinatorDaoTests_8.m */; };
-		18417F4D1AA18C2A007B8489 /* FPCoordinatorDaoTests_9.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBDB1A5CF12C00747936 /* FPCoordinatorDaoTests_9.m */; };
-		18417F4E1AA18C2A007B8489 /* FPCoordinatorDaoTests_10.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBDC1A5CF12C00747936 /* FPCoordinatorDaoTests_10.m */; };
-		18417F4F1AA18C2A007B8489 /* FPCoordinatorDaoTests_11.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBDD1A5CF12C00747936 /* FPCoordinatorDaoTests_11.m */; };
-		18417F501AA18C2A007B8489 /* FPCoordinatorDaoTests_12.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBDE1A5CF12C00747936 /* FPCoordinatorDaoTests_12.m */; };
-		18417F511AA18C2A007B8489 /* FPCoordinatorDaoTests_13.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBDF1A5CF12C00747936 /* FPCoordinatorDaoTests_13.m */; };
-		18417F521AA18C2A007B8489 /* FPCoordinatorDaoTests_14.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBE01A5CF12C00747936 /* FPCoordinatorDaoTests_14.m */; };
-		18417F531AA18C2A007B8489 /* FPCoordinatorDaoTests_15.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBF21A5D045D00747936 /* FPCoordinatorDaoTests_15.m */; };
 		187289E119FA147B00B5D7B0 /* FPEnvironmentLogSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 187289E019FA147B00B5D7B0 /* FPEnvironmentLogSerializer.m */; };
 		18823C2019B80B3B001DB778 /* FPVehicleSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 18823C1F19B80B3B001DB778 /* FPVehicleSerializer.m */; };
 		1882CAF419889B7500A00E67 /* FPVehicle.m in Sources */ = {isa = PBXBuildFile; fileRef = 1882CAF319889B7500A00E67 /* FPVehicle.m */; };
@@ -73,6 +58,20 @@
 		18F23AB019A1EF6D0059DA22 /* FPRestRemoteMasterDao.m in Sources */ = {isa = PBXBuildFile; fileRef = 18F23AAF19A1EF6D0059DA22 /* FPRestRemoteMasterDao.m */; };
 		18F23AB519A1F4730059DA22 /* FPErrorDomains.m in Sources */ = {isa = PBXBuildFile; fileRef = 18F23AB419A1F4730059DA22 /* FPErrorDomains.m */; };
 		18F5FD23198D1DC100D6BB13 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 18F5FD21198D1D6A00D6BB13 /* libsqlite3.dylib */; };
+		CAE4459B1B21332200FD9CD5 /* FPCoordinatorDaoTests_7.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBCC1A5CD9D800747936 /* FPCoordinatorDaoTests_7.m */; };
+		CAE4459F1B21479900FD9CD5 /* FPCoordinatorDaoTests_8.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBDA1A5CF12C00747936 /* FPCoordinatorDaoTests_8.m */; };
+		CAE445A01B2147A600FD9CD5 /* FPCoordinatorDaoTests_9.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBDB1A5CF12C00747936 /* FPCoordinatorDaoTests_9.m */; };
+		CAE445A11B2147B300FD9CD5 /* FPCoordinatorDaoTests_10.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBDC1A5CF12C00747936 /* FPCoordinatorDaoTests_10.m */; };
+		CAE445A21B21483D00FD9CD5 /* FPCoordinatorDaoTests_11.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBDD1A5CF12C00747936 /* FPCoordinatorDaoTests_11.m */; };
+		CAE445A31B21484C00FD9CD5 /* FPCoordinatorDaoTests_12.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBDE1A5CF12C00747936 /* FPCoordinatorDaoTests_12.m */; };
+		CAE445A41B21485B00FD9CD5 /* FPCoordinatorDaoTests_13.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBDF1A5CF12C00747936 /* FPCoordinatorDaoTests_13.m */; };
+		CAE445A51B21494400FD9CD5 /* FPCoordinatorDaoTests_14.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBE01A5CF12C00747936 /* FPCoordinatorDaoTests_14.m */; };
+		CAE445A61B21495400FD9CD5 /* FPCoordinatorDaoTests_15.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBF21A5D045D00747936 /* FPCoordinatorDaoTests_15.m */; };
+		CAE445A71B21496B00FD9CD5 /* FPCoordinatorDaoTests_1.m in Sources */ = {isa = PBXBuildFile; fileRef = 182267E11A5BA75200242806 /* FPCoordinatorDaoTests_1.m */; };
+		CAE445A81B21496B00FD9CD5 /* FPCoordinatorDaoTests_2.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBC61A5CD98A00747936 /* FPCoordinatorDaoTests_2.m */; };
+		CAE445A91B21496B00FD9CD5 /* FPCoordinatorDaoTests_3.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBC81A5CD9D800747936 /* FPCoordinatorDaoTests_3.m */; };
+		CAE445AA1B21496B00FD9CD5 /* FPCoordinatorDaoTests_4.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBC91A5CD9D800747936 /* FPCoordinatorDaoTests_4.m */; };
+		CAE445AB1B21496B00FD9CD5 /* FPCoordinatorDaoTests_5.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBCA1A5CD9D800747936 /* FPCoordinatorDaoTests_5.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -158,7 +157,7 @@
 		18D080311985964D0076A71E /* PELMMainSupport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PELMMainSupport.h; sourceTree = "<group>"; };
 		18D080321985964D0076A71E /* PELMMainSupport.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PELMMainSupport.m; sourceTree = "<group>"; };
 		18D0803519859DBA0076A71E /* FPLocalDao.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FPLocalDao.h; sourceTree = "<group>"; };
-		18D0803619859DBA0076A71E /* FPLocalDao.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FPLocalDao.m; sourceTree = "<group>"; };
+		18D0803619859DBA0076A71E /* FPLocalDao.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = FPLocalDao.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		18D8C10C19C3EB20006C65F9 /* PELMJsonMemberNames.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PELMJsonMemberNames.h; sourceTree = "<group>"; };
 		18D8C10D19C3EB20006C65F9 /* PELMJsonMemberNames.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PELMJsonMemberNames.m; sourceTree = "<group>"; };
 		18D8C11719C3EEF0006C65F9 /* FPUserSerializerTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FPUserSerializerTests.m; sourceTree = "<group>"; };
@@ -169,7 +168,6 @@
 		18D9DBC81A5CD9D800747936 /* FPCoordinatorDaoTests_3.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FPCoordinatorDaoTests_3.m; sourceTree = "<group>"; };
 		18D9DBC91A5CD9D800747936 /* FPCoordinatorDaoTests_4.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FPCoordinatorDaoTests_4.m; sourceTree = "<group>"; };
 		18D9DBCA1A5CD9D800747936 /* FPCoordinatorDaoTests_5.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FPCoordinatorDaoTests_5.m; sourceTree = "<group>"; };
-		18D9DBCB1A5CD9D800747936 /* FPCoordinatorDaoTests_6.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FPCoordinatorDaoTests_6.m; sourceTree = "<group>"; };
 		18D9DBCC1A5CD9D800747936 /* FPCoordinatorDaoTests_7.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FPCoordinatorDaoTests_7.m; sourceTree = "<group>"; };
 		18D9DBDA1A5CF12C00747936 /* FPCoordinatorDaoTests_8.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FPCoordinatorDaoTests_8.m; sourceTree = "<group>"; };
 		18D9DBDB1A5CF12C00747936 /* FPCoordinatorDaoTests_9.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FPCoordinatorDaoTests_9.m; sourceTree = "<group>"; };
@@ -466,7 +464,6 @@
 				18D9DBC81A5CD9D800747936 /* FPCoordinatorDaoTests_3.m */,
 				18D9DBC91A5CD9D800747936 /* FPCoordinatorDaoTests_4.m */,
 				18D9DBCA1A5CD9D800747936 /* FPCoordinatorDaoTests_5.m */,
-				18D9DBCB1A5CD9D800747936 /* FPCoordinatorDaoTests_6.m */,
 				18D9DBCC1A5CD9D800747936 /* FPCoordinatorDaoTests_7.m */,
 				18D9DBDA1A5CF12C00747936 /* FPCoordinatorDaoTests_8.m */,
 				18D9DBDB1A5CF12C00747936 /* FPCoordinatorDaoTests_9.m */,
@@ -1031,28 +1028,27 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				18417F451AA185CD007B8489 /* FPCoordinatorDaoTests_4.m in Sources */,
-				18417F511AA18C2A007B8489 /* FPCoordinatorDaoTests_13.m in Sources */,
+				CAE445A81B21496B00FD9CD5 /* FPCoordinatorDaoTests_2.m in Sources */,
+				CAE445A31B21484C00FD9CD5 /* FPCoordinatorDaoTests_12.m in Sources */,
+				CAE445AA1B21496B00FD9CD5 /* FPCoordinatorDaoTests_4.m in Sources */,
+				CAE445A41B21485B00FD9CD5 /* FPCoordinatorDaoTests_13.m in Sources */,
+				CAE445A91B21496B00FD9CD5 /* FPCoordinatorDaoTests_3.m in Sources */,
 				18C1E9E51A728BAE002B4A08 /* FPUserSerializerTests.m in Sources */,
-				18417F4A1AA18C2A007B8489 /* FPCoordinatorDaoTests_6.m in Sources */,
-				18417F501AA18C2A007B8489 /* FPCoordinatorDaoTests_12.m in Sources */,
-				18417F4F1AA18C2A007B8489 /* FPCoordinatorDaoTests_11.m in Sources */,
-				18417F4B1AA18C2A007B8489 /* FPCoordinatorDaoTests_7.m in Sources */,
-				18417F461AA18C2A007B8489 /* FPCoordinatorDaoTests_1.m in Sources */,
 				18CF89B01AAEB1E700AC42E6 /* FPLogging.m in Sources */,
+				CAE445AB1B21496B00FD9CD5 /* FPCoordinatorDaoTests_5.m in Sources */,
 				181AAAB619AD6F1000F99F23 /* FPToggler.m in Sources */,
 				1800C9D019A8D80400ECD51A /* FPAuthTokenDelegateForTesting.m in Sources */,
-				18417F491AA18C2A007B8489 /* FPCoordinatorDaoTests_5.m in Sources */,
-				18417F4C1AA18C2A007B8489 /* FPCoordinatorDaoTests_8.m in Sources */,
-				18417F521AA18C2A007B8489 /* FPCoordinatorDaoTests_14.m in Sources */,
 				182267E01A5B8E7400242806 /* FPCoordDaoTestContext.m in Sources */,
-				18417F4E1AA18C2A007B8489 /* FPCoordinatorDaoTests_10.m in Sources */,
-				18417F471AA18C2A007B8489 /* FPCoordinatorDaoTests_2.m in Sources */,
-				18417F481AA18C2A007B8489 /* FPCoordinatorDaoTests_3.m in Sources */,
-				18417F531AA18C2A007B8489 /* FPCoordinatorDaoTests_15.m in Sources */,
+				CAE445A21B21483D00FD9CD5 /* FPCoordinatorDaoTests_11.m in Sources */,
+				CAE445A61B21495400FD9CD5 /* FPCoordinatorDaoTests_15.m in Sources */,
 				18C1E9E21A728BAE002B4A08 /* FPModelSupportTests.m in Sources */,
-				18417F4D1AA18C2A007B8489 /* FPCoordinatorDaoTests_9.m in Sources */,
+				CAE4459B1B21332200FD9CD5 /* FPCoordinatorDaoTests_7.m in Sources */,
+				CAE445A71B21496B00FD9CD5 /* FPCoordinatorDaoTests_1.m in Sources */,
+				CAE445A51B21494400FD9CD5 /* FPCoordinatorDaoTests_14.m in Sources */,
+				CAE445A01B2147A600FD9CD5 /* FPCoordinatorDaoTests_9.m in Sources */,
 				18C1E9E31A728BAE002B4A08 /* FPMasterSupportTests.m in Sources */,
+				CAE4459F1B21479900FD9CD5 /* FPCoordinatorDaoTests_8.m in Sources */,
+				CAE445A11B2147B300FD9CD5 /* FPCoordinatorDaoTests_10.m in Sources */,
 				1800C9DC19A8E21B00ECD51A /* FPCoordinatorDao+AdditionsForTesting.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1112,7 +1108,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
-				ONLY_ACTIVE_ARCH = NO;
+				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				VALID_ARCHS = "arm64 armv7 armv7s x86_64 i386";
 			};

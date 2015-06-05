@@ -19,7 +19,7 @@
                         mediaType:(HCMediaType *)mediaType
                         relations:(NSDictionary *)relations
                       deletedDate:(NSDate *)deletedDate
-                     lastModified:(NSDate *)lastModified
+                        updatedAt:(NSDate *)updatedAt
              dateCopiedFromMaster:(NSDate *)dateCopiedFromMaster
                    editInProgress:(BOOL)editInProgress
                       editActorId:(NSNumber *)editActorId
@@ -34,8 +34,7 @@
                             state:(NSString *)state
                               zip:(NSString *)zip
                          latitude:(NSDecimalNumber *)latitude
-                        longitude:(NSDecimalNumber *)longitude
-                        dateAdded:(NSDate *)dateAdded;
+                        longitude:(NSDecimalNumber *)longitude;
 
 #pragma mark - Creation Functions
 
@@ -46,7 +45,6 @@
                                    zip:(NSString *)zip
                               latitude:(NSDecimalNumber *)latitude
                              longitude:(NSDecimalNumber *)longitude
-                             dateAdded:(NSDate *)dateAdded
                              mediaType:(HCMediaType *)mediaType;
 
 + (FPFuelStation *)fuelStationWithName:(NSString *)name
@@ -56,11 +54,10 @@
                                    zip:(NSString *)zip
                               latitude:(NSDecimalNumber *)latitude
                              longitude:(NSDecimalNumber *)longitude
-                             dateAdded:(NSDate *)dateAdded
                       globalIdentifier:(NSString *)globalIdentifier
                              mediaType:(HCMediaType *)mediaType
                              relations:(NSDictionary *)relations
-                          lastModified:(NSDate *)lastModified;
+                             updatedAt:(NSDate *)updatedAt;
 
 + (FPFuelStation *)fuelStationWithLocalMasterIdentifier:(NSNumber *)localMasterIdentifier;
 
@@ -85,8 +82,6 @@
 @property (nonatomic) NSDecimalNumber *latitude;
 
 @property (nonatomic) NSDecimalNumber *longitude;
-
-@property (nonatomic) NSDate *dateAdded;
 
 #pragma mark - Equality
 

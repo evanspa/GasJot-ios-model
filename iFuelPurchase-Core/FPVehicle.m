@@ -21,7 +21,7 @@
                         mediaType:(HCMediaType *)mediaType
                         relations:(NSDictionary *)relations
                       deletedDate:(NSDate *)deletedDate
-                     lastModified:(NSDate *)lastModified
+                        updatedAt:(NSDate *)updatedAt
              dateCopiedFromMaster:(NSDate *)dateCopiedFromMaster
                    editInProgress:(BOOL)editInProgress
                       editActorId:(NSNumber *)editActorId
@@ -31,7 +31,8 @@
                           deleted:(BOOL)deleted
                         editCount:(NSUInteger)editCount
                              name:(NSString *)name
-                        dateAdded:(NSDate *)dateAdded {
+                    defaultOctane:(NSNumber *)defaultOctane
+                     fuelCapacity:(NSDecimalNumber *)fuelCapacity {
   self = [super initWithLocalMainIdentifier:localMainIdentifier
                       localMasterIdentifier:localMasterIdentifier
                            globalIdentifier:globalIdentifier
@@ -40,7 +41,7 @@
                                   mediaType:mediaType
                                   relations:relations
                                 deletedDate:deletedDate
-                               lastModified:lastModified
+                                  updatedAt:updatedAt
                        dateCopiedFromMaster:dateCopiedFromMaster
                              editInProgress:editInProgress
                                 editActorId:editActorId
@@ -51,7 +52,8 @@
                                   editCount:editCount];
   if (self) {
     _name = name;
-    _dateAdded = dateAdded;
+    _defaultOctane = defaultOctane;
+    _fuelCapacity = fuelCapacity;
   }
   return self;
 }
@@ -59,29 +61,32 @@
 #pragma mark - Creation Functions
 
 + (FPVehicle *)vehicleWithName:(NSString *)name
-                     dateAdded:(NSDate *)dateAdded
+                 defaultOctane:(NSNumber *)defaultOctane
+                  fuelCapacity:(NSDecimalNumber *)fuelCapacity
                      mediaType:(HCMediaType *)mediaType {
   return [FPVehicle vehicleWithName:name
-                          dateAdded:dateAdded
+                      defaultOctane:defaultOctane
+                       fuelCapacity:fuelCapacity
                    globalIdentifier:nil
                           mediaType:mediaType
                           relations:nil
-                       lastModified:nil];
+                          updatedAt:nil];
 }
 
 + (FPVehicle *)vehicleWithName:(NSString *)name
-                     dateAdded:(NSDate *)dateAdded
+                 defaultOctane:(NSNumber *)defaultOctane
+                  fuelCapacity:(NSDecimalNumber *)fuelCapacity
               globalIdentifier:(NSString *)globalIdentifier
                      mediaType:(HCMediaType *)mediaType
                      relations:(NSDictionary *)relations
-                  lastModified:(NSDate *)lastModified {
+                     updatedAt:(NSDate *)updatedAt {
   return [[FPVehicle alloc] initWithLocalMainIdentifier:nil
                                   localMasterIdentifier:nil
                                        globalIdentifier:globalIdentifier
                                               mediaType:mediaType
                                               relations:relations
                                             deletedDate:nil
-                                           lastModified:lastModified
+                                              updatedAt:updatedAt
                                    dateCopiedFromMaster:nil
                                          editInProgress:NO
                                             editActorId:nil
@@ -91,7 +96,8 @@
                                                 deleted:NO
                                               editCount:0
                                                    name:name
-                                              dateAdded:dateAdded];
+                                          defaultOctane:defaultOctane
+                                           fuelCapacity:fuelCapacity];
 }
 
 + (FPVehicle *)vehicleWithLocalMasterIdentifier:(NSNumber *)localMasterIdentifier {
@@ -101,7 +107,7 @@
                                               mediaType:nil
                                               relations:nil
                                             deletedDate:nil
-                                           lastModified:nil
+                                              updatedAt:nil
                                    dateCopiedFromMaster:nil
                                          editInProgress:NO
                                             editActorId:nil
@@ -111,7 +117,8 @@
                                                 deleted:NO
                                               editCount:0
                                                    name:nil
-                                              dateAdded:nil];
+                                          defaultOctane:nil
+                                           fuelCapacity:nil];
 }
 
 #pragma mark - Methods
@@ -119,7 +126,8 @@
 - (void)overwrite:(FPVehicle *)vehicle {
   [super overwrite:vehicle];
   [self setName:[vehicle name]];
-  [self setDateAdded:[vehicle dateAdded]];
+  [self setDefaultOctane:[vehicle defaultOctane]];
+  [self setFuelCapacity:[vehicle fuelCapacity]];
 }
 
 #pragma mark - Equality
@@ -128,7 +136,8 @@
   if (!vehicle) { return NO; }
   if ([super isEqualToMainSupport:vehicle]) {
     return [PEUtils isString:[self name] equalTo:[vehicle name]] &&
-      [PEUtils isDate:[self dateAdded] msprecisionEqualTo:[vehicle dateAdded]];
+      [PEUtils isNumProperty:@selector(defaultOctane) equalFor:self and:vehicle] &&
+      [PEUtils isNumProperty:@selector(fuelCapacity) equalFor:self and:vehicle];
   }
   return NO;
 }
@@ -144,13 +153,14 @@
 - (NSUInteger)hash {
   return [super hash] ^
   [[self name] hash] ^
-  [[self dateAdded] hash];
+  [[self defaultOctane] hash] ^
+  [[self fuelCapacity] hash];
 }
 
 - (NSString *)description {
-  return [NSString stringWithFormat:@"%@, name: [%@], date added: [{%@}, {%f}]",
+  return [NSString stringWithFormat:@"%@, name: [%@], default octane: [%@], fuel capacity: [%@]",
           [super description], _name,
-          _dateAdded, [_dateAdded timeIntervalSince1970]];
+          _defaultOctane, _fuelCapacity];
 }
 
 @end

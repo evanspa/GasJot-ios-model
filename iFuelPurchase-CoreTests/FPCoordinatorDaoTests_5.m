@@ -62,8 +62,9 @@ describe(@"FPCoordinatorDao", ^{
       [[expectFutureValue(theValue([_coordTestCtx authTokenReceived])) shouldEventuallyBeforeTimingOutAfter(60)] beYes];
       user = [_coordDao userWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
       [user shouldNotBeNil]; // sanity check
+      [[[user updatedAt] should] equal:[NSDate dateWithTimeIntervalSince1970:1433472979.065]];
       [[theValue([_coordDao numVehiclesForUser:user error:[_coordTestCtx newLocalFetchErrBlkMaker]()]) should] equal:theValue(2)];
-      FPVehicle *newVehicle = [_coordDao vehicleWithName:@"My Z Car" dateAdded:[NSDate date]];
+      FPVehicle *newVehicle = [_coordDao vehicleWithName:@"My Z Car" defaultOctane:@87 fuelCapacity:[NSDecimalNumber decimalNumberWithString:@"20.5"]];
       [_coordDao saveNewVehicle:newVehicle forUser:user error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[theValue([_coordDao numVehiclesForUser:user error:[_coordTestCtx newLocalFetchErrBlkMaker]()]) should] equal:theValue(3)];
       _mocker(@"http-response.vehicles.POST.500", 0, 0);
@@ -80,7 +81,7 @@ describe(@"FPCoordinatorDao", ^{
       [[_numEntitiesBlk(TBL_MAIN_USER) should] equal:[NSNumber numberWithInt:1]]; // user was rightfully not pruned either (sanity check)
       [[_numEntitiesBlk(TBL_MASTER_USER) should] equal:[NSNumber numberWithInt:1]];
       // now lets refetch the vehicle
-      newVehicle = [[_coordDao vehiclesForUser:user pageSize:1 error:[_coordTestCtx newLocalSaveErrBlkMaker]()] objectAtIndex:0];
+      newVehicle = [[_coordDao vehiclesForUser:user error:[_coordTestCtx newLocalSaveErrBlkMaker]()] objectAtIndex:0];
       [newVehicle shouldNotBeNil];
       [[[newVehicle name] should] equal:@"My Z Car"]; // sanity check to make sure that the zeroth element is our new addition
       [[theValue([newVehicle synced]) should] beNo];

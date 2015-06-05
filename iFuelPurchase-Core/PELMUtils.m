@@ -51,7 +51,7 @@ PELMMainSupport * (^toMainSupport)(FMResultSet *, NSString *, NSDictionary *) = 
                                                     mediaType:[HCMediaType MediaTypeFromString:[rs stringForColumn:COL_MEDIA_TYPE]]
                                                     relations:relations
                                                   deletedDate:nil // NA (this is a master entity-only column)
-                                                 lastModified:[rs dateForColumn:COL_MAN_MASTER_LAST_MODIFIED]
+                                                 updatedAt:[rs dateForColumn:COL_MAN_MASTER_UPDATED_AT]
                                          dateCopiedFromMaster:[rs dateForColumn:COL_MAN_DT_COPIED_DOWN_FROM_MASTER]
                                                editInProgress:[rs boolForColumn:COL_MAN_EDIT_IN_PROGRESS]
                                                   editActorId:[rs objectForColumnName:COL_MAN_EDIT_ACTOR_ID]
@@ -151,7 +151,7 @@ markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCom
                       unsyncedEntity], systemFlushCount);
         newAuthTokenBlk(newAuthTkn);
         if (lastModified) {
-          [unsyncedEntity setLastModified:lastModified];
+          [unsyncedEntity setUpdatedAt:lastModified];
         }
         if (movedPermanently) {
           [unsyncedEntity setGlobalIdentifier:globalId];
@@ -192,7 +192,7 @@ markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCom
                         unsyncedEntity],systemFlushCount);
           newAuthTokenBlk(newAuthTkn);
           if (lastModified) {
-            [unsyncedEntity setLastModified:lastModified];
+            [unsyncedEntity setUpdatedAt:lastModified];
           }
           if (movedPermanently) { // this block will get executed again
             [unsyncedEntity setGlobalIdentifier:globalId];
@@ -232,7 +232,7 @@ markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCom
                         unsyncedEntity],systemFlushCount);
           newAuthTokenBlk(newAuthTkn);
           if (lastModified) {
-            [unsyncedEntity setLastModified:lastModified];
+            [unsyncedEntity setUpdatedAt:lastModified];
           }
           if (movedPermanently) { // this block will get executed again
             [unsyncedEntity setGlobalIdentifier:globalId];
@@ -291,6 +291,15 @@ markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCom
 + (NSDecimalNumber *)decimalNumberFromResultSet:(FMResultSet *)rs
                                      columnName:(NSString *)columnName {
   return [PEUtils nullSafeDecimalNumberFromString:[rs stringForColumn:columnName]];
+}
+
++ (NSDate *)dateFromResultSet:(FMResultSet *)rs
+                   columnName:(NSString *)columnName {
+  NSDate *date = nil;
+  if (![rs columnIsNull:columnName]) {
+    date = [NSDate dateWithTimeIntervalSince1970:([rs doubleForColumn:columnName] / 1000)];
+  }
+  return date;
 }
 
 #pragma mark - Utils
@@ -555,9 +564,49 @@ WHERE %@ = ?", mainTable, COL_MAN_EDIT_IN_PROGRESS, COL_LOCAL_ID]
         mainEntityResultSetConverter:(entityFromResultSetBlk)mainEntityResultSetConverter
                                   db:(FMDatabase *)db
                                error:(PELMDaoErrorBlk)errorBlk {
+  return [PELMUtils entitiesForParentEntity:parentEntity
+                      parentEntityMainTable:parentEntityMainTable
+                parentEntityMainRsConverter:parentEntityMainRsConverter
+                 parentEntityMasterIdColumn:parentEntityMasterIdColumn
+                   parentEntityMainIdColumn:parentEntityMainIdColumn
+                                      where:where
+                                   whereArg:whereArg
+                          entityMasterTable:entityMasterTable
+             masterEntityResultSetConverter:masterEntityResultSetConverter
+                            entityMainTable:entityMainTable
+               mainEntityResultSetConverter:mainEntityResultSetConverter
+                          comparatorForSort:nil
+                        orderByDomainColumn:nil
+               orderByDomainColumnDirection:nil
+                                         db:db
+                                      error:errorBlk];
+}
+
++ (NSArray *)entitiesForParentEntity:(PELMModelSupport *)parentEntity
+               parentEntityMainTable:(NSString *)parentEntityMainTable
+         parentEntityMainRsConverter:(entityFromResultSetBlk)parentEntityMainRsConverter
+          parentEntityMasterIdColumn:(NSString *)parentEntityMasterIdColumn
+            parentEntityMainIdColumn:(NSString *)parentEntityMainIdColumn
+                               where:(NSString *)where
+                            whereArg:(id)whereArg
+                   entityMasterTable:(NSString *)entityMasterTable
+      masterEntityResultSetConverter:(entityFromResultSetBlk)masterEntityResultSetConverter
+                     entityMainTable:(NSString *)entityMainTable
+        mainEntityResultSetConverter:(entityFromResultSetBlk)mainEntityResultSetConverter
+                   comparatorForSort:(NSComparisonResult(^)(id, id))comparatorForSort
+                 orderByDomainColumn:(NSString *)orderByDomainColumn
+        orderByDomainColumnDirection:(NSString *)orderByDomainColumnDirection
+                                  db:(FMDatabase *)db
+                               error:(PELMDaoErrorBlk)errorBlk {
   NSString *(^masterQueryTransformer)(NSString *) = ^ NSString *(NSString *qry) {
     if (where) {
-      return [qry stringByAppendingFormat:@" AND mstr.%@ ", where];
+      qry = [qry stringByAppendingFormat:@" AND mstr.%@ ", where];
+    }
+    if (orderByDomainColumn) {
+      qry = [qry stringByAppendingFormat:@" ORDER BY mstr.%@", orderByDomainColumn];
+      if (orderByDomainColumnDirection) {
+        qry = [qry stringByAppendingFormat:@" %@", orderByDomainColumnDirection];
+      }
     }
     return qry;
   };
@@ -569,10 +618,22 @@ WHERE %@ = ?", mainTable, COL_MAN_EDIT_IN_PROGRESS, COL_LOCAL_ID]
   };
   NSString *(^mainQueryTransformer)(NSString *) = ^ NSString *(NSString *qry) {
     if (where) {
-      return [qry stringByAppendingFormat:@" AND %@ ", where];
+      qry = [qry stringByAppendingFormat:@" AND %@ ", where];
+    }
+    if (orderByDomainColumn) {
+      qry = [qry stringByAppendingFormat:@" ORDER BY %@", orderByDomainColumn];
+      if (orderByDomainColumnDirection) {
+        qry = [qry stringByAppendingFormat:@" %@", orderByDomainColumnDirection];
+      }
     }
     return qry;
   };
+  NSArray *(^entitiesFilter)(NSArray *) = nil;
+  if (comparatorForSort) {
+    entitiesFilter = ^ NSArray *(NSArray *entities) {
+      return [entities sortedArrayUsingComparator:comparatorForSort];
+    };
+  }
   return [PELMUtils entitiesForParentEntity:parentEntity
                       parentEntityMainTable:parentEntityMainTable
                 parentEntityMainRsConverter:parentEntityMainRsConverter
@@ -587,7 +648,7 @@ WHERE %@ = ?", mainTable, COL_MAN_EDIT_IN_PROGRESS, COL_LOCAL_ID]
                  masterArgsArrayTransformer:argsArrayTransformer
                        mainQueryTransformer:mainQueryTransformer
                    mainArgsArrayTransformer:argsArrayTransformer
-                             entitiesFilter:nil
+                             entitiesFilter:entitiesFilter
                                          db:db
                                       error:errorBlk];
 }
@@ -1823,26 +1884,6 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
 }
 
 #pragma mark - Helpers
-
-+ (NSDateFormatter *)sqliteDateFormatter {
-  NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
-  [dateFormat setDateFormat:@"yyyy/MM/dd hh:mm:ss"];
-  return dateFormat;
-}
-
-+ (NSString *)sqliteTextFromDate:(NSDate *)date {
-  if (date) {
-    return [[PELMUtils sqliteDateFormatter] stringFromDate:date];
-  }
-  return nil;
-}
-
-+ (NSDate *)dateFromSqliteText:(NSString *)dateText {
-  if (dateText) {
-    return [[PELMUtils sqliteDateFormatter] dateFromString:dateText];
-  }
-  return nil;
-}
 
 + (NSInteger)intFromQuery:(NSString *)query args:(NSArray *)args db:(FMDatabase *)db {
   NSInteger num = 0;

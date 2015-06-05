@@ -19,7 +19,7 @@
                         mediaType:(HCMediaType *)mediaType
                         relations:(NSDictionary *)relations
                       deletedDate:(NSDate *)deletedDate
-                     lastModified:(NSDate *)lastModified
+                        updatedAt:(NSDate *)updatedAt
              dateCopiedFromMaster:(NSDate *)dateCopiedFromMaster
                    editInProgress:(BOOL)editInProgress
                       editActorId:(NSNumber *)editActorId
@@ -29,20 +29,23 @@
                           deleted:(BOOL)deleted
                         editCount:(NSUInteger)editCount
                              name:(NSString *)name
-                        dateAdded:(NSDate *)dateAdded;
+                    defaultOctane:(NSNumber *)defaultOctane
+                     fuelCapacity:(NSDecimalNumber *)fuelCapacity;
 
 #pragma mark - Creation Functions
 
 + (FPVehicle *)vehicleWithName:(NSString *)name
-                     dateAdded:(NSDate *)dateAdded
+                 defaultOctane:(NSNumber *)defaultOctane
+                  fuelCapacity:(NSDecimalNumber *)fuelCapacity
                      mediaType:(HCMediaType *)mediaType;
 
 + (FPVehicle *)vehicleWithName:(NSString *)name
-                     dateAdded:(NSDate *)dateAdded
+                 defaultOctane:(NSNumber *)defaultOctane
+                  fuelCapacity:(NSDecimalNumber *)fuelCapacity
               globalIdentifier:(NSString *)globalIdentifier
                      mediaType:(HCMediaType *)mediaType
                      relations:(NSDictionary *)relations
-                  lastModified:(NSDate *)lastModified;
+                     updatedAt:(NSDate *)updatedAt;
 
 + (FPVehicle *)vehicleWithLocalMasterIdentifier:(NSNumber *)localMasterIdentifier;
 
@@ -54,7 +57,9 @@
 
 @property (nonatomic) NSString *name;
 
-@property (nonatomic) NSDate *dateAdded;
+@property (nonatomic) NSNumber *defaultOctane;
+
+@property (nonatomic) NSDecimalNumber *fuelCapacity;
 
 #pragma mark - Equality
 

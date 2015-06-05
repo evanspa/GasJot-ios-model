@@ -20,7 +20,7 @@
                         mediaType:(HCMediaType *)mediaType
                         relations:(NSDictionary *)relations
                       deletedDate:(NSDate *)deletedDate
-                     lastModified:(NSDate *)lastModified;
+                        updatedAt:(NSDate *)updatedAt;
 
 #pragma mark - Methods
 
@@ -28,7 +28,7 @@
 
 #pragma mark - Properties
 
-@property (nonatomic) NSDate *lastModified;
+@property (nonatomic) NSDate *updatedAt;
 
 @property (nonatomic) NSDate *deletedDate;
 

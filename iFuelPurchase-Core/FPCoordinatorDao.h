@@ -105,8 +105,7 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
 - (FPUser *)userWithName:(NSString *)name
                    email:(NSString *)email
                 username:(NSString *)username
-                password:(NSString *)password
-            creationDate:(NSDate *)creationDate;
+                password:(NSString *)password;
 
 - (void)immediateRemoteSyncSaveNewUser:(FPUser *)user
                        remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
@@ -153,20 +152,11 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
 - (NSInteger)numVehiclesForUser:(FPUser *)user
                           error:(PELMDaoErrorBlk)errorBlk;
 
-- (NSInteger)numVehiclesForUser:(FPUser *)user
-                      newerThan:(NSDate *)newerThan
-                          error:(PELMDaoErrorBlk)errorBlk;
-
 - (FPVehicle *)vehicleWithName:(NSString *)name
-                     dateAdded:(NSDate *)dateAdded;
+                 defaultOctane:(NSNumber *)defaultOctane
+                  fuelCapacity:(NSDecimalNumber *)fuelCapacity;
 
 - (NSArray *)vehiclesForUser:(FPUser *)user
-                    pageSize:(NSInteger)pageSize
-                       error:(PELMDaoErrorBlk)errorBlk;
-
-- (NSArray *)vehiclesForUser:(FPUser *)user
-                    pageSize:(NSInteger)pageSize
-             beforeDateAdded:(NSDate *)beforeDateAdded
                        error:(PELMDaoErrorBlk)errorBlk;
 
 - (FPUser *)userForVehicle:(FPVehicle *)vehicle
@@ -209,26 +199,15 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
 - (NSInteger)numFuelStationsForUser:(FPUser *)user
                               error:(PELMDaoErrorBlk)errorBlk;
 
-- (NSInteger)numFuelStationsForUser:(FPUser *)user
-                          newerThan:(NSDate *)newerThan
-                              error:(PELMDaoErrorBlk)errorBlk;
-
 - (FPFuelStation *)fuelStationWithName:(NSString *)name
                                 street:(NSString *)street
                                   city:(NSString *)city
                                  state:(NSString *)state
                                    zip:(NSString *)zip
                               latitude:(NSDecimalNumber *)latitude
-                             longitude:(NSDecimalNumber *)longitude
-                             dateAdded:(NSDate *)dateAdded;
+                             longitude:(NSDecimalNumber *)longitude;
 
 - (NSArray *)fuelStationsForUser:(FPUser *)user
-                        pageSize:(NSInteger)pageSize
-                           error:(PELMDaoErrorBlk)errorBlk;
-
-- (NSArray *)fuelStationsForUser:(FPUser *)user
-                        pageSize:(NSInteger)pageSize
-                 beforeDateAdded:(NSDate *)beforeDateAdded
                            error:(PELMDaoErrorBlk)errorBlk;
 
 - (FPUser *)userForFuelStation:(FPFuelStation *)fuelStation

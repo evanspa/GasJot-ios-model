@@ -9,13 +9,15 @@
 #import "FPUserSerializer.h"
 #import "FPUser.h"
 #import <PEObjc-Commons/NSMutableDictionary+PEAdditions.h>
+#import <PEObjc-Commons/NSDictionary+PEAdditions.h>
 #import <PEHateoas-Client/HCUtils.h>
 
 NSString * const FPUserFullnameKey     = @"user/name";
 NSString * const FPUserEmailKey        = @"user/email";
 NSString * const FPUserUsernameKey     = @"user/username";
 NSString * const FPUserPasswordKey     = @"user/password";
-NSString * const FPUserCreationDateKey = @"user/creation-date";
+NSString * const FPUserCreatedAtKey    = @"user/created-at";
+NSString * const FPUserUpdatedAtKey    = @"user/updated-at";
 
 @implementation FPUserSerializer
 
@@ -28,8 +30,6 @@ NSString * const FPUserCreationDateKey = @"user/creation-date";
   [userDict setObjectIfNotNull:[user email] forKey:FPUserEmailKey];
   [userDict setObjectIfNotNull:[user username] forKey:FPUserUsernameKey];
   [userDict setObjectIfNotNull:[user password] forKey:FPUserPasswordKey];
-  [userDict setObjectIfNotNull:[HCUtils rfc7231StringFromDate:[user creationDate]]
-                        forKey:FPUserCreationDateKey];
   return userDict;
 }
 
@@ -43,12 +43,11 @@ NSString * const FPUserCreationDateKey = @"user/creation-date";
   return [FPUser userWithName:[resDict objectForKey:FPUserFullnameKey]
                         email:[resDict objectForKey:FPUserEmailKey]
                      username:[resDict objectForKey:FPUserUsernameKey]
-                     password:[resDict objectForKey:FPUserPasswordKey]
-                 creationDate:[HCUtils rfc7231DateFromString:[resDict objectForKey:FPUserCreationDateKey]]
+                     password:[resDict objectForKey:FPUserPasswordKey]                 
              globalIdentifier:location
                     mediaType:mediaType
                     relations:relations
-                 lastModified:lastModified];
+                    updatedAt:[resDict dateSince1970ForKey:FPUserUpdatedAtKey]];
 }
 
 @end

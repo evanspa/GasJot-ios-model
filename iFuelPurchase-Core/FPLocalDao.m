@@ -108,12 +108,11 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   // ------- master vehicle ----------------------------------------------------
   applyDDL([FPDDLUtils masterVehicleDDL]);
   applyDDL([FPDDLUtils masterVehicleUniqueIndex1]);
-  makeIndex(TBL_MASTER_VEHICLE, COL_VEH_DT_ADDED, @"idx_mstr_veh_dt_added");
+  makeIndex(TBL_MASTER_VEHICLE, COL_MST_UPDATED_AT, @"idx_mstr_veh_dt_updated");
   makeRelTable(TBL_MASTER_VEHICLE);
   // ------- main vehicle ------------------------------------------------------
   applyDDL([FPDDLUtils mainVehicleDDL]);
   applyDDL([FPDDLUtils mainVehicleUniqueIndex1]);
-  makeIndex(TBL_MAIN_VEHICLE, COL_VEH_DT_ADDED, @"idx_man_veh_dt_added");
   makeRelTable(TBL_MAIN_VEHICLE);
   
   // ###########################################################################
@@ -121,11 +120,10 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   // ###########################################################################
   // ------- master fuel station -----------------------------------------------
   applyDDL([FPDDLUtils masterFuelStationDDL]);
-  makeIndex(TBL_MASTER_FUEL_STATION, COL_FUELST_DT_ADDED, @"idx_mstr_fs_dt_added");
+  makeIndex(TBL_MASTER_FUEL_STATION, COL_MST_UPDATED_AT, @"idx_mstr_fs_dt_updated");
   makeRelTable(TBL_MASTER_FUEL_STATION);
   // ------- main fuel station -------------------------------------------------
   applyDDL([FPDDLUtils mainFuelStationDDL]);
-  makeIndex(TBL_MAIN_FUEL_STATION, COL_FUELST_DT_ADDED, @"idx_man_fs_dt_added");
   makeRelTable(TBL_MAIN_FUEL_STATION);
   
   // ###########################################################################
@@ -133,11 +131,11 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   // ###########################################################################
   // ------- master fuel purchase log ------------------------------------------
   applyDDL([FPDDLUtils masterFuelPurchaseLogDDL]);
-  makeIndex(TBL_MASTER_FUELPURCHASE_LOG, COL_FUELPL_LOG_DT, @"idx_mstr_fplog_log_dt");
+  makeIndex(TBL_MASTER_FUELPURCHASE_LOG, COL_FUELPL_PURCHASED_AT, @"idx_mstr_fplog_log_dt");
   makeRelTable(TBL_MASTER_FUELPURCHASE_LOG);
   // ------- main fuel purchase log ------------------------------------------
   applyDDL([FPDDLUtils mainFuelPurchaseLogDDL]);
-  makeIndex(TBL_MAIN_FUELPURCHASE_LOG, COL_FUELPL_LOG_DT, @"idx_man_fplog_log_dt");
+  makeIndex(TBL_MAIN_FUELPURCHASE_LOG, COL_FUELPL_PURCHASED_AT, @"idx_man_fplog_log_dt");
   makeRelTable(TBL_MAIN_FUELPURCHASE_LOG);
   
   // ###########################################################################
@@ -482,85 +480,34 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
   return numVehicles;
 }
 
-- (NSInteger)numVehiclesForUser:(FPUser *)user
-                      newerThan:(NSDate *)newerThan
-                          error:(PELMDaoErrorBlk)errorBlk {
-  __block NSInteger numVehicles = 0;
-  [_databaseQueue inDatabase:^(FMDatabase *db) {
-    numVehicles = [PELMUtils numEntitiesForParentEntity:user
-                                  parentEntityMainTable:TBL_MAIN_USER
-                            parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainUserFromResultSet:rs];}
-                             parentEntityMasterIdColumn:COL_MASTER_USER_ID
-                               parentEntityMainIdColumn:COL_MAIN_USER_ID
-                                      entityMasterTable:TBL_MASTER_VEHICLE
-                                        entityMainTable:TBL_MAIN_VEHICLE
-                                                  where:[NSString stringWithFormat:@"%@ > ?", COL_VEH_DT_ADDED]
-                                               whereArg:[PELMUtils sqliteTextFromDate:newerThan]
-                                                     db:db
-                                                  error:errorBlk];
-  }];
-  return numVehicles;
-}
-
 - (NSArray *)vehiclesForUser:(FPUser *)user
-                    pageSize:(NSInteger)pageSize
-                       error:(PELMDaoErrorBlk)errorBlk {
-  return [self vehiclesForUser:user
-                      pageSize:pageSize
-               beforeDateAdded:nil
-                         error:errorBlk];
-}
-
-- (NSArray *)vehiclesForUser:(FPUser *)user
-                    pageSize:(NSInteger)pageSize
-                          db:(FMDatabase *)db
-                       error:(PELMDaoErrorBlk)errorBlk {
-  return [self vehiclesForUser:user
-                      pageSize:pageSize
-               beforeDateAdded:nil
-                            db:db
-                         error:errorBlk];
-}
-
-- (NSArray *)vehiclesForUser:(FPUser *)user
-                    pageSize:(NSInteger)pageSize
-             beforeDateAdded:(NSDate *)beforeDateAdded
                        error:(PELMDaoErrorBlk)errorBlk {
   __block NSArray *vehicles = @[];
   [_databaseQueue inDatabase:^(FMDatabase *db) {
-    vehicles =
-    [self vehiclesForUser:user
-                 pageSize:pageSize
-          beforeDateAdded:beforeDateAdded
-                       db:db
-                    error:errorBlk];
+    vehicles = [self vehiclesForUser:user db:db error:errorBlk];
   }];
   return vehicles;
 }
 
 - (NSArray *)vehiclesForUser:(FPUser *)user
-                    pageSize:(NSInteger)pageSize
-             beforeDateAdded:(NSDate *)beforeDateAdded
                           db:(FMDatabase *)db
                        error:(PELMDaoErrorBlk)errorBlk {
-  return
-  [PELMUtils entitiesForParentEntity:user
-               parentEntityMainTable:TBL_MAIN_USER
-         parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainUserFromResultSet:rs];}
-          parentEntityMasterIdColumn:COL_MASTER_USER_ID
-            parentEntityMainIdColumn:COL_MAIN_USER_ID
-                            pageSize:pageSize
-                   pageBoundaryWhere:[NSString stringWithFormat:@"%@ < ?", COL_VEH_DT_ADDED]
-                     pageBoundaryArg:[PELMUtils sqliteTextFromDate:beforeDateAdded]
-                   entityMasterTable:TBL_MASTER_VEHICLE
-      masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterVehicleFromResultSet:rs];}
-                     entityMainTable:TBL_MAIN_VEHICLE
-        mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainVehicleFromResultSet:rs];}
-                   comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPVehicle *)o2 dateAdded] compare:[(FPVehicle *)o1 dateAdded]];}
-                 orderByDomainColumn:COL_VEH_DT_ADDED
-        orderByDomainColumnDirection:@"DESC"
-                                  db:db
-                               error:errorBlk];
+  return [PELMUtils entitiesForParentEntity:user
+                      parentEntityMainTable:TBL_MAIN_USER
+                parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainUserFromResultSet:rs];}
+                 parentEntityMasterIdColumn:COL_MASTER_USER_ID
+                   parentEntityMainIdColumn:COL_MAIN_USER_ID
+                                      where:nil
+                                   whereArg:nil
+                          entityMasterTable:TBL_MASTER_VEHICLE
+             masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterVehicleFromResultSet:rs];}
+                            entityMainTable:TBL_MAIN_VEHICLE
+               mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainVehicleFromResultSet:rs];}
+                          comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPVehicle *)o2 name] compare:[(FPVehicle *)o1 name]];}
+                        orderByDomainColumn:COL_VEH_NAME
+               orderByDomainColumnDirection:@"ASC"
+                                         db:db
+                                      error:errorBlk];
 }
 
 - (FPUser *)userForVehicle:(FPVehicle *)vehicle
@@ -798,64 +745,15 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
   return numFuelStations;
 }
 
-- (NSInteger)numFuelStationsForUser:(FPUser *)user
-                          newerThan:(NSDate *)newerThan
-                              error:(PELMDaoErrorBlk)errorBlk {
-  __block NSInteger numFuelStations = 0;
-  [_databaseQueue inDatabase:^(FMDatabase *db) {
-    numFuelStations = [PELMUtils numEntitiesForParentEntity:user
-                                      parentEntityMainTable:TBL_MAIN_USER
-                                parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainUserFromResultSet:rs];}
-                                 parentEntityMasterIdColumn:COL_MASTER_USER_ID
-                                   parentEntityMainIdColumn:COL_MAIN_USER_ID
-                                          entityMasterTable:TBL_MASTER_FUEL_STATION
-                                            entityMainTable:TBL_MAIN_FUEL_STATION
-                                                      where:[NSString stringWithFormat:@"%@ > ?", COL_FUELST_DT_ADDED]
-                                                   whereArg:[PELMUtils sqliteTextFromDate:newerThan]
-                                                         db:db
-                                                      error:errorBlk];
-  }];
-  return numFuelStations;
-}
-
-- (NSArray *)fuelStationsForUser:(FPUser *)user
-                        pageSize:(NSInteger)pageSize
-                           error:(PELMDaoErrorBlk)errorBlk {
-  return [self fuelStationsForUser:user
-                          pageSize:pageSize
-                   beforeDateAdded:nil
-                             error:errorBlk];
-}
-
-- (NSArray *)fuelStationsForUser:(FPUser *)user
-                        pageSize:(NSInteger)pageSize
-                              db:(FMDatabase *)db
-                           error:(PELMDaoErrorBlk)errorBlk {
-  return [self fuelStationsForUser:user
-                          pageSize:pageSize
-                   beforeDateAdded:nil
-                                db:db
-                             error:errorBlk];
-}
-
-- (NSArray *)fuelStationsForUser:(FPUser *)user
-                        pageSize:(NSInteger)pageSize
-                 beforeDateAdded:(NSDate *)beforeDateAdded
-                           error:(PELMDaoErrorBlk)errorBlk {
+- (NSArray *)fuelStationsForUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk {
   __block NSArray *fuelStations = @[];
   [_databaseQueue inDatabase:^(FMDatabase *db) {
-    fuelStations = [self fuelStationsForUser:user
-                                    pageSize:pageSize
-                             beforeDateAdded:beforeDateAdded
-                                          db:db
-                                       error:errorBlk];
+    fuelStations = [self fuelStationsForUser:user db:db error:errorBlk];
   }];
   return fuelStations;
 }
 
 - (NSArray *)fuelStationsForUser:(FPUser *)user
-                        pageSize:(NSInteger)pageSize
-                 beforeDateAdded:(NSDate *)beforeDateAdded
                               db:(FMDatabase *)db
                            error:(PELMDaoErrorBlk)errorBlk {
   return [PELMUtils entitiesForParentEntity:user
@@ -863,15 +761,14 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                 parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainUserFromResultSet:rs];}
                  parentEntityMasterIdColumn:COL_MASTER_USER_ID
                    parentEntityMainIdColumn:COL_MAIN_USER_ID
-                                   pageSize:pageSize
-                          pageBoundaryWhere:[NSString stringWithFormat:@"%@ < ?", COL_FUELST_DT_ADDED]
-                            pageBoundaryArg:[PELMUtils sqliteTextFromDate:beforeDateAdded]
+                                      where:nil
+                                   whereArg:nil
                           entityMasterTable:TBL_MASTER_FUEL_STATION
              masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelStationFromResultSet:rs];}
                             entityMainTable:TBL_MAIN_FUEL_STATION
                mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainFuelStationFromResultSet:rs];}
-                          comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPFuelStation *)o2 dateAdded] compare:[(FPFuelStation *)o1 dateAdded]];}
-                        orderByDomainColumn:COL_FUELST_DT_ADDED
+                          comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPFuelStation *)o2 name] compare:[(FPFuelStation *)o1 name]];}
+                        orderByDomainColumn:COL_FUELST_NAME
                orderByDomainColumnDirection:@"DESC"
                                          db:db
                                       error:errorBlk];
@@ -1236,8 +1133,8 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                                parentEntityMainIdColumn:COL_MAIN_USER_ID
                                       entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
                                         entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
-                                                  where:[NSString stringWithFormat:@"%@ > ?", COL_FUELPL_LOG_DT]
-                                               whereArg:[PELMUtils sqliteTextFromDate:newerThan]
+                                                  where:[NSString stringWithFormat:@"%@ > ?", COL_FUELPL_PURCHASED_AT]
+                                               whereArg:@([newerThan timeIntervalSince1970] * 1000)
                                                      db:db
                                                   error:errorBlk];
   }];
@@ -1297,8 +1194,8 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                                parentEntityMainIdColumn:COL_MAIN_VEHICLE_ID
                                       entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
                                         entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
-                                                  where:[NSString stringWithFormat:@"%@ > ?", COL_FUELPL_LOG_DT]
-                                               whereArg:[PELMUtils sqliteTextFromDate:newerThan]
+                                                  where:[NSString stringWithFormat:@"%@ > ?", COL_FUELPL_PURCHASED_AT]
+                                               whereArg:@([newerThan timeIntervalSince1970] * 1000)
                                                      db:db
                                                   error:errorBlk];
   }];
@@ -1358,8 +1255,8 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                                parentEntityMainIdColumn:COL_MAIN_FUELSTATION_ID
                                       entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
                                         entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
-                                                  where:[NSString stringWithFormat:@"%@ > ?", COL_FUELPL_LOG_DT]
-                                               whereArg:[PELMUtils sqliteTextFromDate:newerThan]
+                                                  where:[NSString stringWithFormat:@"%@ > ?", COL_FUELPL_PURCHASED_AT]
+                                               whereArg:@([newerThan timeIntervalSince1970] * 1000)
                                                      db:db
                                                   error:errorBlk];
   }];
@@ -1514,8 +1411,8 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
   [_databaseQueue inDatabase:^(FMDatabase *db) {
     vehicle = [self vehicleForMostRecentFuelPurchaseLogForUser:user db:db error:errorBlk];
     if (!vehicle) {
-      NSArray *vehicles = [self vehiclesForUser:user pageSize:1 db:db error:errorBlk];
-      if ([vehicles count] == 1) {
+      NSArray *vehicles = [self vehiclesForUser:user db:db error:errorBlk];
+      if ([vehicles count] > 0) {
         vehicle = vehicles[0];
       }
     }
@@ -1533,8 +1430,8 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
       [self fuelStationForMostRecentFuelPurchaseLogForUser:user db:db error:errorBlk];
       if (!fs) {
         NSArray *fuelStations =
-        [self fuelStationsForUser:user pageSize:1 db:db error:errorBlk];
-        if ([fuelStations count] == 1) {
+        [self fuelStationsForUser:user db:db error:errorBlk];
+        if ([fuelStations count] > 0) {
           fs = fuelStations[0];
         }
       }
@@ -1627,14 +1524,14 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                  parentEntityMasterIdColumn:parentEntityMasterIdCol
                    parentEntityMainIdColumn:parentEntityMainIdCol
                                    pageSize:pageSize
-                          pageBoundaryWhere:[NSString stringWithFormat:@"%@ < ?", COL_FUELPL_LOG_DT]
-                            pageBoundaryArg:[PELMUtils sqliteTextFromDate:beforeDateLogged]
+                          pageBoundaryWhere:[NSString stringWithFormat:@"%@ < ?", COL_FUELPL_PURCHASED_AT]
+                            pageBoundaryArg:[PEUtils millisecondsFromDate:beforeDateLogged]
                           entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
              masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
                             entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
                mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSet:rs];}
-                          comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPFuelPurchaseLog *)o2 logDate] compare:[(FPFuelPurchaseLog *)o1 logDate]];}
-                        orderByDomainColumn:COL_FUELPL_LOG_DT
+                          comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPFuelPurchaseLog *)o2 purchasedAt] compare:[(FPFuelPurchaseLog *)o1 purchasedAt]];}
+                        orderByDomainColumn:COL_FUELPL_PURCHASED_AT
                orderByDomainColumnDirection:@"DESC"
                                          db:db
                                       error:errorBlk];
@@ -1987,7 +1884,7 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                                       entityMasterTable:TBL_MASTER_ENV_LOG
                                         entityMainTable:TBL_MAIN_ENV_LOG
                                                   where:[NSString stringWithFormat:@"%@ > ?", COL_ENVL_LOG_DT]
-                                               whereArg:[PELMUtils sqliteTextFromDate:newerThan]
+                                               whereArg:@([newerThan timeIntervalSince1970] * 1000)
                                                      db:db
                                                   error:errorBlk];
   }];
@@ -2048,7 +1945,7 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                                       entityMasterTable:TBL_MASTER_ENV_LOG
                                         entityMainTable:TBL_MAIN_ENV_LOG
                                                   where:[NSString stringWithFormat:@"%@ > ?", COL_ENVL_LOG_DT]
-                                               whereArg:[PELMUtils sqliteTextFromDate:newerThan]
+                                               whereArg:@([newerThan timeIntervalSince1970] * 1000)
                                                      db:db
                                                   error:errorBlk];
   }];
@@ -2155,8 +2052,8 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
   [_databaseQueue inDatabase:^(FMDatabase *db) {
     vehicle = [self vehicleForMostRecentEnvironmentLogForUser:user db:db error:errorBlk];
     if (!vehicle) {
-      NSArray *vehicles = [self vehiclesForUser:user pageSize:1 db:db error:errorBlk];
-      if ([vehicles count] == 1) {
+      NSArray *vehicles = [self vehiclesForUser:user db:db error:errorBlk];
+      if ([vehicles count] > 0) {
         vehicle = vehicles[0];
       }
     }
@@ -2212,7 +2109,7 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                    parentEntityMainIdColumn:parentEntityMainIdCol
                                    pageSize:pageSize
                           pageBoundaryWhere:[NSString stringWithFormat:@"%@ < ?", COL_ENVL_LOG_DT]
-                            pageBoundaryArg:[PELMUtils sqliteTextFromDate:beforeDateLogged]
+                            pageBoundaryArg:[PEUtils millisecondsFromDate:beforeDateLogged]
                           entityMasterTable:TBL_MASTER_ENV_LOG
              masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterEnvironmentLogFromResultSet:rs];}
                             entityMainTable:TBL_MAIN_ENV_LOG
@@ -2769,7 +2666,7 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
   cannotBe(!([mainFuelPurchaseLog gotCarWash] == [fuelPurchaseLog gotCarWash]),
            @"Cannot prepare fuel purchase log for edit if its 'got wash' propery differs \
            from the fuel purchase log instance found in main store");
-  cannotBe(![PEUtils isDate:[mainFuelPurchaseLog logDate] equalTo:[fuelPurchaseLog logDate]],
+  cannotBe(![PEUtils isDate:[mainFuelPurchaseLog purchasedAt] equalTo:[fuelPurchaseLog purchasedAt]],
            @"Cannot prepare fuel purchase log for edit if its 'log date' propery differs \
            from the fuel purchase log instance found in main store");
 }
@@ -2804,8 +2701,8 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                                            mediaType:[HCMediaType MediaTypeFromString:[rs stringForColumn:COL_MEDIA_TYPE]]
                                            relations:nil
                                          deletedDate:nil // NA (this is a master store-only column)
-                                        lastModified:[PELMUtils dateFromSqliteText:[rs stringForColumn:COL_MAN_MASTER_LAST_MODIFIED]]
-                                dateCopiedFromMaster:[PELMUtils dateFromSqliteText:[rs stringForColumn:COL_MAN_DT_COPIED_DOWN_FROM_MASTER]]
+                                           updatedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MAN_MASTER_UPDATED_AT]
+                                dateCopiedFromMaster:[PELMUtils dateFromResultSet:rs columnName:COL_MAN_DT_COPIED_DOWN_FROM_MASTER]
                                       editInProgress:[rs boolForColumn:COL_MAN_EDIT_IN_PROGRESS]
                                          editActorId:[rs objectForColumnName:COL_MAN_EDIT_ACTOR_ID]
                                       syncInProgress:[rs boolForColumn:COL_MAN_SYNC_IN_PROGRESS]
@@ -2816,8 +2713,7 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                                                 name:[rs stringForColumn:COL_USR_NAME]
                                                email:[rs stringForColumn:COL_USR_EMAIL]
                                             username:[rs stringForColumn:COL_USR_USERNAME]
-                                            password:[rs stringForColumn:COL_USR_PASSWORD_HASH]
-                                        creationDate:[PELMUtils dateFromSqliteText:[rs stringForColumn:COL_USR_CREATION_DT]]];
+                                            password:[rs stringForColumn:COL_USR_PASSWORD_HASH]];
 }
 
 - (FPUser *)masterUserFromResultSet:(FMResultSet *)rs {
@@ -2826,8 +2722,8 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                                     globalIdentifier:[rs stringForColumn:COL_GLOBAL_ID]
                                            mediaType:[HCMediaType MediaTypeFromString:[rs stringForColumn:COL_MEDIA_TYPE]]
                                            relations:nil
-                                         deletedDate:[PELMUtils dateFromSqliteText:[rs stringForColumn:COL_MST_DELETED_DT]]
-                                        lastModified:[PELMUtils dateFromSqliteText:[rs stringForColumn:COL_MST_LAST_MODIFIED]]
+                                         deletedDate:[PELMUtils dateFromResultSet:rs columnName:COL_MST_DELETED_DT]
+                                           updatedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MST_UPDATED_AT]
                                 dateCopiedFromMaster:nil // NA (this is a main store-only column)
                                       editInProgress:NO  // NA (this is a main store-only column)
                                          editActorId:nil // NA (this is a main store-only column)
@@ -2839,8 +2735,7 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                                                 name:[rs stringForColumn:COL_USR_NAME]
                                                email:[rs stringForColumn:COL_USR_EMAIL]
                                             username:[rs stringForColumn:COL_USR_USERNAME]
-                                            password:[rs stringForColumn:COL_USR_PASSWORD_HASH]
-                                        creationDate:[PELMUtils dateFromSqliteText:[rs stringForColumn:COL_USR_CREATION_DT]]];
+                                            password:[rs stringForColumn:COL_USR_PASSWORD_HASH]];
 }
 
 - (FPVehicle *)mainVehicleFromResultSet:(FMResultSet *)rs {
@@ -2850,8 +2745,8 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                                               mediaType:[HCMediaType MediaTypeFromString:[rs stringForColumn:COL_MEDIA_TYPE]]
                                               relations:nil
                                             deletedDate:nil // NA (this is a master store-only column)
-                                           lastModified:[PELMUtils dateFromSqliteText:[rs stringForColumn:COL_MAN_MASTER_LAST_MODIFIED]]
-                                   dateCopiedFromMaster:[PELMUtils dateFromSqliteText:[rs stringForColumn:COL_MAN_DT_COPIED_DOWN_FROM_MASTER]]
+                                              updatedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MAN_MASTER_UPDATED_AT]
+                                   dateCopiedFromMaster:[PELMUtils dateFromResultSet:rs columnName:COL_MAN_DT_COPIED_DOWN_FROM_MASTER]
                                          editInProgress:[rs boolForColumn:COL_MAN_EDIT_IN_PROGRESS]
                                             editActorId:[rs objectForColumnName:COL_MAN_EDIT_ACTOR_ID]
                                          syncInProgress:[rs boolForColumn:COL_MAN_SYNC_IN_PROGRESS]
@@ -2860,7 +2755,8 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                                                 deleted:[rs boolForColumn:COL_MAN_DELETED]
                                               editCount:[rs intForColumn:COL_MAN_EDIT_COUNT]
                                                    name:[rs stringForColumn:COL_VEH_NAME]
-                                              dateAdded:[PELMUtils dateFromSqliteText:[rs stringForColumn:COL_VEH_DT_ADDED]]];
+                                          defaultOctane:[PELMUtils numberFromResultSet:rs columnName:COL_VEH_DEFAULT_OCTANE]
+                                           fuelCapacity:[PELMUtils decimalNumberFromResultSet:rs columnName:COL_VEH_FUEL_CAPACITY]];
 }
 
 - (FPVehicle *)masterVehicleFromResultSet:(FMResultSet *)rs {
@@ -2869,8 +2765,8 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                                        globalIdentifier:[rs stringForColumn:COL_GLOBAL_ID]
                                               mediaType:[HCMediaType MediaTypeFromString:[rs stringForColumn:COL_MEDIA_TYPE]]
                                               relations:nil
-                                            deletedDate:[PELMUtils dateFromSqliteText:[rs stringForColumn:COL_MST_DELETED_DT]]
-                                           lastModified:[PELMUtils dateFromSqliteText:[rs stringForColumn:COL_MST_LAST_MODIFIED]]
+                                            deletedDate:[PELMUtils dateFromResultSet:rs columnName:COL_MST_DELETED_DT]
+                                              updatedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MST_UPDATED_AT]
                                    dateCopiedFromMaster:nil // NA (this is a main store-only column)
                                          editInProgress:NO  // NA (this is a main store-only column)
                                             editActorId:nil // NA (this is a main store-only column)
@@ -2880,7 +2776,8 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                                                 deleted:NO  // NA (this is a main store-only column)
                                               editCount:0   // NA (this is a main store-only column)
                                                    name:[rs stringForColumn:COL_VEH_NAME]
-                                              dateAdded:[PELMUtils dateFromSqliteText:[rs stringForColumn:COL_VEH_DT_ADDED]]];
+                                          defaultOctane:[PELMUtils numberFromResultSet:rs columnName:COL_VEH_DEFAULT_OCTANE]
+                                           fuelCapacity:[PELMUtils decimalNumberFromResultSet:rs columnName:COL_VEH_FUEL_CAPACITY]];
 }
 
 - (FPFuelStation *)mainFuelStationFromResultSet:(FMResultSet *)rs {
@@ -2890,8 +2787,8 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                                                   mediaType:[HCMediaType MediaTypeFromString:[rs stringForColumn:COL_MEDIA_TYPE]]
                                                   relations:nil
                                                 deletedDate:nil // NA (this is a master store-only column)
-                                               lastModified:[PELMUtils dateFromSqliteText:[rs stringForColumn:COL_MAN_MASTER_LAST_MODIFIED]]
-                                       dateCopiedFromMaster:[PELMUtils dateFromSqliteText:[rs stringForColumn:COL_MAN_DT_COPIED_DOWN_FROM_MASTER]]
+                                               updatedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MAN_MASTER_UPDATED_AT]
+                                       dateCopiedFromMaster:[PELMUtils dateFromResultSet:rs columnName:COL_MAN_DT_COPIED_DOWN_FROM_MASTER]
                                              editInProgress:[rs boolForColumn:COL_MAN_EDIT_IN_PROGRESS]
                                                 editActorId:[rs objectForColumnName:COL_MAN_EDIT_ACTOR_ID]
                                              syncInProgress:[rs boolForColumn:COL_MAN_SYNC_IN_PROGRESS]
@@ -2905,8 +2802,7 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                                                       state:[rs stringForColumn:COL_FUELST_STATE]
                                                         zip:[rs stringForColumn:COL_FUELST_ZIP]
                                                    latitude:[PELMUtils decimalNumberFromResultSet:rs columnName:COL_FUELST_LATITUDE]
-                                                  longitude:[PELMUtils decimalNumberFromResultSet:rs columnName:COL_FUELST_LONGITUDE]
-                                                  dateAdded:[PELMUtils dateFromSqliteText:[rs stringForColumn:COL_FUELST_DT_ADDED]]];
+                                                  longitude:[PELMUtils decimalNumberFromResultSet:rs columnName:COL_FUELST_LONGITUDE]];
 }
 
 - (FPFuelStation *)masterFuelStationFromResultSet:(FMResultSet *)rs {
@@ -2915,8 +2811,8 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                                            globalIdentifier:[rs stringForColumn:COL_GLOBAL_ID]
                                                   mediaType:[HCMediaType MediaTypeFromString:[rs stringForColumn:COL_MEDIA_TYPE]]
                                                   relations:nil
-                                                deletedDate:[PELMUtils dateFromSqliteText:[rs stringForColumn:COL_MST_DELETED_DT]]
-                                               lastModified:[PELMUtils dateFromSqliteText:[rs stringForColumn:COL_MST_LAST_MODIFIED]]
+                                                deletedDate:[PELMUtils dateFromResultSet:rs columnName:COL_MST_DELETED_DT]
+                                               updatedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MST_UPDATED_AT]
                                        dateCopiedFromMaster:nil // NA (this is a main store-only column)
                                              editInProgress:NO  // NA (this is a main store-only column)
                                                 editActorId:nil // NA (this is a main store-only column)
@@ -2931,8 +2827,7 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                                                       state:[rs stringForColumn:COL_FUELST_STATE]
                                                         zip:[rs stringForColumn:COL_FUELST_ZIP]
                                                    latitude:[PELMUtils decimalNumberFromResultSet:rs columnName:COL_FUELST_LATITUDE]
-                                                  longitude:[PELMUtils decimalNumberFromResultSet:rs columnName:COL_FUELST_LONGITUDE]
-                                                  dateAdded:[PELMUtils dateFromSqliteText:[rs stringForColumn:COL_FUELST_DT_ADDED]]];
+                                                  longitude:[PELMUtils decimalNumberFromResultSet:rs columnName:COL_FUELST_LONGITUDE]];
 }
 
 - (FPFuelPurchaseLog *)mainFuelPurchaseLogFromResultSetForSync:(FMResultSet *)rs {
@@ -2942,8 +2837,8 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                                                       mediaType:[HCMediaType MediaTypeFromString:[rs stringForColumn:COL_MEDIA_TYPE]]
                                                       relations:nil
                                                     deletedDate:nil // NA (this is a master store-only column)
-                                                   lastModified:[PELMUtils dateFromSqliteText:[rs stringForColumn:COL_MAN_MASTER_LAST_MODIFIED]]
-                                           dateCopiedFromMaster:[PELMUtils dateFromSqliteText:[rs stringForColumn:COL_MAN_DT_COPIED_DOWN_FROM_MASTER]]
+                                                   updatedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MAN_MASTER_UPDATED_AT]
+                                           dateCopiedFromMaster:[PELMUtils dateFromResultSet:rs columnName:COL_MAN_DT_COPIED_DOWN_FROM_MASTER]
                                                  editInProgress:[rs boolForColumn:COL_MAN_EDIT_IN_PROGRESS]
                                                     editActorId:[rs objectForColumnName:COL_MAN_EDIT_ACTOR_ID]
                                                  syncInProgress:[rs boolForColumn:COL_MAN_SYNC_IN_PROGRESS]
@@ -2958,7 +2853,7 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                                                     gallonPrice:[PELMUtils decimalNumberFromResultSet:rs columnName:COL_FUELPL_PRICE_PER_GALLON]
                                                      gotCarWash:[rs boolForColumn:COL_FUELPL_GOT_CAR_WASH]
                                        carWashPerGallonDiscount:[PELMUtils decimalNumberFromResultSet:rs columnName:COL_FUELPL_CAR_WASH_PER_GALLON_DISCOUNT]
-                                                        logDate:[PELMUtils dateFromSqliteText:[rs stringForColumn:COL_FUELPL_LOG_DT]]];
+                                                        purchasedAt:[PELMUtils dateFromResultSet:rs columnName:COL_FUELPL_PURCHASED_AT]];
 }
 
 - (FPFuelPurchaseLog *)mainFuelPurchaseLogFromResultSet:(FMResultSet *)rs {
@@ -2968,8 +2863,8 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                                                       mediaType:[HCMediaType MediaTypeFromString:[rs stringForColumn:COL_MEDIA_TYPE]]
                                                       relations:nil
                                                     deletedDate:nil // NA (this is a master store-only column)
-                                                   lastModified:[PELMUtils dateFromSqliteText:[rs stringForColumn:COL_MAN_MASTER_LAST_MODIFIED]]
-                                           dateCopiedFromMaster:[PELMUtils dateFromSqliteText:[rs stringForColumn:COL_MAN_DT_COPIED_DOWN_FROM_MASTER]]
+                                                   updatedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MAN_MASTER_UPDATED_AT]
+                                           dateCopiedFromMaster:[PELMUtils dateFromResultSet:rs columnName:COL_MAN_DT_COPIED_DOWN_FROM_MASTER]
                                                  editInProgress:[rs boolForColumn:COL_MAN_EDIT_IN_PROGRESS]
                                                     editActorId:[rs objectForColumnName:COL_MAN_EDIT_ACTOR_ID]
                                                  syncInProgress:[rs boolForColumn:COL_MAN_SYNC_IN_PROGRESS]
@@ -2984,7 +2879,7 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                                                     gallonPrice:[PELMUtils decimalNumberFromResultSet:rs columnName:COL_FUELPL_PRICE_PER_GALLON]
                                                      gotCarWash:[rs boolForColumn:COL_FUELPL_GOT_CAR_WASH]
                                        carWashPerGallonDiscount:[PELMUtils decimalNumberFromResultSet:rs columnName:COL_FUELPL_CAR_WASH_PER_GALLON_DISCOUNT]
-                                                        logDate:[PELMUtils dateFromSqliteText:[rs stringForColumn:COL_FUELPL_LOG_DT]]];
+                                                        purchasedAt:[PELMUtils dateFromResultSet:rs columnName:COL_FUELPL_PURCHASED_AT]];
 }
 
 - (FPFuelPurchaseLog *)masterFuelPurchaseLogFromResultSet:(FMResultSet *)rs {
@@ -2993,8 +2888,8 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                                                globalIdentifier:[rs stringForColumn:COL_GLOBAL_ID]
                                                       mediaType:[HCMediaType MediaTypeFromString:[rs stringForColumn:COL_MEDIA_TYPE]]
                                                       relations:nil
-                                                    deletedDate:[PELMUtils dateFromSqliteText:[rs stringForColumn:COL_MST_DELETED_DT]]
-                                                   lastModified:[PELMUtils dateFromSqliteText:[rs stringForColumn:COL_MST_LAST_MODIFIED]]
+                                                    deletedDate:[PELMUtils dateFromResultSet:rs columnName:COL_MST_DELETED_DT]
+                                                   updatedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MST_UPDATED_AT]
                                            dateCopiedFromMaster:nil // NA (this is a main store-only column)
                                                  editInProgress:NO  // NA (this is a main store-only column)
                                                     editActorId:nil // NA (this is a main store-only column)
@@ -3010,7 +2905,7 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                                                     gallonPrice:[PELMUtils decimalNumberFromResultSet:rs columnName:COL_FUELPL_PRICE_PER_GALLON]
                                                      gotCarWash:[rs boolForColumn:COL_FUELPL_GOT_CAR_WASH]
                                        carWashPerGallonDiscount:[PELMUtils decimalNumberFromResultSet:rs columnName:COL_FUELPL_CAR_WASH_PER_GALLON_DISCOUNT]
-                                                        logDate:[PELMUtils dateFromSqliteText:[rs stringForColumn:COL_FUELPL_LOG_DT]]];
+                                                        purchasedAt:[PELMUtils dateFromResultSet:rs columnName:COL_FUELPL_PURCHASED_AT]];
 }
 
 - (FPEnvironmentLog *)mainEnvironmentLogFromResultSetForSync:(FMResultSet *)rs {
@@ -3020,8 +2915,8 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                                                      mediaType:[HCMediaType MediaTypeFromString:[rs stringForColumn:COL_MEDIA_TYPE]]
                                                      relations:nil
                                                    deletedDate:nil // NA (this is a master store-only column)
-                                                  lastModified:[PELMUtils dateFromSqliteText:[rs stringForColumn:COL_MAN_MASTER_LAST_MODIFIED]]
-                                          dateCopiedFromMaster:[PELMUtils dateFromSqliteText:[rs stringForColumn:COL_MAN_DT_COPIED_DOWN_FROM_MASTER]]
+                                                  updatedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MAN_MASTER_UPDATED_AT]
+                                          dateCopiedFromMaster:[PELMUtils dateFromResultSet:rs columnName:COL_MAN_DT_COPIED_DOWN_FROM_MASTER]
                                                 editInProgress:[rs boolForColumn:COL_MAN_EDIT_IN_PROGRESS]
                                                    editActorId:[rs objectForColumnName:COL_MAN_EDIT_ACTOR_ID]
                                                 syncInProgress:[rs boolForColumn:COL_MAN_SYNC_IN_PROGRESS]
@@ -3034,7 +2929,7 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                                                 reportedAvgMpg:[PELMUtils decimalNumberFromResultSet:rs columnName:COL_ENVL_MPG_READING]
                                                 reportedAvgMph:[PELMUtils decimalNumberFromResultSet:rs columnName:COL_ENVL_MPH_READING]
                                            reportedOutsideTemp:[PELMUtils decimalNumberFromResultSet:rs columnName:COL_ENVL_OUTSIDE_TEMP_READING]
-                                                       logDate:[PELMUtils dateFromSqliteText:[rs stringForColumn:COL_ENVL_LOG_DT]]
+                                                       logDate:[PELMUtils dateFromResultSet:rs columnName:COL_ENVL_LOG_DT]
                                                    reportedDte:[PELMUtils decimalNumberFromResultSet:rs columnName:COL_ENVL_DTE]];
 }
 
@@ -3045,8 +2940,8 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                                                      mediaType:[HCMediaType MediaTypeFromString:[rs stringForColumn:COL_MEDIA_TYPE]]
                                                      relations:nil
                                                    deletedDate:nil // NA (this is a master store-only column)
-                                                  lastModified:[PELMUtils dateFromSqliteText:[rs stringForColumn:COL_MAN_MASTER_LAST_MODIFIED]]
-                                          dateCopiedFromMaster:[PELMUtils dateFromSqliteText:[rs stringForColumn:COL_MAN_DT_COPIED_DOWN_FROM_MASTER]]
+                                                  updatedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MAN_MASTER_UPDATED_AT]
+                                          dateCopiedFromMaster:[PELMUtils dateFromResultSet:rs columnName:COL_MAN_DT_COPIED_DOWN_FROM_MASTER]
                                                 editInProgress:[rs boolForColumn:COL_MAN_EDIT_IN_PROGRESS]
                                                    editActorId:[rs objectForColumnName:COL_MAN_EDIT_ACTOR_ID]
                                                 syncInProgress:[rs boolForColumn:COL_MAN_SYNC_IN_PROGRESS]
@@ -3059,7 +2954,7 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                                                 reportedAvgMpg:[PELMUtils decimalNumberFromResultSet:rs columnName:COL_ENVL_MPG_READING]
                                                 reportedAvgMph:[PELMUtils decimalNumberFromResultSet:rs columnName:COL_ENVL_MPH_READING]
                                            reportedOutsideTemp:[PELMUtils decimalNumberFromResultSet:rs columnName:COL_ENVL_OUTSIDE_TEMP_READING]
-                                                       logDate:[PELMUtils dateFromSqliteText:[rs stringForColumn:COL_ENVL_LOG_DT]]
+                                                       logDate:[PELMUtils dateFromResultSet:rs columnName:COL_ENVL_LOG_DT]
                                                    reportedDte:[PELMUtils decimalNumberFromResultSet:rs columnName:COL_ENVL_DTE]];
 }
 
@@ -3069,8 +2964,8 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                                               globalIdentifier:[rs stringForColumn:COL_GLOBAL_ID]
                                                      mediaType:[HCMediaType MediaTypeFromString:[rs stringForColumn:COL_MEDIA_TYPE]]
                                                      relations:nil
-                                                   deletedDate:[PELMUtils dateFromSqliteText:[rs stringForColumn:COL_MST_DELETED_DT]]
-                                                  lastModified:[PELMUtils dateFromSqliteText:[rs stringForColumn:COL_MST_LAST_MODIFIED]]
+                                                   deletedDate:[PELMUtils dateFromResultSet:rs columnName:COL_MST_DELETED_DT]
+                                                  updatedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MST_UPDATED_AT]
                                           dateCopiedFromMaster:nil // NA (this is a main store-only column)
                                                 editInProgress:NO  // NA (this is a main store-only column)
                                                    editActorId:nil // NA (this is a main store-only column)
@@ -3084,7 +2979,7 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                                                 reportedAvgMpg:[PELMUtils decimalNumberFromResultSet:rs columnName:COL_ENVL_MPG_READING]
                                                 reportedAvgMph:[PELMUtils decimalNumberFromResultSet:rs columnName:COL_ENVL_MPH_READING]
                                            reportedOutsideTemp:[PELMUtils decimalNumberFromResultSet:rs columnName:COL_ENVL_OUTSIDE_TEMP_READING]
-                                                       logDate:[PELMUtils dateFromSqliteText:[rs stringForColumn:COL_ENVL_LOG_DT]]
+                                                       logDate:[PELMUtils dateFromResultSet:rs columnName:COL_ENVL_LOG_DT]
                                                    reportedDte:[PELMUtils decimalNumberFromResultSet:rs columnName:COL_ENVL_DTE]];
 }
 
@@ -3095,12 +2990,12 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                                  db:(FMDatabase *)db
                               error:(PELMDaoErrorBlk)errorBlk {
   NSString *stmt = [NSString stringWithFormat:@"INSERT INTO %@ (%@, %@, %@, \
-                    %@, %@, %@, %@, %@, %@, %@, %@, %@, %@) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                    %@, %@, %@, %@, %@, %@, %@, %@, %@) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                     TBL_MASTER_FUEL_STATION,
                     COL_MASTER_USER_ID,
                     COL_GLOBAL_ID,
                     COL_MEDIA_TYPE,
-                    COL_MST_LAST_MODIFIED,
+                    COL_MST_UPDATED_AT,
                     COL_MST_DELETED_DT,
                     COL_FUELST_NAME,
                     COL_FUELST_STREET,
@@ -3108,22 +3003,20 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                     COL_FUELST_STATE,
                     COL_FUELST_ZIP,
                     COL_FUELST_LATITUDE,
-                    COL_FUELST_LONGITUDE,
-                    COL_FUELST_DT_ADDED];
+                    COL_FUELST_LONGITUDE];
   [PELMUtils doMasterInsert:stmt
                   argsArray:@[orNil([user localMasterIdentifier]),
                               orNil([fuelStation globalIdentifier]),
                               orNil([[fuelStation mediaType] description]),
-                              orNil([PELMUtils sqliteTextFromDate:[fuelStation lastModified]]),
-                              orNil([PELMUtils sqliteTextFromDate:[fuelStation deletedDate]]),
+                              orNil([PEUtils millisecondsFromDate:[fuelStation updatedAt]]),
+                              orNil([PEUtils millisecondsFromDate:[fuelStation deletedDate]]),
                               orNil([fuelStation name]),
                               orNil([fuelStation street]),
                               orNil([fuelStation city]),
                               orNil([fuelStation state]),
                               orNil([fuelStation zip]),
                               orNil([fuelStation latitude]),
-                              orNil([fuelStation longitude]),
-                              orNil([PELMUtils sqliteTextFromDate:[fuelStation dateAdded]])]
+                              orNil([fuelStation longitude])]
                      entity:fuelStation
                          db:db
                       error:errorBlk];
@@ -3134,13 +3027,13 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                                db:(FMDatabase *)db
                             error:(PELMDaoErrorBlk)errorBlk {
   NSString *stmt = [NSString stringWithFormat:@"INSERT INTO %@ \
-                    (%@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@) VALUES \
-                    (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                    (%@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@) VALUES \
+                    (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                     TBL_MAIN_FUEL_STATION,
                     COL_MAIN_USER_ID,
                     COL_GLOBAL_ID,
                     COL_MEDIA_TYPE,
-                    COL_MAN_MASTER_LAST_MODIFIED,
+                    COL_MAN_MASTER_UPDATED_AT,
                     COL_MAN_DT_COPIED_DOWN_FROM_MASTER,
                     COL_FUELST_NAME,
                     COL_FUELST_STREET,
@@ -3149,7 +3042,6 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                     COL_FUELST_ZIP,
                     COL_FUELST_LATITUDE,
                     COL_FUELST_LONGITUDE,
-                    COL_FUELST_DT_ADDED,
                     COL_MAN_EDIT_IN_PROGRESS,
                     COL_MAN_SYNC_IN_PROGRESS,
                     COL_MAN_SYNCED,
@@ -3161,8 +3053,8 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                 argsArray:@[orNil([user localMainIdentifier]),
                             orNil([fuelStation globalIdentifier]),
                             orNil([[fuelStation mediaType] description]),
-                            orNil([PELMUtils sqliteTextFromDate:[fuelStation lastModified]]),
-                            orNil([PELMUtils sqliteTextFromDate:[fuelStation dateCopiedFromMaster]]),
+                            orNil([PEUtils millisecondsFromDate:[fuelStation updatedAt]]),
+                            orNil([PEUtils millisecondsFromDate:[fuelStation dateCopiedFromMaster]]),
                             orNil([fuelStation name]),
                             orNil([fuelStation street]),
                             orNil([fuelStation city]),
@@ -3170,7 +3062,6 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                             orNil([fuelStation zip]),
                             orNil([fuelStation latitude]),
                             orNil([fuelStation longitude]),
-                            orNil([PELMUtils sqliteTextFromDate:[fuelStation dateAdded]]),
                             [NSNumber numberWithBool:[fuelStation editInProgress]],
                             [NSNumber numberWithBool:[fuelStation syncInProgress]],
                             [NSNumber numberWithBool:[fuelStation synced]],
@@ -3195,13 +3086,12 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
           %@ = ?, \
           %@ = ?, \
           %@ = ?, \
-          %@ = ?, \
           %@ = ? \
           WHERE %@ = ?",
           TBL_MASTER_FUEL_STATION,// table
           COL_GLOBAL_ID,          // col1
           COL_MEDIA_TYPE,         // col2
-          COL_MST_LAST_MODIFIED,  // col3
+          COL_MST_UPDATED_AT,  // col3
           COL_MST_DELETED_DT,     // col4
           COL_FUELST_NAME,        // col5
           COL_FUELST_STREET,
@@ -3210,15 +3100,14 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
           COL_FUELST_ZIP,
           COL_FUELST_LATITUDE,
           COL_FUELST_LONGITUDE,
-          COL_FUELST_DT_ADDED,
           COL_LOCAL_ID];          // where, col1
 }
 
 - (NSArray *)updateArgsForMasterFuelStation:(FPFuelStation *)fuelStation {
   return @[orNil([fuelStation globalIdentifier]),
            orNil([[fuelStation mediaType] description]),
-           orNil([PELMUtils sqliteTextFromDate:[fuelStation lastModified]]),
-           orNil([PELMUtils sqliteTextFromDate:[fuelStation deletedDate]]),
+           orNil([PEUtils millisecondsFromDate:[fuelStation updatedAt]]),
+           orNil([PEUtils millisecondsFromDate:[fuelStation deletedDate]]),
            orNil([fuelStation name]),
            orNil([fuelStation street]),
            orNil([fuelStation city]),
@@ -3226,7 +3115,6 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
            orNil([fuelStation zip]),
            orNil([fuelStation latitude]),
            orNil([fuelStation longitude]),
-           orNil([PELMUtils sqliteTextFromDate:[fuelStation dateAdded]]),
            [fuelStation localMasterIdentifier]];
 }
 
@@ -3249,13 +3137,12 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
           %@ = ?, \
           %@ = ?, \
           %@ = ?, \
-          %@ = ?, \
           %@ = ? \
           WHERE %@ = ?",
           TBL_MAIN_FUEL_STATION,                   // table
           COL_GLOBAL_ID,                      // col1
           COL_MEDIA_TYPE,                     // col2
-          COL_MAN_MASTER_LAST_MODIFIED,      // col3
+          COL_MAN_MASTER_UPDATED_AT,      // col3
           COL_MAN_DT_COPIED_DOWN_FROM_MASTER, // col4
           COL_FUELST_NAME,                       // col5
           COL_FUELST_STREET,
@@ -3264,7 +3151,6 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
           COL_FUELST_ZIP,
           COL_FUELST_LATITUDE,
           COL_FUELST_LONGITUDE,
-          COL_FUELST_DT_ADDED,                   // col6
           COL_MAN_EDIT_IN_PROGRESS,           // col7
           COL_MAN_SYNC_IN_PROGRESS,           // col8
           COL_MAN_SYNCED,                     // col9
@@ -3278,8 +3164,8 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
 - (NSArray *)updateArgsForMainFuelStation:(FPFuelStation *)fuelStation {
   return @[orNil([fuelStation globalIdentifier]),
            orNil([[fuelStation mediaType] description]),
-           orNil([PELMUtils sqliteTextFromDate:[fuelStation lastModified]]),
-           orNil([PELMUtils sqliteTextFromDate:[fuelStation dateCopiedFromMaster]]),
+           orNil([PEUtils millisecondsFromDate:[fuelStation updatedAt]]),
+           orNil([PEUtils millisecondsFromDate:[fuelStation dateCopiedFromMaster]]),
            orNil([fuelStation name]),
            orNil([fuelStation street]),
            orNil([fuelStation city]),
@@ -3287,7 +3173,6 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
            orNil([fuelStation zip]),
            orNil([fuelStation latitude]),
            orNil([fuelStation longitude]),
-           orNil([PELMUtils sqliteTextFromDate:[fuelStation dateAdded]]),
            [NSNumber numberWithBool:[fuelStation editInProgress]],
            [NSNumber numberWithBool:[fuelStation syncInProgress]],
            [NSNumber numberWithBool:[fuelStation synced]],
@@ -3305,23 +3190,25 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                              db:(FMDatabase *)db
                           error:(PELMDaoErrorBlk)errorBlk {
   NSString *stmt = [NSString stringWithFormat:@"INSERT INTO %@ (%@, %@, %@, \
-                    %@, %@, %@, %@) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                    %@, %@, %@, %@, %@) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                     TBL_MASTER_VEHICLE,
                     COL_MASTER_USER_ID,
                     COL_GLOBAL_ID,
                     COL_MEDIA_TYPE,
-                    COL_MST_LAST_MODIFIED,
+                    COL_MST_UPDATED_AT,
                     COL_MST_DELETED_DT,
                     COL_VEH_NAME,
-                    COL_VEH_DT_ADDED];
+                    COL_VEH_DEFAULT_OCTANE,
+                    COL_VEH_FUEL_CAPACITY];
   [PELMUtils doMasterInsert:stmt
                   argsArray:@[orNil([user localMasterIdentifier]),
                               orNil([vehicle globalIdentifier]),
                               orNil([[vehicle mediaType] description]),
-                              orNil([PELMUtils sqliteTextFromDate:[vehicle lastModified]]),
-                              orNil([PELMUtils sqliteTextFromDate:[vehicle deletedDate]]),
+                              orNil([PEUtils millisecondsFromDate:[vehicle updatedAt]]),
+                              orNil([PEUtils millisecondsFromDate:[vehicle deletedDate]]),
                               orNil([vehicle name]),
-                              orNil([PELMUtils sqliteTextFromDate:[vehicle dateAdded]])]
+                              orNil([vehicle defaultOctane]),
+                              orNil([vehicle fuelCapacity])]
                      entity:vehicle
                          db:db
                       error:errorBlk];
@@ -3332,15 +3219,16 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                            db:(FMDatabase *)db
                         error:(PELMDaoErrorBlk)errorBlk {
   NSString *stmt = [NSString stringWithFormat:@"INSERT INTO %@ (%@, %@, %@, \
-                    %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                    %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                     TBL_MAIN_VEHICLE,
                     COL_MAIN_USER_ID,
                     COL_GLOBAL_ID,
                     COL_MEDIA_TYPE,
-                    COL_MAN_MASTER_LAST_MODIFIED,
+                    COL_MAN_MASTER_UPDATED_AT,
                     COL_MAN_DT_COPIED_DOWN_FROM_MASTER,
                     COL_VEH_NAME,
-                    COL_VEH_DT_ADDED,
+                    COL_VEH_DEFAULT_OCTANE,
+                    COL_VEH_FUEL_CAPACITY,
                     COL_MAN_EDIT_IN_PROGRESS,
                     COL_MAN_SYNC_IN_PROGRESS,
                     COL_MAN_SYNCED,
@@ -3352,10 +3240,11 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                 argsArray:@[orNil([user localMainIdentifier]),
                             orNil([vehicle globalIdentifier]),
                             orNil([[vehicle mediaType] description]),
-                            orNil([PELMUtils sqliteTextFromDate:[vehicle lastModified]]),
-                            orNil([PELMUtils sqliteTextFromDate:[vehicle dateCopiedFromMaster]]),
+                            orNil([PEUtils millisecondsFromDate:[vehicle updatedAt]]),
+                            orNil([PEUtils millisecondsFromDate:[vehicle dateCopiedFromMaster]]),
                             orNil([vehicle name]),
-                            orNil([PELMUtils sqliteTextFromDate:[vehicle dateAdded]]),
+                            orNil([vehicle defaultOctane]),
+                            orNil([vehicle fuelCapacity]),
                             [NSNumber numberWithBool:[vehicle editInProgress]],
                             [NSNumber numberWithBool:[vehicle syncInProgress]],
                             [NSNumber numberWithBool:[vehicle synced]],
@@ -3375,25 +3264,28 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
           %@ = ?, \
           %@ = ?, \
           %@ = ?, \
+          %@ = ?, \
           %@ = ? \
           WHERE %@ = ?",
           TBL_MASTER_VEHICLE,     // table
           COL_GLOBAL_ID,          // col1
           COL_MEDIA_TYPE,         // col2
-          COL_MST_LAST_MODIFIED,  // col3
+          COL_MST_UPDATED_AT,  // col3
           COL_MST_DELETED_DT,     // col4
           COL_VEH_NAME,           // col5
-          COL_VEH_DT_ADDED,       // col6
+          COL_VEH_DEFAULT_OCTANE,
+          COL_VEH_FUEL_CAPACITY,
           COL_LOCAL_ID];          // where, col1
 }
 
 - (NSArray *)updateArgsForMasterVehicle:(FPVehicle *)vehicle {
   return @[orNil([vehicle globalIdentifier]),
            orNil([[vehicle mediaType] description]),
-           orNil([PELMUtils sqliteTextFromDate:[vehicle lastModified]]),
-           orNil([PELMUtils sqliteTextFromDate:[vehicle deletedDate]]),
+           orNil([PEUtils millisecondsFromDate:[vehicle updatedAt]]),
+           orNil([PEUtils millisecondsFromDate:[vehicle deletedDate]]),
            orNil([vehicle name]),
-           orNil([PELMUtils sqliteTextFromDate:[vehicle dateAdded]]),
+           orNil([vehicle defaultOctane]),
+           orNil([vehicle fuelCapacity]),
            [vehicle localMasterIdentifier]];
 }
 
@@ -3411,15 +3303,17 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
           %@ = ?, \
           %@ = ?, \
           %@ = ?, \
+          %@ = ?, \
           %@ = ? \
           WHERE %@ = ?",
           TBL_MAIN_VEHICLE,                   // table
           COL_GLOBAL_ID,                      // col1
           COL_MEDIA_TYPE,                     // col2
-          COL_MAN_MASTER_LAST_MODIFIED,      // col3
+          COL_MAN_MASTER_UPDATED_AT,      // col3
           COL_MAN_DT_COPIED_DOWN_FROM_MASTER, // col4
           COL_VEH_NAME,                       // col5
-          COL_VEH_DT_ADDED,                   // col6
+          COL_VEH_DEFAULT_OCTANE,
+          COL_VEH_FUEL_CAPACITY,
           COL_MAN_EDIT_IN_PROGRESS,           // col7
           COL_MAN_SYNC_IN_PROGRESS,           // col8
           COL_MAN_SYNCED,                     // col9
@@ -3433,10 +3327,11 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
 - (NSArray *)updateArgsForMainVehicle:(FPVehicle *)vehicle {
   return @[orNil([vehicle globalIdentifier]),
            orNil([[vehicle mediaType] description]),
-           orNil([PELMUtils sqliteTextFromDate:[vehicle lastModified]]),
-           orNil([PELMUtils sqliteTextFromDate:[vehicle dateCopiedFromMaster]]),
+           orNil([PEUtils millisecondsFromDate:[vehicle updatedAt]]),
+           orNil([PEUtils millisecondsFromDate:[vehicle dateCopiedFromMaster]]),
            orNil([vehicle name]),
-           orNil([PELMUtils sqliteTextFromDate:[vehicle dateAdded]]),
+           orNil([vehicle defaultOctane]),
+           orNil([vehicle fuelCapacity]),
            [NSNumber numberWithBool:[vehicle editInProgress]],
            [NSNumber numberWithBool:[vehicle syncInProgress]],
            [NSNumber numberWithBool:[vehicle synced]],
@@ -3518,32 +3413,29 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
           %@ = ?, \
           %@ = ?, \
           %@ = ?, \
-          %@ = ?, \
           %@ = ? \
           WHERE %@ = ?",
           TBL_MASTER_USER,        // table
           COL_GLOBAL_ID,          // col1
           COL_MEDIA_TYPE,         // col2
-          COL_MST_LAST_MODIFIED, // col3
+          COL_MST_UPDATED_AT, // col3
           COL_MST_DELETED_DT,     // col4
           COL_USR_NAME,           // col5
           COL_USR_EMAIL,          // col6
           COL_USR_USERNAME,       // col7
           COL_USR_PASSWORD_HASH,  // col8
-          COL_USR_CREATION_DT,    // col9
           COL_LOCAL_ID];          // where, col1
 }
 
 - (NSArray *)updateArgsForMasterUser:(FPUser *)user {
   return @[orNil([user globalIdentifier]),
            orNil([[user mediaType] description]),
-           orNil([PELMUtils sqliteTextFromDate:[user lastModified]]),
-           orNil([PELMUtils sqliteTextFromDate:[user deletedDate]]),
+           orNil([PEUtils millisecondsFromDate:[user updatedAt]]),
+           orNil([PEUtils millisecondsFromDate:[user deletedDate]]),
            orNil([user name]),
            orNil([user email]),
            orNil([user username]),
            orNil([user password]),
-           orNil([PELMUtils sqliteTextFromDate:[user creationDate]]),
            [user localMasterIdentifier]];
 }
 
@@ -3563,19 +3455,17 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
           %@ = ?, \
           %@ = ?, \
           %@ = ?, \
-          %@ = ?, \
           %@ = ? \
           WHERE %@ = ?",
           TBL_MAIN_USER,                      // table
           COL_GLOBAL_ID,                      // col1
           COL_MEDIA_TYPE,                     // col2
-          COL_MAN_MASTER_LAST_MODIFIED,      // col3
+          COL_MAN_MASTER_UPDATED_AT,      // col3
           COL_MAN_DT_COPIED_DOWN_FROM_MASTER, // col4
           COL_USR_NAME,                       // col5
           COL_USR_EMAIL,                      // col6
           COL_USR_USERNAME,                   // col7
           COL_USR_PASSWORD_HASH,              // col8
-          COL_USR_CREATION_DT,                // col9
           COL_MAN_EDIT_IN_PROGRESS,           // col10
           COL_MAN_SYNC_IN_PROGRESS,           // col11
           COL_MAN_SYNCED,                     // col12
@@ -3589,13 +3479,12 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
 - (NSArray *)updateArgsForMainUser:(FPUser *)user {
   return @[orNil([user globalIdentifier]),
            orNil([[user mediaType] description]),
-           orNil([PELMUtils sqliteTextFromDate:[user lastModified]]),
-           orNil([PELMUtils sqliteTextFromDate:[user dateCopiedFromMaster]]),
+           orNil([PEUtils millisecondsFromDate:[user updatedAt]]),
+           orNil([PEUtils millisecondsFromDate:[user dateCopiedFromMaster]]),
            orNil([user name]),
            orNil([user email]),
            orNil([user username]),
            orNil([user password]),
-           orNil([PELMUtils sqliteTextFromDate:[user creationDate]]),
            [NSNumber numberWithBool:[user editInProgress]],
            [NSNumber numberWithBool:[user syncInProgress]],
            [NSNumber numberWithBool:[user synced]],
@@ -3610,7 +3499,7 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                         db:(FMDatabase *)db
                      error:(PELMDaoErrorBlk)errorBlk {
   NSString *stmt = [NSString stringWithFormat:@"INSERT INTO %@ (%@, %@, %@, %@, \
-%@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, \
+%@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, \
 ?, ?, ?, ?)",
                     TBL_MAIN_USER,
                     COL_LOCAL_ID,
@@ -3622,7 +3511,6 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                     COL_USR_EMAIL,
                     COL_USR_USERNAME,
                     COL_USR_PASSWORD_HASH,
-                    COL_USR_CREATION_DT,
                     COL_MAN_EDIT_IN_PROGRESS,
                     COL_MAN_SYNC_IN_PROGRESS,
                     COL_MAN_SYNCED,
@@ -3635,12 +3523,11 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                             orNil([user localMasterIdentifier]),
                             orNil([user globalIdentifier]),
                             orNil([[user mediaType] description]),
-                            orNil([PELMUtils sqliteTextFromDate:[user dateCopiedFromMaster]]),
+                            orNil([PEUtils millisecondsFromDate:[user dateCopiedFromMaster]]),
                             orNil([user name]),
                             orNil([user email]),
                             orNil([user username]),
                             orNil([user password]),
-                            orNil([PELMUtils sqliteTextFromDate:[user creationDate]]),
                             [NSNumber numberWithBool:[user editInProgress]],
                             [NSNumber numberWithBool:[user syncInProgress]],
                             [NSNumber numberWithBool:[user synced]],
@@ -3657,27 +3544,25 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                           db:(FMDatabase *)db
                        error:(PELMDaoErrorBlk)errorBlk {
   NSString *stmt = [NSString stringWithFormat:@"INSERT INTO %@ (%@, %@, %@, \
-%@, %@, %@, %@, %@, %@) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+%@, %@, %@, %@, %@) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                     TBL_MASTER_USER,
                     COL_GLOBAL_ID,
                     COL_MEDIA_TYPE,
-                    COL_MST_LAST_MODIFIED,
+                    COL_MST_UPDATED_AT,
                     COL_MST_DELETED_DT,
                     COL_USR_NAME,
                     COL_USR_EMAIL,
                     COL_USR_USERNAME,
-                    COL_USR_PASSWORD_HASH,
-                    COL_USR_CREATION_DT];
+                    COL_USR_PASSWORD_HASH];
   [PELMUtils doMasterInsert:stmt
                   argsArray:@[orNil([user globalIdentifier]),
                               orNil([[user mediaType] description]),
-                              orNil([PELMUtils sqliteTextFromDate:[user lastModified]]),
-                              orNil([PELMUtils sqliteTextFromDate:[user deletedDate]]),
+                              orNil([PEUtils millisecondsFromDate:[user updatedAt]]),
+                              orNil([PEUtils millisecondsFromDate:[user deletedDate]]),
                               orNil([user name]),
                               orNil([user email]),
                               orNil([user username]),
-                              orNil([user password]),
-                              orNil([PELMUtils sqliteTextFromDate:[user creationDate]])]
+                              orNil([user password])]
                      entity:user
                          db:db
                       error:errorBlk];
@@ -3734,28 +3619,28 @@ WHERE manfp.%@ = manv.%@ AND \
                     COL_MASTER_FUELSTATION_ID,
                     COL_GLOBAL_ID,
                     COL_MEDIA_TYPE,
-                    COL_MST_LAST_MODIFIED,
+                    COL_MST_UPDATED_AT,
                     COL_MST_DELETED_DT,
                     COL_FUELPL_NUM_GALLONS,
                     COL_FUELPL_OCTANE,
                     COL_FUELPL_PRICE_PER_GALLON,
                     COL_FUELPL_CAR_WASH_PER_GALLON_DISCOUNT,
                     COL_FUELPL_GOT_CAR_WASH,
-                    COL_FUELPL_LOG_DT];
+                    COL_FUELPL_PURCHASED_AT];
   [PELMUtils doMasterInsert:stmt
                   argsArray:@[orNil([user localMasterIdentifier]),
                               orNil([vehicle localMasterIdentifier]),
                               orNil([fuelStation localMasterIdentifier]),
                               orNil([fuelPurchaseLog globalIdentifier]),
                               orNil([[fuelPurchaseLog mediaType] description]),
-                              orNil([PELMUtils sqliteTextFromDate:[fuelPurchaseLog lastModified]]),
-                              orNil([PELMUtils sqliteTextFromDate:[fuelPurchaseLog deletedDate]]),
+                              orNil([PEUtils millisecondsFromDate:[fuelPurchaseLog updatedAt]]),
+                              orNil([PEUtils millisecondsFromDate:[fuelPurchaseLog deletedDate]]),
                               orNil([fuelPurchaseLog numGallons]),
                               orNil([fuelPurchaseLog octane]),
                               orNil([fuelPurchaseLog gallonPrice]),
                               orNil([fuelPurchaseLog carWashPerGallonDiscount]),
                               [NSNumber numberWithBool:[fuelPurchaseLog gotCarWash]],
-                              orNil([PELMUtils sqliteTextFromDate:[fuelPurchaseLog logDate]])]
+                              orNil([PEUtils millisecondsFromDate:[fuelPurchaseLog purchasedAt]])]
                      entity:fuelPurchaseLog
                          db:db
                       error:errorBlk];
@@ -3776,14 +3661,14 @@ WHERE manfp.%@ = manv.%@ AND \
                     COL_MAIN_FUELSTATION_ID,
                     COL_GLOBAL_ID,
                     COL_MEDIA_TYPE,
-                    COL_MAN_MASTER_LAST_MODIFIED,
+                    COL_MAN_MASTER_UPDATED_AT,
                     COL_MAN_DT_COPIED_DOWN_FROM_MASTER,
                     COL_FUELPL_NUM_GALLONS,
                     COL_FUELPL_OCTANE,
                     COL_FUELPL_PRICE_PER_GALLON,
                     COL_FUELPL_CAR_WASH_PER_GALLON_DISCOUNT,
                     COL_FUELPL_GOT_CAR_WASH,
-                    COL_FUELPL_LOG_DT,
+                    COL_FUELPL_PURCHASED_AT,
                     COL_MAN_EDIT_IN_PROGRESS,
                     COL_MAN_SYNC_IN_PROGRESS,
                     COL_MAN_SYNCED,
@@ -3797,14 +3682,14 @@ WHERE manfp.%@ = manv.%@ AND \
                             orNil([fuelStation localMainIdentifier]),
                             orNil([fuelPurchaseLog globalIdentifier]),
                             orNil([[fuelPurchaseLog mediaType] description]),
-                            orNil([PELMUtils sqliteTextFromDate:[fuelPurchaseLog lastModified]]),
-                            orNil([PELMUtils sqliteTextFromDate:[fuelPurchaseLog dateCopiedFromMaster]]),
+                            orNil([PEUtils millisecondsFromDate:[fuelPurchaseLog updatedAt]]),
+                            orNil([PEUtils millisecondsFromDate:[fuelPurchaseLog dateCopiedFromMaster]]),
                             orNil([fuelPurchaseLog numGallons]),
                             orNil([fuelPurchaseLog octane]),
                             orNil([fuelPurchaseLog gallonPrice]),
                             orNil([fuelPurchaseLog carWashPerGallonDiscount]),
                             [NSNumber numberWithBool:[fuelPurchaseLog gotCarWash]],
-                            orNil([PELMUtils sqliteTextFromDate:[fuelPurchaseLog logDate]]),
+                            orNil([PEUtils millisecondsFromDate:[fuelPurchaseLog purchasedAt]]),
                             [NSNumber numberWithBool:[fuelPurchaseLog editInProgress]],
                             [NSNumber numberWithBool:[fuelPurchaseLog syncInProgress]],
                             [NSNumber numberWithBool:[fuelPurchaseLog synced]],
@@ -3837,14 +3722,14 @@ WHERE %@ = ?",
           COL_MASTER_FUELSTATION_ID,
           COL_GLOBAL_ID,          // col1
           COL_MEDIA_TYPE,         // col2
-          COL_MST_LAST_MODIFIED,  // col3
+          COL_MST_UPDATED_AT,  // col3
           COL_MST_DELETED_DT,     // col4
           COL_FUELPL_NUM_GALLONS,
           COL_FUELPL_OCTANE,
           COL_FUELPL_PRICE_PER_GALLON,
           COL_FUELPL_CAR_WASH_PER_GALLON_DISCOUNT,
           COL_FUELPL_GOT_CAR_WASH,
-          COL_FUELPL_LOG_DT,
+          COL_FUELPL_PURCHASED_AT,
           COL_LOCAL_ID];          // where, col1
 }
 
@@ -3864,14 +3749,14 @@ WHERE %@ = ?",
           TBL_MASTER_FUELPURCHASE_LOG, // table
           COL_GLOBAL_ID,          // col1
           COL_MEDIA_TYPE,         // col2
-          COL_MST_LAST_MODIFIED,  // col3
+          COL_MST_UPDATED_AT,  // col3
           COL_MST_DELETED_DT,     // col4
           COL_FUELPL_NUM_GALLONS,
           COL_FUELPL_OCTANE,
           COL_FUELPL_PRICE_PER_GALLON,
           COL_FUELPL_CAR_WASH_PER_GALLON_DISCOUNT,
           COL_FUELPL_GOT_CAR_WASH,
-          COL_FUELPL_LOG_DT,
+          COL_FUELPL_PURCHASED_AT,
           COL_LOCAL_ID];          // where, col1
 }
 
@@ -3892,14 +3777,14 @@ WHERE %@ = ?",
   NSArray *reqdArgs =
   @[orNil([fuelPurchaseLog globalIdentifier]),
     orNil([[fuelPurchaseLog mediaType] description]),
-    orNil([PELMUtils sqliteTextFromDate:[fuelPurchaseLog lastModified]]),
-    orNil([PELMUtils sqliteTextFromDate:[fuelPurchaseLog deletedDate]]),
+    orNil([PEUtils millisecondsFromDate:[fuelPurchaseLog updatedAt]]),
+    orNil([PEUtils millisecondsFromDate:[fuelPurchaseLog deletedDate]]),
     orNil([fuelPurchaseLog numGallons]),
     orNil([fuelPurchaseLog octane]),
     orNil([fuelPurchaseLog gallonPrice]),
     orNil([fuelPurchaseLog carWashPerGallonDiscount]),
     [NSNumber numberWithBool:[fuelPurchaseLog gotCarWash]],
-    orNil([PELMUtils sqliteTextFromDate:[fuelPurchaseLog logDate]]),
+    orNil([PEUtils millisecondsFromDate:[fuelPurchaseLog purchasedAt]]),
     [fuelPurchaseLog localMasterIdentifier]];
   [args addObjectsFromArray:reqdArgs];
   return args;
@@ -3932,14 +3817,14 @@ WHERE %@ = ?",
           COL_MAIN_FUELSTATION_ID,
           COL_GLOBAL_ID,                      // col1
           COL_MEDIA_TYPE,                     // col2
-          COL_MAN_MASTER_LAST_MODIFIED,      // col3
+          COL_MAN_MASTER_UPDATED_AT,      // col3
           COL_MAN_DT_COPIED_DOWN_FROM_MASTER, // col4
           COL_FUELPL_NUM_GALLONS,
           COL_FUELPL_OCTANE,
           COL_FUELPL_PRICE_PER_GALLON,
           COL_FUELPL_CAR_WASH_PER_GALLON_DISCOUNT,
           COL_FUELPL_GOT_CAR_WASH,
-          COL_FUELPL_LOG_DT,                   // col6
+          COL_FUELPL_PURCHASED_AT,                   // col6
           COL_MAN_EDIT_IN_PROGRESS,           // col7
           COL_MAN_SYNC_IN_PROGRESS,           // col8
           COL_MAN_SYNCED,                     // col9
@@ -3973,14 +3858,14 @@ WHERE %@ = ?",
           TBL_MAIN_FUELPURCHASE_LOG,                   // table
           COL_GLOBAL_ID,                      // col1
           COL_MEDIA_TYPE,                     // col2
-          COL_MAN_MASTER_LAST_MODIFIED,      // col3
+          COL_MAN_MASTER_UPDATED_AT,      // col3
           COL_MAN_DT_COPIED_DOWN_FROM_MASTER, // col4
           COL_FUELPL_NUM_GALLONS,
           COL_FUELPL_OCTANE,
           COL_FUELPL_PRICE_PER_GALLON,
           COL_FUELPL_CAR_WASH_PER_GALLON_DISCOUNT,
           COL_FUELPL_GOT_CAR_WASH,
-          COL_FUELPL_LOG_DT,                   // col6
+          COL_FUELPL_PURCHASED_AT,                   // col6
           COL_MAN_EDIT_IN_PROGRESS,           // col7
           COL_MAN_SYNC_IN_PROGRESS,           // col8
           COL_MAN_SYNCED,                     // col9
@@ -4010,14 +3895,14 @@ WHERE %@ = ?",
   NSArray *reqdArgs =
   @[orNil([fuelPurchaseLog globalIdentifier]),
     orNil([[fuelPurchaseLog mediaType] description]),
-    orNil([PELMUtils sqliteTextFromDate:[fuelPurchaseLog lastModified]]),
-    orNil([PELMUtils sqliteTextFromDate:[fuelPurchaseLog dateCopiedFromMaster]]),
+    orNil([PEUtils millisecondsFromDate:[fuelPurchaseLog updatedAt]]),
+    orNil([PEUtils millisecondsFromDate:[fuelPurchaseLog dateCopiedFromMaster]]),
     orNil([fuelPurchaseLog numGallons]),
     orNil([fuelPurchaseLog octane]),
     orNil([fuelPurchaseLog gallonPrice]),
     orNil([fuelPurchaseLog carWashPerGallonDiscount]),
     [NSNumber numberWithBool:[fuelPurchaseLog gotCarWash]],
-    orNil([PELMUtils sqliteTextFromDate:[fuelPurchaseLog logDate]]),
+    orNil([PEUtils millisecondsFromDate:[fuelPurchaseLog purchasedAt]]),
     [NSNumber numberWithBool:[fuelPurchaseLog editInProgress]],
     [NSNumber numberWithBool:[fuelPurchaseLog syncInProgress]],
     [NSNumber numberWithBool:[fuelPurchaseLog synced]],
@@ -4063,7 +3948,7 @@ WHERE %@ = ?",
                     COL_MASTER_VEHICLE_ID,
                     COL_GLOBAL_ID,
                     COL_MEDIA_TYPE,
-                    COL_MST_LAST_MODIFIED,
+                    COL_MST_UPDATED_AT,
                     COL_MST_DELETED_DT,
                     COL_ENVL_ODOMETER_READING,
                     COL_ENVL_MPG_READING,
@@ -4076,13 +3961,13 @@ WHERE %@ = ?",
                               orNil([vehicle localMasterIdentifier]),
                               orNil([environmentLog globalIdentifier]),
                               orNil([[environmentLog mediaType] description]),
-                              orNil([PELMUtils sqliteTextFromDate:[environmentLog lastModified]]),
-                              orNil([PELMUtils sqliteTextFromDate:[environmentLog deletedDate]]),
+                              orNil([PEUtils millisecondsFromDate:[environmentLog updatedAt]]),
+                              orNil([PEUtils millisecondsFromDate:[environmentLog deletedDate]]),
                               orNil([environmentLog odometer]),
                               orNil([environmentLog reportedAvgMpg]),
                               orNil([environmentLog reportedAvgMph]),
                               orNil([environmentLog reportedOutsideTemp]),
-                              orNil([PELMUtils sqliteTextFromDate:[environmentLog logDate]]),
+                              orNil([PEUtils millisecondsFromDate:[environmentLog logDate]]),
                               orNil([environmentLog reportedDte])]
                      entity:environmentLog
                          db:db
@@ -4102,7 +3987,7 @@ WHERE %@ = ?",
                     COL_MAIN_VEHICLE_ID,
                     COL_GLOBAL_ID,
                     COL_MEDIA_TYPE,
-                    COL_MAN_MASTER_LAST_MODIFIED,
+                    COL_MAN_MASTER_UPDATED_AT,
                     COL_MAN_DT_COPIED_DOWN_FROM_MASTER,
                     COL_ENVL_ODOMETER_READING,
                     COL_ENVL_MPG_READING,
@@ -4122,13 +4007,13 @@ WHERE %@ = ?",
                             orNil([vehicle localMainIdentifier]),
                             orNil([environmentLog globalIdentifier]),
                             orNil([[environmentLog mediaType] description]),
-                            orNil([PELMUtils sqliteTextFromDate:[environmentLog lastModified]]),
-                            orNil([PELMUtils sqliteTextFromDate:[environmentLog dateCopiedFromMaster]]),
+                            orNil([PEUtils millisecondsFromDate:[environmentLog updatedAt]]),
+                            orNil([PEUtils millisecondsFromDate:[environmentLog dateCopiedFromMaster]]),
                             orNil([environmentLog odometer]),
                             orNil([environmentLog reportedAvgMpg]),
                             orNil([environmentLog reportedAvgMph]),
                             orNil([environmentLog reportedOutsideTemp]),
-                            orNil([PELMUtils sqliteTextFromDate:[environmentLog logDate]]),
+                            orNil([PEUtils millisecondsFromDate:[environmentLog logDate]]),
                             orNil([environmentLog reportedDte]),
                             [NSNumber numberWithBool:[environmentLog editInProgress]],
                             [NSNumber numberWithBool:[environmentLog syncInProgress]],
@@ -4160,7 +4045,7 @@ WHERE %@ = ?",
           COL_MASTER_VEHICLE_ID,
           COL_GLOBAL_ID,          // col1
           COL_MEDIA_TYPE,         // col2
-          COL_MST_LAST_MODIFIED,  // col3
+          COL_MST_UPDATED_AT,  // col3
           COL_MST_DELETED_DT,     // col4
           COL_ENVL_ODOMETER_READING,
           COL_ENVL_MPG_READING,
@@ -4187,7 +4072,7 @@ WHERE %@ = ?",
           TBL_MASTER_ENV_LOG, // table
           COL_GLOBAL_ID,          // col1
           COL_MEDIA_TYPE,         // col2
-          COL_MST_LAST_MODIFIED,  // col3
+          COL_MST_UPDATED_AT,  // col3
           COL_MST_DELETED_DT,     // col4
           COL_ENVL_ODOMETER_READING,
           COL_ENVL_MPG_READING,
@@ -4211,13 +4096,13 @@ WHERE %@ = ?",
   NSArray *reqdArgs =
   @[orNil([environmentLog globalIdentifier]),
     orNil([[environmentLog mediaType] description]),
-    orNil([PELMUtils sqliteTextFromDate:[environmentLog lastModified]]),
-    orNil([PELMUtils sqliteTextFromDate:[environmentLog deletedDate]]),
+    orNil([PEUtils millisecondsFromDate:[environmentLog updatedAt]]),
+    orNil([PEUtils millisecondsFromDate:[environmentLog deletedDate]]),
     orNil([environmentLog odometer]),
     orNil([environmentLog reportedAvgMpg]),
     orNil([environmentLog reportedAvgMph]),
     orNil([environmentLog reportedOutsideTemp]),
-    orNil([PELMUtils sqliteTextFromDate:[environmentLog logDate]]),
+    orNil([PEUtils millisecondsFromDate:[environmentLog logDate]]),
     orNil([environmentLog reportedDte]),
     [environmentLog localMasterIdentifier]];
   [args addObjectsFromArray:reqdArgs];
@@ -4249,7 +4134,7 @@ WHERE %@ = ?",
           COL_MAIN_VEHICLE_ID,
           COL_GLOBAL_ID,                      // col1
           COL_MEDIA_TYPE,                     // col2
-          COL_MAN_MASTER_LAST_MODIFIED,      // col3
+          COL_MAN_MASTER_UPDATED_AT,      // col3
           COL_MAN_DT_COPIED_DOWN_FROM_MASTER, // col4
           COL_ENVL_ODOMETER_READING,
           COL_ENVL_MPG_READING,
@@ -4290,7 +4175,7 @@ WHERE %@ = ?",
           TBL_MAIN_ENV_LOG,                   // table
           COL_GLOBAL_ID,                      // col1
           COL_MEDIA_TYPE,                     // col2
-          COL_MAN_MASTER_LAST_MODIFIED,      // col3
+          COL_MAN_MASTER_UPDATED_AT,      // col3
           COL_MAN_DT_COPIED_DOWN_FROM_MASTER, // col4
           COL_ENVL_ODOMETER_READING,
           COL_ENVL_MPG_READING,
@@ -4322,13 +4207,13 @@ WHERE %@ = ?",
   NSArray *reqdArgs =
   @[orNil([environmentLog globalIdentifier]),
     orNil([[environmentLog mediaType] description]),
-    orNil([PELMUtils sqliteTextFromDate:[environmentLog lastModified]]),
-    orNil([PELMUtils sqliteTextFromDate:[environmentLog dateCopiedFromMaster]]),
+    orNil([PEUtils millisecondsFromDate:[environmentLog updatedAt]]),
+    orNil([PEUtils millisecondsFromDate:[environmentLog dateCopiedFromMaster]]),
     orNil([environmentLog odometer]),
     orNil([environmentLog reportedAvgMpg]),
     orNil([environmentLog reportedAvgMph]),
     orNil([environmentLog reportedOutsideTemp]),
-    orNil([PELMUtils sqliteTextFromDate:[environmentLog logDate]]),
+    orNil([PEUtils millisecondsFromDate:[environmentLog logDate]]),
     orNil([environmentLog reportedDte]),
     [NSNumber numberWithBool:[environmentLog editInProgress]],
     [NSNumber numberWithBool:[environmentLog syncInProgress]],

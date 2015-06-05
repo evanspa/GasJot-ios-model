@@ -800,13 +800,11 @@
 - (FPUser *)userWithName:(NSString *)name
                    email:(NSString *)email
                 username:(NSString *)username
-                password:(NSString *)password
-            creationDate:(NSDate *)creationDate {
+                password:(NSString *)password {
   return [FPUser userWithName:name
                         email:email
                      username:username
                      password:password
-                 creationDate:creationDate
                     mediaType:[FPKnownMediaTypes userMediaTypeWithVersion:_userResMtVersion]];
 }
 
@@ -931,35 +929,18 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
   return [_localDao numVehiclesForUser:user error:errorBlk];
 }
 
-- (NSInteger)numVehiclesForUser:(FPUser *)user
-                      newerThan:(NSDate *)newerThan
-                          error:(PELMDaoErrorBlk)errorBlk {
-  return [_localDao numVehiclesForUser:user newerThan:newerThan error:errorBlk];
-}
-
 - (FPVehicle *)vehicleWithName:(NSString *)name
-                     dateAdded:(NSDate *)dateAdded {
+                 defaultOctane:(NSNumber *)defaultOctane
+                  fuelCapacity:(NSDecimalNumber *)fuelCapacity {
   return [FPVehicle vehicleWithName:name
-                          dateAdded:dateAdded
+                      defaultOctane:defaultOctane
+                       fuelCapacity:fuelCapacity
                           mediaType:[FPKnownMediaTypes vehicleMediaTypeWithVersion:_vehicleResMtVersion]];
 }
 
 - (NSArray *)vehiclesForUser:(FPUser *)user
-                    pageSize:(NSInteger)pageSize
-                       error:(PELMDaoErrorBlk)errorBlk {
-  return [self vehiclesForUser:user
-                      pageSize:pageSize
-               beforeDateAdded:nil
-                         error:errorBlk];
-}
-
-- (NSArray *)vehiclesForUser:(FPUser *)user
-                    pageSize:(NSInteger)pageSize
-             beforeDateAdded:(NSDate *)beforeDateAdded
                        error:(PELMDaoErrorBlk)errorBlk {
   return [_localDao vehiclesForUser:user
-                           pageSize:pageSize
-                    beforeDateAdded:beforeDateAdded
                               error:errorBlk];
 }
 
@@ -1036,22 +1017,13 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
   return [_localDao numFuelStationsForUser:user error:errorBlk];
 }
 
-- (NSInteger)numFuelStationsForUser:(FPUser *)user
-                          newerThan:(NSDate *)newerThan
-                              error:(PELMDaoErrorBlk)errorBlk {
-  return [_localDao numFuelStationsForUser:user
-                                 newerThan:newerThan
-                                     error:errorBlk];
-}
-
 - (FPFuelStation *)fuelStationWithName:(NSString *)name
                                 street:(NSString *)street
                                   city:(NSString *)city
                                  state:(NSString *)state
                                    zip:(NSString *)zip
                               latitude:(NSDecimalNumber *)latitude
-                             longitude:(NSDecimalNumber *)longitude
-                             dateAdded:(NSDate *)dateAdded {
+                             longitude:(NSDecimalNumber *)longitude {
   return [FPFuelStation fuelStationWithName:name
                                      street:street
                                        city:city
@@ -1059,26 +1031,12 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                                         zip:zip
                                    latitude:latitude
                                   longitude:longitude
-                                  dateAdded:dateAdded
                                   mediaType:[FPKnownMediaTypes fuelStationMediaTypeWithVersion:_fuelStationResMtVersion]];
 }
 
 - (NSArray *)fuelStationsForUser:(FPUser *)user
-                        pageSize:(NSInteger)pageSize
-                           error:(PELMDaoErrorBlk)errorBlk {
-  return [self fuelStationsForUser:user
-                          pageSize:pageSize
-                   beforeDateAdded:nil
-                             error:errorBlk];
-}
-
-- (NSArray *)fuelStationsForUser:(FPUser *)user
-                        pageSize:(NSInteger)pageSize
-                 beforeDateAdded:(NSDate *)beforeDateAdded
                            error:(PELMDaoErrorBlk)errorBlk {
   return [_localDao fuelStationsForUser:user
-                               pageSize:pageSize
-                        beforeDateAdded:beforeDateAdded
                                   error:errorBlk];
 }
 
@@ -1174,7 +1132,7 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                                               gallonPrice:gallonPrice
                                                gotCarWash:gotCarWash
                                  carWashPerGallonDiscount:carWashPerGallonDiscount
-                                                  logDate:logDate
+                                                  purchasedAt:logDate
                                                 mediaType:[FPKnownMediaTypes fuelPurchaseLogMediaTypeWithVersion:_fuelPurchaseLogResMtVersion]];
 }
 

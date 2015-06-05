@@ -9,6 +9,7 @@
 #import "FPFuelStationSerializer.h"
 #import "FPFuelStation.h"
 #import <PEObjc-Commons/NSMutableDictionary+PEAdditions.h>
+#import <PEObjc-Commons/NSDictionary+PEAdditions.h>
 #import <PEHateoas-Client/HCUtils.h>
 
 NSString * const FPFuelStationNameKey      = @"fpfuelstation/name";
@@ -18,7 +19,7 @@ NSString * const FPFuelStationStateKey     = @"fpfuelstation/state";
 NSString * const FPFuelStationZipKey       = @"fpfuelstation/zip";
 NSString * const FPFuelStationLatitudeKey  = @"fpfuelstation/latitude";
 NSString * const FPFuelStationLongitudeKey = @"fpfuelstation/longitude";
-NSString * const FPFuelStationDateAddedKey = @"fpfuelstation/date-added";
+NSString * const FPFuelStationUpdatedAtKey = @"fpfuelstation/updated-at";
 
 @implementation FPFuelStationSerializer
 
@@ -34,8 +35,6 @@ NSString * const FPFuelStationDateAddedKey = @"fpfuelstation/date-added";
   [fuelStationDict setObjectIfNotNull:[fuelStation zip] forKey:FPFuelStationZipKey];
   [fuelStationDict setObjectIfNotNull:[fuelStation latitude] forKey:FPFuelStationLatitudeKey];
   [fuelStationDict setObjectIfNotNull:[fuelStation longitude] forKey:FPFuelStationLongitudeKey];
-  [fuelStationDict setObjectIfNotNull:[HCUtils rfc7231StringFromDate:[fuelStation dateAdded]]
-                               forKey:FPFuelStationDateAddedKey];
   return fuelStationDict;
 }
 
@@ -53,11 +52,10 @@ NSString * const FPFuelStationDateAddedKey = @"fpfuelstation/date-added";
                                         zip:[resDict objectForKey:FPFuelStationZipKey]
                                    latitude:[resDict objectForKey:FPFuelStationLatitudeKey]
                                   longitude:[resDict objectForKey:FPFuelStationLongitudeKey]
-                                  dateAdded:[HCUtils rfc7231DateFromString:[resDict objectForKey:FPFuelStationDateAddedKey]]
                            globalIdentifier:location
                                   mediaType:mediaType
                                   relations:relations
-                               lastModified:lastModified];
+                                  updatedAt:[resDict dateSince1970ForKey:FPFuelStationUpdatedAtKey]];
 }
 
 @end

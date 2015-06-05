@@ -8,18 +8,20 @@
 
 #import "FPFuelPurchaseLogSerializer.h"
 #import "FPFuelPurchaseLog.h"
+#import <PEObjc-Commons/NSDictionary+PEAdditions.h>
 #import <PEObjc-Commons/NSMutableDictionary+PEAdditions.h>
 #import <PEHateoas-Client/HCUtils.h>
 #import <PEObjc-Commons/PEUtils.h>
 
-NSString * const FPFuelPurchaseLogVehicleGlobalIdKey          = @"fpfuelpurchaselog/vehicle";
-NSString * const FPFuelPurchaseLogFuelStationGlobalIdKey      = @"fpfuelpurchaselog/fuelstation";
-NSString * const FPFuelPurchaseLogNumGallonsKey               = @"fpfuelpurchaselog/num-gallons";
-NSString * const FPFuelPurchaseLogOctaneKey                   = @"fpfuelpurchaselog/octane";
-NSString * const FPFuelPurchaseLogGallonPriceKey              = @"fpfuelpurchaselog/gallon-price";
-NSString * const FPFuelPurchaseLogGotCarWashKey               = @"fpfuelpurchaselog/got-car-wash";
-NSString * const FPFuelPurchaseLogCarWashPerGallonDiscountKey = @"fpfuelpurchaselog/carwash-per-gal-discount";
-NSString * const FPFuelPurchaseLogLogDateKey                  = @"fpfuelpurchaselog/purchase-date";
+NSString * const FPFuelPurchaseLogVehicleGlobalIdKey          = @"fplog/vehicle";
+NSString * const FPFuelPurchaseLogFuelStationGlobalIdKey      = @"fplog/fuelstation";
+NSString * const FPFuelPurchaseLogNumGallonsKey               = @"fplog/num-gallons";
+NSString * const FPFuelPurchaseLogOctaneKey                   = @"fplog/octane";
+NSString * const FPFuelPurchaseLogGallonPriceKey              = @"fplog/gallon-price";
+NSString * const FPFuelPurchaseLogGotCarWashKey               = @"fplog/got-car-wash";
+NSString * const FPFuelPurchaseLogCarWashPerGallonDiscountKey = @"fplog/car-wash-per-gal-discount";
+NSString * const FPFuelPurchaseLogPurchasedAtKey              = @"fplog/purchased-at";
+NSString * const FPFuelPurchaseLogUpdatedAtKey                = @"fplog/updated-at";
 
 @implementation FPFuelPurchaseLogSerializer
 
@@ -28,15 +30,22 @@ NSString * const FPFuelPurchaseLogLogDateKey                  = @"fpfuelpurchase
 - (NSDictionary *)dictionaryWithResourceModel:(id)resourceModel {
   FPFuelPurchaseLog *fuelPurchaseLog = (FPFuelPurchaseLog *)resourceModel;
   NSMutableDictionary *fuelPurchaseLogDict = [NSMutableDictionary dictionary];
-  [fuelPurchaseLogDict setObjectIfNotNull:[fuelPurchaseLog vehicleGlobalIdentifier] forKey:FPFuelPurchaseLogVehicleGlobalIdKey];
-  [fuelPurchaseLogDict setObjectIfNotNull:[fuelPurchaseLog fuelStationGlobalIdentifier] forKey:FPFuelPurchaseLogFuelStationGlobalIdKey];
-  [fuelPurchaseLogDict setObjectIfNotNull:[fuelPurchaseLog numGallons] forKey:FPFuelPurchaseLogNumGallonsKey];
-  [fuelPurchaseLogDict setObjectIfNotNull:[fuelPurchaseLog octane] forKey:FPFuelPurchaseLogOctaneKey];
-  [fuelPurchaseLogDict setObjectIfNotNull:[fuelPurchaseLog gallonPrice] forKey:FPFuelPurchaseLogGallonPriceKey];
-  [fuelPurchaseLogDict setObjectIfNotNull:[NSNumber numberWithBool:[fuelPurchaseLog gotCarWash]] forKey:FPFuelPurchaseLogGotCarWashKey];
-  [fuelPurchaseLogDict setObjectIfNotNull:[fuelPurchaseLog carWashPerGallonDiscount] forKey:FPFuelPurchaseLogCarWashPerGallonDiscountKey];
-  [fuelPurchaseLogDict setObjectIfNotNull:[HCUtils rfc7231StringFromDate:[fuelPurchaseLog logDate]]
-                               forKey:FPFuelPurchaseLogLogDateKey];
+  [fuelPurchaseLogDict setObjectIfNotNull:[fuelPurchaseLog vehicleGlobalIdentifier]
+                                   forKey:FPFuelPurchaseLogVehicleGlobalIdKey];
+  [fuelPurchaseLogDict setObjectIfNotNull:[fuelPurchaseLog fuelStationGlobalIdentifier]
+                                   forKey:FPFuelPurchaseLogFuelStationGlobalIdKey];
+  [fuelPurchaseLogDict setObjectIfNotNull:[fuelPurchaseLog numGallons]
+                                   forKey:FPFuelPurchaseLogNumGallonsKey];
+  [fuelPurchaseLogDict setObjectIfNotNull:[fuelPurchaseLog octane]
+                                   forKey:FPFuelPurchaseLogOctaneKey];
+  [fuelPurchaseLogDict setObjectIfNotNull:[fuelPurchaseLog gallonPrice]
+                                   forKey:FPFuelPurchaseLogGallonPriceKey];
+  [fuelPurchaseLogDict setObjectIfNotNull:[NSNumber numberWithBool:[fuelPurchaseLog gotCarWash]]
+                                   forKey:FPFuelPurchaseLogGotCarWashKey];
+  [fuelPurchaseLogDict setObjectIfNotNull:[fuelPurchaseLog carWashPerGallonDiscount]
+                                   forKey:FPFuelPurchaseLogCarWashPerGallonDiscountKey];
+  [fuelPurchaseLogDict setSecondsSince1970FromDate:[fuelPurchaseLog purchasedAt]
+                                            forKey:FPFuelPurchaseLogPurchasedAtKey];
   return fuelPurchaseLogDict;
 }
 
@@ -54,11 +63,11 @@ NSString * const FPFuelPurchaseLogLogDateKey                  = @"fpfuelpurchase
                         gallonPrice:resDict[FPFuelPurchaseLogGallonPriceKey]
                          gotCarWash:[resDict[FPFuelPurchaseLogGotCarWashKey] boolValue]
            carWashPerGallonDiscount:resDict[FPFuelPurchaseLogCarWashPerGallonDiscountKey]
-                            logDate:[HCUtils rfc7231DateFromString:resDict[FPFuelPurchaseLogLogDateKey]]
+                        purchasedAt:[resDict dateSince1970ForKey:FPFuelPurchaseLogPurchasedAtKey]
                    globalIdentifier:location
                           mediaType:mediaType
                           relations:relations
-                       lastModified:lastModified];
+                          updatedAt:[resDict dateSince1970ForKey:FPFuelPurchaseLogUpdatedAtKey]];
   [fplog setVehicleGlobalIdentifier:resDict[FPFuelPurchaseLogVehicleGlobalIdKey]];
   [fplog setFuelStationGlobalIdentifier:resDict[FPFuelPurchaseLogFuelStationGlobalIdKey]];
   return fplog;

@@ -19,10 +19,10 @@ NSString * const COL_REL_NAME = @"name";
 NSString * const COL_REL_URI = @"uri";
 NSString * const COL_REL_MEDIA_TYPE = @"media_type";
 // ----Common master columns----------------------------------------------------
-NSString * const COL_MST_LAST_MODIFIED = @"last_modified";
+NSString * const COL_MST_UPDATED_AT = @"updated_at";
 NSString * const COL_MST_DELETED_DT = @"deleted_date";
 // ----Common main columns------------------------------------------------------
-NSString * const COL_MAN_MASTER_LAST_MODIFIED = @"master_last_modified";
+NSString * const COL_MAN_MASTER_UPDATED_AT = @"master_updated_at";
 NSString * const COL_MAN_DT_COPIED_DOWN_FROM_MASTER = @"date_copied_down_from_master";
 NSString * const COL_MAN_EDIT_IN_PROGRESS = @"edit_in_progress";
 NSString * const COL_MAN_EDIT_ACTOR_ID = @"edit_actor_id";

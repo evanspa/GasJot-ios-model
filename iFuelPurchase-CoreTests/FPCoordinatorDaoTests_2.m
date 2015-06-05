@@ -56,7 +56,7 @@ describe(@"FPCoordinatorDao", ^{
       });
       // First we need to create a vehicle and fuel station.
       FPVehicle *vehicle =
-        [_coordDao vehicleWithName:@"My Bimmer" dateAdded:[NSDate date]];
+        [_coordDao vehicleWithName:@"My Bimmer" defaultOctane:@87 fuelCapacity:[NSDecimalNumber decimalNumberWithString:@"20.5"]];
       [_coordDao saveNewVehicle:vehicle forUser:user error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       FPFuelStation *fuelStation =
         [_coordDao fuelStationWithName:@"Exxon Mobile"
@@ -65,8 +65,7 @@ describe(@"FPCoordinatorDao", ^{
                                  state:@"NC"
                                    zip:@"28277"
                               latitude:nil
-                             longitude:nil
-                             dateAdded:[NSDate date]];
+                             longitude:nil];
       [_coordDao saveNewFuelStation:fuelStation forUser:user error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       FPFuelPurchaseLog *fplog =
       [_coordDao fuelPurchaseLogWithNumGallons:[NSDecimalNumber decimalNumberWithString:@"15.2"]
@@ -142,7 +141,7 @@ describe(@"FPCoordinatorDao", ^{
       
       // Now, starting "fresh", lets edit our fplog
       user = [_coordDao userWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
-      NSArray *vehicles = [_coordDao vehiclesForUser:user pageSize:10 error:[_coordTestCtx newLocalFetchErrBlkMaker]()];
+      NSArray *vehicles = [_coordDao vehiclesForUser:user error:[_coordTestCtx newLocalFetchErrBlkMaker]()];
       [[vehicles should] haveCountOf:1];
       vehicle = vehicles[0];
       fplogs = [_coordDao fuelPurchaseLogsForVehicle:vehicle
@@ -180,7 +179,7 @@ describe(@"FPCoordinatorDao", ^{
       // 'vehicle' object in-memory was not mutated; it was mutated in the database.  So, in order to have
       // a consistent view of our data model, we need to refetch things from the database.
       user = [_coordDao userWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
-      vehicles = [_coordDao vehiclesForUser:user pageSize:10 error:[_coordTestCtx newLocalFetchErrBlkMaker]()];
+      vehicles = [_coordDao vehiclesForUser:user error:[_coordTestCtx newLocalFetchErrBlkMaker]()];
       [[vehicles should] haveCountOf:1]; // sanity check
       vehicle = vehicles[0];
       fplogs = [_coordDao fuelPurchaseLogsForVehicle:vehicle

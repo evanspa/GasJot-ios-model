@@ -11,17 +11,18 @@
     <header name="Cache-Control" value="no-cache" />
     <header name="Vary" value="Accept, Accept-Charset, Accept-Language" />
     <header name="fp-auth-token" value="23409582345-093284590-2345LKJDFLSDFLK" />
-    <header name="Last-Modified" value="Fri, 06 Sep 2014 10:34:22 GMT" />
     <header name="Content-Type" value="application/vnd.fp.fplog-v0.0.1+json" />
   </headers>
   <body>
     <![CDATA[
-      { "fpfuelpurchaselog/num-gallons": "15.2",
-        "fpfuelpurchaselog/octane": "93",
-        "fpfuelpurchaselog/gallon-price": "3.85",
-        "fpfuelpurchaselog/got-car-wash": "NO",
-        "fpfuelpurchaselog/carwash-per-gallon-discount": "0.08",
-        "fpfuelpurchaselog/log-date": "Sun, 12 Oct 2014 09:49:03 GMT" }
+      { "fplog/num-gallons": "15.2",
+        "fplog/octane": "93",
+        "fplog/gallon-price": "3.85",
+        "fplog/got-car-wash": "NO",
+        "fplog/car-wash-per-gal-discount": "0.08",
+        "fplog/purchased-at": 1413107343000,
+        "fplog/updated-at": 1413107343000
+        "fplog/created-at": 1413107343000}
     ]]>
   </body>
 </http-response>

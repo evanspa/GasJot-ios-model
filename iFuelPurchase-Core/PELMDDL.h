@@ -19,10 +19,10 @@ FOUNDATION_EXPORT NSString * const COL_REL_NAME;
 FOUNDATION_EXPORT NSString * const COL_REL_URI;
 FOUNDATION_EXPORT NSString * const COL_REL_MEDIA_TYPE;
 // ----Common master columns----------------------------------------------------
-FOUNDATION_EXPORT NSString * const COL_MST_LAST_MODIFIED;
+FOUNDATION_EXPORT NSString * const COL_MST_UPDATED_AT;
 FOUNDATION_EXPORT NSString * const COL_MST_DELETED_DT;
 // ----Common main columns------------------------------------------------------
-FOUNDATION_EXPORT NSString * const COL_MAN_MASTER_LAST_MODIFIED;
+FOUNDATION_EXPORT NSString * const COL_MAN_MASTER_UPDATED_AT;
 FOUNDATION_EXPORT NSString * const COL_MAN_DT_COPIED_DOWN_FROM_MASTER;
 FOUNDATION_EXPORT NSString * const COL_MAN_EDIT_IN_PROGRESS;
 FOUNDATION_EXPORT NSString * const COL_MAN_EDIT_ACTOR_ID;

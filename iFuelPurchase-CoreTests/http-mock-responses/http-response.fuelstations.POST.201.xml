@@ -11,7 +11,6 @@
     <header name="Cache-Control" value="no-cache" />
     <header name="Vary" value="Accept, Accept-Charset, Accept-Language" />
     <header name="fp-auth-token" value="23409582345-093284590-2345LKJDFLSDFLK" />
-    <header name="Last-Modified" value="Fri, 06 Sep 2014 10:34:22 GMT" />
     <header name="Content-Type" value="application/vnd.fp.fuelstation-v0.0.1+json" />
   </headers>
   <body>
@@ -20,7 +19,8 @@
         "fpfuelstation/city": "Charlotte",
         "fpfuelstation/state": "NC",
         "fpfuelstation/zip": "28277",
-        "fpfuelstation/date-added": "Sun, 05 Oct 2014 09:52:22 GMT" }
+        "fpfuelstation/updated-at": 1412502742000,
+        "fpfuelstation/created-at": 1412502742000}
     ]]>
   </body>
 </http-response>
