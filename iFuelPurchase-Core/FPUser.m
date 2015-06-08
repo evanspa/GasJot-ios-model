@@ -166,7 +166,7 @@ NSString * const FPAppTransactionSetRelation = @"apptxnset";
 }
 
 - (NSString *)usernameOrEmail {
-  if ([self username]) {
+  if (!([self username] == (id)[NSNull null] || [self username].length == 0)) {
     return [self username];
   }
   return [self email];
