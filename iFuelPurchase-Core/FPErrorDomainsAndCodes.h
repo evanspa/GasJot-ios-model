@@ -34,14 +34,12 @@ FOUNDATION_EXPORT NSString * const FPSystemFaultedErrorDomain;
  domain.
  */
 typedef NS_OPTIONS(NSUInteger, FPSaveUserMsg) {
-  FPSaveUsrAnyIssues              = 1 << 0,
-  FPSaveUsrNameNotProvided        = 1 << 1,
-  FPSaveUsrInvalidName            = 1 << 2,
-  FPSaveUsrInvalidEmail           = 1 << 3,
-  FPSaveUsrInvalidUsername        = 1 << 4,
-  FPSaveUsrIdentifierNotProvided  = 1 << 5,
-  FPSaveUsrPasswordNotProvided    = 1 << 6,
-  FPSaveUsrEmailAlreadyRegistered = 1 << 7
+  FPSaveUsrAnyIssues                   = 1 << 0,
+  FPSaveUsrInvalidEmail                = 1 << 1,
+  FPSaveUsrUsernameAndEmailNotProvided = 1 << 2,
+  FPSaveUsrPasswordNotProvided         = 1 << 3,
+  FPSaveUsrEmailAlreadyRegistered      = 1 << 4,
+  FPSaveUsrUsernameAlreadyRegistered   = 1 << 5
 };
 
 /**

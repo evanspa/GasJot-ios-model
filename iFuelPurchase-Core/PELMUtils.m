@@ -266,10 +266,6 @@ markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCom
         }
       }
     }
-  } else {
-    // I dunno - do I really need to log this?  Seems like this is a good way to
-    // fill up my transaction database with useless data.
-    //[txn logWithEventType:FPTxnSyncUserEvtSaveToRemoteStoreSkippedDueToNoEdits];
   }
 }
 
