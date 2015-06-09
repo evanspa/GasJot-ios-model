@@ -15,6 +15,9 @@ FOUNDATION_EXPORT NSString * const FPUserSyncInitiated;
 FOUNDATION_EXPORT NSString * const FPUserSynced;
 FOUNDATION_EXPORT NSString * const FPUserSyncFailed;
 FOUNDATION_EXPORT NSString * const FPUserDeleted;
+FOUNDATION_EXPORT NSString * const FPUserRemotelyDeleted;
+FOUNDATION_EXPORT NSString * const FPUserUpdated;
+FOUNDATION_EXPORT NSString * const FPUserRemotelyUpdated;
 
 #pragma mark - Vehicle related notifications
 

@@ -8,7 +8,6 @@
 
 #import "FPCoordinatorDao.h"
 #import "FPCoordinatorDao+AdditionsForTesting.h"
-#import <PEFuelPurchase-Common/FPTransactionCodes.h>
 #import <CocoaLumberjack/DDLog.h>
 #import <CocoaLumberjack/DDASLLogger.h>
 #import <CocoaLumberjack/DDTTYLogger.h>

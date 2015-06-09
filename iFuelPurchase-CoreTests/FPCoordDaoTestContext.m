@@ -15,7 +15,6 @@
 #import <CocoaLumberjack/DDTTYLogger.h>
 #import <UIKit/UIDevice.h>
 #import "FPAuthTokenDelegateForTesting.h"
-#import <PEFuelPurchase-Common/FPTransactionCodes.h>
 #import "FPCoordinatorDao+AdditionsForTesting.h"
 #import "FPLogging.h"
 

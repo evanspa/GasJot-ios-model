@@ -16,6 +16,9 @@ NSString * const FPUserSyncInitiated = @"FPUserSyncInitiated";
 NSString * const FPUserSynced = @"FPUserSynced";
 NSString * const FPUserSyncFailed = @"FPUserSyncFailed";
 NSString * const FPUserDeleted = @"FPUserDeleted";
+NSString * const FPUserRemotelyDeleted = @"FPUserRemotelyDeleted";
+NSString * const FPUserUpdated = @"FPUserUpdated";
+NSString * const FPUserRemotelyUpdated = @"FPUserRemotelyUpdated";
 
 #pragma mark - Vehicle related notifications
 
