@@ -411,6 +411,8 @@ WHERE %@ = ?", mainTable, COL_MAN_EDIT_IN_PROGRESS, COL_LOCAL_ID]
                                      mainTable:mainTable
                                             db:db
                                          error:errorBlk];
+    [entity setSyncHttpRespCode:nil];
+    [entity setSyncErrMask:nil];
     [entity setEditInProgress:NO];
     [PELMUtils doUpdate:mainUpdateStmt
               argsArray:mainUpdateArgsBlk(entity)
