@@ -98,9 +98,10 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
                        model:model];
 }
 
-+ (HCAuthReqdErrorBlk)toHCAuthReqdBlk:(PELMRemoteMasterAuthReqdBlk)authReqdBlk {
++ (HCAuthReqdErrorBlk)toHCAuthReqdBlk:(PELMRemoteMasterAuthReqdBlk)authReqdBlk
+                               entity:(id)entity {
   return ^(HCAuthentication *auth, NSHTTPURLResponse *resp) {
-    authReqdBlk(auth);
+    authReqdBlk(entity, auth);
   };
 }
 
@@ -207,7 +208,8 @@ queueForCompletionHandler:(dispatch_queue_t)queue
                     success:[self newPostSuccessBlk:complHandler]
                 redirection:[self newRedirectionBlk:complHandler]
                 clientError:[self newClientErrBlk:complHandler]
-     authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired]
+     authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired
+                                                            entity:resourceModelParam]
                 serverError:[self newServerErrBlk:complHandler]
            unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
           connectionFailure:[self newConnFailureBlk:complHandler]
@@ -259,7 +261,8 @@ queueForCompletionHandler:queue
                    success:[self newPutSuccessBlk:complHandler]
                redirection:[self newRedirectionBlk:complHandler]
                clientError:[self newClientErrBlk:complHandler]
-    authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired]
+    authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired
+                                                           entity:vehicle]
                serverError:[self newServerErrBlk:complHandler]
           unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
                   conflict:[self newConflictBlk:complHandler]
@@ -283,7 +286,8 @@ queueForCompletionHandler:(dispatch_queue_t)queue {
                      success:[self newDeleteSuccessBlk:complHandler]
                  redirection:[self newRedirectionBlk:complHandler]
                  clientError:[self newClientErrBlk:complHandler]
-      authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired]
+      authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired
+                                                             entity:vehicle]
                  serverError:[self newServerErrBlk:complHandler]
             unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
                     conflict:[self newConflictBlk:complHandler]
@@ -330,7 +334,8 @@ queueForCompletionHandler:queue
                    success:[self newPutSuccessBlk:complHandler]
                redirection:[self newRedirectionBlk:complHandler]
                clientError:[self newClientErrBlk:complHandler]
-    authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired]
+    authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired
+                                                           entity:fuelStation]
                serverError:[self newServerErrBlk:complHandler]
           unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
                   conflict:[self newConflictBlk:complHandler]
@@ -354,7 +359,8 @@ queueForCompletionHandler:(dispatch_queue_t)queue {
                      success:[self newDeleteSuccessBlk:complHandler]
                  redirection:[self newRedirectionBlk:complHandler]
                  clientError:[self newClientErrBlk:complHandler]
-      authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired]
+      authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired
+                                                             entity:fuelStation]
                  serverError:[self newServerErrBlk:complHandler]
             unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
                     conflict:[self newConflictBlk:complHandler]
@@ -401,7 +407,8 @@ queueForCompletionHandler:queue
    success:[self newPutSuccessBlk:complHandler]
    redirection:[self newRedirectionBlk:complHandler]
    clientError:[self newClientErrBlk:complHandler]
-   authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired]
+   authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired
+                                                          entity:fuelPurchaseLog]
    serverError:[self newServerErrBlk:complHandler]
    unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
    conflict:[self newConflictBlk:complHandler]
@@ -425,7 +432,8 @@ queueForCompletionHandler:queue
    success:[self newDeleteSuccessBlk:complHandler]
    redirection:[self newRedirectionBlk:complHandler]
    clientError:[self newClientErrBlk:complHandler]
-   authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired]
+   authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired
+                                                          entity:fuelPurchaseLog]
    serverError:[self newServerErrBlk:complHandler]
    unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
    conflict:[self newConflictBlk:complHandler]
@@ -472,7 +480,8 @@ queueForCompletionHandler:queue
    success:[self newPutSuccessBlk:complHandler]
    redirection:[self newRedirectionBlk:complHandler]
    clientError:[self newClientErrBlk:complHandler]
-   authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired]
+   authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired
+                                                          entity:environmentLog]
    serverError:[self newServerErrBlk:complHandler]
    unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
    conflict:[self newConflictBlk:complHandler]
@@ -496,7 +505,8 @@ queueForCompletionHandler:queue
    success:[self newDeleteSuccessBlk:complHandler]
    redirection:[self newRedirectionBlk:complHandler]
    clientError:[self newClientErrBlk:complHandler]
-   authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired]
+   authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired
+                                                          entity:environmentLog]
    serverError:[self newServerErrBlk:complHandler]
    unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
    conflict:[self newConflictBlk:complHandler]
@@ -543,7 +553,8 @@ queueForCompletionHandler:(dispatch_queue_t)queue {
                    success:[self newPutSuccessBlk:complHandler]
                redirection:[self newRedirectionBlk:complHandler]
                clientError:[self newClientErrBlk:complHandler]
-    authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired]
+    authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired
+                                                           entity:user]
                serverError:[self newServerErrBlk:complHandler]
           unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
                   conflict:[self newConflictBlk:complHandler]
@@ -592,7 +603,8 @@ queueForCompletionHandler:(dispatch_queue_t)queue {
                      success:[self newDeleteSuccessBlk:complHandler]
                  redirection:[self newRedirectionBlk:complHandler]
                  clientError:[self newClientErrBlk:complHandler]
-      authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired]
+      authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired
+                                                             entity:user]
                  serverError:[self newServerErrBlk:complHandler]
             unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
                     conflict:[self newConflictBlk:complHandler]

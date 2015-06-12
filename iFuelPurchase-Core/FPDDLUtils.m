@@ -155,6 +155,9 @@ FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MASTER_ENV_LOG,
 %@ INTEGER, \
 %@ INTEGER, \
 %@ INTEGER, \
+%@ INTEGER, \
+%@ INTEGER, \
+%@ INTEGER, \
 FOREIGN KEY (%@) REFERENCES %@(%@), \
 FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MAIN_ENV_LOG,
                    COL_LOCAL_ID,                       // col1
@@ -177,6 +180,9 @@ FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MAIN_ENV_LOG,
                    COL_MAN_DELETED,                    // col16
                    COL_MAN_EDIT_COUNT,                 // col18
                    COL_MAN_EDIT_ACTOR_ID,              // col19
+                   COL_MAN_SYNC_HTTP_RESP_CODE,        // col20
+                   COL_MAN_SYNC_ERR_MASK,              // col21
+                   COL_MAN_SYNC_RETRY_AT,              // col22
                    COL_MAIN_USER_ID,                   // fk1, col1
                    TBL_MAIN_USER,                      // fk1, tbl-ref
                    COL_LOCAL_ID,                       // fk1, tbl-ref col1
@@ -254,6 +260,9 @@ FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MASTER_FUELPURCHASE_LOG,
 %@ INTEGER, \
 %@ INTEGER, \
 %@ INTEGER, \
+%@ INTEGER, \
+%@ INTEGER, \
+%@ INTEGER, \
 FOREIGN KEY (%@) REFERENCES %@(%@), \
 FOREIGN KEY (%@) REFERENCES %@(%@), \
 FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MAIN_FUELPURCHASE_LOG,
@@ -278,6 +287,9 @@ FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MAIN_FUELPURCHASE_LOG,
                    COL_MAN_DELETED,                         // col19
                    COL_MAN_EDIT_COUNT,                      // col20
                    COL_MAN_EDIT_ACTOR_ID,                   // col21
+                   COL_MAN_SYNC_HTTP_RESP_CODE,             // col22
+                   COL_MAN_SYNC_ERR_MASK,                   // col23
+                   COL_MAN_SYNC_RETRY_AT,                   // col24
                    COL_MAIN_USER_ID,                        // fk1, col1
                    TBL_MAIN_USER,                           // fk1, tbl-ref
                    COL_LOCAL_ID,                            // fk1, tbl-ref col1
@@ -344,6 +356,9 @@ FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MASTER_FUEL_STATION,
 %@ INTEGER, \
 %@ INTEGER, \
 %@ INTEGER, \
+%@ INTEGER, \
+%@ INTEGER, \
+%@ INTEGER, \
 FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MAIN_FUEL_STATION,
                    COL_LOCAL_ID,                       // col1
                    COL_MAIN_USER_ID,                   // col2
@@ -364,6 +379,9 @@ FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MAIN_FUEL_STATION,
                    COL_MAN_DELETED,                    // col18
                    COL_MAN_EDIT_COUNT,                 // col19
                    COL_MAN_EDIT_ACTOR_ID,              // col20
+                   COL_MAN_SYNC_HTTP_RESP_CODE,        // col21
+                   COL_MAN_SYNC_ERR_MASK,              // col22
+                   COL_MAN_SYNC_RETRY_AT,              // col23
                    COL_MAIN_USER_ID,                   // fk1, col1
                    TBL_MAIN_USER,                      // fk1, tbl-ref
                    COL_LOCAL_ID];                      // fk1, tbl-ref col1
@@ -422,6 +440,9 @@ FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MASTER_VEHICLE,
 %@ INTEGER, \
 %@ INTEGER, \
 %@ INTEGER, \
+%@ INTEGER, \
+%@ INTEGER, \
+%@ INTEGER, \
 FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MAIN_VEHICLE,
                    COL_LOCAL_ID,                       // col1
                    COL_MAIN_USER_ID,                   // col2
@@ -439,6 +460,9 @@ FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MAIN_VEHICLE,
                    COL_MAN_DELETED,                    // col13
                    COL_MAN_EDIT_COUNT,                 // col14
                    COL_MAN_EDIT_ACTOR_ID,              // col15
+                   COL_MAN_SYNC_HTTP_RESP_CODE,        // col16
+                   COL_MAN_SYNC_ERR_MASK,              // col17
+                   COL_MAN_SYNC_RETRY_AT,              // col18
                    COL_MAIN_USER_ID,                   // fk1, col1
                    TBL_MAIN_USER,                      // fk1, tbl-ref
                    COL_LOCAL_ID];                      // fk1, tbl-ref col1
@@ -494,6 +518,9 @@ FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MAIN_VEHICLE,
 %@ INTEGER, \
 %@ INTEGER, \
 %@ INTEGER, \
+%@ INTEGER, \
+%@ INTEGER, \
+%@ INTEGER, \
 FOREIGN KEY (%@) REFERENCES %@(%@))",
                    TBL_MAIN_USER,                      // table
                    COL_LOCAL_ID,                       // col1
@@ -513,6 +540,9 @@ FOREIGN KEY (%@) REFERENCES %@(%@))",
                    COL_MAN_DELETED,                    // col16
                    COL_MAN_EDIT_COUNT,                 // col17
                    COL_MAN_EDIT_ACTOR_ID,              // col18
+                   COL_MAN_SYNC_HTTP_RESP_CODE,        // col19
+                   COL_MAN_SYNC_ERR_MASK,              // col20
+                   COL_MAN_SYNC_RETRY_AT,              // col21
                    COL_MASTER_USER_ID,                 // fk1, col1
                    TBL_MASTER_USER,                    // fk1, ref-tab
                    COL_LOCAL_ID];                      // fk1, ref-tab col1

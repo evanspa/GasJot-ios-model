@@ -29,7 +29,10 @@
                            synced:(BOOL)synced
                        inConflict:(BOOL)inConflict
                           deleted:(BOOL)deleted
-                        editCount:(NSUInteger)editCount {
+                        editCount:(NSUInteger)editCount
+                 syncHttpRespCode:(NSNumber *)syncHttpRespCode
+                      syncErrMask:(NSNumber *)syncErrMask
+                      syncRetryAt:(NSDate *)syncRetryAt {
   self = [super initWithLocalMainIdentifier:localMainIdentifier
                       localMasterIdentifier:localMasterIdentifier
                            globalIdentifier:globalIdentifier
@@ -48,6 +51,9 @@
     _inConflict = inConflict;
     _deleted = deleted;
     _editCount = editCount;
+    _syncHttpRespCode = syncHttpRespCode;
+    _syncErrMask = syncErrMask;
+    _syncRetryAt = syncRetryAt;
   }
   return self;
 }
@@ -64,6 +70,9 @@
   [self setInConflict:[entity inConflict]];
   [self setDeleted:[entity deleted]];
   [self setEditCount:[entity editCount]];
+  [self setSyncHttpRespCode:[entity syncHttpRespCode]];
+  [self setSyncErrMask:[entity syncErrMask]];
+  [self setSyncRetryAt:[entity syncRetryAt]];
 }
 
 - (NSUInteger)incrementEditCount {
@@ -84,12 +93,17 @@
     BOOL hasEqualCopyFromMasterDates =
       [PEUtils isDate:[self dateCopiedFromMaster]
    msprecisionEqualTo:[mainSupport dateCopiedFromMaster]];
+    BOOL hasEqualSyncRetryAtDates = [PEUtils isDate:[self syncRetryAt]
+                                 msprecisionEqualTo:[mainSupport syncRetryAt]];
     return hasEqualCopyFromMasterDates &&
       ([self editInProgress] == [mainSupport editInProgress]) &&
       ([self syncInProgress] == [mainSupport syncInProgress]) &&
       ([self synced] == [mainSupport synced]) &&
       ([self inConflict] == [mainSupport inConflict]) &&
-      ([self deleted] == [mainSupport deleted]);
+      ([self deleted] == [mainSupport deleted]) &&
+      [PEUtils isNumber:[self syncHttpRespCode] equalTo:[mainSupport syncHttpRespCode]] &&
+      [PEUtils isNumber:[self syncErrMask] equalTo:[mainSupport syncErrMask]] &&
+      hasEqualSyncRetryAtDates;
   }
   return NO;
 }
@@ -110,13 +124,17 @@
     [[NSNumber numberWithBool:[self syncInProgress]] hash] ^
     [[NSNumber numberWithBool:[self synced]] hash] ^
     [[NSNumber numberWithBool:[self inConflict]] hash] ^
-    [[NSNumber numberWithBool:[self deleted]] hash];
+    [[NSNumber numberWithBool:[self deleted]] hash] ^
+    [_syncHttpRespCode hash] ^
+    [_syncErrMask hash] ^
+    [_syncRetryAt hash];
 }
 
 - (NSString *)description {
   return [NSString stringWithFormat:@"%@, date copied from master: [{%@}, {%f}], \
 edit in progress: [%@], edit actor id: [%@], sync in progress: [%@], \
-synced: [%@], in conflict: [%@], deleted: [%@], edit count: [%lu]",
+synced: [%@], in conflict: [%@], deleted: [%@], edit count: [%lu], \
+sync HTTP resp code: [%@], sync err mask: [%@], sync retry at: [%@]",
           [super description],
           _dateCopiedFromMaster,
           [_dateCopiedFromMaster timeIntervalSince1970],
@@ -126,7 +144,10 @@ synced: [%@], in conflict: [%@], deleted: [%@], edit count: [%lu]",
           [PEUtils trueFalseFromBool:_synced],
           [PEUtils trueFalseFromBool:_inConflict],
           [PEUtils trueFalseFromBool:_deleted],
-          (unsigned long)_editCount];
+          (unsigned long)_editCount,
+          _syncHttpRespCode,
+          _syncErrMask,
+          _syncRetryAt];
 }
 
 @end

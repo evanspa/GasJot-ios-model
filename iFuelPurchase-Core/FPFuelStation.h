@@ -28,6 +28,9 @@
                        inConflict:(BOOL)inConflict
                           deleted:(BOOL)deleted
                         editCount:(NSUInteger)editCount
+                 syncHttpRespCode:(NSNumber *)syncHttpRespCode
+                      syncErrMask:(NSNumber *)syncErrMask
+                      syncRetryAt:(NSDate *)syncRetryAt
                              name:(NSString *)name
                            street:(NSString *)street
                              city:(NSString *)city

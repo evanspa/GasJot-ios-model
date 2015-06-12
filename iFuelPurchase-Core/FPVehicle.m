@@ -30,6 +30,9 @@
                        inConflict:(BOOL)inConflict
                           deleted:(BOOL)deleted
                         editCount:(NSUInteger)editCount
+                 syncHttpRespCode:(NSNumber *)syncHttpRespCode
+                      syncErrMask:(NSNumber *)syncErrMask
+                      syncRetryAt:(NSDate *)syncRetryAt
                              name:(NSString *)name
                     defaultOctane:(NSNumber *)defaultOctane
                      fuelCapacity:(NSDecimalNumber *)fuelCapacity {
@@ -49,7 +52,10 @@
                                      synced:synced
                                  inConflict:inConflict
                                     deleted:deleted
-                                  editCount:editCount];
+                                  editCount:editCount
+                           syncHttpRespCode:syncHttpRespCode
+                                syncErrMask:syncErrMask
+                                syncRetryAt:syncRetryAt];
   if (self) {
     _name = name;
     _defaultOctane = defaultOctane;
@@ -95,6 +101,9 @@
                                              inConflict:NO
                                                 deleted:NO
                                               editCount:0
+                                       syncHttpRespCode:nil
+                                            syncErrMask:nil
+                                            syncRetryAt:nil
                                                    name:name
                                           defaultOctane:defaultOctane
                                            fuelCapacity:fuelCapacity];
@@ -116,6 +125,9 @@
                                              inConflict:NO
                                                 deleted:NO
                                               editCount:0
+                                       syncHttpRespCode:nil
+                                            syncErrMask:nil
+                                            syncRetryAt:nil
                                                    name:nil
                                           defaultOctane:nil
                                            fuelCapacity:nil];

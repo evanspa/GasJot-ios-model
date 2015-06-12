@@ -88,10 +88,11 @@ describe(@"FPCoordinatorDao", ^{
       [[theValue([_coordTestCtx prepareForEditEntityDeleted]) should] beNo];
       [[theValue([_coordTestCtx prepareForEditEntityInConflict]) should] beNo];
       [[theValue([_coordTestCtx prepareForEditEntityBeingEditedByOtherActor]) should] beNo];
-      FPToggler *userSyncCompleteToggler = _observer(@[FPUserSynced]);
       _mocker(@"http-response.user.PUT.204", 0, 0);
+      FPToggler *userSyncCompleteToggler = _observer(@[FPUserSynced]);
       [_coordTestCtx startTimerForAsyncWorkWithInterval:1 coordDao:_coordDao];
-      [[expectFutureValue(theValue([userSyncCompleteToggler value])) shouldEventuallyBeforeTimingOutAfter(60)] beYes];
+      [[expectFutureValue(theValue([userSyncCompleteToggler observedCount]))
+        shouldEventuallyBeforeTimingOutAfter(60)] beGreaterThanOrEqualTo:theValue(1)];
       user = [[_coordDao localDao] mainUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
       [user shouldNotBeNil]; // user not pruned from main because vehicle (child) is in main_vehicle
       [[theValue([user synced]) should] beYes];

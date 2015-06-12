@@ -28,7 +28,10 @@
                            synced:(BOOL)synced
                        inConflict:(BOOL)inConflict
                           deleted:(BOOL)deleted
-                        editCount:(NSUInteger)editCount;
+                        editCount:(NSUInteger)editCount
+                 syncHttpRespCode:(NSNumber *)syncHttpRespCode
+                      syncErrMask:(NSNumber *)syncErrMask
+                      syncRetryAt:(NSDate *)syncRetryAt;
 
 #pragma mark - Methods
 
@@ -51,6 +54,12 @@
 @property (nonatomic) BOOL deleted;
 
 @property (nonatomic) NSUInteger editCount;
+
+@property (nonatomic) NSNumber *syncHttpRespCode;
+
+@property (nonatomic) NSNumber *syncErrMask;
+
+@property (nonatomic) NSDate *syncRetryAt;
 
 #pragma mark - Methods
 

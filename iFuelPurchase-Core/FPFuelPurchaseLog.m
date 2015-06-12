@@ -30,6 +30,9 @@
                        inConflict:(BOOL)inConflict
                           deleted:(BOOL)deleted
                         editCount:(NSUInteger)editCount
+                 syncHttpRespCode:(NSNumber *)syncHttpRespCode
+                      syncErrMask:(NSNumber *)syncErrMask
+                      syncRetryAt:(NSDate *)syncRetryAt
           vehicleGlobalIdentifier:(NSString *)vehicleGlobalIdentifier
       fuelStationGlobalIdentifier:(NSString *)fuelStationGlobalIdentifier
                        numGallons:(NSDecimalNumber *)numGallons
@@ -37,7 +40,7 @@
                       gallonPrice:(NSDecimalNumber *)gallonPrice
                        gotCarWash:(BOOL)gotCarWash
          carWashPerGallonDiscount:(NSDecimalNumber *)carWashPerGallonDiscount
-                          purchasedAt:(NSDate *)purchasedAt {
+                      purchasedAt:(NSDate *)purchasedAt {
   self = [super initWithLocalMainIdentifier:localMainIdentifier
                       localMasterIdentifier:localMasterIdentifier
                            globalIdentifier:globalIdentifier
@@ -46,7 +49,7 @@
                                   mediaType:mediaType
                                   relations:relations
                                 deletedDate:deletedDate
-                               updatedAt:updatedAt
+                                  updatedAt:updatedAt
                        dateCopiedFromMaster:dateCopiedFromMaster
                              editInProgress:editInProgress
                                 editActorId:editActorId
@@ -54,7 +57,10 @@
                                      synced:synced
                                  inConflict:inConflict
                                     deleted:deleted
-                                  editCount:editCount];
+                                  editCount:editCount
+                           syncHttpRespCode:syncHttpRespCode
+                                syncErrMask:syncErrMask
+                                syncRetryAt:syncRetryAt];
   if (self) {
     _vehicleGlobalIdentifier = vehicleGlobalIdentifier;
     _fuelStationGlobalIdentifier = fuelStationGlobalIdentifier;
@@ -114,6 +120,9 @@
                                                      inConflict:NO
                                                         deleted:NO
                                                       editCount:0
+                                               syncHttpRespCode:nil
+                                                    syncErrMask:nil
+                                                    syncRetryAt:nil
                                         vehicleGlobalIdentifier:nil
                                     fuelStationGlobalIdentifier:nil
                                                      numGallons:numGallons

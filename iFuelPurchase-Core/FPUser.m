@@ -43,6 +43,9 @@ NSString * const FPAppTransactionSetRelation = @"apptxnset";
                        inConflict:(BOOL)inConflict
                           deleted:(BOOL)deleted
                         editCount:(NSUInteger)editCount
+                 syncHttpRespCode:(NSNumber *)syncHttpRespCode
+                      syncErrMask:(NSNumber *)syncErrMask
+                      syncRetryAt:(NSDate *)syncRetryAt
                              name:(NSString *)name
                             email:(NSString *)email
                          username:(NSString *)username
@@ -63,7 +66,10 @@ NSString * const FPAppTransactionSetRelation = @"apptxnset";
                                      synced:synced
                                  inConflict:inConflict
                                     deleted:deleted
-                                  editCount:editCount];
+                                  editCount:editCount
+                           syncHttpRespCode:syncHttpRespCode
+                                syncErrMask:syncErrMask
+                                syncRetryAt:syncRetryAt];
   if (self) {
     _name = name;
     _email = email;
@@ -117,6 +123,9 @@ NSString * const FPAppTransactionSetRelation = @"apptxnset";
                                           inConflict:NO
                                              deleted:NO
                                            editCount:0
+                                    syncHttpRespCode:nil
+                                         syncErrMask:nil
+                                         syncRetryAt:nil
                                                 name:name
                                                email:email
                                             username:username

@@ -30,6 +30,9 @@
                        inConflict:(BOOL)inConflict
                           deleted:(BOOL)deleted
                         editCount:(NSUInteger)editCount
+                 syncHttpRespCode:(NSNumber *)syncHttpRespCode
+                      syncErrMask:(NSNumber *)syncErrMask
+                      syncRetryAt:(NSDate *)syncRetryAt
                              name:(NSString *)name
                            street:(NSString *)street
                              city:(NSString *)city
@@ -53,7 +56,10 @@
                                      synced:synced
                                  inConflict:inConflict
                                     deleted:deleted
-                                  editCount:editCount];
+                                  editCount:editCount
+                           syncHttpRespCode:syncHttpRespCode
+                                syncErrMask:syncErrMask
+                                syncRetryAt:syncRetryAt];
   if (self) {
     _name = name;
     _street = street;
@@ -115,6 +121,9 @@
                                                  inConflict:NO
                                                     deleted:NO
                                                   editCount:0
+                                           syncHttpRespCode:nil
+                                                syncErrMask:nil
+                                                syncRetryAt:nil
                                                        name:name
                                                      street:street
                                                        city:city
@@ -140,6 +149,9 @@
                                                  inConflict:NO
                                                     deleted:NO
                                                   editCount:0
+                                           syncHttpRespCode:nil
+                                                syncErrMask:nil
+                                                syncRetryAt:nil
                                                        name:nil
                                                      street:nil
                                                        city:nil

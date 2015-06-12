@@ -30,6 +30,9 @@
                        inConflict:(BOOL)inConflict
                           deleted:(BOOL)deleted
                         editCount:(NSUInteger)editCount
+                 syncHttpRespCode:(NSNumber *)syncHttpRespCode
+                      syncErrMask:(NSNumber *)syncErrMask
+                      syncRetryAt:(NSDate *)syncRetryAt
           vehicleGlobalIdentifier:(NSString *)vehicleGlobalIdentifier
                          odometer:(NSDecimalNumber *)odometer
                    reportedAvgMpg:(NSDecimalNumber *)reportedAvgMpg
@@ -53,7 +56,10 @@
                                      synced:synced
                                  inConflict:inConflict
                                     deleted:deleted
-                                  editCount:editCount];
+                                  editCount:editCount
+                           syncHttpRespCode:syncHttpRespCode
+                                syncErrMask:syncErrMask
+                                syncRetryAt:syncRetryAt];
   if (self) {
     _vehicleGlobalIdentifier = vehicleGlobalIdentifier;
     _odometer = odometer;
@@ -112,6 +118,9 @@
                                                     inConflict:NO
                                                        deleted:NO
                                                      editCount:0
+                                              syncHttpRespCode:nil
+                                                   syncErrMask:nil
+                                                   syncRetryAt:nil
                                        vehicleGlobalIdentifier:nil
                                                       odometer:odometer
                                                 reportedAvgMpg:reportedAvgMpg

@@ -79,6 +79,9 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                                               error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)cancelSyncForUser:(FPUser *)user
+             httpRespCode:(NSNumber *)httpRespCode
+                errorMask:(NSNumber *)errorMask
+                  retryAt:(NSDate *)retryAt
               editActorId:(NSNumber *)editActorId
                     error:(PELMDaoErrorBlk)errorBlk;
 
@@ -142,6 +145,9 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                                            error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)cancelSyncForVehicle:(FPVehicle *)vehicle
+                httpRespCode:(NSNumber *)httpRespCode
+                   errorMask:(NSNumber *)errorMask
+                     retryAt:(NSDate *)retryAt
                  editActorId:(NSNumber *)editActorId
                        error:(PELMDaoErrorBlk)errorBlk;
 
@@ -214,6 +220,9 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                                                   error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)cancelSyncForFuelStation:(FPFuelStation *)fuelStation
+                    httpRespCode:(NSNumber *)httpRespCode
+                       errorMask:(NSNumber *)errorMask
+                         retryAt:(NSDate *)retryAt
                      editActorId:(NSNumber *)editActorId
                            error:(PELMDaoErrorBlk)errorBlk;
 
@@ -361,6 +370,9 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                                                    error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)cancelSyncForFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
+                        httpRespCode:(NSNumber *)httpRespCode
+                           errorMask:(NSNumber *)errorMask
+                             retryAt:(NSDate *)retryAt
                          editActorId:(NSNumber *)editActorId
                                error:(PELMDaoErrorBlk)errorBlk;
 
@@ -482,6 +494,9 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                                                   error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)cancelSyncForEnvironmentLog:(FPEnvironmentLog *)environmentLog
+                       httpRespCode:(NSNumber *)httpRespCode
+                          errorMask:(NSNumber *)errorMask
+                            retryAt:(NSDate *)retryAt
                         editActorId:(NSNumber *)editActorId
                               error:(PELMDaoErrorBlk)errorBlk;
 

@@ -67,13 +67,12 @@ describe(@"FPCoordinatorDao", ^{
       [_coordDao saveNewVehicle:newVehicle forUser:user error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[theValue([_coordDao numVehiclesForUser:user error:[_coordTestCtx newLocalFetchErrBlkMaker]()]) should] equal:theValue(3)];
       _mocker(@"http-response.vehicles.POST.500", 0, 0);
+      FPToggler *vehSyncedObserver = _observer(@[FPVehicleSyncFailed]);
+       _flusher(0.0); // flush to master, prune and pause
+      [[expectFutureValue(theValue([vehSyncedObserver observedCount])) shouldEventuallyBeforeTimingOutAfter(5)] beGreaterThanOrEqualTo:theValue(1)];
       [[_numEntitiesBlk(TBL_MAIN_VEHICLE) should] equal:[NSNumber numberWithInt:1]];
       [[_numEntitiesBlk(TBL_MASTER_VEHICLE) should] equal:[NSNumber numberWithInt:2]];
       [_coordTestCtx startTimerForAsyncWorkWithInterval:1 coordDao:_coordDao];
-      //for (int i = 0; i < 1; i++) { // wait on 1 prune cycle
-        //FPToggler *toggler = _observer(@[FPSystemPruningComplete]);
-        //[[expectFutureValue(theValue([toggler value])) shouldEventuallyBeforeTimingOutAfter(60)] beYes];
-      //}
       [_coordDao pruneAllSyncedEntitiesWithError:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[_numEntitiesBlk(TBL_MAIN_VEHICLE) should] equal:[NSNumber numberWithInt:1]]; // vehicle not pruned (because it didn't get synced)
       [[_numEntitiesBlk(TBL_MASTER_VEHICLE) should] equal:[NSNumber numberWithInt:2]];
@@ -85,7 +84,69 @@ describe(@"FPCoordinatorDao", ^{
       [[[newVehicle name] should] equal:@"My Z Car"]; // sanity check to make sure that the zeroth element is our new addition
       [[theValue([newVehicle synced]) should] beNo];
       [[theValue([newVehicle syncInProgress]) should] beNo];
+      [[[newVehicle syncHttpRespCode] should] equal:[NSNumber numberWithInt:500]];
+      [[newVehicle syncRetryAt] shouldBeNil];
+      [[[newVehicle syncErrMask] should] equal:[NSNumber numberWithInt:0]];
       [[theValue([_coordDao numVehiclesForUser:user error:[_coordTestCtx newLocalFetchErrBlkMaker]()]) should] equal:theValue(3)];
+      
+      _mocker(@"http-response.vehicles.POST.500.1", 0, 0);
+      vehSyncedObserver = _observer(@[FPVehicleSyncFailed]);
+      _flusher(0.0); // flush to master, prune and pause
+      [[expectFutureValue(theValue([vehSyncedObserver observedCount])) shouldEventuallyBeforeTimingOutAfter(5)] beGreaterThanOrEqualTo:theValue(1)];
+      newVehicle = [_coordDao vehiclesForUser:user error:[_coordTestCtx newLocalSaveErrBlkMaker]()][0];
+      [[[newVehicle name] should] equal:@"My Z Car"];
+      [[theValue([newVehicle synced]) should] beNo];
+      [[theValue([newVehicle syncInProgress]) should] beNo];
+      [[[newVehicle syncHttpRespCode] should] equal:[NSNumber numberWithInt:500]];
+      [[newVehicle syncRetryAt] shouldBeNil];
+      [[[newVehicle syncErrMask] should] equal:[NSNumber numberWithInt:6]];
+      
+      // we need to clear-out the err-mask field of the vehicle so that a new sync is re-attempted
+      [_coordDao prepareVehicleForEdit:newVehicle
+                               forUser:user
+                           editActorId:@(0)
+                     entityBeingSynced:nil
+                         entityDeleted:nil
+                      entityInConflict:nil
+         entityBeingEditedByOtherActor:nil
+                                 error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+      [newVehicle setSyncErrMask:nil];
+      [_coordDao saveVehicle:newVehicle editActorId:@(0) error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+      [_coordDao markAsDoneEditingVehicle:newVehicle editActorId:@(0) error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+      _mocker(@"http-response.vehicles.POST.503", 0, 0);
+      vehSyncedObserver = _observer(@[FPVehicleSyncFailed]);
+      _flusher(0.0); // flush to master, prune and pause
+      [[expectFutureValue(theValue([vehSyncedObserver observedCount])) shouldEventuallyBeforeTimingOutAfter(5)] beGreaterThanOrEqualTo:theValue(1)];
+      newVehicle = [_coordDao vehiclesForUser:user error:[_coordTestCtx newLocalSaveErrBlkMaker]()][0];
+      [[[newVehicle name] should] equal:@"My Z Car"];
+      [[theValue([newVehicle synced]) should] beNo];
+      [[theValue([newVehicle syncInProgress]) should] beNo];
+      [[[newVehicle syncHttpRespCode] should] equal:[NSNumber numberWithInt:503]];
+      [[newVehicle syncRetryAt] shouldNotBeNil];
+      [[newVehicle syncErrMask] shouldBeNil];
+      
+      [_coordDao prepareVehicleForEdit:newVehicle
+                               forUser:user
+                           editActorId:@(0)
+                     entityBeingSynced:nil
+                         entityDeleted:nil
+                      entityInConflict:nil
+         entityBeingEditedByOtherActor:nil
+                                 error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+      [newVehicle setSyncRetryAt:nil];
+      [_coordDao saveVehicle:newVehicle editActorId:@(0) error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+      [_coordDao markAsDoneEditingVehicle:newVehicle editActorId:@(0) error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+      _mocker(@"http-response.vehicles.POST.401", 0, 0);
+      vehSyncedObserver = _observer(@[FPVehicleSyncFailed]);
+      _flusher(0.0); // flush to master, prune and pause
+      [[expectFutureValue(theValue([vehSyncedObserver observedCount])) shouldEventuallyBeforeTimingOutAfter(5)] beGreaterThanOrEqualTo:theValue(1)];
+      newVehicle = [_coordDao vehiclesForUser:user error:[_coordTestCtx newLocalSaveErrBlkMaker]()][0];
+      [[[newVehicle name] should] equal:@"My Z Car"];
+      [[theValue([newVehicle synced]) should] beNo];
+      [[theValue([newVehicle syncInProgress]) should] beNo];
+      [[[newVehicle syncHttpRespCode] should] equal:[NSNumber numberWithInt:401]];
+      [[newVehicle syncRetryAt] shouldBeNil];
+      [[newVehicle syncErrMask] shouldBeNil];
     });
   });
 });

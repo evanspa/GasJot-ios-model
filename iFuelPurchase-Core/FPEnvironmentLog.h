@@ -28,6 +28,9 @@
                        inConflict:(BOOL)inConflict
                           deleted:(BOOL)deleted
                         editCount:(NSUInteger)editCount
+                 syncHttpRespCode:(NSNumber *)syncHttpRespCode
+                      syncErrMask:(NSNumber *)syncErrMask
+                      syncRetryAt:(NSDate *)syncRetryAt
           vehicleGlobalIdentifier:(NSString *)vehicleGlobalIdentifier
                          odometer:(NSDecimalNumber *)odometer
                    reportedAvgMpg:(NSDecimalNumber *)reportedAvgMpg

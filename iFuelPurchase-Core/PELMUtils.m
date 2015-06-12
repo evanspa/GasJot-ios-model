@@ -51,15 +51,18 @@ PELMMainSupport * (^toMainSupport)(FMResultSet *, NSString *, NSDictionary *) = 
                                                     mediaType:[HCMediaType MediaTypeFromString:[rs stringForColumn:COL_MEDIA_TYPE]]
                                                     relations:relations
                                                   deletedDate:nil // NA (this is a master entity-only column)
-                                                 updatedAt:[rs dateForColumn:COL_MAN_MASTER_UPDATED_AT]
-                                         dateCopiedFromMaster:[rs dateForColumn:COL_MAN_DT_COPIED_DOWN_FROM_MASTER]
+                                                    updatedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MAN_MASTER_UPDATED_AT]
+                                         dateCopiedFromMaster:[PELMUtils dateFromResultSet:rs columnName:COL_MAN_DT_COPIED_DOWN_FROM_MASTER]
                                                editInProgress:[rs boolForColumn:COL_MAN_EDIT_IN_PROGRESS]
                                                   editActorId:[rs objectForColumnName:COL_MAN_EDIT_ACTOR_ID]
                                                syncInProgress:[rs boolForColumn:COL_MAN_SYNC_IN_PROGRESS]
                                                        synced:[rs boolForColumn:COL_MAN_SYNCED]
                                                    inConflict:[rs boolForColumn:COL_MAN_IN_CONFLICT]
                                                       deleted:[rs boolForColumn:COL_MAN_DELETED]
-                                                    editCount:[rs intForColumn:COL_MAN_EDIT_COUNT]];
+                                                    editCount:[rs intForColumn:COL_MAN_EDIT_COUNT]
+                                             syncHttpRespCode:[rs objectForColumnName:COL_MAN_SYNC_HTTP_RESP_CODE]
+                                                  syncErrMask:[rs objectForColumnName:COL_MAN_SYNC_ERR_MASK]
+                                                  syncRetryAt:[PELMUtils dateFromResultSet:rs columnName:COL_MAN_SYNC_RETRY_AT]];
 };
 
 @implementation PELMUtils
@@ -80,7 +83,7 @@ PELMMainSupport * (^toMainSupport)(FMResultSet *, NSString *, NSDictionary *) = 
                     systemFlushCount:(NSInteger)systemFlushCount
              contextForNotifications:(NSObject *)contextForNotifications
                   remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
-                       cancelSyncBlk:(void(^)(PELMMainSupport *))cancelSyncBlk
+                       cancelSyncBlk:(void(^)(PELMMainSupport *, NSError *, NSInteger))cancelSyncBlk
                    markAsConflictBlk:(void(^)(id, PELMMainSupport *))markAsConflictBlk
    markAsSyncCompleteForNewEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCompleteForNewEntityBlk
 markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCompleteForExistingEntityBlk
@@ -95,10 +98,11 @@ markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCom
               remoteMasterSaveNewBlk:(PELMRemoteMasterSaveBlk)remoteMasterSaveNewBlk
          remoteMasterSaveExistingBlk:(PELMRemoteMasterSaveBlk)remoteMasterSaveExistingBlk
                localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrHandler {
-  if (unsyncedEntity) {
+  if (unsyncedEntity) { // when would 'unsyncedEntity' ever be nil?  Oh well...worry about this later...
     PELMRemoteMasterBusyBlk remoteStoreBusyHandler = ^(NSDate *retryAfter) {
       remoteStoreBusyBlk(retryAfter);
-      cancelSyncBlk(unsyncedEntity);
+      [PELMNotificationUtils postNotificationWithName:syncFailedNotificationName
+                                               entity:unsyncedEntity];
     };
     void (^processConflict)(id) = ^ (id latestResourceModel) {
       markAsConflictBlk(latestResourceModel, unsyncedEntity);
@@ -127,8 +131,8 @@ markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCom
       [PELMNotificationUtils postNotificationWithName:syncCompleteNotificationName
                                                entity:unsyncedEntity];
     };
-    void (^notifyUnsuccessfulSync)(NSError *) = ^(NSError *error) {
-      cancelSyncBlk(unsyncedEntity);
+    void (^notifyUnsuccessfulSync)(NSError *, NSInteger) = ^(NSError *error, NSInteger httpStatusCode) {
+      cancelSyncBlk(unsyncedEntity, error, httpStatusCode);
       [PELMNotificationUtils postNotificationWithName:syncFailedNotificationName
                                                entity:unsyncedEntity];
     };
@@ -137,9 +141,10 @@ markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCom
       [PELMNotificationUtils postNotificationWithName:entityGoneNotificationName
                                                entity:unsyncedEntity];
     };
-    PELMRemoteMasterAuthReqdBlk authReqdWithNotification = ^(HCAuthentication *auth) {
-      notifyUnsuccessfulSync(nil);
-      authRequiredHandler(auth);
+    PELMRemoteMasterAuthReqdBlk authReqdWithNotification = ^(PELMMainSupport *entity, HCAuthentication *auth) {
+      [PELMNotificationUtils postNotificationWithName:syncFailedNotificationName
+                                               entity:unsyncedEntity];
+      authRequiredHandler(entity, auth);
     };
     if ([unsyncedEntity deleted]) {
       PELMRemoteMasterCompletionHandler remoteStoreComplHandler =
@@ -151,7 +156,7 @@ markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCom
                       unsyncedEntity], systemFlushCount);
         newAuthTokenBlk(newAuthTkn);
         if (lastModified) {
-          [unsyncedEntity setUpdatedAt:lastModified];
+          //[unsyncedEntity setUpdatedAt:lastModified];
         }
         if (movedPermanently) {
           [unsyncedEntity setGlobalIdentifier:globalId];
@@ -164,7 +169,7 @@ markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCom
         } else if (notModified) {
           // should not happen since we're doing a PUT
         } else if (err) {
-          notifyUnsuccessfulSync(err);
+          notifyUnsuccessfulSync(err, [httpResp statusCode]);
         } else {
           physicallyDeleteEntityBlk(unsyncedEntity);
           notifySuccessfulSync(nil, YES, NO);
@@ -192,7 +197,7 @@ markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCom
                         unsyncedEntity],systemFlushCount);
           newAuthTokenBlk(newAuthTkn);
           if (lastModified) {
-            [unsyncedEntity setUpdatedAt:lastModified];
+            //[unsyncedEntity setUpdatedAt:lastModified];
           }
           if (movedPermanently) { // this block will get executed again
             [unsyncedEntity setGlobalIdentifier:globalId];
@@ -205,7 +210,7 @@ markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCom
           } else if (notModified) {
             // should not happen since we're doing a PUT
           } else if (err) {
-            notifyUnsuccessfulSync(err);
+            notifyUnsuccessfulSync(err, [httpResp statusCode]);
           } else {
             notifySuccessfulSync(resourceModel, NO, YES);
           }
@@ -232,7 +237,7 @@ markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCom
                         unsyncedEntity],systemFlushCount);
           newAuthTokenBlk(newAuthTkn);
           if (lastModified) {
-            [unsyncedEntity setUpdatedAt:lastModified];
+            //[unsyncedEntity setUpdatedAt:lastModified];
           }
           if (movedPermanently) { // this block will get executed again
             [unsyncedEntity setGlobalIdentifier:globalId];
@@ -245,7 +250,7 @@ markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCom
           } else if (notModified) {
             // should not happen since we're doing a POST
           } else if (err) {
-            notifyUnsuccessfulSync(err);
+            notifyUnsuccessfulSync(err, [httpResp statusCode]);
           } else {
             notifySuccessfulSync(resourceModel, NO, NO);
           }
@@ -299,6 +304,23 @@ markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCom
 }
 
 #pragma mark - Utils
+
+- (void)cancelSyncForEntity:(PELMMainSupport *)entity
+             httpRespCode:(NSNumber *)httpRespCode
+                errorMask:(NSNumber *)errorMask
+                  retryAt:(NSDate *)retryAt
+           mainUpdateStmt:(NSString *)mainUpdateStmt
+        mainUpdateArgsBlk:(NSArray *(^)(PELMMainSupport *))mainUpdateArgsBlk
+              editActorId:(NSNumber *)editActorId
+                    error:(PELMDaoErrorBlk)errorBlk {
+  [entity setSyncInProgress:NO];
+  [entity setSyncErrMask:errorMask];
+  [entity setSyncHttpRespCode:httpRespCode];
+  [entity setSyncRetryAt:retryAt];
+  [self doUpdateInTxn:mainUpdateStmt
+            argsArray:mainUpdateArgsBlk(entity)
+                error:errorBlk];
+}
 
 - (void)cancelEditOfEntity:(PELMMainSupport *)entity
                  mainTable:(NSString *)mainTable
@@ -1283,7 +1305,20 @@ Entity: %@", entity]
                                   db:db
                                error:errorBlk];
     for (PELMMainSupport *entity in entities) {
-      if (![entity editInProgress] && ![entity syncInProgress] && ![entity inConflict] && ![entity synced]) {
+      if (![entity editInProgress] &&
+          ![entity syncInProgress] &&
+          ![entity inConflict] &&
+          ![entity synced] &&
+          (([entity syncErrMask] == nil) ||
+           ([entity syncErrMask].integerValue == 0)) &&
+          (([entity syncHttpRespCode] == nil) ||
+           ([entity syncHttpRespCode].integerValue == 401) || 
+           ([entity syncHttpRespCode].integerValue == 503) ||
+           ([entity syncHttpRespCode].integerValue == 502) ||
+           ([entity syncHttpRespCode].integerValue == 504) ||
+           ([entity syncHttpRespCode].integerValue == 500)) && // each of these err codes can be temporary, so even if the previous sync attempt yielded one of these, we can still try again on the next attempt
+          (([entity syncRetryAt] == nil) ||
+           ([NSDate date] > [entity syncRetryAt]))) {
         if (filterBlk) {
           if (filterBlk(entity)) {
             markSyncInProgressAction(entity, db);

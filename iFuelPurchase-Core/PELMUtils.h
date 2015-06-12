@@ -43,7 +43,7 @@ typedef void (^PELMRemoteMasterCompletionHandler)(NSString *, // auth token
 
 typedef void (^PELMRemoteMasterBusyBlk)(NSDate *);
 
-typedef void (^PELMRemoteMasterAuthReqdBlk)(HCAuthentication *);
+typedef void (^PELMRemoteMasterAuthReqdBlk)(PELMMainSupport *, HCAuthentication *);
 
 typedef void (^PELMRemoteMasterDeletionBlk)(PELMMainSupport *,
                                             PELMRemoteMasterBusyBlk,
@@ -91,7 +91,7 @@ void (^LogSyncLocal)(NSString *, NSInteger);
                     systemFlushCount:(NSInteger)systemFlushCount
              contextForNotifications:(NSObject *)contextForNotifications
                   remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
-                       cancelSyncBlk:(void(^)(PELMMainSupport *))cancelSyncBlk
+                       cancelSyncBlk:(void(^)(PELMMainSupport *, NSError *, NSInteger))cancelSyncBlk
                    markAsConflictBlk:(void(^)(id, PELMMainSupport *))markAsConflictBlk
    markAsSyncCompleteForNewEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCompleteForNewEntityBlk
 markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCompleteForExistingEntityBlk
@@ -127,6 +127,15 @@ markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCom
 @property (nonatomic, readonly) FMDatabaseQueue *databaseQueue;
 
 #pragma mark - Utils
+
+- (void)cancelSyncForEntity:(PELMMainSupport *)entity
+               httpRespCode:(NSNumber *)httpRespCode
+                  errorMask:(NSNumber *)errorMask
+                    retryAt:(NSDate *)retryAt
+             mainUpdateStmt:(NSString *)mainUpdateStmt
+          mainUpdateArgsBlk:(NSArray *(^)(PELMMainSupport *))mainUpdateArgsBlk
+                editActorId:(NSNumber *)editActorId
+                      error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)cancelEditOfEntity:(PELMMainSupport *)entity
                  mainTable:(NSString *)mainTable

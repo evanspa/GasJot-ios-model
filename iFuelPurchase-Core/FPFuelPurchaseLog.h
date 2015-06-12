@@ -28,6 +28,9 @@
                        inConflict:(BOOL)inConflict
                           deleted:(BOOL)deleted
                         editCount:(NSUInteger)editCount
+                 syncHttpRespCode:(NSNumber *)syncHttpRespCode
+                      syncErrMask:(NSNumber *)syncErrMask
+                      syncRetryAt:(NSDate *)syncRetryAt
           vehicleGlobalIdentifier:(NSString *)vehicleGlobalIdentifier
       fuelStationGlobalIdentifier:(NSString *)fuelStationGlobalIdentifier
                        numGallons:(NSDecimalNumber *)numGallons
