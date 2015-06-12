@@ -356,7 +356,7 @@
                                                 retryAt:nil
                                             editActorId:editActorId
                                                   error:_bgProcessingErrorBlk]; }
-                          newAuthTokenBlk:^(NSString *newAuthTkn){[self processNewAuthToken:newAuthTkn forUsernameOrEmail:[user usernameOrEmail]];}
+                          newAuthTokenBlk:^(NSString *newAuthTkn){[self processNewAuthToken:newAuthTkn forUser:user];}
                 backgroundProcessingQueue:_serialQueue
                     remoteMasterDeleteBlk:remoteMasterDeletionExistingBlk
                    remoteMasterSaveNewBlk:nil // because new users are always created in real-time, in main-thread of application
@@ -456,7 +456,7 @@
                                                                                                                         retryAt:nil
                                                                                                                     editActorId:editActorId
                                                                                                                           error:_bgProcessingErrorBlk]; }
-                          newAuthTokenBlk:^(NSString *newAuthTkn){[self processNewAuthToken:newAuthTkn forUsernameOrEmail:[user usernameOrEmail]];}
+                          newAuthTokenBlk:^(NSString *newAuthTkn){[self processNewAuthToken:newAuthTkn forUser:user];}
                 backgroundProcessingQueue:_serialQueue
                     remoteMasterDeleteBlk:remoteMasterDeletionExistingBlk
                    remoteMasterSaveNewBlk:remoteMasterSaveNewBlk
@@ -554,8 +554,7 @@
                                                     retryAt:nil
                                                 editActorId:editActorId
                                                       error:_bgProcessingErrorBlk]; }
-                          newAuthTokenBlk:^(NSString *newAuthTkn){[self processNewAuthToken:newAuthTkn
-                                                                         forUsernameOrEmail:[user usernameOrEmail]];}
+                          newAuthTokenBlk:^(NSString *newAuthTkn){[self processNewAuthToken:newAuthTkn forUser:user];}
                 backgroundProcessingQueue:_serialQueue
                     remoteMasterDeleteBlk:remoteMasterDeletionExistingBlk
                    remoteMasterSaveNewBlk:remoteMasterSaveNewBlk
@@ -655,7 +654,7 @@
                                                         retryAt:nil
                                                     editActorId:editActorId
                                                           error:_bgProcessingErrorBlk]; }
-                          newAuthTokenBlk:^(NSString *newAuthTkn){[self processNewAuthToken:newAuthTkn forUsernameOrEmail:[user usernameOrEmail]];}
+                          newAuthTokenBlk:^(NSString *newAuthTkn){[self processNewAuthToken:newAuthTkn forUser:user];}
                 backgroundProcessingQueue:_serialQueue
                     remoteMasterDeleteBlk:remoteMasterDeletionExistingBlk
                    remoteMasterSaveNewBlk:remoteMasterSaveNewBlk
@@ -754,8 +753,7 @@
                                                        retryAt:nil
                                                    editActorId:editActorId
                                                          error:_bgProcessingErrorBlk]; }
-                          newAuthTokenBlk:^(NSString *newAuthTkn){[self processNewAuthToken:newAuthTkn
-                                                                         forUsernameOrEmail:[user usernameOrEmail]];}
+                          newAuthTokenBlk:^(NSString *newAuthTkn){[self processNewAuthToken:newAuthTkn forUser:user];}
                 backgroundProcessingQueue:_serialQueue
                     remoteMasterDeleteBlk:remoteMasterDeletionExistingBlk
                    remoteMasterSaveNewBlk:remoteMasterSaveNewBlk
@@ -844,7 +842,7 @@
 - (void)logoutUser:(FPUser *)user error:(PELMDaoErrorBlk)error {
   //[_localDao cascadeDeleteUser:user error:error];
   [_localDao deleteAllUsers:error];
-  [_authTokenDelegate invalidateTokenForUsernameOrEmail:[user usernameOrEmail]];
+  [_authTokenDelegate invalidateTokenForUserGlobalIdentifier:[user globalIdentifier]];
   // TODO -- issue DELETE to server to delete auth token
   _authToken = nil;
 }
@@ -880,7 +878,7 @@
     if (globalId) { // success!
       respUser = (FPUser *)resourceModel;
       [_localDao saveNewUser:respUser error:localSaveErrorHandler];
-      [self processNewAuthToken:newAuthTkn forUsernameOrEmail:[respUser usernameOrEmail]];
+      [self processNewAuthToken:newAuthTkn forUser:respUser];
     };
     complHandler(respUser, err);
   };
@@ -905,7 +903,7 @@
     FPUser *user = (FPUser *)resourceModel;
     if (user) {
       [_localDao persistDeepUserFromRemoteMaster:user error:localSaveErrorHandler];
-      [self processNewAuthToken:newAuthTkn forUsernameOrEmail:[user usernameOrEmail]];
+      [self processNewAuthToken:newAuthTkn forUser:user];
     }
     complHandler(user, err);
   };
@@ -1547,13 +1545,12 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
 
 #pragma mark - Other helpers (private)
 
-- (void)processNewAuthToken:(NSString *)newAuthToken
-         forUsernameOrEmail:(NSString *)usernameOrEmail {
+- (void)processNewAuthToken:(NSString *)newAuthToken forUser:(FPUser *)user {
   if (newAuthToken) {
     [self setAuthToken:newAuthToken];
     dispatch_async(dispatch_get_main_queue(), ^{
       [_authTokenDelegate didReceiveNewAuthToken:newAuthToken
-                              forUsernameOrEmail:usernameOrEmail];
+                         forUserGlobalIdentifier:[user globalIdentifier]];
     });
   }
 }

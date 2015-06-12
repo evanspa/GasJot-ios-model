@@ -23,7 +23,7 @@
   return self;
 }
 - (void)didReceiveNewAuthToken:(NSString *)authToken
-            forUsernameOrEmail:(NSString *)usernameOrEmail {
+       forUserGlobalIdentifier:(NSString *)userGlobalIdentifier {
   _authTokenReceivedBlk(authToken);
 }
 
@@ -31,7 +31,7 @@
   _authRequiredBlk(authentication);
 }
 
--(void)invalidateTokenForUsernameOrEmail:(NSString *)usernameOrEmail {
+-(void)invalidateTokenForUserGlobalIdentifier:(NSString *)userGlobalIdentifier {
   // do nothing...
 }
 
