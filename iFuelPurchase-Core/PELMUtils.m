@@ -83,7 +83,7 @@ PELMMainSupport * (^toMainSupport)(FMResultSet *, NSString *, NSDictionary *) = 
                     systemFlushCount:(NSInteger)systemFlushCount
              contextForNotifications:(NSObject *)contextForNotifications
                   remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
-                       cancelSyncBlk:(void(^)(PELMMainSupport *, NSError *, NSInteger))cancelSyncBlk
+                       cancelSyncBlk:(void(^)(PELMMainSupport *, NSError *, NSNumber *))cancelSyncBlk
                    markAsConflictBlk:(void(^)(id, PELMMainSupport *))markAsConflictBlk
    markAsSyncCompleteForNewEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCompleteForNewEntityBlk
 markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCompleteForExistingEntityBlk
@@ -131,7 +131,7 @@ markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCom
       [PELMNotificationUtils postNotificationWithName:syncCompleteNotificationName
                                                entity:unsyncedEntity];
     };
-    void (^notifyUnsuccessfulSync)(NSError *, NSInteger) = ^(NSError *error, NSInteger httpStatusCode) {
+    void (^notifyUnsuccessfulSync)(NSError *, NSNumber *) = ^(NSError *error, NSNumber *httpStatusCode) {
       cancelSyncBlk(unsyncedEntity, error, httpStatusCode);
       [PELMNotificationUtils postNotificationWithName:syncFailedNotificationName
                                                entity:unsyncedEntity];
@@ -169,7 +169,11 @@ markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCom
         } else if (notModified) {
           // should not happen since we're doing a PUT
         } else if (err) {
-          notifyUnsuccessfulSync(err, [httpResp statusCode]);
+          if (httpResp) { // will deduce that error is from server
+            notifyUnsuccessfulSync(err, [NSNumber numberWithInteger:[httpResp statusCode]]);
+          } else {  // will deduce that error is connecton-related
+            notifyUnsuccessfulSync(err, nil);
+          }
         } else {
           physicallyDeleteEntityBlk(unsyncedEntity);
           notifySuccessfulSync(nil, YES, NO);
@@ -210,7 +214,11 @@ markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCom
           } else if (notModified) {
             // should not happen since we're doing a PUT
           } else if (err) {
-            notifyUnsuccessfulSync(err, [httpResp statusCode]);
+            if (httpResp) { // will deduce that error is from server
+              notifyUnsuccessfulSync(err, [NSNumber numberWithInteger:[httpResp statusCode]]);
+            } else {  // will deduce that error is connecton-related
+              notifyUnsuccessfulSync(err, nil);
+            }
           } else {
             notifySuccessfulSync(resourceModel, NO, YES);
           }
@@ -250,7 +258,11 @@ markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCom
           } else if (notModified) {
             // should not happen since we're doing a POST
           } else if (err) {
-            notifyUnsuccessfulSync(err, [httpResp statusCode]);
+            if (httpResp) { // will deduce that error is from server
+              notifyUnsuccessfulSync(err, [NSNumber numberWithInteger:[httpResp statusCode]]);
+            } else {  // will deduce that error is connecton-related
+              notifyUnsuccessfulSync(err, nil);
+            }
           } else {
             notifySuccessfulSync(resourceModel, NO, NO);
           }

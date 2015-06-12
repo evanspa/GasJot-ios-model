@@ -91,7 +91,7 @@ void (^LogSyncLocal)(NSString *, NSInteger);
                     systemFlushCount:(NSInteger)systemFlushCount
              contextForNotifications:(NSObject *)contextForNotifications
                   remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
-                       cancelSyncBlk:(void(^)(PELMMainSupport *, NSError *, NSInteger))cancelSyncBlk
+                       cancelSyncBlk:(void(^)(PELMMainSupport *, NSError *, NSNumber *))cancelSyncBlk
                    markAsConflictBlk:(void(^)(id, PELMMainSupport *))markAsConflictBlk
    markAsSyncCompleteForNewEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCompleteForNewEntityBlk
 markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCompleteForExistingEntityBlk

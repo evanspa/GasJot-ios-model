@@ -333,12 +333,13 @@
                          systemFlushCount:_flushToRemoteMasterCount
                   contextForNotifications:self
                        remoteStoreBusyBlk:remoteStoreBusyBlk
-                            cancelSyncBlk:^(PELMMainSupport *unsyncedUser, NSError *err, NSInteger httpStatusCode){[_localDao cancelSyncForUser:(FPUser *)unsyncedUser
-                                                                                                                                   httpRespCode:@(httpStatusCode)
-                                                                                                                                      errorMask:@([err code])
-                                                                                                                                        retryAt:nil
-                                                                                                                                    editActorId:editActorId
-                                                                                                                                          error:_bgProcessingErrorBlk];}
+                            cancelSyncBlk:^(PELMMainSupport *unsyncedUser, NSError *err, NSNumber *httpStatusCode) {
+                                [_localDao cancelSyncForUser:(FPUser *)unsyncedUser
+                                                httpRespCode:httpStatusCode
+                                                   errorMask:@([err code])
+                                                     retryAt:nil
+                                                 editActorId:editActorId
+                                                       error:_bgProcessingErrorBlk];}
                         markAsConflictBlk:markAsConflictBlk
         markAsSyncCompleteForNewEntityBlk:nil // because new users are always created in real-time, in main-thread of application
    markAsSyncCompleteForExistingEntityBlk:^(PELMMainSupport *unsyncedUser){[_localDao markAsSyncCompleteForUser:(FPUser *)unsyncedUser
@@ -429,9 +430,9 @@
                                                                                       retryAt:retryAt
                                                                                   editActorId:editActorId
                                                                                         error:_bgProcessingErrorBlk];}
-                            cancelSyncBlk:^(PELMMainSupport *unsyncedVehicle, NSError *err, NSInteger httpStatusCode) {
+                            cancelSyncBlk:^(PELMMainSupport *unsyncedVehicle, NSError *err, NSNumber *httpStatusCode) {
                               [_localDao cancelSyncForVehicle:(FPVehicle *)unsyncedVehicle
-                                                 httpRespCode:@(httpStatusCode)
+                                                 httpRespCode:httpStatusCode
                                                     errorMask:@([err code])
                                                       retryAt:nil
                                                   editActorId:editActorId
@@ -528,8 +529,8 @@
                                                                                           retryAt:retryAt
                                                                                       editActorId:editActorId
                                                                                             error:_bgProcessingErrorBlk];}
-                            cancelSyncBlk:^(PELMMainSupport *unsyncedFuelStation, NSError *err, NSInteger httpStatusCode){[_localDao cancelSyncForFuelStation:(FPFuelStation *)unsyncedFuelStation
-                                                                                                                                                 httpRespCode:@(httpStatusCode)
+                            cancelSyncBlk:^(PELMMainSupport *unsyncedFuelStation, NSError *err, NSNumber *httpStatusCode){[_localDao cancelSyncForFuelStation:(FPFuelStation *)unsyncedFuelStation
+                                                                                                                                                 httpRespCode:httpStatusCode
                                                                                                                                                     errorMask:@([err code])
                                                                                                                                                       retryAt:nil
                                                                                                                                                   editActorId:editActorId
@@ -628,8 +629,8 @@
                                                                                               retryAt:retryAt
                                                                                           editActorId:editActorId
                                                                                                 error:_bgProcessingErrorBlk];}
-                            cancelSyncBlk:^(PELMMainSupport *unsyncedFplog, NSError *err, NSInteger httpStatusCode){[_localDao cancelSyncForFuelPurchaseLog:(FPFuelPurchaseLog *)unsyncedFplog
-                                                                                                                                               httpRespCode:@(httpStatusCode)
+                            cancelSyncBlk:^(PELMMainSupport *unsyncedFplog, NSError *err, NSNumber *httpStatusCode){[_localDao cancelSyncForFuelPurchaseLog:(FPFuelPurchaseLog *)unsyncedFplog
+                                                                                                                                               httpRespCode:httpStatusCode
                                                                                                                                                   errorMask:@([err code])
                                                                                                                                                     retryAt:nil
                                                                                                                                                 editActorId:editActorId
@@ -727,8 +728,8 @@
                                                                                              retryAt:retryAt
                                                                                          editActorId:editActorId
                                                                                                error:_bgProcessingErrorBlk];}
-                            cancelSyncBlk:^(PELMMainSupport *unsyncedEnvLog, NSError *err, NSInteger httpStatusCode){[_localDao cancelSyncForEnvironmentLog:(FPEnvironmentLog *)unsyncedEnvLog
-                                                                                                                                               httpRespCode:@(httpStatusCode)
+                            cancelSyncBlk:^(PELMMainSupport *unsyncedEnvLog, NSError *err, NSNumber *httpStatusCode){[_localDao cancelSyncForEnvironmentLog:(FPEnvironmentLog *)unsyncedEnvLog
+                                                                                                                                               httpRespCode:httpStatusCode
                                                                                                                                                   errorMask:@([err code])
                                                                                                                                                     retryAt:nil
                                                                                                                                                 editActorId:editActorId
