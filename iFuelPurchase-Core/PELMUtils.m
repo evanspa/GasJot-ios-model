@@ -1324,7 +1324,7 @@ Entity: %@", entity]
           ![entity inConflict] &&
           ![entity synced] &&
           (([entity syncErrMask] == nil) ||
-           ([entity syncErrMask].integerValue == 0)) &&
+           ([entity syncErrMask].integerValue < 0)) && // less than zero means it represents a system connectivity-related issue (thus temporary)
           (([entity syncHttpRespCode] == nil) ||
            ([entity syncHttpRespCode].integerValue == 401) || 
            ([entity syncHttpRespCode].integerValue == 503) ||
