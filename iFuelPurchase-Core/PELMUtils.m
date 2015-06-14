@@ -433,6 +433,30 @@ WHERE %@ = ?", mainTable, COL_MAN_EDIT_IN_PROGRESS, COL_LOCAL_ID]
   }];
 }
 
+- (void)markAsDoneEditingAndSyncImmediateEntity:(PELMMainSupport *)entity
+                                      mainTable:(NSString *)mainTable
+                                 mainUpdateStmt:(NSString *)mainUpdateStmt
+                              mainUpdateArgsBlk:(NSArray *(^)(id))mainUpdateArgsBlk
+                                    editActorId:(NSNumber *)editActorId
+                                          error:(PELMDaoErrorBlk)errorBlk {
+  [PELMUtils saveEntityInvariantChecks:entity];
+  [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
+    [PELMUtils assertActualEditActorIdOfEntity:entity
+                            matchesEditActorId:editActorId
+                                     mainTable:mainTable
+                                            db:db
+                                         error:errorBlk];
+    [entity setSyncHttpRespCode:nil];
+    [entity setSyncErrMask:nil];
+    [entity setEditInProgress:NO];
+    [entity setSyncInProgress:YES];
+    [PELMUtils doUpdate:mainUpdateStmt
+              argsArray:mainUpdateArgsBlk(entity)
+                     db:db
+                  error:errorBlk];
+  }];
+}
+
 - (void)markAsSyncCompleteForNewEntity:(PELMMainSupport *)entity
                              mainTable:(NSString *)mainTable
                            masterTable:(NSString *)masterTable

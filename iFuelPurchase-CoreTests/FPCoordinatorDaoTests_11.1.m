@@ -1,5 +1,5 @@
 //
-//  FPCoordinatorDaoTests_11.1.m
+//  FPCoordinatorDaoTests_11.m
 //  PEFuelPurchase-Model
 //
 //  Created by Evans, Paul on 8/23/14.
@@ -20,7 +20,7 @@
 #import "FPCoordDaoTestContext.h"
 #import <Kiwi/Kiwi.h>
 
-SPEC_BEGIN(FPCoordinatorDaoSpec_11_1)
+SPEC_BEGIN(FPCoordinatorDaoSpec_11)
 
 __block FPCoordDaoTestContext *_coordTestCtx;
 __block FPCoordinatorDao *_coordDao;
@@ -49,7 +49,7 @@ describe(@"FPCoordinatorDao", ^{
   });
   
   context(@"Tests", ^{
-    it(@"Can edit a user and have it sync via immediately", ^{
+    it(@"Can edit a user and have it sync via background job (PUT returns 204 response)", ^{
       FPUser *user = [_coordTestCtx newFreshJoeSmithMaker](_coordDao, ^{
         [[expectFutureValue(theValue([_coordTestCtx authTokenReceived])) shouldEventuallyBeforeTimingOutAfter(60)] beYes];
       });
@@ -71,20 +71,14 @@ describe(@"FPCoordinatorDao", ^{
       [[theValue([user editInProgress]) should] beYes];
       [user setName:@"Paul Evans"];
       [user setEmail:@"paul.evans@example.com"];
-      
+      [_coordDao markAsDoneEditingUser:user
+                           editActorId:@(FPForegroundActorId)
+                                 error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       FPToggler *toggler = _observer(@[FPUserSynced]);
       _mocker(@"http-response.user.PUT.204", 0, 0);
-      __block BOOL saveSuccess = NO;
-      [_coordDao markAsDoneAndSyncUserImmediate:user
-                                    editActorId:@(FPForegroundActorId)
-                                     successBlk:^{saveSuccess = YES;}
-                                 remoteErrorBlk:^(NSError *err) {}
-                             remoteStoreBusyBlk:^(NSDate *retryAfter) {}
-                                          error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
-      [[expectFutureValue(theValue(saveSuccess)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
-      [[theValue([toggler value]) should] beYes];
-      // notice that I didn't even have to start the flusher job!
-      
+      [[[_coordDao localDao] mainUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()] shouldNotBeNil];
+      [_coordTestCtx startTimerForAsyncWorkWithInterval:1 coordDao:_coordDao];
+      [[expectFutureValue(theValue([toggler value])) shouldEventuallyBeforeTimingOutAfter(60)] beYes];
       // explicitly get the user from master
       user = [[_coordDao localDao] masterUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
       [user shouldNotBeNil];

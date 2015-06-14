@@ -295,6 +295,20 @@
                        editActorId:(NSNumber *)editActorId
                 remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
                              error:(PELMDaoErrorBlk)errorBlk {
+  [self flushUnsyncedChangesToUser:user
+                       editActorId:editActorId
+                        successBlk:nil
+                    remoteErrorBlk:nil
+                remoteStoreBusyBlk:remoteStoreBusyBlk
+                             error:errorBlk];
+}
+
+- (void)flushUnsyncedChangesToUser:(FPUser *)user
+                       editActorId:(NSNumber *)editActorId
+                        successBlk:(void(^)(PELMMainSupport *))successBlk
+                    remoteErrorBlk:(void(^)(FPUser *, NSError *, NSNumber *))remoteErrBlk
+                remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
+                             error:(PELMDaoErrorBlk)errorBlk {
   void (^markAsConflictBlk)(id, PELMMainSupport *) = ^ (id latestResourceModel, PELMMainSupport *unsyncedUser) {
     [_localDao markAsInConflictForUser:(FPUser *)unsyncedUser
                            editActorId:editActorId
@@ -339,12 +353,21 @@
                                                    errorMask:@([err code])
                                                      retryAt:nil
                                                  editActorId:editActorId
-                                                       error:_bgProcessingErrorBlk];}
+                                                       error:_bgProcessingErrorBlk];
+                              if (remoteErrBlk) {
+                                remoteErrBlk((FPUser *)unsyncedUser, err, httpStatusCode);
+                              }
+                            }
                         markAsConflictBlk:markAsConflictBlk
         markAsSyncCompleteForNewEntityBlk:nil // because new users are always created in real-time, in main-thread of application
-   markAsSyncCompleteForExistingEntityBlk:^(PELMMainSupport *unsyncedUser){[_localDao markAsSyncCompleteForUser:(FPUser *)unsyncedUser
-                                                                                                    editActorId:editActorId
-                                                                                                          error:_bgProcessingErrorBlk];}
+   markAsSyncCompleteForExistingEntityBlk:^(PELMMainSupport *unsyncedUser){
+                                  [_localDao markAsSyncCompleteForUser:(FPUser *)unsyncedUser
+                                                           editActorId:editActorId
+                                                                 error:_bgProcessingErrorBlk];
+                                  if (successBlk) {
+                                    successBlk((FPUser *)unsyncedUser);
+                                  }
+                            }
              syncCompleteNotificationName:FPUserSynced
                syncFailedNotificationName:FPUserSyncFailed
                entityGoneNotificationName:FPUserDeleted
@@ -950,6 +973,26 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
   [_localDao saveUser:user
           editActorId:editActorId
                 error:errorBlk];
+}
+
+- (void)markAsDoneAndSyncUserImmediate:(FPUser *)user
+                           editActorId:(NSNumber *)editActorId
+                            successBlk:(void(^)(void))successBlk
+                        remoteErrorBlk:(void(^)(NSError *))remoteErrBlk
+                    remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
+                                 error:(PELMDaoErrorBlk)errorBlk {
+  [_localDao markAsDoneEditingImmediateSyncUser:user
+                                    editActorId:editActorId
+                                          error:errorBlk];
+  [self flushUnsyncedChangesToUser:user
+                       editActorId:editActorId
+                        successBlk:^(PELMMainSupport *user) {
+    successBlk();
+  } remoteErrorBlk:^(FPUser *user, NSError *err, NSNumber *httpRespCode) {
+    remoteErrBlk(err);
+  } remoteStoreBusyBlk:^(NSDate *retryAfter) {
+    remoteStoreBusyBlk(retryAfter);
+  } error:errorBlk];
 }
 
 - (void)markAsDoneEditingUser:(FPUser *)user

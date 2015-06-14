@@ -368,6 +368,17 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                          error:errorBlk];
 }
 
+- (void)markAsDoneEditingImmediateSyncUser:(FPUser *)user
+                               editActorId:(NSNumber *)editActorId
+                                     error:(PELMDaoErrorBlk)errorBlk {
+  [_localModelUtils markAsDoneEditingAndSyncImmediateEntity:user
+                                                  mainTable:TBL_MAIN_USER
+                                             mainUpdateStmt:[self updateStmtForMainUser]
+                                          mainUpdateArgsBlk:^NSArray *(PELMMainSupport *entity){return [self updateArgsForMainUser:(FPUser *)entity];}
+                                                editActorId:editActorId
+                                                      error:errorBlk];
+}
+
 - (void)markAsDoneEditingUser:(FPUser *)user
                   editActorId:(NSNumber *)editActorId
                         error:(PELMDaoErrorBlk)errorBlk {

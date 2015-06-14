@@ -60,6 +60,10 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
      editActorId:(NSNumber *)editActorId
            error:(PELMDaoErrorBlk)errorBlk;
 
+- (void)markAsDoneEditingImmediateSyncUser:(FPUser *)user
+                               editActorId:(NSNumber *)editActorId
+                                     error:(PELMDaoErrorBlk)errorBlk;
+
 - (void)markAsDoneEditingUser:(FPUser *)user
                   editActorId:(NSNumber *)editActorId
                         error:(PELMDaoErrorBlk)errorBlk;
