@@ -975,12 +975,12 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                 error:errorBlk];
 }
 
-- (void)markAsDoneAndSyncUserImmediate:(FPUser *)user
-                           editActorId:(NSNumber *)editActorId
-                            successBlk:(void(^)(void))successBlk
-                        remoteErrorBlk:(void(^)(NSError *))remoteErrBlk
-                    remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
-                                 error:(PELMDaoErrorBlk)errorBlk {
+- (void)markAsDoneEditingAndSyncUserImmediate:(FPUser *)user
+                                  editActorId:(NSNumber *)editActorId
+                                   successBlk:(void(^)(void))successBlk
+                               remoteErrorBlk:(void(^)(NSError *))remoteErrBlk
+                           remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
+                                        error:(PELMDaoErrorBlk)errorBlk {
   [_localDao markAsDoneEditingImmediateSyncUser:user
                                     editActorId:editActorId
                                           error:errorBlk];

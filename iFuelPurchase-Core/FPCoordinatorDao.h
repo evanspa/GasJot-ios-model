@@ -132,12 +132,12 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
      editActorId:(NSNumber *)editActorId
            error:(PELMDaoErrorBlk)errorBlk;
 
-- (void)markAsDoneAndSyncUserImmediate:(FPUser *)user
-                           editActorId:(NSNumber *)editActorId
-                            successBlk:(void(^)(void))successBlk
-                        remoteErrorBlk:(void(^)(NSError *))remoteErrBlk
-                    remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
-                                 error:(PELMDaoErrorBlk)errorBlk;
+- (void)markAsDoneEditingAndSyncUserImmediate:(FPUser *)user
+                                  editActorId:(NSNumber *)editActorId
+                                   successBlk:(void(^)(void))successBlk
+                               remoteErrorBlk:(void(^)(NSError *))remoteErrBlk
+                           remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
+                                        error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)markAsDoneEditingUser:(FPUser *)user
                   editActorId:(NSNumber *)editActorId

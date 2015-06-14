@@ -75,12 +75,12 @@ describe(@"FPCoordinatorDao", ^{
       FPToggler *toggler = _observer(@[FPUserSynced]);
       _mocker(@"http-response.user.PUT.204", 0, 0);
       __block BOOL saveSuccess = NO;
-      [_coordDao markAsDoneAndSyncUserImmediate:user
-                                    editActorId:@(FPForegroundActorId)
-                                     successBlk:^{saveSuccess = YES;}
-                                 remoteErrorBlk:^(NSError *err) {}
-                             remoteStoreBusyBlk:^(NSDate *retryAfter) {}
-                                          error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+      [_coordDao markAsDoneEditingAndSyncUserImmediate:user
+                                           editActorId:@(FPForegroundActorId)
+                                            successBlk:^{saveSuccess = YES;}
+                                        remoteErrorBlk:^(NSError *err) {}
+                                    remoteStoreBusyBlk:^(NSDate *retryAfter) {}
+                                                 error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[expectFutureValue(theValue(saveSuccess)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
       [[theValue([toggler value]) should] beYes];
       // notice that I didn't even have to start the flusher job!
