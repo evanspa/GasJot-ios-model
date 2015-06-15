@@ -1,5 +1,5 @@
 //
-//  FPCoordinatorDaoTests_11.m
+//  FPCoordinatorDaoTests_11.1.m
 //  PEFuelPurchase-Model
 //
 //  Created by Evans, Paul on 8/23/14.
@@ -20,7 +20,7 @@
 #import "FPCoordDaoTestContext.h"
 #import <Kiwi/Kiwi.h>
 
-SPEC_BEGIN(FPCoordinatorDaoSpec_11)
+SPEC_BEGIN(FPCoordinatorDaoSpec_11_1)
 
 __block FPCoordDaoTestContext *_coordTestCtx;
 __block FPCoordinatorDao *_coordDao;

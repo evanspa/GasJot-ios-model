@@ -1,5 +1,5 @@
 //
-//  FPCoordinatorDaoTests_11.1.m
+//  FPCoordinatorDaoTests_11.m
 //  PEFuelPurchase-Model
 //
 //  Created by Evans, Paul on 8/23/14.
@@ -18,9 +18,10 @@
 #import "FPDDLUtils.h"
 #import "FPToggler.h"
 #import "FPCoordDaoTestContext.h"
+#import <PEWire-Control/PEHttpResponseSimulator.h>
 #import <Kiwi/Kiwi.h>
 
-SPEC_BEGIN(FPCoordinatorDaoSpec_11_1)
+SPEC_BEGIN(FPCoordinatorDaoSpec_11)
 
 __block FPCoordDaoTestContext *_coordTestCtx;
 __block FPCoordinatorDao *_coordDao;
@@ -92,6 +93,24 @@ describe(@"FPCoordinatorDao", ^{
       [[[user email] should] equal:@"paul.evans@example.com"];
       [_coordDao pruneAllSyncedEntitiesWithError:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[[_coordDao localDao] mainUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()] shouldBeNil]; // it should have been pruned
+      
+      [_coordDao prepareUserForEdit:user
+                        editActorId:@(FPForegroundActorId)
+                  entityBeingSynced:[_coordTestCtx entityBeingSyncedBlk]
+                      entityDeleted:[_coordTestCtx entityDeletedBlk]
+                   entityInConflict:[_coordTestCtx entityInConflictBlk]
+      entityBeingEditedByOtherActor:[_coordTestCtx entityBeingEditedByOtherActorBlk]
+                              error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+      [PEHttpResponseSimulator simulateCannotConnectToHostForRequestUrl:[NSURL URLWithString:@"http://example.com/fp/users/U8890209302"]
+                                                   andRequestHttpMethod:@"PUT"];
+      __block BOOL saveFailed = NO;
+      [_coordDao markAsDoneEditingAndSyncUserImmediate:user
+                                           editActorId:@(FPForegroundActorId)
+                                            successBlk:^{}
+                                        remoteErrorBlk:^(NSError *err) {saveFailed = YES;}
+                                    remoteStoreBusyBlk:^(NSDate *retryAfter) {}
+                                                 error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+      [[expectFutureValue(theValue(saveFailed)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
     });
   });
 });

@@ -126,6 +126,8 @@
     _authTokenDelegate = authTokenDelegate;
     _bgProcessingErrorBlk = bgProcessingErrorBlk;
     _bgEditActorId = bgEditActorId;
+    
+    _includeUserInBackgroundFlush = YES;
   }
   return self;
 }
@@ -809,15 +811,19 @@
   FPUser *user = [_localDao markUserAsSyncInProgressWithEditActorId:editActorId
                                                               error:errorBlk];
   if (user) {
-    LogSyncRemoteMaster(@"coordDao/flushUnsynced: 'user' instance found in main table.", _flushToRemoteMasterCount);
-    if ([user syncInProgress]) {
-      LogSyncRemoteMaster(@"coordDao/flushUnsynced: 'user' instance is in need of syncing", _flushToRemoteMasterCount);
-      [self flushUnsyncedChangesToUser:user
-                           editActorId:editActorId
-                    remoteStoreBusyBlk:remoteStoreBusyBlk
-                                 error:errorBlk];
+    if (_includeUserInBackgroundFlush) {
+      LogSyncRemoteMaster(@"coordDao/flushUnsynced: 'user' instance found in main table.", _flushToRemoteMasterCount);
+      if ([user syncInProgress]) {
+        LogSyncRemoteMaster(@"coordDao/flushUnsynced: 'user' instance is in need of syncing", _flushToRemoteMasterCount);
+        [self flushUnsyncedChangesToUser:user
+                             editActorId:editActorId
+                      remoteStoreBusyBlk:remoteStoreBusyBlk
+                                   error:errorBlk];
+      } else {
+        LogSyncRemoteMaster(@"coordDao/flushUnsynced: 'user' instance is NOT in need of syncing", _flushToRemoteMasterCount);
+      }
     } else {
-      LogSyncRemoteMaster(@"coordDao/flushUnsynced: 'user' instance is NOT in need of syncing", _flushToRemoteMasterCount);
+      DDLogInfo(@"coordDao configured to not include 'user' instance in background syncing process");
     }
     [self flushUnsyncedChangesUsingFetcher:^NSArray *(void){return [_localDao markVehiclesAsSyncInProgressForUser:user
                                                                                                       editActorId:editActorId

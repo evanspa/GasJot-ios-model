@@ -79,6 +79,8 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
 
 @property (nonatomic) NSUInteger systemPruneCount;
 
+@property (nonatomic) BOOL includeUserInBackgroundFlush;
+
 #pragma mark - Flushing to Remote Master and other Background Work
 
 // by definition, this can only be invoked by the 'background' edit actor ID
