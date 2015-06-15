@@ -808,8 +808,13 @@
 - (void)flushUnsyncedChangesToAllEntityTypes:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
                                  editActorId:(NSNumber *)editActorId
                                        error:(PELMDaoErrorBlk)errorBlk {
-  FPUser *user = [_localDao markUserAsSyncInProgressWithEditActorId:editActorId
-                                                              error:errorBlk];
+  FPUser *user;
+  if (_includeUserInBackgroundFlush) {
+    user = [_localDao markUserAsSyncInProgressWithEditActorId:editActorId
+                                                        error:errorBlk];
+  } else {
+    user = [_localDao userWithError:errorBlk];
+  }
   if (user) {
     if (_includeUserInBackgroundFlush) {
       LogSyncRemoteMaster(@"coordDao/flushUnsynced: 'user' instance found in main table.", _flushToRemoteMasterCount);

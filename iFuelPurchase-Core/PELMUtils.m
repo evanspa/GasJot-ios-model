@@ -348,6 +348,9 @@ markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCom
                                             db:db
                                          error:errorBlk];
     [entity setEditInProgress:NO];
+    [entity setSyncErrMask:nil];
+    [entity setSyncHttpRespCode:nil];
+    [entity setSyncRetryAt:nil];
     if ([entity decrementEditCount] == 0) {
       [PELMUtils deleteRelationsForEntity:entity
                               entityTable:mainTable
@@ -383,8 +386,8 @@ version of entity not found!  It's global ID is: [%@]", [entity globalIdentifier
         }
       }
     } else {
-      [db executeUpdate:[NSString stringWithFormat:@"UPDATE %@ SET %@ = 0 \
-WHERE %@ = ?", mainTable, COL_MAN_EDIT_IN_PROGRESS, COL_LOCAL_ID]
+      [db executeUpdate:[NSString stringWithFormat:@"UPDATE %@ SET %@ = 0, \
+%@ = NULL, %@ = NULL, %@ = NULL WHERE %@ = ?", mainTable, COL_MAN_EDIT_IN_PROGRESS, COL_MAN_SYNC_ERR_MASK, COL_MAN_SYNC_HTTP_RESP_CODE, COL_MAN_SYNC_RETRY_AT, COL_LOCAL_ID]
    withArgumentsInArray:@[[entity localMainIdentifier]]];
     }
   }];
