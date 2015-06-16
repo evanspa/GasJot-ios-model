@@ -87,7 +87,7 @@ void (^LogSyncLocal)(NSString *, NSInteger);
 
 #pragma mark - Syncing
 
-+ (void)flushUnsyncedChangesToEntity:(PELMMainSupport *)unsyncedEntity
++ (void)flushUnsyncedChangesToEntity:(PELMMainSupport *)entity
                     systemFlushCount:(NSInteger)systemFlushCount
              contextForNotifications:(NSObject *)contextForNotifications
                   remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk

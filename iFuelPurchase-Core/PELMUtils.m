@@ -79,7 +79,7 @@ PELMMainSupport * (^toMainSupport)(FMResultSet *, NSString *, NSDictionary *) = 
 
 #pragma mark - Syncing
 
-+ (void)flushUnsyncedChangesToEntity:(PELMMainSupport *)unsyncedEntity
++ (void)flushUnsyncedChangesToEntity:(PELMMainSupport *)entity
                     systemFlushCount:(NSInteger)systemFlushCount
              contextForNotifications:(NSObject *)contextForNotifications
                   remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
@@ -98,20 +98,23 @@ markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCom
               remoteMasterSaveNewBlk:(PELMRemoteMasterSaveBlk)remoteMasterSaveNewBlk
          remoteMasterSaveExistingBlk:(PELMRemoteMasterSaveBlk)remoteMasterSaveExistingBlk
                localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrHandler {
-  if (unsyncedEntity) { // when would 'unsyncedEntity' ever be nil?  Oh well...worry about this later...
+  if (entity) { // when would 'unsyncedEntity' ever be nil?  Oh well...worry about this later...
+    if ([entity synced]) {
+      return;
+    }
     PELMRemoteMasterBusyBlk remoteStoreBusyHandler = ^(NSDate *retryAfter) {
       remoteStoreBusyBlk(retryAfter);
       [PELMNotificationUtils postNotificationWithName:syncFailedNotificationName
-                                               entity:unsyncedEntity];
+                                               entity:entity];
     };
     void (^processConflict)(id) = ^ (id latestResourceModel) {
-      markAsConflictBlk(latestResourceModel, unsyncedEntity);
+      markAsConflictBlk(latestResourceModel, entity);
     };
     void (^notifySuccessfulSync)(PELMMainSupport *, BOOL, BOOL) = ^(PELMMainSupport *respEntity, BOOL wasDeletion, BOOL wasPut) {
       if (!wasDeletion) {
         if (respEntity) {
-          NSString *unsyncedEntityGlobalId = [unsyncedEntity globalIdentifier];
-          [unsyncedEntity overwrite:respEntity];
+          NSString *unsyncedEntityGlobalId = [entity globalIdentifier];
+          [entity overwrite:respEntity];
           if (wasPut) {
             // we do this because, in an HTTP PUT, the typical response is 200,
             // and, with 200, the "location" header is usually absent; this means
@@ -119,47 +122,47 @@ markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCom
             // property empty.  Well, we want to keep our existing global identity
             // property, so, we have to re-set it onto unsyncedEntity after doing
             // the "overwrite" step above
-            [unsyncedEntity setGlobalIdentifier:unsyncedEntityGlobalId];
+            [entity setGlobalIdentifier:unsyncedEntityGlobalId];
           }
         }
         if (wasPut) {
-          markAsSyncCompleteForExistingEntityBlk(unsyncedEntity);
+          markAsSyncCompleteForExistingEntityBlk(entity);
         } else {
-          markAsSyncCompleteForNewEntityBlk(unsyncedEntity);
+          markAsSyncCompleteForNewEntityBlk(entity);
         }
       }
       [PELMNotificationUtils postNotificationWithName:syncCompleteNotificationName
-                                               entity:unsyncedEntity];
+                                               entity:entity];
     };
     void (^notifyUnsuccessfulSync)(NSError *, NSNumber *) = ^(NSError *error, NSNumber *httpStatusCode) {
-      cancelSyncBlk(unsyncedEntity, error, httpStatusCode);
+      cancelSyncBlk(entity, error, httpStatusCode);
       [PELMNotificationUtils postNotificationWithName:syncFailedNotificationName
-                                               entity:unsyncedEntity];
+                                               entity:entity];
     };
     void (^processGone)(void) = ^{
-      physicallyDeleteEntityBlk(unsyncedEntity);
+      physicallyDeleteEntityBlk(entity);
       [PELMNotificationUtils postNotificationWithName:entityGoneNotificationName
-                                               entity:unsyncedEntity];
+                                               entity:entity];
     };
     PELMRemoteMasterAuthReqdBlk authReqdWithNotification = ^(PELMMainSupport *entity, HCAuthentication *auth) {
       [PELMNotificationUtils postNotificationWithName:syncFailedNotificationName
-                                               entity:unsyncedEntity];
+                                               entity:entity];
       authRequiredHandler(entity, auth);
     };
-    if ([unsyncedEntity deleted]) {
+    if ([entity deleted]) {
       PELMRemoteMasterCompletionHandler remoteStoreComplHandler =
       ^(NSString *newAuthTkn, NSString *globalId, id resourceModel, NSDictionary *rels,
         NSDate *lastModified, BOOL isConflict, BOOL gone, BOOL notFound, BOOL movedPermanently,
         BOOL notModified, NSError *err, NSHTTPURLResponse *httpResp) {
         LogSyncLocal([NSString stringWithFormat:@"(PELMRemoteMasterCompletionHandler) \
                       STARTED to process response from remote master delete request for entity: [%@].",
-                      unsyncedEntity], systemFlushCount);
+                      entity], systemFlushCount);
         newAuthTokenBlk(newAuthTkn);
         if (lastModified) {
           //[unsyncedEntity setUpdatedAt:lastModified];
         }
         if (movedPermanently) {
-          [unsyncedEntity setGlobalIdentifier:globalId];
+          [entity setGlobalIdentifier:globalId];
         } else if (isConflict) {
           processConflict(resourceModel);
         } else if (gone) {
@@ -175,7 +178,7 @@ markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCom
             notifyUnsuccessfulSync(err, nil);
           }
         } else {
-          physicallyDeleteEntityBlk(unsyncedEntity);
+          physicallyDeleteEntityBlk(entity);
           notifySuccessfulSync(nil, YES, NO);
         }
         LogSyncLocal(@"(PELMRemoteMasterCompletionHandler) COMPLETED to process \
@@ -183,7 +186,7 @@ markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCom
       };
       LogSyncRemoteMaster(@"(PELMRemoteMasterCompletionHandler) START invoke \
                           'remoteMasterDeleteBlk'", systemFlushCount);
-      remoteMasterDeleteBlk(unsyncedEntity,
+      remoteMasterDeleteBlk(entity,
                             remoteStoreBusyHandler,
                             authReqdWithNotification,
                             remoteStoreComplHandler,
@@ -191,20 +194,20 @@ markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCom
       LogSyncRemoteMaster(@"(PELMRemoteMasterCompletionHandler) COMPLETE \
                           'remoteMasterDeleteBlk' invocation", systemFlushCount);
     } else {
-      if ([unsyncedEntity globalIdentifier]) {
+      if ([entity globalIdentifier]) {
         PELMRemoteMasterCompletionHandler remoteStoreComplHandler =
         ^(NSString *newAuthTkn, NSString *globalId, id resourceModel, NSDictionary *rels,
           NSDate *lastModified, BOOL isConflict, BOOL gone, BOOL notFound, BOOL movedPermanently,
           BOOL notModified, NSError *err, NSHTTPURLResponse *httpResp) {
           LogSyncLocal([NSString stringWithFormat:@"(PELMRemoteMasterCompletionHandler) \
                         STARTED to process response from remote master update request for entity: [%@].",
-                        unsyncedEntity],systemFlushCount);
+                        entity],systemFlushCount);
           newAuthTokenBlk(newAuthTkn);
           if (lastModified) {
             //[unsyncedEntity setUpdatedAt:lastModified];
           }
           if (movedPermanently) { // this block will get executed again
-            [unsyncedEntity setGlobalIdentifier:globalId];
+            [entity setGlobalIdentifier:globalId];
           } else if (isConflict) {
             processConflict(resourceModel);
           } else if (gone) {
@@ -224,11 +227,11 @@ markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCom
           }
           LogSyncLocal([NSString stringWithFormat:@"(PELMRemoteMasterCompletionHandler) \
                         COMPLETED to process response from remote master update request for entity: [%@].",
-                        unsyncedEntity],systemFlushCount);
+                        entity],systemFlushCount);
         };
         LogSyncRemoteMaster(@"(PELMRemoteMasterCompletionHandler) START invoke\
                             'remoteMasterSaveExistingBlk'", systemFlushCount);
-        remoteMasterSaveExistingBlk(unsyncedEntity,
+        remoteMasterSaveExistingBlk(entity,
                                     remoteStoreBusyHandler,
                                     authReqdWithNotification,
                                     remoteStoreComplHandler,
@@ -242,13 +245,13 @@ markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCom
           BOOL notModified, NSError *err, NSHTTPURLResponse *httpResp) {
           LogSyncLocal([NSString stringWithFormat:@"(PELMRemoteMasterCompletionHandler) \
                         STARTED to process response from remote master creation request for entity: [%@].",
-                        unsyncedEntity],systemFlushCount);
+                        entity],systemFlushCount);
           newAuthTokenBlk(newAuthTkn);
           if (lastModified) {
             //[unsyncedEntity setUpdatedAt:lastModified];
           }
           if (movedPermanently) { // this block will get executed again
-            [unsyncedEntity setGlobalIdentifier:globalId];
+            [entity setGlobalIdentifier:globalId];
           } else if (isConflict) {
             // weird - this should not happen
           } else if (gone) {
@@ -268,12 +271,12 @@ markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCom
           }
           LogSyncLocal([NSString stringWithFormat:@"(PELMRemoteMasterCompletionHandler) \
                         COMPLETED to process response from remote master creation request for entity: [%@].",
-                        unsyncedEntity],systemFlushCount);
+                        entity],systemFlushCount);
         };
         if (remoteMasterSaveNewBlk) {
           LogSyncRemoteMaster([NSString stringWithFormat:@"(PELMRemoteMasterCompletionHandler) \
                                START invoke 'remoteMasterSaveNewBlk'"], systemFlushCount);
-          remoteMasterSaveNewBlk(unsyncedEntity,
+          remoteMasterSaveNewBlk(entity,
                                  remoteStoreBusyHandler,
                                  authReqdWithNotification,
                                  remoteStoreComplHandler,

@@ -295,18 +295,6 @@
 
 - (void)flushUnsyncedChangesToUser:(FPUser *)user
                        editActorId:(NSNumber *)editActorId
-                remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
-                             error:(PELMDaoErrorBlk)errorBlk {
-  [self flushUnsyncedChangesToUser:user
-                       editActorId:editActorId
-                        successBlk:nil
-                    remoteErrorBlk:nil
-                remoteStoreBusyBlk:remoteStoreBusyBlk
-                             error:errorBlk];
-}
-
-- (void)flushUnsyncedChangesToUser:(FPUser *)user
-                       editActorId:(NSNumber *)editActorId
                         successBlk:(void(^)(PELMMainSupport *))successBlk
                     remoteErrorBlk:(void(^)(FPUser *, NSError *, NSNumber *))remoteErrBlk
                 remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
@@ -393,6 +381,9 @@
 - (void)flushUnsyncedChangesToVehicle:(FPVehicle *)vehicle
                               forUser:(FPUser *)user
                           editActorId:(NSNumber *)editActorId
+                           successBlk:(void(^)(PELMMainSupport *))successBlk
+                       remoteErrorBlk:(void(^)(FPVehicle *, NSError *, NSNumber *))remoteErrBlk
+                   remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
                                 error:(PELMDaoErrorBlk)errorBlk {
   void (^markAsConflictBlk)(id, PELMMainSupport *) = ^ (id latestResourceModel, PELMMainSupport *unsyncedVehicle) {
     [_localDao markAsInConflictForVehicle:(FPVehicle *)unsyncedVehicle
@@ -448,7 +439,6 @@
                          systemFlushCount:_flushToRemoteMasterCount
                   contextForNotifications:self
                        remoteStoreBusyBlk:^(NSDate *retryAt) {
-                         NSLog(@"retryAt is: %@", retryAt);
                          [_localDao cancelSyncForVehicle:vehicle
                                                                                  httpRespCode:@(503)
                                                                                     errorMask:nil
@@ -461,15 +451,27 @@
                                                     errorMask:@([err code])
                                                       retryAt:nil
                                                   editActorId:editActorId
-                                                        error:_bgProcessingErrorBlk]; }
+                                                        error:_bgProcessingErrorBlk];
+                              if (remoteErrBlk) {
+                                remoteErrBlk((FPVehicle *)unsyncedVehicle, err, httpStatusCode);
+                              }
+                            }
                         markAsConflictBlk:markAsConflictBlk
         markAsSyncCompleteForNewEntityBlk:^(PELMMainSupport *unsyncedVehicle){[_localDao markAsSyncCompleteForNewVehicle:(FPVehicle *)unsyncedVehicle
                                                                                                                  forUser:user
                                                                                                              editActorId:editActorId
-                                                                                                                   error:_bgProcessingErrorBlk];}
+                                                                                                                   error:_bgProcessingErrorBlk];
+          if (successBlk) {
+            successBlk((FPVehicle *)unsyncedVehicle);
+          }
+        }
    markAsSyncCompleteForExistingEntityBlk:^(PELMMainSupport *unsyncedVehicle){[_localDao markAsSyncCompleteForUpdatedVehicle:(FPVehicle *)unsyncedVehicle
                                                                                                                  editActorId:editActorId
-                                                                                                                       error:_bgProcessingErrorBlk];}
+                                                                                                                       error:_bgProcessingErrorBlk];
+     if (successBlk) {
+       successBlk((FPVehicle *)unsyncedVehicle);
+     }
+   }
              syncCompleteNotificationName:FPVehicleSynced
                syncFailedNotificationName:FPVehicleSyncFailed
                entityGoneNotificationName:FPVehicleDeleted
@@ -822,6 +824,8 @@
         LogSyncRemoteMaster(@"coordDao/flushUnsynced: 'user' instance is in need of syncing", _flushToRemoteMasterCount);
         [self flushUnsyncedChangesToUser:user
                              editActorId:editActorId
+                              successBlk:nil
+                          remoteErrorBlk:nil
                       remoteStoreBusyBlk:remoteStoreBusyBlk
                                    error:errorBlk];
       } else {
@@ -836,6 +840,9 @@
                                     syncer:^(PELMMainSupport *entity){[self flushUnsyncedChangesToVehicle:(FPVehicle *)entity
                                                                                                   forUser:user
                                                                                               editActorId:editActorId
+                                                                                               successBlk:nil
+                                                                                           remoteErrorBlk:nil
+                                                                                       remoteStoreBusyBlk:remoteStoreBusyBlk
                                                                                                     error:errorBlk];}
                          entityLabelForLog:@"vehicle"
                                      error:errorBlk];
@@ -1068,6 +1075,22 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
   [_localDao saveNewVehicle:vehicle forUser:user error:errorBlk];
 }
 
+- (void)saveNewAndSyncImmediateVehicle:(FPVehicle *)vehicle
+                               forUser:(FPUser *)user
+                            successBlk:(void(^)(void))successBlk
+                        remoteErrorBlk:(void(^)(NSError *))remoteErrBlk
+                    remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
+                                 error:(PELMDaoErrorBlk)errorBlk {
+  [_localDao saveNewAndSyncImmediateVehicle:vehicle forUser:user error:errorBlk];
+  [self flushUnsyncedChangesToVehicle:vehicle
+                              forUser:user
+                          editActorId:nil
+                           successBlk:^(PELMMainSupport *vehicle) {successBlk();}
+                       remoteErrorBlk:^(FPVehicle *vehicle, NSError *err, NSNumber *httpRespCode) {remoteErrBlk(err);}
+                   remoteStoreBusyBlk:^(NSDate *retryAfter) {remoteStoreBusyBlk(retryAfter);}
+                                error:errorBlk];
+}
+
 - (BOOL)prepareVehicleForEdit:(FPVehicle *)vehicle
                       forUser:(FPUser *)user
                   editActorId:(NSNumber *)editActorId
@@ -1099,6 +1122,25 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                            error:(PELMDaoErrorBlk)errorBlk {
   [_localDao markAsDoneEditingVehicle:vehicle
                           editActorId:editActorId
+                                error:errorBlk];
+}
+
+- (void)markAsDoneEditingAndSyncVehicleImmediate:(FPVehicle *)vehicle
+                                         forUser:(FPUser *)user
+                                     editActorId:(NSNumber *)editActorId
+                                      successBlk:(void(^)(void))successBlk
+                                  remoteErrorBlk:(void(^)(NSError *))remoteErrBlk
+                              remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
+                                           error:(PELMDaoErrorBlk)errorBlk {
+  [_localDao markAsDoneEditingImmediateSyncVehicle:vehicle
+                                       editActorId:editActorId
+                                             error:errorBlk];
+  [self flushUnsyncedChangesToVehicle:vehicle
+                              forUser:user
+                          editActorId:nil
+                           successBlk:^(PELMMainSupport *vehicle) {successBlk();}
+                       remoteErrorBlk:^(FPVehicle *vehicle, NSError *err, NSNumber *httpRespCode) {remoteErrBlk(err);}
+                   remoteStoreBusyBlk:^(NSDate *retryAfter) {remoteStoreBusyBlk(retryAfter);}
                                 error:errorBlk];
 }
 

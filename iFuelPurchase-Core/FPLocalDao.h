@@ -116,6 +116,10 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                forUser:(FPUser *)user
                  error:(PELMDaoErrorBlk)errorBlk;
 
+- (void)saveNewAndSyncImmediateVehicle:(FPVehicle *)vehicle
+                               forUser:(FPUser *)user
+                                 error:(PELMDaoErrorBlk)errorBlk;
+
 - (BOOL)prepareVehicleForEdit:(FPVehicle *)vehicle
                       forUser:(FPUser *)user
                   editActorId:(NSNumber *)editActorId
@@ -132,6 +136,10 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
 - (void)markAsDoneEditingVehicle:(FPVehicle *)vehicle
                      editActorId:(NSNumber *)editActorId
                            error:(PELMDaoErrorBlk)errorBlk;
+
+- (void)markAsDoneEditingImmediateSyncVehicle:(FPVehicle *)vehicle
+                                  editActorId:(NSNumber *)editActorId
+                                        error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)reloadVehicle:(FPVehicle *)vehicle
                 error:(PELMDaoErrorBlk)errorBlk;

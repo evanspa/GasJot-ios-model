@@ -585,6 +585,16 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
   }];
 }
 
+- (void)saveNewAndSyncImmediateVehicle:(FPVehicle *)vehicle
+                               forUser:(FPUser *)user
+                                 error:(PELMDaoErrorBlk)errorBlk {
+  [PELMUtils newEntityInsertionInvariantChecks:vehicle];
+  [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
+    [vehicle setSyncInProgress:YES];
+    [self saveNewVehicle:vehicle forUser:user db:db error:errorBlk];
+  }];
+}
+
 - (void)saveNewVehicle:(FPVehicle *)vehicle
                forUser:(FPUser *)user
                     db:(FMDatabase *)db
@@ -656,6 +666,17 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                           mainUpdateArgsBlk:^NSArray *(PELMMainSupport *entity){return [self updateArgsForMainVehicle:(FPVehicle *)entity];}
                                 editActorId:editActorId
                                       error:errorBlk];
+}
+
+- (void)markAsDoneEditingImmediateSyncVehicle:(FPVehicle *)vehicle
+                                  editActorId:(NSNumber *)editActorId
+                                        error:(PELMDaoErrorBlk)errorBlk {
+  [_localModelUtils markAsDoneEditingAndSyncImmediateEntity:vehicle
+                                                  mainTable:TBL_MAIN_VEHICLE
+                                             mainUpdateStmt:[self updateStmtForMainVehicle]
+                                          mainUpdateArgsBlk:^NSArray *(PELMMainSupport *entity){return [self updateArgsForMainVehicle:(FPVehicle *)entity];}
+                                                editActorId:editActorId
+                                                      error:errorBlk];
 }
 
 - (void)reloadVehicle:(FPVehicle *)vehicle
