@@ -79,9 +79,12 @@ describe(@"FPCoordinatorDao", ^{
       [_coordDao markAsDoneEditingAndSyncUserImmediate:user
                                            editActorId:@(FPForegroundActorId)
                                             successBlk:^{saveSuccess = YES;}
-                                        remoteErrorBlk:^(NSError *err) {}
                                     remoteStoreBusyBlk:^(NSDate *retryAfter) {}
+                                    tempRemoteErrorBlk:^{}
+                                        remoteErrorBlk:^(NSInteger fpErrMask) {}
+                                       authRequiredBlk:^{}
                                                  error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+      
       [[expectFutureValue(theValue(saveSuccess)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
       [[theValue([toggler value]) should] beYes];
       // notice that I didn't even have to start the flusher job!
@@ -94,6 +97,7 @@ describe(@"FPCoordinatorDao", ^{
       [_coordDao pruneAllSyncedEntitiesWithError:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[[_coordDao localDao] mainUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()] shouldBeNil]; // it should have been pruned
       
+      // ok - now lets try with a connection error
       [_coordDao prepareUserForEdit:user
                         editActorId:@(FPForegroundActorId)
                   entityBeingSynced:[_coordTestCtx entityBeingSyncedBlk]
@@ -107,10 +111,140 @@ describe(@"FPCoordinatorDao", ^{
       [_coordDao markAsDoneEditingAndSyncUserImmediate:user
                                            editActorId:@(FPForegroundActorId)
                                             successBlk:^{}
-                                        remoteErrorBlk:^(NSError *err) {saveFailed = YES;}
                                     remoteStoreBusyBlk:^(NSDate *retryAfter) {}
+                                    tempRemoteErrorBlk:^{saveFailed = YES;}
+                                        remoteErrorBlk:^(NSInteger fpErrMask) {}
+                                       authRequiredBlk:^{}
                                                  error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[expectFutureValue(theValue(saveFailed)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
+      user = [[_coordDao localDao] mainUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
+      [user shouldNotBeNil];
+      [[theValue([user syncInProgress]) should] beNo];
+      [[theValue([user editInProgress]) should] beNo];
+      [[user syncHttpRespCode] shouldBeNil];
+      [[user syncRetryAt] shouldBeNil];
+      [[[user syncErrMask] should] equal:[NSNumber numberWithInteger:-1004]];
+      
+      // ok - now lets try with a temporary server error
+      [_coordDao prepareUserForEdit:user
+                        editActorId:@(FPForegroundActorId)
+                  entityBeingSynced:[_coordTestCtx entityBeingSyncedBlk]
+                      entityDeleted:[_coordTestCtx entityDeletedBlk]
+                   entityInConflict:[_coordTestCtx entityInConflictBlk]
+      entityBeingEditedByOtherActor:[_coordTestCtx entityBeingEditedByOtherActorBlk]
+                              error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+      toggler = _observer(@[FPUserSyncFailed]);
+      _mocker(@"http-response.user.PUT.500", 0, 0);
+      saveFailed = NO;
+      [_coordDao markAsDoneEditingAndSyncUserImmediate:user
+                                           editActorId:@(FPForegroundActorId)
+                                            successBlk:^{}
+                                    remoteStoreBusyBlk:^(NSDate *retryAfter) {}
+                                    tempRemoteErrorBlk:^{saveFailed = YES;}
+                                        remoteErrorBlk:^(NSInteger fpErrMask) {}
+                                       authRequiredBlk:^{}
+                                                 error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+      [[expectFutureValue(theValue(saveFailed)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
+      [[theValue([toggler value]) should] beYes];
+      user = [[_coordDao localDao] mainUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
+      [user shouldNotBeNil];
+      [[theValue([user syncInProgress]) should] beNo];
+      [[theValue([user editInProgress]) should] beNo];
+      [[[user syncHttpRespCode] should] equal:[NSNumber numberWithInteger:500]];
+      [[user syncRetryAt] shouldBeNil];
+      [[[user syncErrMask] should] equal:[NSNumber numberWithInteger:0]];
+      
+      // ok - now lets try with a non-temporary server error
+      [_coordDao prepareUserForEdit:user
+                        editActorId:@(FPForegroundActorId)
+                  entityBeingSynced:[_coordTestCtx entityBeingSyncedBlk]
+                      entityDeleted:[_coordTestCtx entityDeletedBlk]
+                   entityInConflict:[_coordTestCtx entityInConflictBlk]
+      entityBeingEditedByOtherActor:[_coordTestCtx entityBeingEditedByOtherActorBlk]
+                              error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+      toggler = _observer(@[FPUserSyncFailed]);
+      _mocker(@"http-response.user.PUT.500.1", 0, 0);
+      saveFailed = NO;
+      __block NSInteger errMask = 0;
+      [_coordDao markAsDoneEditingAndSyncUserImmediate:user
+                                           editActorId:@(FPForegroundActorId)
+                                            successBlk:^{}
+                                    remoteStoreBusyBlk:^(NSDate *retryAfter) {}
+                                    tempRemoteErrorBlk:^{}
+                                        remoteErrorBlk:^(NSInteger fpErrMask) {saveFailed = YES; errMask = fpErrMask;}
+                                       authRequiredBlk:^{}
+                                                 error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+      [[expectFutureValue(theValue(saveFailed)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
+      [[theValue([toggler value]) should] beYes];
+      user = [[_coordDao localDao] mainUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
+      [user shouldNotBeNil];
+      [[theValue([user syncInProgress]) should] beNo];
+      [[theValue([user editInProgress]) should] beNo];
+      [[[user syncHttpRespCode] should] equal:[NSNumber numberWithInteger:500]];
+      [[user syncRetryAt] shouldBeNil];
+      [[theValue(errMask) should] equal:theValue(6)];
+      [[[user syncErrMask] should] equal:[NSNumber numberWithInteger:errMask]];
+      
+      // ok - now lets try with a temporary 503 server error
+      [_coordDao prepareUserForEdit:user
+                        editActorId:@(FPForegroundActorId)
+                  entityBeingSynced:[_coordTestCtx entityBeingSyncedBlk]
+                      entityDeleted:[_coordTestCtx entityDeletedBlk]
+                   entityInConflict:[_coordTestCtx entityInConflictBlk]
+      entityBeingEditedByOtherActor:[_coordTestCtx entityBeingEditedByOtherActorBlk]
+                              error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+      toggler = _observer(@[FPUserSyncFailed]);
+      _mocker(@"http-response.user.PUT.503", 0, 0);
+      saveFailed = NO;
+      __block NSDate *retryAfterVal = nil;
+      [_coordDao markAsDoneEditingAndSyncUserImmediate:user
+                                           editActorId:@(FPForegroundActorId)
+                                            successBlk:^{}
+                                    remoteStoreBusyBlk:^(NSDate *retryAfter) {saveFailed = YES; retryAfterVal = retryAfter;}
+                                    tempRemoteErrorBlk:^{}
+                                        remoteErrorBlk:^(NSInteger fpErrMask) {}
+                                       authRequiredBlk:^{}
+                                                 error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+      [[expectFutureValue(theValue(saveFailed)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
+      [[theValue([toggler value]) should] beYes];
+      user = [[_coordDao localDao] mainUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
+      [user shouldNotBeNil];
+      [[theValue([user syncInProgress]) should] beNo];
+      [[theValue([user editInProgress]) should] beNo];
+      [[[user syncHttpRespCode] should] equal:[NSNumber numberWithInteger:503]];
+      [[user syncRetryAt] shouldNotBeNil];
+      [retryAfterVal shouldNotBeNil];
+      [[theValue([PEUtils isDate:[user syncRetryAt] msprecisionEqualTo:retryAfterVal]) should] beYes];
+      [[user syncErrMask] shouldBeNil];
+      
+      // ok - now lets try with an authentication failure
+      [_coordDao prepareUserForEdit:user
+                        editActorId:@(FPForegroundActorId)
+                  entityBeingSynced:[_coordTestCtx entityBeingSyncedBlk]
+                      entityDeleted:[_coordTestCtx entityDeletedBlk]
+                   entityInConflict:[_coordTestCtx entityInConflictBlk]
+      entityBeingEditedByOtherActor:[_coordTestCtx entityBeingEditedByOtherActorBlk]
+                              error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+      toggler = _observer(@[FPUserSyncFailed]);
+      _mocker(@"http-response.user.PUT.401", 0, 0);
+      saveFailed = NO;
+      [_coordDao markAsDoneEditingAndSyncUserImmediate:user
+                                           editActorId:@(FPForegroundActorId)
+                                            successBlk:^{}
+                                    remoteStoreBusyBlk:^(NSDate *retryAfter) {}
+                                    tempRemoteErrorBlk:^{}
+                                        remoteErrorBlk:^(NSInteger fpErrMask) {}
+                                       authRequiredBlk:^{saveFailed = YES;}
+                                                 error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+      [[expectFutureValue(theValue(saveFailed)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
+      [[theValue([toggler value]) should] beYes];
+      user = [[_coordDao localDao] mainUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
+      [user shouldNotBeNil];
+      [[theValue([user syncInProgress]) should] beNo];
+      [[theValue([user editInProgress]) should] beNo];
+      [[[user syncHttpRespCode] should] equal:[NSNumber numberWithInteger:401]];
+      [[user syncRetryAt] shouldBeNil];
+      [[user syncErrMask] shouldBeNil];
     });
   });
 });

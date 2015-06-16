@@ -77,8 +77,10 @@ describe(@"FPCoordinatorDao", ^{
       [_coordDao saveNewAndSyncImmediateVehicle:vehicle
                                         forUser:user
                                      successBlk:^{saveSuccess = YES;}
-                                 remoteErrorBlk:^(NSError *err) {}
                              remoteStoreBusyBlk:^(NSDate *retryAfter) {}
+                             tempRemoteErrorBlk:^{}
+                                 remoteErrorBlk:^(NSInteger fpErrMask) {}
+                                authRequiredBlk:^{}
                                           error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[expectFutureValue(theValue(saveSuccess)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
       [[theValue([toggler value]) should] beYes];
@@ -127,9 +129,12 @@ describe(@"FPCoordinatorDao", ^{
                                                   forUser:user
                                               editActorId:@(FPForegroundActorId)
                                                successBlk:^{saveSuccess = YES;}
-                                           remoteErrorBlk:^(NSError *err) {}
                                        remoteStoreBusyBlk:^(NSDate *retryAfter) {}
+                                       tempRemoteErrorBlk:^{}
+                                           remoteErrorBlk:^(NSInteger fpErrMask) {}
+                                          authRequiredBlk:^{}
                                                     error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+      
       [[expectFutureValue(theValue(saveSuccess)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
       [[theValue([toggler value]) should] beYes];
       [_coordDao pruneAllSyncedEntitiesWithError:[_coordTestCtx newLocalSaveErrBlkMaker]()];

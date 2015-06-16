@@ -129,7 +129,11 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
 - (HCServerErrorBlk)newServerErrBlk:(PELMRemoteMasterCompletionHandler)complHandler {
   return ^(NSHTTPURLResponse *resp) {
     NSString *fpErrMaskStr = [[resp allHeaderFields] objectForKey:_errorMaskHeaderName];
-    NSError *error = [NSError errorWithDomain:FPSystemFaultedErrorDomain code:[fpErrMaskStr intValue] userInfo:nil];
+    NSInteger codeForError = 0;
+    if (fpErrMaskStr) {
+      codeForError = [fpErrMaskStr integerValue];
+    }
+    NSError *error = [NSError errorWithDomain:FPSystemFaultedErrorDomain code:codeForError userInfo:nil];
     complHandler(nil, nil, nil, nil, nil, NO, NO, NO, NO, NO, error, resp);
   };
 }

@@ -137,8 +137,10 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
 - (void)markAsDoneEditingAndSyncUserImmediate:(FPUser *)user
                                   editActorId:(NSNumber *)editActorId
                                    successBlk:(void(^)(void))successBlk
-                               remoteErrorBlk:(void(^)(NSError *))remoteErrBlk
                            remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
+                           tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk
+                               remoteErrorBlk:(void(^)(NSInteger))remoteErrorBlk
+                              authRequiredBlk:(void(^)(void))authRequiredBlk
                                         error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)markAsDoneEditingUser:(FPUser *)user
@@ -178,8 +180,10 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
 - (void)saveNewAndSyncImmediateVehicle:(FPVehicle *)vehicle
                                forUser:(FPUser *)user
                             successBlk:(void(^)(void))successBlk
-                        remoteErrorBlk:(void(^)(NSError *))remoteErrBlk
                     remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
+                    tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk
+                        remoteErrorBlk:(void(^)(NSInteger))remoteErrorBlk
+                       authRequiredBlk:(void(^)(void))authRequiredBlk
                                  error:(PELMDaoErrorBlk)errorBlk;
 
 - (BOOL)prepareVehicleForEdit:(FPVehicle *)vehicle
@@ -203,8 +207,10 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                                          forUser:(FPUser *)user
                                      editActorId:(NSNumber *)editActorId
                                       successBlk:(void(^)(void))successBlk
-                                  remoteErrorBlk:(void(^)(NSError *))remoteErrBlk
                               remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
+                              tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk
+                                  remoteErrorBlk:(void(^)(NSInteger))remoteErrorBlk
+                                 authRequiredBlk:(void(^)(void))authRequiredBlk
                                            error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)reloadVehicle:(FPVehicle *)vehicle

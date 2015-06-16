@@ -83,7 +83,7 @@ PELMMainSupport * (^toMainSupport)(FMResultSet *, NSString *, NSDictionary *) = 
                     systemFlushCount:(NSInteger)systemFlushCount
              contextForNotifications:(NSObject *)contextForNotifications
                   remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
-                       cancelSyncBlk:(void(^)(PELMMainSupport *, NSError *, NSNumber *))cancelSyncBlk
+                       remoteStoreErrorBlk:(void(^)(PELMMainSupport *, NSError *, NSNumber *))remoteStoreErrorBlk
                    markAsConflictBlk:(void(^)(id, PELMMainSupport *))markAsConflictBlk
    markAsSyncCompleteForNewEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCompleteForNewEntityBlk
 markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCompleteForExistingEntityBlk
@@ -135,7 +135,7 @@ markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCom
                                                entity:entity];
     };
     void (^notifyUnsuccessfulSync)(NSError *, NSNumber *) = ^(NSError *error, NSNumber *httpStatusCode) {
-      cancelSyncBlk(entity, error, httpStatusCode);
+      remoteStoreErrorBlk(entity, error, httpStatusCode);
       [PELMNotificationUtils postNotificationWithName:syncFailedNotificationName
                                                entity:entity];
     };
