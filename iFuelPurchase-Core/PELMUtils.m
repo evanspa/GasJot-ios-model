@@ -351,9 +351,6 @@ markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCom
                                             db:db
                                          error:errorBlk];
     [entity setEditInProgress:NO];
-    [entity setSyncErrMask:nil];
-    [entity setSyncHttpRespCode:nil];
-    [entity setSyncRetryAt:nil];
     if ([entity decrementEditCount] == 0) {
       [PELMUtils deleteRelationsForEntity:entity
                               entityTable:mainTable

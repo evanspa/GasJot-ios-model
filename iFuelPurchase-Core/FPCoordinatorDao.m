@@ -298,7 +298,7 @@
                     addlTempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
                         addlRemoteErrorBlk:(void(^)(NSInteger))addlRemoteErrorBlk {
   if (httpStatusCode) {
-    if ([[err domain] isEqualToString:FPSystemFaultedErrorDomain]) {
+    if ([[err domain] isEqualToString:FPUserFaultedErrorDomain]) {
       if ([err code] > 0) {
         if (addlRemoteErrorBlk) addlRemoteErrorBlk([err code]);
       } else {

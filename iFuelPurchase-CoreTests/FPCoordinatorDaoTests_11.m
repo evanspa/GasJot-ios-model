@@ -163,7 +163,7 @@ describe(@"FPCoordinatorDao", ^{
       entityBeingEditedByOtherActor:[_coordTestCtx entityBeingEditedByOtherActorBlk]
                               error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       toggler = _observer(@[FPUserSyncFailed]);
-      _mocker(@"http-response.user.PUT.500.1", 0, 0);
+      _mocker(@"http-response.user.PUT.422", 0, 0);
       saveFailed = NO;
       __block NSInteger errMask = 0;
       [_coordDao markAsDoneEditingAndSyncUserImmediate:user
@@ -180,7 +180,7 @@ describe(@"FPCoordinatorDao", ^{
       [user shouldNotBeNil];
       [[theValue([user syncInProgress]) should] beNo];
       [[theValue([user editInProgress]) should] beNo];
-      [[[user syncHttpRespCode] should] equal:[NSNumber numberWithInteger:500]];
+      [[[user syncHttpRespCode] should] equal:[NSNumber numberWithInteger:422]];
       [[user syncRetryAt] shouldBeNil];
       [[theValue(errMask) should] equal:theValue(6)];
       [[[user syncErrMask] should] equal:[NSNumber numberWithInteger:errMask]];
