@@ -195,6 +195,10 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                    forUser:(FPUser *)user
                      error:(PELMDaoErrorBlk)errorBlk;
 
+- (void)saveNewAndSyncImmediateFuelStation:(FPFuelStation *)fuelStation
+                                   forUser:(FPUser *)user
+                                     error:(PELMDaoErrorBlk)errorBlk;
+
 - (BOOL)prepareFuelStationForEdit:(FPFuelStation *)fuelStation
                           forUser:(FPUser *)user
                       editActorId:(NSNumber *)editActorId
@@ -211,6 +215,10 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
 - (void)markAsDoneEditingFuelStation:(FPFuelStation *)fuelStation
                          editActorId:(NSNumber *)editActorId
                                error:(PELMDaoErrorBlk)errorBlk;
+
+- (void)markAsDoneEditingImmediateSyncFuelStation:(FPFuelStation *)fuelStation
+                                      editActorId:(NSNumber *)editActorId
+                                            error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)reloadFuelStation:(FPFuelStation *)fuelStation
                     error:(PELMDaoErrorBlk)errorBlk;

@@ -371,7 +371,7 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
 - (void)markAsDoneEditingImmediateSyncUser:(FPUser *)user
                                editActorId:(NSNumber *)editActorId
                                      error:(PELMDaoErrorBlk)errorBlk {
-  [_localModelUtils markAsDoneEditingAndSyncImmediateEntity:user
+  [_localModelUtils markAsDoneEditingImmediateSyncEntity:user
                                                   mainTable:TBL_MAIN_USER
                                              mainUpdateStmt:[self updateStmtForMainUser]
                                           mainUpdateArgsBlk:^NSArray *(PELMMainSupport *entity){return [self updateArgsForMainUser:(FPUser *)entity];}
@@ -671,12 +671,12 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
 - (void)markAsDoneEditingImmediateSyncVehicle:(FPVehicle *)vehicle
                                   editActorId:(NSNumber *)editActorId
                                         error:(PELMDaoErrorBlk)errorBlk {
-  [_localModelUtils markAsDoneEditingAndSyncImmediateEntity:vehicle
-                                                  mainTable:TBL_MAIN_VEHICLE
-                                             mainUpdateStmt:[self updateStmtForMainVehicle]
-                                          mainUpdateArgsBlk:^NSArray *(PELMMainSupport *entity){return [self updateArgsForMainVehicle:(FPVehicle *)entity];}
-                                                editActorId:editActorId
-                                                      error:errorBlk];
+  [_localModelUtils markAsDoneEditingImmediateSyncEntity:vehicle
+                                               mainTable:TBL_MAIN_VEHICLE
+                                          mainUpdateStmt:[self updateStmtForMainVehicle]
+                                       mainUpdateArgsBlk:^NSArray *(PELMMainSupport *entity){return [self updateArgsForMainVehicle:(FPVehicle *)entity];}
+                                             editActorId:editActorId
+                                                   error:errorBlk];
 }
 
 - (void)reloadVehicle:(FPVehicle *)vehicle
@@ -896,6 +896,16 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
   }];
 }
 
+- (void)saveNewAndSyncImmediateFuelStation:(FPFuelStation *)fuelStation
+                                   forUser:(FPUser *)user
+                                     error:(PELMDaoErrorBlk)errorBlk {
+  [PELMUtils newEntityInsertionInvariantChecks:fuelStation];
+  [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
+    [fuelStation setSyncInProgress:YES];
+    [self saveNewFuelStation:fuelStation forUser:user db:db error:errorBlk];
+  }];
+}
+
 - (void)saveNewFuelStation:(FPFuelStation *)fuelStation
                    forUser:(FPUser *)user
                         db:(FMDatabase *)db
@@ -987,6 +997,17 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                           mainUpdateArgsBlk:^NSArray *(PELMMainSupport *entity){return [self updateArgsForMainFuelStation:(FPFuelStation *)entity];}
                                 editActorId:editActorId
                                       error:errorBlk];
+}
+
+- (void)markAsDoneEditingImmediateSyncFuelStation:(FPFuelStation *)fuelStation
+                                      editActorId:(NSNumber *)editActorId
+                                            error:(PELMDaoErrorBlk)errorBlk {
+  [_localModelUtils markAsDoneEditingImmediateSyncEntity:fuelStation
+                                                  mainTable:TBL_MAIN_FUEL_STATION
+                                             mainUpdateStmt:[self updateStmtForMainFuelStation]
+                                          mainUpdateArgsBlk:^NSArray *(PELMMainSupport *entity){return [self updateArgsForMainFuelStation:(FPFuelStation *)entity];}
+                                                editActorId:editActorId
+                                                      error:errorBlk];
 }
 
 - (void)reloadFuelStation:(FPFuelStation *)fuelStation

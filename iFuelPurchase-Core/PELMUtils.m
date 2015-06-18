@@ -435,12 +435,12 @@ version of entity not found!  It's global ID is: [%@]", [entity globalIdentifier
   }];
 }
 
-- (void)markAsDoneEditingAndSyncImmediateEntity:(PELMMainSupport *)entity
-                                      mainTable:(NSString *)mainTable
-                                 mainUpdateStmt:(NSString *)mainUpdateStmt
-                              mainUpdateArgsBlk:(NSArray *(^)(id))mainUpdateArgsBlk
-                                    editActorId:(NSNumber *)editActorId
-                                          error:(PELMDaoErrorBlk)errorBlk {
+- (void)markAsDoneEditingImmediateSyncEntity:(PELMMainSupport *)entity
+                                   mainTable:(NSString *)mainTable
+                              mainUpdateStmt:(NSString *)mainUpdateStmt
+                           mainUpdateArgsBlk:(NSArray *(^)(id))mainUpdateArgsBlk
+                                 editActorId:(NSNumber *)editActorId
+                                       error:(PELMDaoErrorBlk)errorBlk {
   [PELMUtils saveEntityInvariantChecks:entity];
   [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
     [PELMUtils assertActualEditActorIdOfEntity:entity

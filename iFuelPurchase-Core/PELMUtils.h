@@ -158,12 +158,12 @@ markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCom
                     editActorId:(NSNumber *)editActorId
                           error:(PELMDaoErrorBlk)errorBlk;
 
-- (void)markAsDoneEditingAndSyncImmediateEntity:(PELMMainSupport *)entity
-                                      mainTable:(NSString *)mainTable
-                                 mainUpdateStmt:(NSString *)mainUpdateStmt
-                              mainUpdateArgsBlk:(NSArray *(^)(id))mainUpdateArgsBlk
-                                    editActorId:(NSNumber *)editActorId
-                                          error:(PELMDaoErrorBlk)errorBlk;
+- (void)markAsDoneEditingImmediateSyncEntity:(PELMMainSupport *)entity
+                                   mainTable:(NSString *)mainTable
+                              mainUpdateStmt:(NSString *)mainUpdateStmt
+                           mainUpdateArgsBlk:(NSArray *(^)(id))mainUpdateArgsBlk
+                                 editActorId:(NSNumber *)editActorId
+                                       error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)markAsSyncCompleteForNewEntity:(PELMMainSupport *)entity
                              mainTable:(NSString *)mainTable

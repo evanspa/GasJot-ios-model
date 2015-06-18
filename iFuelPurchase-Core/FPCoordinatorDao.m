@@ -82,7 +82,7 @@
     _fuelStationResMtVersion = fuelStationResMtVersion;
     _fuelPurchaseLogResMtVersion = fuelPurchaseLogResMtVersion;
     _environmentLogResMtVersion = environmentLogResMtVersion;
-    
+
     FPEnvironmentLogSerializer *environmentLogSerializer =
       [self environmentLogSerializerForCharset:acceptCharset];
     FPFuelPurchaseLogSerializer *fuelPurchaseLogSerializer =
@@ -126,7 +126,7 @@
     _authTokenDelegate = authTokenDelegate;
     _bgProcessingErrorBlk = bgProcessingErrorBlk;
     _bgEditActorId = bgEditActorId;
-    
+
     _includeUserInBackgroundFlush = YES;
   }
   return self;
@@ -239,7 +239,7 @@
 - (void)computeOfFuelStationCoordsWithEditActorId:(NSNumber *)editActorId
                                             error:(PELMDaoErrorBlk)errorBlk {
   FPUser *user = [self userWithError:_bgProcessingErrorBlk];
-  if (user) { // need to check in case user was "deleted" / "logged-out" 
+  if (user) { // need to check in case user was "deleted" / "logged-out"
     NSArray *fuelStationsToComputeCoords =
       [_localDao markFuelStationsAsCoordinateComputeForUser:user
                                                 editActorId:editActorId
@@ -478,17 +478,17 @@
                          systemFlushCount:_flushToRemoteMasterCount
                   contextForNotifications:self
                        remoteStoreBusyBlk:^(NSDate *retryAt) {
-                         [_localDao cancelSyncForVehicle:vehicle
-                                                                                 httpRespCode:@(503)
-                                                                                    errorMask:nil
-                                                                                      retryAt:retryAt
-                                                                                  editActorId:editActorId
-                                                                                        error:_bgProcessingErrorBlk];
-                         if (addlRemoteStoreBusyBlk) {
-                           addlRemoteStoreBusyBlk(retryAt);
-                         }
-                       }
-                            remoteStoreErrorBlk:^(PELMMainSupport *unsyncedVehicle, NSError *err, NSNumber *httpStatusCode) {
+      [_localDao cancelSyncForVehicle:vehicle
+                         httpRespCode:@(503)
+                            errorMask:nil
+                              retryAt:retryAt
+                          editActorId:editActorId
+                                error:_bgProcessingErrorBlk];
+      if (addlRemoteStoreBusyBlk) {
+        addlRemoteStoreBusyBlk(retryAt);
+      }
+    }
+  remoteStoreErrorBlk:^(PELMMainSupport *unsyncedVehicle, NSError *err, NSNumber *httpStatusCode) {
                               [_localDao cancelSyncForVehicle:(FPVehicle *)unsyncedVehicle
                                                  httpRespCode:httpStatusCode
                                                     errorMask:@([err code])
@@ -501,21 +501,23 @@
                                                                 addlRemoteErrorBlk:addlRemoteErrorBlk];
                             }
                         markAsConflictBlk:markAsConflictBlk
-        markAsSyncCompleteForNewEntityBlk:^(PELMMainSupport *unsyncedVehicle){[_localDao markAsSyncCompleteForNewVehicle:(FPVehicle *)unsyncedVehicle
-                                                                                                                 forUser:user
-                                                                                                             editActorId:editActorId
-                                                                                                                   error:_bgProcessingErrorBlk];
-          if (addlSuccessBlk) {
-            addlSuccessBlk((FPVehicle *)unsyncedVehicle);
-          }
+        markAsSyncCompleteForNewEntityBlk:^(PELMMainSupport *unsyncedVehicle) {
+                          [_localDao markAsSyncCompleteForNewVehicle:(FPVehicle *)unsyncedVehicle
+                                                             forUser:user
+                                                         editActorId:editActorId
+                                                               error:_bgProcessingErrorBlk];
+                          if (addlSuccessBlk) {
+                            addlSuccessBlk((FPVehicle *)unsyncedVehicle);
+                          }
         }
-   markAsSyncCompleteForExistingEntityBlk:^(PELMMainSupport *unsyncedVehicle){[_localDao markAsSyncCompleteForUpdatedVehicle:(FPVehicle *)unsyncedVehicle
-                                                                                                                 editActorId:editActorId
-                                                                                                                       error:_bgProcessingErrorBlk];
-     if (addlSuccessBlk) {
-       addlSuccessBlk((FPVehicle *)unsyncedVehicle);
-     }
-   }
+   markAsSyncCompleteForExistingEntityBlk:^(PELMMainSupport *unsyncedVehicle) {
+                          [_localDao markAsSyncCompleteForUpdatedVehicle:(FPVehicle *)unsyncedVehicle
+                                                             editActorId:editActorId
+                                                                   error:_bgProcessingErrorBlk];
+                          if (addlSuccessBlk) {
+                            addlSuccessBlk((FPVehicle *)unsyncedVehicle);
+                          }
+                        }
              syncCompleteNotificationName:FPVehicleSynced
                syncFailedNotificationName:FPVehicleSyncFailed
                entityGoneNotificationName:FPVehicleDeleted
@@ -544,6 +546,11 @@
 - (void)flushUnsyncedChangesToFuelStation:(FPFuelStation *)fuelStation
                                   forUser:(FPUser *)user
                               editActorId:(NSNumber *)editActorId
+                           addlSuccessBlk:(void(^)(PELMMainSupport *))addlSuccessBlk
+                   addlRemoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)addlRemoteStoreBusyBlk
+                   addlTempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
+                       addlRemoteErrorBlk:(void(^)(NSInteger))addlRemoteErrorBlk
+                      addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
                                     error:(PELMDaoErrorBlk)errorBlk {
   void (^markAsConflictBlk)(id, PELMMainSupport *) = ^ (id latestResourceModel, PELMMainSupport *unsyncedFuelStation) {
     [_localDao markAsInConflictForFuelStation:(FPFuelStation *)unsyncedFuelStation
@@ -586,7 +593,6 @@
     PELMRemoteMasterAuthReqdBlk authReqdHandler,
     PELMRemoteMasterCompletionHandler remoteStoreComplHandler,
     dispatch_queue_t backgroundQueue) {
-    DDLogDebug(@"{%lu} - About to call remoteMasterDao / saveNewFuelStation on thread: [%@]", (unsigned long)_flushToRemoteMasterCount, [NSThread currentThread]);
     [_remoteMasterDao saveNewFuelStation:(FPFuelStation *)unsyncedFuelStation
                                  forUser:user
                             asynchronous:NO
@@ -599,38 +605,64 @@
   [PELMUtils flushUnsyncedChangesToEntity:fuelStation
                          systemFlushCount:_flushToRemoteMasterCount
                   contextForNotifications:self
-                       remoteStoreBusyBlk:^(NSDate *retryAt) {[_localDao cancelSyncForFuelStation:fuelStation
-                                                                                     httpRespCode:@(503)
-                                                                                        errorMask:nil
-                                                                                          retryAt:retryAt
-                                                                                      editActorId:editActorId
-                                                                                            error:_bgProcessingErrorBlk];}
-                            remoteStoreErrorBlk:^(PELMMainSupport *unsyncedFuelStation, NSError *err, NSNumber *httpStatusCode){[_localDao cancelSyncForFuelStation:(FPFuelStation *)unsyncedFuelStation
-                                                                                                                                                 httpRespCode:httpStatusCode
-                                                                                                                                                    errorMask:@([err code])
-                                                                                                                                                      retryAt:nil
-                                                                                                                                                  editActorId:editActorId
-                                                                                                                                                        error:_bgProcessingErrorBlk];}
+                       remoteStoreBusyBlk:^(NSDate *retryAt) {
+      [_localDao cancelSyncForFuelStation:fuelStation
+                             httpRespCode:@(503)
+                                errorMask:nil
+                                  retryAt:retryAt
+                              editActorId:editActorId
+                                    error:_bgProcessingErrorBlk];
+      if (addlRemoteStoreBusyBlk) {
+        addlRemoteStoreBusyBlk(retryAt);
+      }
+    }
+  remoteStoreErrorBlk:^(PELMMainSupport *unsyncedFuelStation, NSError *err, NSNumber *httpStatusCode) {
+      [_localDao cancelSyncForFuelStation:(FPFuelStation *)unsyncedFuelStation
+                             httpRespCode:httpStatusCode
+                                errorMask:@([err code])
+                                  retryAt:nil
+                              editActorId:editActorId
+                                    error:_bgProcessingErrorBlk];
+      [FPCoordinatorDao invokeErrorBlocksForHttpStatusCode:httpStatusCode
+                                                     error:err
+                                    addlTempRemoteErrorBlk:addlTempRemoteErrorBlk
+                                        addlRemoteErrorBlk:addlRemoteErrorBlk];
+    }
                         markAsConflictBlk:markAsConflictBlk
-        markAsSyncCompleteForNewEntityBlk:^(PELMMainSupport *unsyncedFuelStation){[_localDao markAsSyncCompleteForNewFuelStation:(FPFuelStation *)unsyncedFuelStation
-                                                                                                                         forUser:user
-                                                                                                                     editActorId:editActorId
-                                                                                                                           error:_bgProcessingErrorBlk];}
-   markAsSyncCompleteForExistingEntityBlk:^(PELMMainSupport *unsyncedFuelStation){[_localDao markAsSyncCompleteForUpdatedFuelStation:(FPFuelStation *)unsyncedFuelStation
-                                                                                                                         editActorId:editActorId
-                                                                                                                               error:_bgProcessingErrorBlk];}
+        markAsSyncCompleteForNewEntityBlk:^(PELMMainSupport *unsyncedFuelStation) {
+                          [_localDao markAsSyncCompleteForNewFuelStation:(FPFuelStation *)unsyncedFuelStation
+                                                                 forUser:user
+                                                             editActorId:editActorId
+                                                                   error:_bgProcessingErrorBlk];
+                          if (addlSuccessBlk) {
+                            addlSuccessBlk((FPFuelStation *)unsyncedFuelStation);
+                          }
+                        }
+  markAsSyncCompleteForExistingEntityBlk:^(PELMMainSupport *unsyncedFuelStation) {
+                          [_localDao markAsSyncCompleteForUpdatedFuelStation:(FPFuelStation *)unsyncedFuelStation
+                                                                 editActorId:editActorId
+                                                                       error:_bgProcessingErrorBlk];
+                          if (addlSuccessBlk) {
+                            addlSuccessBlk((FPFuelStation *)unsyncedFuelStation);
+                          }
+                        }
              syncCompleteNotificationName:FPFuelStationSynced
                syncFailedNotificationName:FPFuelStationSyncFailed
                entityGoneNotificationName:FPFuelStationDeleted
                 physicallyDeleteEntityBlk:^(PELMMainSupport *unsyncedFuelStation){[_localDao cascadeDeleteFuelStation:(FPFuelStation *)unsyncedFuelStation
                                                                                                                 error:_bgProcessingErrorBlk];}
-                      authRequiredHandler:^(PELMMainSupport *unsyncedFuelStation, HCAuthentication *auth) { [self authReqdBlk](unsyncedFuelStation, auth);
-                        [_localDao cancelSyncForFuelStation:(FPFuelStation *)unsyncedFuelStation
-                                               httpRespCode:@(401)
-                                                  errorMask:nil
-                                                    retryAt:nil
-                                                editActorId:editActorId
-                                                      error:_bgProcessingErrorBlk]; }
+  authRequiredHandler:^(PELMMainSupport *unsyncedFuelStation, HCAuthentication *auth) {
+               [self authReqdBlk](unsyncedFuelStation, auth);
+               [_localDao cancelSyncForFuelStation:(FPFuelStation *)unsyncedFuelStation
+                                      httpRespCode:@(401)
+                                         errorMask:nil
+                                           retryAt:nil
+                                       editActorId:editActorId
+                                             error:_bgProcessingErrorBlk];
+               if (addlAuthRequiredBlk) {
+                 addlAuthRequiredBlk();
+               }
+             }
                           newAuthTokenBlk:^(NSString *newAuthTkn){[self processNewAuthToken:newAuthTkn forUser:user];}
                 backgroundProcessingQueue:_serialQueue
                     remoteMasterDeleteBlk:remoteMasterDeletionExistingBlk
@@ -905,6 +937,11 @@
                                     syncer:^(PELMMainSupport *entity){[self flushUnsyncedChangesToFuelStation:(FPFuelStation *)entity
                                                                                                       forUser:user
                                                                                                   editActorId:editActorId
+                                                                                               addlSuccessBlk:nil
+                                                                                       addlRemoteStoreBusyBlk:remoteStoreBusyBlk
+                                                                                       addlTempRemoteErrorBlk:nil
+                                                                                           addlRemoteErrorBlk:nil
+                                                                                          addlAuthRequiredBlk:nil
                                                                                                         error:errorBlk];}
                          entityLabelForLog:@"fuel station"
                                      error:errorBlk];
@@ -1268,6 +1305,26 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
   [_localDao saveNewFuelStation:fuelStation forUser:user error:errorBlk];
 }
 
+- (void)saveNewAndSyncImmediateFuelStation:(FPFuelStation *)fuelStation
+                                   forUser:(FPUser *)user
+                                successBlk:(void(^)(void))successBlk
+                        remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
+                        tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk
+                            remoteErrorBlk:(void(^)(NSInteger))remoteErrorBlk
+                           authRequiredBlk:(void(^)(void))authRequiredBlk
+                                     error:(PELMDaoErrorBlk)errorBlk {
+  [_localDao saveNewAndSyncImmediateFuelStation:fuelStation forUser:user error:errorBlk];
+  [self flushUnsyncedChangesToFuelStation:fuelStation
+                                  forUser:user
+                              editActorId:nil
+                           addlSuccessBlk:^(PELMMainSupport *vehicle) {successBlk();}
+                   addlRemoteStoreBusyBlk:remoteStoreBusyBlk
+                   addlTempRemoteErrorBlk:tempRemoteErrorBlk
+                       addlRemoteErrorBlk:remoteErrorBlk
+                      addlAuthRequiredBlk:authRequiredBlk
+                                    error:errorBlk];
+}
+
 - (BOOL)prepareFuelStationForEdit:(FPFuelStation *)fuelStation
                           forUser:(FPUser *)user
                       editActorId:(NSNumber *)editActorId
@@ -1299,6 +1356,29 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                                error:(PELMDaoErrorBlk)errorBlk {
   [_localDao markAsDoneEditingFuelStation:fuelStation
                               editActorId:editActorId
+                                    error:errorBlk];
+}
+
+- (void)markAsDoneEditingAndSyncFuelStationImmediate:(FPFuelStation *)fuelStation
+                                             forUser:(FPUser *)user
+                                         editActorId:(NSNumber *)editActorId
+                                          successBlk:(void(^)(void))successBlk
+                                  remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
+                                  tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk
+                                      remoteErrorBlk:(void(^)(NSInteger))remoteErrorBlk
+                                     authRequiredBlk:(void(^)(void))authRequiredBlk
+                                               error:(PELMDaoErrorBlk)errorBlk {
+  [_localDao markAsDoneEditingImmediateSyncFuelStation:fuelStation
+                                           editActorId:editActorId
+                                                 error:errorBlk];
+  [self flushUnsyncedChangesToFuelStation:fuelStation
+                                  forUser:user
+                              editActorId:nil
+                           addlSuccessBlk:^(PELMMainSupport *vehicle) {successBlk();}
+                   addlRemoteStoreBusyBlk:remoteStoreBusyBlk
+                   addlTempRemoteErrorBlk:tempRemoteErrorBlk
+                       addlRemoteErrorBlk:remoteErrorBlk
+                      addlAuthRequiredBlk:authRequiredBlk
                                     error:errorBlk];
 }
 
