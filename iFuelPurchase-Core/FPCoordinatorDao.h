@@ -370,6 +370,17 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                    fuelStation:(FPFuelStation *)fuelStation
                          error:(PELMDaoErrorBlk)errorBlk;
 
+- (void)saveNewAndSyncImmediateFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
+                                       forUser:(FPUser *)user
+                                       vehicle:(FPVehicle *)vehicle
+                                   fuelStation:(FPFuelStation *)fuelStation
+                                    successBlk:(void(^)(void))successBlk
+                            remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
+                            tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk
+                                remoteErrorBlk:(void(^)(NSInteger))remoteErrorBlk
+                               authRequiredBlk:(void(^)(void))authRequiredBlk
+                                         error:(PELMDaoErrorBlk)errorBlk;
+
 - (BOOL)prepareFuelPurchaseLogForEdit:(FPFuelPurchaseLog *)fuelPurchaseLog
                               forUser:(FPUser *)user
                           editActorId:(NSNumber *)editActorId

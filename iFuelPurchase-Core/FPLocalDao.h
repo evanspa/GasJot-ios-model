@@ -326,33 +326,17 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                                            forUser:(FPUser *)user
                                              error:(PELMDaoErrorBlk)errorBlk;
 
-- (void)persistDeepFuelPurchaseLogFromRemoteMaster:(FPFuelPurchaseLog *)fuelPurchaseLog
-                                           forUser:(FPUser *)user
-                                                db:(FMDatabase *)db
-                                             error:(PELMDaoErrorBlk)errorBlk;
-
 - (void)saveNewFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
                        forUser:(FPUser *)user
                        vehicle:vehicle
                    fuelStation:fuelStation
                          error:(PELMDaoErrorBlk)errorBlk;
 
-- (void)saveNewFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
-                       forUser:(FPUser *)user
-                       vehicle:(FPVehicle *)vehicle
-                   fuelStation:(FPFuelStation *)fuelStation
-                            db:(FMDatabase *)db
-                         error:(PELMDaoErrorBlk)errorBlk;
-
-- (BOOL)prepareFuelPurchaseLogForEdit:(FPFuelPurchaseLog *)fuelPurchaseLog
-                              forUser:(FPUser *)user
-                          editActorId:(NSNumber *)editActorId
-                    entityBeingSynced:(void(^)(void))entityBeingSyncedBlk
-                        entityDeleted:(void(^)(void))entityDeletedBlk
-                     entityInConflict:(void(^)(void))entityInConflictBlk
-        entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActorBlk
-                                   db:(FMDatabase *)db
-                                error:(PELMDaoErrorBlk)errorBlk;
+- (void)saveNewAndSyncImmediateFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
+                                       forUser:(FPUser *)user
+                                       vehicle:vehicle
+                                   fuelStation:fuelStation
+                                         error:(PELMDaoErrorBlk)errorBlk;
 
 - (BOOL)prepareFuelPurchaseLogForEdit:(FPFuelPurchaseLog *)fuelPurchaseLog
                               forUser:(FPUser *)user
@@ -373,6 +357,10 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
 - (void)markAsDoneEditingFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
                              editActorId:(NSNumber *)editActorId
                                    error:(PELMDaoErrorBlk)errorBlk;
+
+- (void)markAsDoneEditingImmediateSyncFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
+                                          editActorId:(NSNumber *)editActorId
+                                                error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)reloadFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
                         error:(PELMDaoErrorBlk)errorBlk;
@@ -453,31 +441,10 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                                           forUser:(FPUser *)user
                                             error:(PELMDaoErrorBlk)errorBlk;
 
-- (void)persistDeepEnvironmentLogFromRemoteMaster:(FPEnvironmentLog *)environmentLog
-                                          forUser:(FPUser *)user
-                                               db:(FMDatabase *)db
-                                            error:(PELMDaoErrorBlk)errorBlk;
-
 - (void)saveNewEnvironmentLog:(FPEnvironmentLog *)environmentLog
                       forUser:(FPUser *)user
                       vehicle:vehicle
                         error:(PELMDaoErrorBlk)errorBlk;
-
-- (void)saveNewEnvironmentLog:(FPEnvironmentLog *)environmentLog
-                      forUser:(FPUser *)user
-                      vehicle:(FPVehicle *)vehicle
-                           db:(FMDatabase *)db
-                        error:(PELMDaoErrorBlk)errorBlk;
-
-- (BOOL)prepareEnvironmentLogForEdit:(FPEnvironmentLog *)environmentLog
-                             forUser:(FPUser *)user
-                         editActorId:(NSNumber *)editActorId
-                   entityBeingSynced:(void(^)(void))entityBeingSyncedBlk
-                       entityDeleted:(void(^)(void))entityDeletedBlk
-                    entityInConflict:(void(^)(void))entityInConflictBlk
-       entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActorBlk
-                                  db:(FMDatabase *)db
-                               error:(PELMDaoErrorBlk)errorBlk;
 
 - (BOOL)prepareEnvironmentLogForEdit:(FPEnvironmentLog *)environmentLog
                              forUser:(FPUser *)user

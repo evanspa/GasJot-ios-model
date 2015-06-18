@@ -386,8 +386,8 @@ version of entity not found!  It's global ID is: [%@]", [entity globalIdentifier
         }
       }
     } else {
-      [db executeUpdate:[NSString stringWithFormat:@"UPDATE %@ SET %@ = 0 WHERE %@ = ?", mainTable, COL_MAN_EDIT_IN_PROGRESS, COL_LOCAL_ID]
-   withArgumentsInArray:@[[entity localMainIdentifier]]];
+      [db executeUpdate:[NSString stringWithFormat:@"UPDATE %@ SET %@ = 0, %@ = ? WHERE %@ = ?", mainTable, COL_MAN_EDIT_IN_PROGRESS, COL_MAN_EDIT_COUNT, COL_LOCAL_ID]
+   withArgumentsInArray:@[@([entity editCount]), [entity localMainIdentifier]]];
     }
   }];
 }

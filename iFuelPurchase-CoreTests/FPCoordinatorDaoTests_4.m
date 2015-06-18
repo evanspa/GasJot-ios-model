@@ -128,6 +128,7 @@ describe(@"FPCoordinatorDao", ^{
            entityBeingEditedByOtherActor:[_coordTestCtx entityBeingEditedByOtherActorBlk]
                                    error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[theValue(prepareForEditSuccess) should] beYes];
+      [[theValue([vehicle editCount]) should] equal:theValue(2)];
       [[theValue([_coordTestCtx prepareForEditEntityBeingSynced]) should] beNo];
       [[theValue([_coordTestCtx prepareForEditEntityDeleted]) should] beNo];
       [[theValue([_coordTestCtx prepareForEditEntityInConflict]) should] beNo];
@@ -147,7 +148,7 @@ describe(@"FPCoordinatorDao", ^{
       [[theValue([_coordDao numVehiclesForUser:user error:[_coordTestCtx newLocalFetchErrBlkMaker]()]) should] equal:theValue(2)];
       vehicle = vehicles[1];
       [[[vehicle name] should] equal:@"300ZX Edit 1"];
-      [[theValue([vehicle editCount]) should] equal:theValue(2)];
+      [[theValue([vehicle editCount]) should] equal:theValue(1)]; // canceling previous edit decrements the edit count
       [[theValue([vehicle editInProgress]) should] beNo];
       prepareForEditSuccess =
         [_coordDao prepareVehicleForEdit:vehicle
@@ -159,6 +160,7 @@ describe(@"FPCoordinatorDao", ^{
            entityBeingEditedByOtherActor:[_coordTestCtx entityBeingEditedByOtherActorBlk]
                                    error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[theValue(prepareForEditSuccess) should] beYes];
+      [[theValue([vehicle editCount]) should] equal:theValue(2)]; // edit count is now back to 2 again
       [[theValue([_coordTestCtx prepareForEditEntityBeingSynced]) should] beNo];
       [[theValue([_coordTestCtx prepareForEditEntityDeleted]) should] beNo];
       [[theValue([_coordTestCtx prepareForEditEntityInConflict]) should] beNo];
@@ -176,6 +178,7 @@ describe(@"FPCoordinatorDao", ^{
            entityBeingEditedByOtherActor:[_coordTestCtx entityBeingEditedByOtherActorBlk]
                                    error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[theValue(prepareForEditSuccess) should] beYes];
+      [[theValue([vehicle editCount]) should] equal:theValue(3)];
       [[theValue([_coordTestCtx prepareForEditEntityBeingSynced]) should] beNo];
       [[theValue([_coordTestCtx prepareForEditEntityDeleted]) should] beNo];
       [[theValue([_coordTestCtx prepareForEditEntityInConflict]) should] beNo];
@@ -193,6 +196,7 @@ describe(@"FPCoordinatorDao", ^{
            entityBeingEditedByOtherActor:[_coordTestCtx entityBeingEditedByOtherActorBlk]
                                    error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[theValue(prepareForEditSuccess) should] beYes];
+      [[theValue([vehicle editCount]) should] equal:theValue(4)];
       [[theValue([_coordTestCtx prepareForEditEntityBeingSynced]) should] beNo];
       [[theValue([_coordTestCtx prepareForEditEntityDeleted]) should] beNo];
       [[theValue([_coordTestCtx prepareForEditEntityInConflict]) should] beNo];
@@ -203,7 +207,7 @@ describe(@"FPCoordinatorDao", ^{
       // 1 more sanity check
       vehicle = [_coordDao vehiclesForUser:user error:[_coordTestCtx newLocalFetchErrBlkMaker]()][1];
       [[[vehicle name] should] equal:@"300ZX Edit 1"];
-      [[theValue([vehicle editCount]) should] equal:theValue(5)];
+      [[theValue([vehicle editCount]) should] equal:theValue(4)];
       [[theValue([vehicle editInProgress]) should] beNo];
       [[theValue([_coordDao numVehiclesForUser:user error:[_coordTestCtx newLocalFetchErrBlkMaker]()]) should] equal:theValue(2)];
     });

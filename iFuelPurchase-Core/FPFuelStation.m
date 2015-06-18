@@ -72,6 +72,37 @@
   return self;
 }
 
+#pragma mark - NSCopying
+
+-(id)copyWithZone:(NSZone *)zone {
+  FPFuelStation *copy = [[FPFuelStation alloc] initWithLocalMainIdentifier:[self localMainIdentifier]
+                                                     localMasterIdentifier:[self localMasterIdentifier]
+                                                          globalIdentifier:[self globalIdentifier]
+                                                                 mediaType:[self mediaType]
+                                                                 relations:[self relations]
+                                                               deletedDate:[self deletedDate]
+                                                                 updatedAt:[self updatedAt]
+                                                      dateCopiedFromMaster:[self dateCopiedFromMaster]
+                                                            editInProgress:[self editInProgress]
+                                                               editActorId:[self editActorId]
+                                                            syncInProgress:[self syncInProgress]
+                                                                    synced:[self synced]
+                                                                inConflict:[self inConflict]
+                                                                   deleted:[self deleted]
+                                                                 editCount:[self editCount]
+                                                          syncHttpRespCode:[self syncHttpRespCode]
+                                                               syncErrMask:[self syncErrMask]
+                                                               syncRetryAt:[self syncRetryAt]
+                                                                      name:_name
+                                                                    street:_street
+                                                                      city:_city
+                                                                     state:_state
+                                                                       zip:_zip
+                                                                  latitude:_latitude
+                                                                 longitude:_longitude];
+  return copy;
+}
+
 #pragma mark - Creation Functions
 
 + (FPFuelStation *)fuelStationWithName:(NSString *)name

@@ -72,6 +72,37 @@
   return self;
 }
 
+#pragma mark - NSCopying
+
+-(id)copyWithZone:(NSZone *)zone {
+  FPEnvironmentLog *copy = [[FPEnvironmentLog alloc] initWithLocalMainIdentifier:[self localMainIdentifier]
+                                                           localMasterIdentifier:[self localMasterIdentifier]
+                                                                globalIdentifier:[self globalIdentifier]
+                                                                       mediaType:[self mediaType]
+                                                                       relations:[self relations]
+                                                                     deletedDate:[self deletedDate]
+                                                                       updatedAt:[self updatedAt]
+                                                            dateCopiedFromMaster:[self dateCopiedFromMaster]
+                                                                  editInProgress:[self editInProgress]
+                                                                     editActorId:[self editActorId]
+                                                                  syncInProgress:[self syncInProgress]
+                                                                          synced:[self synced]
+                                                                      inConflict:[self inConflict]
+                                                                         deleted:[self deleted]
+                                                                       editCount:[self editCount]
+                                                                syncHttpRespCode:[self syncHttpRespCode]
+                                                                     syncErrMask:[self syncErrMask]
+                                                                     syncRetryAt:[self syncRetryAt]
+                                                         vehicleGlobalIdentifier:_vehicleGlobalIdentifier
+                                                                        odometer:_odometer
+                                                                  reportedAvgMpg:_reportedAvgMpg
+                                                                  reportedAvgMph:_reportedAvgMph
+                                                             reportedOutsideTemp:_reportedOutsideTemp
+                                                                         logDate:_logDate
+                                                                     reportedDte:_reportedDte];
+  return copy;
+}
+
 #pragma mark - Creation Functions
 
 + (FPEnvironmentLog *)envLogWithOdometer:(NSDecimalNumber *)odometer

@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "PELMMainSupport.h"
 
-@interface FPEnvironmentLog : PELMMainSupport
+@interface FPEnvironmentLog : PELMMainSupport <NSCopying>
 
 #pragma mark - Initializers
 

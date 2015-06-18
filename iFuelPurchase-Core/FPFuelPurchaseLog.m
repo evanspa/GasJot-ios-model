@@ -74,6 +74,38 @@
   return self;
 }
 
+#pragma mark - NSCopying
+
+-(id)copyWithZone:(NSZone *)zone {
+  FPFuelPurchaseLog *copy = [[FPFuelPurchaseLog alloc] initWithLocalMainIdentifier:[self localMainIdentifier]
+                                                             localMasterIdentifier:[self localMasterIdentifier]
+                                                                  globalIdentifier:[self globalIdentifier]
+                                                                         mediaType:[self mediaType]
+                                                                         relations:[self relations]
+                                                                       deletedDate:[self deletedDate]
+                                                                         updatedAt:[self updatedAt]
+                                                              dateCopiedFromMaster:[self dateCopiedFromMaster]
+                                                                    editInProgress:[self editInProgress]
+                                                                       editActorId:[self editActorId]
+                                                                    syncInProgress:[self syncInProgress]
+                                                                            synced:[self synced]
+                                                                        inConflict:[self inConflict]
+                                                                           deleted:[self deleted]
+                                                                         editCount:[self editCount]
+                                                                  syncHttpRespCode:[self syncHttpRespCode]
+                                                                       syncErrMask:[self syncErrMask]
+                                                                       syncRetryAt:[self syncRetryAt]
+                                                           vehicleGlobalIdentifier:_vehicleGlobalIdentifier
+                                                       fuelStationGlobalIdentifier:_fuelStationGlobalIdentifier
+                                                                        numGallons:_numGallons
+                                                                            octane:_octane
+                                                                       gallonPrice:_gallonPrice
+                                                                        gotCarWash:_gotCarWash
+                                                          carWashPerGallonDiscount:_carWashPerGallonDiscount
+                                                                       purchasedAt:_purchasedAt];
+  return copy;
+}
+
 #pragma mark - Creation Functions
 
 + (FPFuelPurchaseLog *)fuelPurchaseLogWithNumGallons:(NSDecimalNumber *)numGallons

@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "PELMMainSupport.h"
 
-@interface FPFuelPurchaseLog : PELMMainSupport
+@interface FPFuelPurchaseLog : PELMMainSupport <NSCopying>
 
 #pragma mark - Initializers
 

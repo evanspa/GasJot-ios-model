@@ -9,7 +9,7 @@
 #import "PELMMainSupport.h"
 #import <CoreLocation/CoreLocation.h>
 
-@interface FPFuelStation : PELMMainSupport
+@interface FPFuelStation : PELMMainSupport <NSCopying>
 
 #pragma mark - Initializers
 

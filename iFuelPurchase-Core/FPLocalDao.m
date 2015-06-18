@@ -1658,6 +1658,23 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
   }];
 }
 
+- (void)saveNewAndSyncImmediateFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
+                                       forUser:(FPUser *)user
+                                       vehicle:vehicle
+                                   fuelStation:fuelStation
+                                         error:(PELMDaoErrorBlk)errorBlk {
+  [PELMUtils newEntityInsertionInvariantChecks:fuelPurchaseLog];
+  [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
+    [fuelPurchaseLog setSyncInProgress:YES];
+    [self saveNewFuelPurchaseLog:fuelPurchaseLog
+                         forUser:user
+                         vehicle:vehicle
+                     fuelStation:fuelStation
+                              db:db
+                           error:errorBlk];
+  }];
+}
+
 - (void)saveNewFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
                        forUser:(FPUser *)user
                        vehicle:(FPVehicle *)vehicle
@@ -1807,6 +1824,17 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                           mainUpdateArgsBlk:^NSArray *(PELMMainSupport *entity){return [self updateArgsForMainFuelPurchaseLog:(FPFuelPurchaseLog *)entity];}
                                 editActorId:editActorId
                                       error:errorBlk];
+}
+
+- (void)markAsDoneEditingImmediateSyncFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
+                                          editActorId:(NSNumber *)editActorId
+                                                error:(PELMDaoErrorBlk)errorBlk {
+  [_localModelUtils markAsDoneEditingImmediateSyncEntity:fuelPurchaseLog
+                                               mainTable:TBL_MAIN_FUELPURCHASE_LOG
+                                          mainUpdateStmt:[self updateStmtForMainFuelPurchaseLogSansVehicleFuelStationFks]
+                                       mainUpdateArgsBlk:^NSArray *(PELMMainSupport *entity){return [self updateArgsForMainFuelPurchaseLog:(FPFuelPurchaseLog *)entity];}
+                                             editActorId:editActorId
+                                                   error:errorBlk];
 }
 
 - (void)reloadFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
