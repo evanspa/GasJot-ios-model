@@ -446,6 +446,11 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                       vehicle:vehicle
                         error:(PELMDaoErrorBlk)errorBlk;
 
+- (void)saveNewAndSyncImmediateEnvironmentLog:(FPEnvironmentLog *)environmentLog
+                                      forUser:(FPUser *)user
+                                      vehicle:vehicle
+                                        error:(PELMDaoErrorBlk)errorBlk;
+
 - (BOOL)prepareEnvironmentLogForEdit:(FPEnvironmentLog *)environmentLog
                              forUser:(FPUser *)user
                          editActorId:(NSNumber *)editActorId
@@ -464,6 +469,10 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
 - (void)markAsDoneEditingEnvironmentLog:(FPEnvironmentLog *)environmentLog
                             editActorId:(NSNumber *)editActorId
                                   error:(PELMDaoErrorBlk)errorBlk;
+
+- (void)markAsDoneEditingImmediateSyncEnvironmentLog:(FPEnvironmentLog *)environmentLog
+                                         editActorId:(NSNumber *)editActorId
+                                               error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)reloadEnvironmentLog:(FPEnvironmentLog *)environmentLog
                        error:(PELMDaoErrorBlk)errorBlk;

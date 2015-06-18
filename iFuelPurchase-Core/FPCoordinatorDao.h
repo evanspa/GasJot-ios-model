@@ -401,6 +401,16 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                              editActorId:(NSNumber *)editActorId
                                    error:(PELMDaoErrorBlk)errorBlk;
 
+- (void)markAsDoneEditingAndSyncFuelPurchaseLogImmediate:(FPFuelPurchaseLog *)fuelPurchaseLog
+                                                 forUser:(FPUser *)user
+                                             editActorId:(NSNumber *)editActorId
+                                              successBlk:(void(^)(void))successBlk
+                                      remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
+                                      tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk
+                                          remoteErrorBlk:(void(^)(NSInteger))remoteErrorBlk
+                                         authRequiredBlk:(void(^)(void))authRequiredBlk
+                                                   error:(PELMDaoErrorBlk)errorBlk;
+
 - (void)reloadFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
                         error:(PELMDaoErrorBlk)errorBlk;
 
@@ -464,6 +474,16 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                       vehicle:(FPVehicle *)vehicle
                         error:(PELMDaoErrorBlk)errorBlk;
 
+- (void)saveNewAndSyncImmediateEnvironmentLog:(FPEnvironmentLog *)envLog
+                                      forUser:(FPUser *)user
+                                      vehicle:(FPVehicle *)vehicle
+                                   successBlk:(void(^)(void))successBlk
+                           remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
+                           tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk
+                               remoteErrorBlk:(void(^)(NSInteger))remoteErrorBlk
+                              authRequiredBlk:(void(^)(void))authRequiredBlk
+                                        error:(PELMDaoErrorBlk)errorBlk;
+
 - (BOOL)prepareEnvironmentLogForEdit:(FPEnvironmentLog *)envLog
                              forUser:(FPUser *)user
                          editActorId:(NSNumber *)editActorId
@@ -482,6 +502,16 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
 - (void)markAsDoneEditingEnvironmentLog:(FPEnvironmentLog *)envLog
                             editActorId:(NSNumber *)editActorId
                                   error:(PELMDaoErrorBlk)errorBlk;
+
+- (void)markAsDoneEditingAndSyncEnvironmentLogImmediate:(FPEnvironmentLog *)envLog
+                                                forUser:(FPUser *)user
+                                            editActorId:(NSNumber *)editActorId
+                                             successBlk:(void(^)(void))successBlk
+                                     remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
+                                     tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk
+                                         remoteErrorBlk:(void(^)(NSInteger))remoteErrorBlk
+                                        authRequiredBlk:(void(^)(void))authRequiredBlk
+                                                  error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)reloadEnvironmentLog:(FPEnvironmentLog *)environmentLog
                        error:(PELMDaoErrorBlk)errorBlk;

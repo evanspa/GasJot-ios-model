@@ -2273,6 +2273,21 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
   }];
 }
 
+- (void)saveNewAndSyncImmediateEnvironmentLog:(FPEnvironmentLog *)environmentLog
+                                      forUser:(FPUser *)user
+                                      vehicle:vehicle
+                                        error:(PELMDaoErrorBlk)errorBlk {
+  [PELMUtils newEntityInsertionInvariantChecks:environmentLog];
+  [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
+    [environmentLog setSyncInProgress:YES];
+    [self saveNewEnvironmentLog:environmentLog
+                        forUser:user
+                        vehicle:vehicle
+                             db:db
+                          error:errorBlk];
+  }];
+}
+
 - (void)saveNewEnvironmentLog:(FPEnvironmentLog *)environmentLog
                       forUser:(FPUser *)user
                       vehicle:(FPVehicle *)vehicle
@@ -2402,6 +2417,17 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                           mainUpdateArgsBlk:^NSArray *(PELMMainSupport *entity){return [self updateArgsForMainEnvironmentLog:(FPEnvironmentLog *)entity];}
                                 editActorId:editActorId
                                       error:errorBlk];
+}
+
+- (void)markAsDoneEditingImmediateSyncEnvironmentLog:(FPEnvironmentLog *)environmentLog
+                                         editActorId:(NSNumber *)editActorId
+                                               error:(PELMDaoErrorBlk)errorBlk {
+  [_localModelUtils markAsDoneEditingImmediateSyncEntity:environmentLog
+                                               mainTable:TBL_MAIN_ENV_LOG
+                                          mainUpdateStmt:[self updateStmtForMainEnvironmentLogSansVehicleFks]
+                                       mainUpdateArgsBlk:^NSArray *(PELMMainSupport *entity){return [self updateArgsForMainEnvironmentLog:(FPEnvironmentLog *)entity];}
+                                             editActorId:editActorId
+                                                   error:errorBlk];
 }
 
 - (void)reloadEnvironmentLog:(FPEnvironmentLog *)environmentLog
