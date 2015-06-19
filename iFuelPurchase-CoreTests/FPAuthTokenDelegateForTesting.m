@@ -31,8 +31,4 @@
   _authRequiredBlk(authentication);
 }
 
--(void)invalidateTokenForUserGlobalIdentifier:(NSString *)userGlobalIdentifier {
-  // do nothing...
-}
-
 @end

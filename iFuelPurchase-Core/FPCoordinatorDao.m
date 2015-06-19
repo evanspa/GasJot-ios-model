@@ -1047,8 +1047,7 @@
 - (void)logoutUser:(FPUser *)user error:(PELMDaoErrorBlk)error {
   //[_localDao cascadeDeleteUser:user error:error];
   [_localDao deleteAllUsers:error];
-  [_authTokenDelegate invalidateTokenForUserGlobalIdentifier:[user globalIdentifier]];
-  // TODO -- issue DELETE to server to delete auth token
+  // TODO -- issue DELETE to server to delete _authToken
   _authToken = nil;
 }
 
@@ -1975,6 +1974,5 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
     });
   }
 }
-
 
 @end
