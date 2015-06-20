@@ -100,6 +100,8 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
 
 - (void)logoutUser:(FPUser *)user error:(PELMDaoErrorBlk)error;
 
+- (void)cascadeDeleteLocalUser:(FPUser *)user error:(PELMDaoErrorBlk)error;
+
 - (void)globalCancelSyncInProgressWithError:(PELMDaoErrorBlk)error;
 
 #pragma mark - User

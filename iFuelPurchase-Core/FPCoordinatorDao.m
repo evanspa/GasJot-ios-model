@@ -1045,10 +1045,13 @@
 #pragma mark - System
 
 - (void)logoutUser:(FPUser *)user error:(PELMDaoErrorBlk)error {
-  //[_localDao cascadeDeleteUser:user error:error];
-  [_localDao deleteAllUsers:error];
   // TODO -- issue DELETE to server to delete _authToken
   _authToken = nil;
+}
+
+- (void)cascadeDeleteLocalUser:(FPUser *)user error:(PELMDaoErrorBlk)error {
+  //[_localDao cascadeDeleteUser:user error:error];
+  [_localDao deleteAllUsers:error];
 }
 
 - (void)globalCancelSyncInProgressWithError:(PELMDaoErrorBlk)error {
