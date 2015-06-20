@@ -1062,6 +1062,12 @@
 
 #pragma mark - User
 
+- (FPUser *)newLocalUserWithError:(PELMDaoErrorBlk)errorBlk {
+  FPUser *user = [self userWithName:nil email:nil username:nil password:nil];
+  [_localDao saveNewLocalUser:user error:errorBlk];
+  return user;
+}
+
 - (FPUser *)userWithName:(NSString *)name
                    email:(NSString *)email
                 username:(NSString *)username

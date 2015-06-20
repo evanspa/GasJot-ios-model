@@ -106,6 +106,8 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
 
 #pragma mark - User
 
+- (FPUser *)newLocalUserWithError:(PELMDaoErrorBlk)errorBlk;
+
 - (FPUser *)userWithName:(NSString *)name
                    email:(NSString *)email
                 username:(NSString *)username

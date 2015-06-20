@@ -194,6 +194,12 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
 
 #pragma mark - User
 
+- (void)saveNewLocalUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk {
+  [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
+    [self insertIntoMasterUser:user db:db error:errorBlk];
+  }];
+}
+
 - (void)saveNewUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk {
   [PELMUtils newEntityInsertionInvariantChecks:user];
   // user is special in that, upon insertion, it should have a global-ID (this

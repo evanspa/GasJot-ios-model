@@ -42,6 +42,8 @@
 
 #pragma mark - User
 
+- (void)saveNewLocalUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk;
+
 - (void)saveNewUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)persistDeepUserFromRemoteMaster:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk;
