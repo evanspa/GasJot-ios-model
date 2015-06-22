@@ -20,7 +20,7 @@ FOUNDATION_EXPORT NSString * const FPFuelPurchaseLogsRelation;
 FOUNDATION_EXPORT NSString * const FPEnvironmentLogsRelation;
 FOUNDATION_EXPORT NSString * const FPAppTransactionSetRelation;
 
-@interface FPUser : PELMMainSupport
+@interface FPUser : PELMMainSupport <NSCopying>
 
 #pragma mark - Initializers
 

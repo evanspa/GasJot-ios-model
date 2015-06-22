@@ -83,6 +83,34 @@ NSString * const FPAppTransactionSetRelation = @"apptxnset";
   return self;
 }
 
+#pragma mark - NSCopying
+
+-(id)copyWithZone:(NSZone *)zone {
+  FPUser *copy = [[FPUser alloc] initWithLocalMainIdentifier:[self localMainIdentifier]
+                                       localMasterIdentifier:[self localMasterIdentifier]
+                                            globalIdentifier:[self globalIdentifier]
+                                                   mediaType:[self mediaType]
+                                                   relations:[self relations]
+                                                 deletedDate:[self deletedDate]
+                                                   updatedAt:[self updatedAt]
+                                        dateCopiedFromMaster:[self dateCopiedFromMaster]
+                                              editInProgress:[self editInProgress]
+                                                 editActorId:[self editActorId]
+                                              syncInProgress:[self syncInProgress]
+                                                      synced:[self synced]
+                                                  inConflict:[self inConflict]
+                                                     deleted:[self deleted]
+                                                   editCount:[self editCount]
+                                            syncHttpRespCode:[self syncHttpRespCode]
+                                                 syncErrMask:[self syncErrMask]
+                                                 syncRetryAt:[self syncRetryAt]
+                                                        name:_name
+                                                       email:_email
+                                                    username:_username
+                                                    password:_password];
+  return copy;
+}
+
 #pragma mark - Creation Functions
 
 + (FPUser *)userWithName:(NSString *)name
