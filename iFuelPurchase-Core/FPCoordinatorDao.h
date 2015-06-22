@@ -108,20 +108,16 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
 
 - (FPUser *)newLocalUserWithError:(PELMDaoErrorBlk)errorBlk;
 
-- (FPUser *)userWithName:(NSString *)name
-                   email:(NSString *)email
-                username:(NSString *)username
-                password:(NSString *)password;
-
-- (void)immediateRemoteSyncSaveNewUser:(FPUser *)user
-                       remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
-                     completionHandler:(FPSavedNewEntityCompletionHandler)complHandler
-                 localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler;
+- (void)establishRemoteAccountForUser:(FPUser *)user
+                      remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
+                    completionHandler:(FPSavedNewEntityCompletionHandler)complHandler
+                localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler;
 
 - (FPUser *)userWithError:(PELMDaoErrorBlk)errorBlk;
 
 - (void)loginWithUsernameOrEmail:(NSString *)usernameOrEmail
                         password:(NSString *)password
+    andLinkRemoteUserToLocalUser:(FPUser *)localUser
                  remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                completionHandler:(FPFetchedEntityCompletionHandler)complHandler
            localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler;

@@ -44,9 +44,13 @@
 
 - (void)saveNewLocalUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk;
 
-- (void)saveNewUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk;
+- (void)saveNewRemoteUser:(FPUser *)remoteUser
+       andLinkToLocalUser:(FPUser *)localUser
+                    error:(PELMDaoErrorBlk)errorBlk;
 
-- (void)persistDeepUserFromRemoteMaster:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk;
+- (void)deepSaveNewRemoteUser:(FPUser *)remoteUser
+           andLinkToLocalUser:(FPUser *)localUser
+                        error:(PELMDaoErrorBlk)errorBlk;
 
 - (FPUser *)userWithError:(PELMDaoErrorBlk)errorBlk;
 

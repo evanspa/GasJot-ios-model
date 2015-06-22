@@ -53,16 +53,18 @@ describe(@"FPCoordinatorDao", ^{
       FPUser *user = [_coordDao userWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
       [user shouldBeNil];
       _mocker(@"http-response.users.POST.201", 0, 0);
-      user = [_coordDao userWithName:@"Joe Smith"
-                               email:@"joe.smith@example.com"
-                            username:@"smithjoe"
-                            password:@"pa55w0rd"];
-      [_coordDao immediateRemoteSyncSaveNewUser:user
-                                remoteStoreBusy:[_coordTestCtx newRemoteStoreBusyBlkMaker]()
-                              completionHandler:[_coordTestCtx new1ErrArgComplHandlerBlkMaker]()
-                          localSaveErrorHandler:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+      user = [_coordDao newLocalUserWithError:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+      [user setName:@"Joe Smith"];
+      [user setEmail:@"joe.smith@example.com"];
+      [user setUsername:@"smithjoe"];
+      [user setPassword:@"pa55w0rd"];
+      [_coordDao establishRemoteAccountForUser:user
+                               remoteStoreBusy:[_coordTestCtx newRemoteStoreBusyBlkMaker]()
+                             completionHandler:[_coordTestCtx new1ErrArgComplHandlerBlkMaker]()
+                         localSaveErrorHandler:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[expectFutureValue(theValue([_coordTestCtx authTokenReceived])) shouldEventuallyBeforeTimingOutAfter(60)] beYes];
       [[theValue([_coordTestCtx success]) should] beYes];
+      [_coordDao pruneAllSyncedEntitiesWithError:[_coordTestCtx newLocalSaveErrBlkMaker]()]; // should prune main user
       // sanity check that the user is ONLY in master
       [[_numEntitiesBlk(TBL_MAIN_USER) should] equal:[NSNumber numberWithInt:0]];
       [[_numEntitiesBlk(TBL_MASTER_USER) should] equal:[NSNumber numberWithInt:1]];

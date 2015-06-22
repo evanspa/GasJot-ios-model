@@ -131,13 +131,13 @@ queueForCompletionHandler:(dispatch_queue_t)queue;
 
 #pragma mark - User Operations
 
-- (void)saveNewUser:(FPUser *)user
-       asynchronous:(BOOL)asynchronous
-            timeout:(NSInteger)timeout
-    remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
-       authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
-  completionHandler:(PELMRemoteMasterCompletionHandler)complHandler
-queueForCompletionHandler:(dispatch_queue_t)queue;
+- (void)establishAccountForUser:(FPUser *)user
+                   asynchronous:(BOOL)asynchronous
+                        timeout:(NSInteger)timeout
+                remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
+                   authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
+              completionHandler:(PELMRemoteMasterCompletionHandler)complHandler
+      queueForCompletionHandler:(dispatch_queue_t)queue;
 
 - (void)saveExistingUser:(FPUser *)user
             asynchronous:(BOOL)asynchronous

@@ -1079,10 +1079,10 @@
                     mediaType:[FPKnownMediaTypes userMediaTypeWithVersion:_userResMtVersion]];
 }
 
-- (void)immediateRemoteSyncSaveNewUser:(FPUser *)user
-                       remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
-                     completionHandler:(FPSavedNewEntityCompletionHandler)complHandler
-                 localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler {
+- (void)establishRemoteAccountForUser:(FPUser *)user
+                      remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
+                    completionHandler:(FPSavedNewEntityCompletionHandler)complHandler
+                localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler {
   PELMRemoteMasterCompletionHandler remoteMasterComplHandler =
     ^(NSString *newAuthTkn, NSString *globalId, id resourceModel, NSDictionary *rels,
       NSDate *lastModified, BOOL isConflict, BOOL gone, BOOL notFound, BOOL movedPermanently,
@@ -1090,22 +1090,23 @@
     FPUser *respUser = nil;
     if (globalId) { // success!
       respUser = (FPUser *)resourceModel;
-      [_localDao saveNewUser:respUser error:localSaveErrorHandler];
+      [_localDao saveNewRemoteUser:respUser andLinkToLocalUser:user error:localSaveErrorHandler];
       [self processNewAuthToken:newAuthTkn forUser:respUser];
     };
     complHandler(respUser, err);
   };
-  [_remoteMasterDao saveNewUser:user
-                   asynchronous:YES
-                        timeout:_timeout
-                remoteStoreBusy:busyHandler
-                   authRequired:[self authReqdBlk]
-              completionHandler:remoteMasterComplHandler
-      queueForCompletionHandler:dispatch_get_main_queue()];
+  [_remoteMasterDao establishAccountForUser:user
+                               asynchronous:YES
+                                    timeout:_timeout
+                            remoteStoreBusy:busyHandler
+                               authRequired:[self authReqdBlk]
+                          completionHandler:remoteMasterComplHandler
+                  queueForCompletionHandler:dispatch_get_main_queue()];
 }
 
 - (void)loginWithUsernameOrEmail:(NSString *)usernameOrEmail
                         password:(NSString *)password
+    andLinkRemoteUserToLocalUser:(FPUser *)localUser
                  remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                completionHandler:(FPFetchedEntityCompletionHandler)complHandler
            localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler {
@@ -1113,12 +1114,12 @@
   ^(NSString *newAuthTkn, NSString *globalId, id resourceModel, NSDictionary *rels,
     NSDate *lastModified, BOOL isConflict, BOOL gone, BOOL notFound, BOOL movedPermanently,
     BOOL notModified, NSError *err, NSHTTPURLResponse *httpResp) {
-    FPUser *user = (FPUser *)resourceModel;
-    if (user) {
-      [_localDao persistDeepUserFromRemoteMaster:user error:localSaveErrorHandler];
-      [self processNewAuthToken:newAuthTkn forUser:user];
+    FPUser *remoteUser = (FPUser *)resourceModel;
+    if (remoteUser) {
+      [_localDao deepSaveNewRemoteUser:remoteUser andLinkToLocalUser:localUser error:localSaveErrorHandler];
+      [self processNewAuthToken:newAuthTkn forUser:remoteUser];
     }
-    complHandler(user, err);
+    complHandler(remoteUser, err);
   };
   PELMRemoteMasterAuthReqdBlk authReqdBlk = ^(PELMMainSupport *entity, HCAuthentication *authReqd) {
     NSError *error = [NSError errorWithDomain:FPUserFaultedErrorDomain

@@ -54,11 +54,12 @@ describe(@"FPCoordinatorDao", ^{
       [[theValue([_coordTestCtx localFetchError]) should] beNo];
       [user shouldBeNil];
       _mocker(@"http-response.users.POST.201", 0, 0);
-      user = [_coordDao userWithName:@"Joe Smith"
-                               email:@"joe.smith@example.com"
-                            username:@"smithjoe"
-                            password:@"pa55w0rd"];
-      [_coordDao immediateRemoteSyncSaveNewUser:user
+      FPUser *localUser = [_coordDao newLocalUserWithError:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+      [localUser setName:@"Joe Smith"];
+      [localUser setEmail:@"joe.smith@example.com"];
+      [localUser setUsername:@"smithjoe"];
+      [localUser setPassword:@"pa55w0rd"];
+      [_coordDao establishRemoteAccountForUser:localUser
                                remoteStoreBusy:[_coordTestCtx newRemoteStoreBusyBlkMaker]()
                              completionHandler:[_coordTestCtx new1ErrArgComplHandlerBlkMaker]()
                          localSaveErrorHandler:[_coordTestCtx newLocalSaveErrBlkMaker]()];

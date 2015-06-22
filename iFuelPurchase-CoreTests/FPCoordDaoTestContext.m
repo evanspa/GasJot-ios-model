@@ -187,16 +187,21 @@ NSInteger const FPForegroundActorId = 1;
                      FPCoordinatorDao *coordDao,
                      void (^waitBlock)(void)) {
     [self newMocker](Two01MockResponseFile, 0, 0);
-    FPUser *user = [coordDao userWithName:name
+    /*FPUser *user = [coordDao userWithName:name
                                     email:email
                                  username:username
-                                 password:password];
-    FPSavedNewEntityCompletionHandler complHandler = ^(FPUser *savedUser, NSError *error) { };
+                                 password:password];*/
     PELMDaoErrorBlk localDaoErrHandler = ^(NSError *error, int code, NSString *msg) { };
-    [coordDao immediateRemoteSyncSaveNewUser:user
-                             remoteStoreBusy:[self newRemoteStoreBusyBlkMaker]()
-                           completionHandler:complHandler
-                       localSaveErrorHandler:localDaoErrHandler];
+    FPUser *localUser = [coordDao newLocalUserWithError:localDaoErrHandler];
+    [localUser setName:name];
+    [localUser setEmail:email];
+    [localUser setUsername:username];
+    [localUser setPassword:password];
+    FPSavedNewEntityCompletionHandler complHandler = ^(FPUser *savedUser, NSError *error) { };
+    [coordDao establishRemoteAccountForUser:localUser
+                            remoteStoreBusy:[self newRemoteStoreBusyBlkMaker]()
+                          completionHandler:complHandler
+                      localSaveErrorHandler:localDaoErrHandler];
     waitBlock();
     return [coordDao userWithError:^(NSError *error, int code, NSString *msg) {
       DDLogError(@"Error fetching local user from within 'fetchUser' helper block.  Error: [%@]", error);

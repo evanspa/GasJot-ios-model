@@ -200,68 +200,119 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   }];
 }
 
-- (void)saveNewUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk {
-  [PELMUtils newEntityInsertionInvariantChecks:user];
+- (void)linkMainUser:(FPUser *)mainUser
+        toMasterUser:(FPUser *)masterUser
+                  db:(FMDatabase *)db
+               error:(PELMDaoErrorBlk)errorBlk {
+  [mainUser overwrite:masterUser];
+  [mainUser setLocalMasterIdentifier:[masterUser localMasterIdentifier]];
+  [mainUser setSynced:YES];
+  [PELMUtils doUpdate:[NSString stringWithFormat:@"update %@ set \
+                       %@ = ?, \
+                       %@ = 1, \
+                       %@ = ?, \
+                       %@ = ?, \
+                       %@ = ?, \
+                       %@ = ?, \
+                       %@ = ? \
+                       where %@ = ?", TBL_MAIN_USER,
+                       COL_MASTER_USER_ID,
+                       COL_MAN_SYNCED,
+                       COL_GLOBAL_ID,
+                       COL_MAN_MASTER_UPDATED_AT,
+                       COL_USR_NAME,
+                       COL_USR_EMAIL,
+                       COL_USR_USERNAME,
+                       COL_LOCAL_ID]
+            argsArray:@[[masterUser localMasterIdentifier],
+                        [masterUser globalIdentifier],
+                        [PEUtils millisecondsFromDate:[masterUser updatedAt]],
+                        [masterUser name],
+                        [masterUser email],
+                        [masterUser username],
+                        [mainUser localMainIdentifier]]
+                   db:db
+                error:errorBlk];
+  [PELMUtils deleteRelationsForEntity:mainUser
+                          entityTable:TBL_MAIN_USER
+                      localIdentifier:[mainUser localMainIdentifier]
+                                   db:db
+                                error:errorBlk];
+  [PELMUtils insertRelations:[masterUser relations]
+                   forEntity:mainUser
+                 entityTable:TBL_MAIN_USER
+             localIdentifier:[mainUser localMainIdentifier]
+                          db:db
+                       error:errorBlk];
+}
+
+- (void)saveNewRemoteUser:(FPUser *)remoteUser
+       andLinkToLocalUser:(FPUser *)localUser
+                    error:(PELMDaoErrorBlk)errorBlk {
+  [PELMUtils newEntityInsertionInvariantChecks:remoteUser];
   // user is special in that, upon insertion, it should have a global-ID (this
   // is because as part of user-creation, we FIRST save to remote master, which
   // returns us back a global-ID, then we insert into local master, hence this
   // invariant check)
-  NSAssert([user globalIdentifier] != nil, @"globalIdentifier is nil");
+  NSAssert([remoteUser globalIdentifier] != nil, @"globalIdentifier is nil");
   [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
-    [self insertIntoMasterUser:user db:db error:errorBlk];
-    [PELMUtils insertRelations:[user relations]
-                     forEntity:user
-                   entityTable:TBL_MASTER_USER
-               localIdentifier:[user localMasterIdentifier]
-                            db:db
-                         error:errorBlk];
+    [self saveNewRemoteUser:remoteUser andLinkToLocalUser:localUser db:db error:errorBlk];
   }];
 }
 
-- (void)persistDeepUserFromRemoteMaster:(FPUser *)user
-                                  error:(PELMDaoErrorBlk)errorBlk {
-  [PELMUtils newEntityInsertionInvariantChecks:user];
-  NSAssert([user globalIdentifier] != nil, @"globalIdentifier is nil");
+- (void)saveNewRemoteUser:(FPUser *)newRemoteUser
+       andLinkToLocalUser:(FPUser *)localUser
+                       db:(FMDatabase *)db
+                    error:(PELMDaoErrorBlk)errorBlk {
+  [self insertIntoMasterUser:newRemoteUser db:db error:errorBlk];
+  [PELMUtils insertRelations:[newRemoteUser relations]
+                   forEntity:newRemoteUser
+                 entityTable:TBL_MASTER_USER
+             localIdentifier:[newRemoteUser localMasterIdentifier]
+                          db:db
+                       error:errorBlk];
+  [self linkMainUser:localUser toMasterUser:newRemoteUser db:db error:errorBlk];
+}
+
+- (void)deepSaveNewRemoteUser:(FPUser *)remoteUser
+           andLinkToLocalUser:(FPUser *)localUser
+                        error:(PELMDaoErrorBlk)errorBlk {
+  [PELMUtils newEntityInsertionInvariantChecks:remoteUser];
+  NSAssert([remoteUser globalIdentifier] != nil, @"globalIdentifier is nil");
   [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
-    [self insertIntoMasterUser:user db:db error:errorBlk];
-    [PELMUtils insertRelations:[user relations]
-                     forEntity:user
-                   entityTable:TBL_MASTER_USER
-               localIdentifier:[user localMasterIdentifier]
-                            db:db
-                         error:errorBlk];
-    NSArray *vehicles = [user vehicles];
+    [self saveNewRemoteUser:remoteUser andLinkToLocalUser:localUser db:db error:errorBlk];
+    NSArray *vehicles = [remoteUser vehicles];
     if (vehicles) {
       for (FPVehicle *vehicle in vehicles) {
         [self persistDeepVehicleFromRemoteMaster:vehicle
-                                         forUser:user
+                                         forUser:remoteUser
                                               db:db
                                            error:errorBlk];
       }
     }
-    NSArray *fuelStations = [user fuelStations];
+    NSArray *fuelStations = [remoteUser fuelStations];
     if (fuelStations) {
       for (FPFuelStation *fuelStation in fuelStations) {
         [self persistDeepFuelStationFromRemoteMaster:fuelStation
-                                             forUser:user
+                                             forUser:remoteUser
                                                   db:db
                                                error:errorBlk];
       }
     }
-    NSArray *fpLogs = [user fuelPurchaseLogs];
+    NSArray *fpLogs = [remoteUser fuelPurchaseLogs];
     if (fpLogs) {
       for (FPFuelPurchaseLog *fpLog in fpLogs) {
         [self persistDeepFuelPurchaseLogFromRemoteMaster:fpLog
-                                                 forUser:user
+                                                 forUser:remoteUser
                                                       db:db
                                                    error:errorBlk];
       }
     }
-    NSArray *envLogs = [user environmentLogs];
+    NSArray *envLogs = [remoteUser environmentLogs];
     if (envLogs) {
       for (FPEnvironmentLog *envLog in envLogs) {
         [self persistDeepEnvironmentLogFromRemoteMaster:envLog
-                                                forUser:user
+                                                forUser:remoteUser
                                                      db:db
                                                   error:errorBlk];
       }

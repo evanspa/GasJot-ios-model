@@ -54,8 +54,9 @@ describe(@"FPCoordinatorDao", ^{
       FPUser *user = [_coordTestCtx newFreshJoeSmithMaker](_coordDao, ^{
           [[expectFutureValue(theValue([_coordTestCtx authTokenReceived])) shouldEventuallyBeforeTimingOutAfter(60)] beYes];
         });
+      NSLog(@"user: %@", user);
       // First we need to create a vehicle and fuel station.
-      FPVehicle *vehicle =
+     FPVehicle *vehicle =
       [_coordDao vehicleWithName:@"Volkswagen CC" defaultOctane:@87 fuelCapacity:[NSDecimalNumber decimalNumberWithString:@"19.0"]];
       [_coordDao saveNewVehicle:vehicle forUser:user error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       FPEnvironmentLog *envLog =
