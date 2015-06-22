@@ -196,8 +196,14 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
 
 - (void)saveNewLocalUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk {
   [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
-    [self insertIntoMainUser:user db:db error:errorBlk];
+    [self saveNewLocalUser:user db:db error:errorBlk];
   }];
+}
+
+- (void)saveNewLocalUser:(FPUser *)user
+                      db:(FMDatabase *)db
+                   error:(PELMDaoErrorBlk)errorBlk {
+  [self insertIntoMainUser:user db:db error:errorBlk];
 }
 
 - (void)linkMainUser:(FPUser *)mainUser

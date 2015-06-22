@@ -12,8 +12,6 @@
 // Shared columns
 //##############################################################################
 // ----Columns common to both main and master entities--------------------------
-NSString * const COL_MAIN_USER_ID = @"main_user_id";
-NSString * const COL_MASTER_USER_ID = @"master_user_id";
 NSString * const COL_MAIN_VEHICLE_ID = @"main_vehicle_id";
 NSString * const COL_MASTER_VEHICLE_ID = @"master_vehicle_id";
 NSString * const COL_MAIN_FUELSTATION_ID = @"main_fuelstation_id";

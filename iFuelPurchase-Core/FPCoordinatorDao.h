@@ -98,13 +98,14 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
 
 #pragma mark - System
 
-- (void)logoutUser:(FPUser *)user error:(PELMDaoErrorBlk)error;
-
-- (void)cascadeDeleteLocalUser:(FPUser *)user error:(PELMDaoErrorBlk)error;
-
 - (void)globalCancelSyncInProgressWithError:(PELMDaoErrorBlk)error;
 
 #pragma mark - User
+
+- (void)deleteRemoteAuthenticationTokenWithRemoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
+                                     addlCompletionHandler:(FPSavedNewEntityCompletionHandler)addlCompletionHandler;
+
+- (void)resetAsLocalUser:(FPUser *)user error:(PELMDaoErrorBlk)error;
 
 - (FPUser *)newLocalUserWithError:(PELMDaoErrorBlk)errorBlk;
 

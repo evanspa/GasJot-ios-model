@@ -13,6 +13,8 @@
 //##############################################################################
 // ----Columns common to both main and master entities--------------------------
 NSString * const COL_LOCAL_ID = @"id";
+NSString * const COL_MAIN_USER_ID = @"main_user_id";
+NSString * const COL_MASTER_USER_ID = @"master_user_id";
 NSString * const COL_GLOBAL_ID = @"global_identifier";
 NSString * const COL_MEDIA_TYPE = @"media_type";
 NSString * const COL_REL_NAME = @"name";

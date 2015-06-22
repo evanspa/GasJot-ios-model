@@ -13,6 +13,8 @@
 //##############################################################################
 // ----Columns common to both main and master entities--------------------------
 FOUNDATION_EXPORT NSString * const COL_LOCAL_ID;
+FOUNDATION_EXPORT NSString * const COL_MAIN_USER_ID;
+FOUNDATION_EXPORT NSString * const COL_MASTER_USER_ID;
 FOUNDATION_EXPORT NSString * const COL_GLOBAL_ID;
 FOUNDATION_EXPORT NSString * const COL_MEDIA_TYPE;
 FOUNDATION_EXPORT NSString * const COL_REL_NAME;

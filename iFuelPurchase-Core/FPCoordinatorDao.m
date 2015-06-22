@@ -1044,16 +1044,6 @@
 
 #pragma mark - System
 
-- (void)logoutUser:(FPUser *)user error:(PELMDaoErrorBlk)error {
-  // TODO -- issue DELETE to server to delete _authToken
-  _authToken = nil;
-}
-
-- (void)cascadeDeleteLocalUser:(FPUser *)user error:(PELMDaoErrorBlk)error {
-  //[_localDao cascadeDeleteUser:user error:error];
-  [_localDao deleteAllUsers:error];
-}
-
 - (void)globalCancelSyncInProgressWithError:(PELMDaoErrorBlk)error {
   dispatch_async(_serialQueue, ^{
     [_localDao globalCancelSyncInProgressWithError:error];
@@ -1061,6 +1051,20 @@
 }
 
 #pragma mark - User
+
+- (void)deleteRemoteAuthenticationTokenWithRemoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
+                                     addlCompletionHandler:(FPSavedNewEntityCompletionHandler)addlCompletionHandler {
+  // TODO
+  _authToken = nil;
+}
+
+- (void)resetAsLocalUser:(FPUser *)user error:(PELMDaoErrorBlk)error {
+  [_localDao deleteAllUsers:error];
+  FPUser *newLocalUser = [self newLocalUserWithError:error];
+  [user overwrite:newLocalUser];
+  [user setLocalMainIdentifier:[newLocalUser localMainIdentifier]];
+  [user setLocalMasterIdentifier:nil];
+}
 
 - (FPUser *)newLocalUserWithError:(PELMDaoErrorBlk)errorBlk {
   FPUser *user = [self userWithName:nil email:nil username:nil password:nil];
