@@ -1079,23 +1079,23 @@
                     mediaType:[FPKnownMediaTypes userMediaTypeWithVersion:_userResMtVersion]];
 }
 
-- (void)establishRemoteAccountForUser:(FPUser *)user
-                      remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
-                    completionHandler:(FPSavedNewEntityCompletionHandler)complHandler
-                localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler {
+- (void)establishRemoteAccountForLocalUser:(FPUser *)localUser
+                           remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
+                         completionHandler:(FPSavedNewEntityCompletionHandler)complHandler
+                     localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler {
   PELMRemoteMasterCompletionHandler remoteMasterComplHandler =
     ^(NSString *newAuthTkn, NSString *globalId, id resourceModel, NSDictionary *rels,
       NSDate *lastModified, BOOL isConflict, BOOL gone, BOOL notFound, BOOL movedPermanently,
       BOOL notModified, NSError *err, NSHTTPURLResponse *httpResp) {
-    FPUser *respUser = nil;
+    FPUser *remoteUser = nil;
     if (globalId) { // success!
-      respUser = (FPUser *)resourceModel;
-      [_localDao saveNewRemoteUser:respUser andLinkToLocalUser:user error:localSaveErrorHandler];
-      [self processNewAuthToken:newAuthTkn forUser:respUser];
+      remoteUser = (FPUser *)resourceModel;
+      [_localDao saveNewRemoteUser:remoteUser andLinkToLocalUser:localUser error:localSaveErrorHandler];
+      [self processNewAuthToken:newAuthTkn forUser:remoteUser];
     };
-    complHandler(respUser, err);
+    complHandler(remoteUser, err);
   };
-  [_remoteMasterDao establishAccountForUser:user
+  [_remoteMasterDao establishAccountForUser:localUser
                                asynchronous:YES
                                     timeout:_timeout
                             remoteStoreBusy:busyHandler

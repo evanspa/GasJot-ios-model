@@ -58,7 +58,7 @@ describe(@"FPCoordinatorDao", ^{
       [user setEmail:@"joe.smith@example.com"];
       [user setUsername:@"smithjoe"];
       [user setPassword:@"pa55w0rd"];
-      [_coordDao establishRemoteAccountForUser:user
+      [_coordDao establishRemoteAccountForLocalUser:user
                                remoteStoreBusy:[_coordTestCtx newRemoteStoreBusyBlkMaker]()
                              completionHandler:[_coordTestCtx new1ErrArgComplHandlerBlkMaker]()
                          localSaveErrorHandler:[_coordTestCtx newLocalSaveErrBlkMaker]()];

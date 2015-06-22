@@ -227,9 +227,9 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
             argsArray:@[[masterUser localMasterIdentifier],
                         [masterUser globalIdentifier],
                         [PEUtils millisecondsFromDate:[masterUser updatedAt]],
-                        [masterUser name],
-                        [masterUser email],
-                        [masterUser username],
+                        orNil([masterUser name]),
+                        orNil([masterUser email]),
+                        orNil([masterUser username]),
                         [mainUser localMainIdentifier]]
                    db:db
                 error:errorBlk];

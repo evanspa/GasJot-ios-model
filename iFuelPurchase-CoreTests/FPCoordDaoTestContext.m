@@ -198,7 +198,7 @@ NSInteger const FPForegroundActorId = 1;
     [localUser setUsername:username];
     [localUser setPassword:password];
     FPSavedNewEntityCompletionHandler complHandler = ^(FPUser *savedUser, NSError *error) { };
-    [coordDao establishRemoteAccountForUser:localUser
+    [coordDao establishRemoteAccountForLocalUser:localUser
                             remoteStoreBusy:[self newRemoteStoreBusyBlkMaker]()
                           completionHandler:complHandler
                       localSaveErrorHandler:localDaoErrHandler];

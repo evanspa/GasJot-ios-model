@@ -108,10 +108,10 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
 
 - (FPUser *)newLocalUserWithError:(PELMDaoErrorBlk)errorBlk;
 
-- (void)establishRemoteAccountForUser:(FPUser *)user
-                      remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
-                    completionHandler:(FPSavedNewEntityCompletionHandler)complHandler
-                localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler;
+- (void)establishRemoteAccountForLocalUser:(FPUser *)localUser
+                           remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
+                         completionHandler:(FPSavedNewEntityCompletionHandler)complHandler
+                     localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler;
 
 - (FPUser *)userWithError:(PELMDaoErrorBlk)errorBlk;
 
