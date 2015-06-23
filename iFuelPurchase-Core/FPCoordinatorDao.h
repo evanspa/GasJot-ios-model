@@ -110,6 +110,8 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
 
 - (NSInteger)numUnsyncedEnvironmentLogsForUser:(FPUser *)user;
 
+- (BOOL)doesUserHaveAnyUnsyncedEntities:(FPUser *)user;
+
 - (void)deleteRemoteAuthenticationTokenWithRemoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                                      addlCompletionHandler:(FPSavedNewEntityCompletionHandler)addlCompletionHandler;
 

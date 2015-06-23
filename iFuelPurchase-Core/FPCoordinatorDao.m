@@ -1068,6 +1068,13 @@
   return [_localDao numUnsyncedEnvironmentLogsForUser:user];
 }
 
+- (BOOL)doesUserHaveAnyUnsyncedEntities:(FPUser *)user {
+  return ([self numUnsyncedVehiclesForUser:user] > 0) ||
+         ([self numUnsyncedFuelStationsForUser:user] > 0) ||
+         ([self numUnsyncedFuelPurchaseLogsForUser:user] > 0)||
+         ([self numUnsyncedEnvironmentLogsForUser:user] > 0);
+}
+
 - (void)deleteRemoteAuthenticationTokenWithRemoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                                      addlCompletionHandler:(FPSavedNewEntityCompletionHandler)addlCompletionHandler {
   // TODO
