@@ -1965,16 +1965,21 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
   return num;
 }
 
-- (NSNumber *)numEntitiesFromTable:(NSString *)table
-                             error:(PELMDaoErrorBlk)errorBlk {
-  __block NSNumber *numEntities = nil;
+- (NSInteger)numEntitiesFromTable:(NSString *)table
+                            error:(PELMDaoErrorBlk)errorBlk {
+  __block NSInteger numEntities = 0;
   [_databaseQueue inDatabase:^(FMDatabase *db) {
-    FMResultSet *rs = [db executeQuery:[NSString stringWithFormat:@"SELECT COUNT(*) FROM %@", table]];
-    while ([rs next]) {
-      numEntities = [NSNumber numberWithInt:[rs intForColumnIndex:0]];
-    }
+    numEntities = [PELMUtils numEntitiesFromTable:table db:db error:errorBlk];
   }];
   return numEntities;
+}
+
++ (NSInteger)numEntitiesFromTable:(NSString *)table
+                               db:(FMDatabase *)db
+                            error:(PELMDaoErrorBlk)errorBlk {
+  FMResultSet *rs = [db executeQuery:[NSString stringWithFormat:@"SELECT COUNT(*) FROM %@", table]];
+  [rs next];
+  return [rs intForColumnIndex:0];
 }
 
 - (NSNumber *)numberFromTable:(NSString *)table

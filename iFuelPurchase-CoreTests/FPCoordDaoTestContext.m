@@ -83,9 +83,8 @@ NSInteger const FPForegroundActorId = 1;
 
 - (FPCoordTestingNumEntitiesComputer)newNumEntitiesComputerWithCoordDao:(FPCoordinatorDao *)coordDao {
   return (^ NSNumber * (NSString *table) {
-    return [[[coordDao localDao] localModelUtils]
-              numEntitiesFromTable:table
-                             error:[self newLocalBgErrBlkMaker]()];
+    return [NSNumber numberWithInteger:[[[coordDao localDao] localModelUtils] numEntitiesFromTable:table
+                                                                                             error:[self newLocalBgErrBlkMaker]()]];
   });
 }
 
@@ -199,9 +198,10 @@ NSInteger const FPForegroundActorId = 1;
     [localUser setPassword:password];
     FPSavedNewEntityCompletionHandler complHandler = ^(FPUser *savedUser, NSError *error) { };
     [coordDao establishRemoteAccountForLocalUser:localUser
-                            remoteStoreBusy:[self newRemoteStoreBusyBlkMaker]()
-                          completionHandler:complHandler
-                      localSaveErrorHandler:localDaoErrHandler];
+                   preserveExistingLocalEntities:YES
+                                 remoteStoreBusy:[self newRemoteStoreBusyBlkMaker]()
+                               completionHandler:complHandler
+                           localSaveErrorHandler:localDaoErrHandler];
     waitBlock();
     return [coordDao userWithError:^(NSError *error, int code, NSString *msg) {
       DDLogError(@"Error fetching local user from within 'fetchUser' helper block.  Error: [%@]", error);

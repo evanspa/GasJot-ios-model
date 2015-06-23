@@ -42,14 +42,24 @@
 
 #pragma mark - User
 
+- (NSInteger)numUnsyncedVehiclesForUser:(FPUser *)user;
+
+- (NSInteger)numUnsyncedFuelStationsForUser:(FPUser *)user;
+
+- (NSInteger)numUnsyncedFuelPurchaseLogsForUser:(FPUser *)user;
+
+- (NSInteger)numUnsyncedEnvironmentLogsForUser:(FPUser *)user;
+
 - (void)saveNewLocalUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)saveNewRemoteUser:(FPUser *)remoteUser
        andLinkToLocalUser:(FPUser *)localUser
+preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                     error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)deepSaveNewRemoteUser:(FPUser *)remoteUser
            andLinkToLocalUser:(FPUser *)localUser
+preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                         error:(PELMDaoErrorBlk)errorBlk;
 
 - (FPUser *)userWithError:(PELMDaoErrorBlk)errorBlk;

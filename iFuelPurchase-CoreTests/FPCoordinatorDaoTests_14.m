@@ -60,9 +60,10 @@ describe(@"FPCoordinatorDao", ^{
       [localUser setUsername:@"smithjoe"];
       [localUser setPassword:@"pa55w0rd"];
       [_coordDao establishRemoteAccountForLocalUser:localUser
-                               remoteStoreBusy:[_coordTestCtx newRemoteStoreBusyBlkMaker]()
-                             completionHandler:[_coordTestCtx new1ErrArgComplHandlerBlkMaker]()
-                         localSaveErrorHandler:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+                      preserveExistingLocalEntities:YES
+                                    remoteStoreBusy:[_coordTestCtx newRemoteStoreBusyBlkMaker]()
+                                  completionHandler:[_coordTestCtx new1ErrArgComplHandlerBlkMaker]()
+                              localSaveErrorHandler:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[expectFutureValue(theValue([_coordTestCtx authTokenReceived])) shouldEventuallyBeforeTimingOutAfter(60)] beYes];
       [[_coordTestCtx authToken] shouldNotBeNil];
       [[[_coordTestCtx authToken] should] equal:@"1092348123049OLSDFJLIE001234"];

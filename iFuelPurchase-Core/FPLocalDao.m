@@ -194,6 +194,39 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
 
 #pragma mark - User
 
+- (NSInteger)numUnsyncedEntitiesForUser:(FPUser *)user
+                            entityTable:(NSString *)entityTable {
+  __block NSInteger numEntities = 0;
+  [_databaseQueue inDatabase:^(FMDatabase *db) {
+    NSString *qry = [NSString stringWithFormat:@"select count(*) from %@ where \
+                     %@ = ? and \
+                     %@ = 0", entityTable,
+                     COL_MAIN_USER_ID,
+                     COL_MAN_SYNCED];
+    FMResultSet *rs = [db executeQuery:qry
+                  withArgumentsInArray:@[[user localMainIdentifier]]];
+    [rs next];
+    numEntities = [rs intForColumnIndex:0];
+  }];
+  return numEntities;
+}
+
+- (NSInteger)numUnsyncedVehiclesForUser:(FPUser *)user {
+  return [self numUnsyncedEntitiesForUser:user entityTable:TBL_MAIN_VEHICLE];
+}
+
+- (NSInteger)numUnsyncedFuelStationsForUser:(FPUser *)user {
+  return [self numUnsyncedEntitiesForUser:user entityTable:TBL_MAIN_FUEL_STATION];
+}
+
+- (NSInteger)numUnsyncedFuelPurchaseLogsForUser:(FPUser *)user {
+  return [self numUnsyncedEntitiesForUser:user entityTable:TBL_MAIN_FUELPURCHASE_LOG];
+}
+
+- (NSInteger)numUnsyncedEnvironmentLogsForUser:(FPUser *)user {
+  return [self numUnsyncedEntitiesForUser:user entityTable:TBL_MAIN_ENV_LOG];
+}
+
 - (void)saveNewLocalUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk {
   [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
     [self saveNewLocalUser:user db:db error:errorBlk];
@@ -254,6 +287,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
 
 - (void)saveNewRemoteUser:(FPUser *)remoteUser
        andLinkToLocalUser:(FPUser *)localUser
+preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                     error:(PELMDaoErrorBlk)errorBlk {
   [PELMUtils newEntityInsertionInvariantChecks:remoteUser];
   // user is special in that, upon insertion, it should have a global-ID (this
@@ -262,12 +296,17 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   // invariant check)
   NSAssert([remoteUser globalIdentifier] != nil, @"globalIdentifier is nil");
   [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
-    [self saveNewRemoteUser:remoteUser andLinkToLocalUser:localUser db:db error:errorBlk];
+    [self saveNewRemoteUser:remoteUser
+         andLinkToLocalUser:localUser
+preserveExistingLocalEntities:preserveExistingLocalEntities
+                         db:db
+                      error:errorBlk];
   }];
 }
 
 - (void)saveNewRemoteUser:(FPUser *)newRemoteUser
        andLinkToLocalUser:(FPUser *)localUser
+preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                        db:(FMDatabase *)db
                     error:(PELMDaoErrorBlk)errorBlk {
   [self insertIntoMasterUser:newRemoteUser db:db error:errorBlk];
@@ -278,15 +317,26 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                           db:db
                        error:errorBlk];
   [self linkMainUser:localUser toMasterUser:newRemoteUser db:db error:errorBlk];
+  if (!preserveExistingLocalEntities) {
+    [PELMUtils deleteAllEntities:TBL_MAIN_FUELPURCHASE_LOG db:db error:errorBlk];
+    [PELMUtils deleteAllEntities:TBL_MAIN_ENV_LOG db:db error:errorBlk];
+    [PELMUtils deleteAllEntities:TBL_MAIN_FUEL_STATION db:db error:errorBlk];
+    [PELMUtils deleteAllEntities:TBL_MAIN_VEHICLE db:db error:errorBlk];
+  }
 }
 
 - (void)deepSaveNewRemoteUser:(FPUser *)remoteUser
            andLinkToLocalUser:(FPUser *)localUser
+preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                         error:(PELMDaoErrorBlk)errorBlk {
   [PELMUtils newEntityInsertionInvariantChecks:remoteUser];
   NSAssert([remoteUser globalIdentifier] != nil, @"globalIdentifier is nil");
   [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
-    [self saveNewRemoteUser:remoteUser andLinkToLocalUser:localUser db:db error:errorBlk];
+    [self saveNewRemoteUser:remoteUser
+         andLinkToLocalUser:localUser
+preserveExistingLocalEntities:preserveExistingLocalEntities
+                         db:db
+                      error:errorBlk];
     NSArray *vehicles = [remoteUser vehicles];
     if (vehicles) {
       for (FPVehicle *vehicle in vehicles) {

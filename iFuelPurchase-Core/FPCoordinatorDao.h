@@ -102,6 +102,14 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
 
 #pragma mark - User
 
+- (NSInteger)numUnsyncedVehiclesForUser:(FPUser *)user;
+
+- (NSInteger)numUnsyncedFuelStationsForUser:(FPUser *)user;
+
+- (NSInteger)numUnsyncedFuelPurchaseLogsForUser:(FPUser *)user;
+
+- (NSInteger)numUnsyncedEnvironmentLogsForUser:(FPUser *)user;
+
 - (void)deleteRemoteAuthenticationTokenWithRemoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                                      addlCompletionHandler:(FPSavedNewEntityCompletionHandler)addlCompletionHandler;
 
@@ -110,6 +118,7 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
 - (FPUser *)newLocalUserWithError:(PELMDaoErrorBlk)errorBlk;
 
 - (void)establishRemoteAccountForLocalUser:(FPUser *)localUser
+             preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                            remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                          completionHandler:(FPSavedNewEntityCompletionHandler)complHandler
                      localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler;
@@ -119,6 +128,7 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
 - (void)loginWithUsernameOrEmail:(NSString *)usernameOrEmail
                         password:(NSString *)password
     andLinkRemoteUserToLocalUser:(FPUser *)localUser
+   preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                  remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                completionHandler:(FPFetchedEntityCompletionHandler)complHandler
            localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler;

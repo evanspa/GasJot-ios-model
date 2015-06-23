@@ -58,6 +58,7 @@ describe(@"FPCoordinatorDao", ^{
       [_coordDao loginWithUsernameOrEmail:@"evansp2"
                                  password:@"1n53cur3"
              andLinkRemoteUserToLocalUser:user
+            preserveExistingLocalEntities:YES
                           remoteStoreBusy:[_coordTestCtx newRemoteStoreBusyBlkMaker]()
                         completionHandler:[_coordTestCtx new1ErrArgComplHandlerBlkMaker]()
                     localSaveErrorHandler:[_coordTestCtx newLocalSaveErrBlkMaker]()];

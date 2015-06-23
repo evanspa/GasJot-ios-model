@@ -54,8 +54,7 @@ describe(@"FPCoordinatorDao", ^{
       FPUser *user = [_coordTestCtx newFreshJoeSmithMaker](_coordDao, ^{
           [[expectFutureValue(theValue([_coordTestCtx authTokenReceived])) shouldEventuallyBeforeTimingOutAfter(60)] beYes];
         });
-      NSLog(@"user: %@", user);
-      // First we need to create a vehicle and fuel station.
+     // First we need to create a vehicle and fuel station.
      FPVehicle *vehicle =
       [_coordDao vehicleWithName:@"Volkswagen CC" defaultOctane:@87 fuelCapacity:[NSDecimalNumber decimalNumberWithString:@"19.0"]];
       [_coordDao saveNewVehicle:vehicle forUser:user error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
@@ -75,6 +74,7 @@ describe(@"FPCoordinatorDao", ^{
       [[envLog localMainIdentifier] shouldNotBeNil];
       [[vehicle localMasterIdentifier] shouldBeNil];
       [[envLog localMasterIdentifier] shouldBeNil];
+      [[theValue([_coordDao numUnsyncedVehiclesForUser:user]) should] equal:theValue(1)];
       _mocker(@"http-response.vehicles.POST.201", 0, 0);
       _mocker(@"http-response.envlogs.POST.201", 0, 0);
       _flusher(5.0); // flush to master and pause

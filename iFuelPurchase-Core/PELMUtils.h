@@ -525,8 +525,12 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
 
 #pragma mark - Helpers
 
-- (NSNumber *)numEntitiesFromTable:(NSString *)table
-                             error:(PELMDaoErrorBlk)errorBlk;
+- (NSInteger)numEntitiesFromTable:(NSString *)table
+                            error:(PELMDaoErrorBlk)errorBlk;
+
++ (NSInteger)numEntitiesFromTable:(NSString *)table
+                               db:(FMDatabase *)db
+                            error:(PELMDaoErrorBlk)errorBlk;
 
 - (NSNumber *)numberFromTable:(NSString *)table
                  selectColumn:(NSString *)selectColumn

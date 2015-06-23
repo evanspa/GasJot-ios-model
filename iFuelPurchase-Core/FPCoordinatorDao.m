@@ -1052,6 +1052,22 @@
 
 #pragma mark - User
 
+- (NSInteger)numUnsyncedVehiclesForUser:(FPUser *)user {
+  return [_localDao numUnsyncedVehiclesForUser:user];
+}
+
+- (NSInteger)numUnsyncedFuelStationsForUser:(FPUser *)user {
+  return [_localDao numUnsyncedFuelStationsForUser:user];
+}
+
+- (NSInteger)numUnsyncedFuelPurchaseLogsForUser:(FPUser *)user {
+  return [_localDao numUnsyncedFuelPurchaseLogsForUser:user];
+}
+
+- (NSInteger)numUnsyncedEnvironmentLogsForUser:(FPUser *)user {
+  return [_localDao numUnsyncedEnvironmentLogsForUser:user];
+}
+
 - (void)deleteRemoteAuthenticationTokenWithRemoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                                      addlCompletionHandler:(FPSavedNewEntityCompletionHandler)addlCompletionHandler {
   // TODO
@@ -1084,6 +1100,7 @@
 }
 
 - (void)establishRemoteAccountForLocalUser:(FPUser *)localUser
+             preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                            remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                          completionHandler:(FPSavedNewEntityCompletionHandler)complHandler
                      localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler {
@@ -1094,7 +1111,10 @@
     FPUser *remoteUser = nil;
     if (globalId) { // success!
       remoteUser = (FPUser *)resourceModel;
-      [_localDao saveNewRemoteUser:remoteUser andLinkToLocalUser:localUser error:localSaveErrorHandler];
+      [_localDao saveNewRemoteUser:remoteUser
+                andLinkToLocalUser:localUser
+     preserveExistingLocalEntities:preserveExistingLocalEntities
+                             error:localSaveErrorHandler];
       [self processNewAuthToken:newAuthTkn forUser:remoteUser];
     };
     complHandler(remoteUser, err);
@@ -1111,6 +1131,7 @@
 - (void)loginWithUsernameOrEmail:(NSString *)usernameOrEmail
                         password:(NSString *)password
     andLinkRemoteUserToLocalUser:(FPUser *)localUser
+   preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                  remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                completionHandler:(FPFetchedEntityCompletionHandler)complHandler
            localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler {
@@ -1120,7 +1141,10 @@
     BOOL notModified, NSError *err, NSHTTPURLResponse *httpResp) {
     FPUser *remoteUser = (FPUser *)resourceModel;
     if (remoteUser) {
-      [_localDao deepSaveNewRemoteUser:remoteUser andLinkToLocalUser:localUser error:localSaveErrorHandler];
+      [_localDao deepSaveNewRemoteUser:remoteUser
+                    andLinkToLocalUser:localUser
+         preserveExistingLocalEntities:preserveExistingLocalEntities
+                                 error:localSaveErrorHandler];
       [self processNewAuthToken:newAuthTkn forUser:remoteUser];
     }
     complHandler(remoteUser, err);
