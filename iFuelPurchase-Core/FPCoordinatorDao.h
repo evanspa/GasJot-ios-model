@@ -113,7 +113,7 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
 - (BOOL)doesUserHaveAnyUnsyncedEntities:(FPUser *)user;
 
 - (void)deleteRemoteAuthenticationTokenWithRemoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
-                                     addlCompletionHandler:(FPSavedNewEntityCompletionHandler)addlCompletionHandler;
+                                     addlCompletionHandler:(void(^)(void))addlCompletionHandler;
 
 - (void)resetAsLocalUser:(FPUser *)user error:(PELMDaoErrorBlk)error;
 

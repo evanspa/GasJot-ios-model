@@ -1076,9 +1076,10 @@
 }
 
 - (void)deleteRemoteAuthenticationTokenWithRemoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
-                                     addlCompletionHandler:(FPSavedNewEntityCompletionHandler)addlCompletionHandler {
+                                     addlCompletionHandler:(void(^)(void))addlCompletionHandler {
   // TODO
   _authToken = nil;
+  addlCompletionHandler();
 }
 
 - (void)resetAsLocalUser:(FPUser *)user error:(PELMDaoErrorBlk)error {
