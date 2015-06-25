@@ -24,7 +24,6 @@
                         updatedAt:(NSDate *)updatedAt
              dateCopiedFromMaster:(NSDate *)dateCopiedFromMaster
                    editInProgress:(BOOL)editInProgress
-                      editActorId:(NSNumber *)editActorId
                    syncInProgress:(BOOL)syncInProgress
                            synced:(BOOL)synced
                        inConflict:(BOOL)inConflict
@@ -45,7 +44,6 @@
   if (self) {
     _dateCopiedFromMaster = dateCopiedFromMaster;
     _editInProgress = editInProgress;
-    _editActorId = editActorId;
     _syncInProgress = syncInProgress;
     _synced = synced;
     _inConflict = inConflict;
@@ -64,7 +62,6 @@
   [super overwrite:entity];
   [self setDateCopiedFromMaster:[entity dateCopiedFromMaster]];
   [self setEditInProgress:[entity editInProgress]];
-  [self setEditActorId:[entity editActorId]];
   [self setSyncInProgress:[entity syncInProgress]];
   [self setSynced:[entity synced]];
   [self setInConflict:[entity inConflict]];
@@ -120,7 +117,6 @@
   return [super hash] ^
     [[self dateCopiedFromMaster] hash] ^
     [[NSNumber numberWithBool:[self editInProgress]] hash] ^
-    [_editActorId hash] ^
     [[NSNumber numberWithBool:[self syncInProgress]] hash] ^
     [[NSNumber numberWithBool:[self synced]] hash] ^
     [[NSNumber numberWithBool:[self inConflict]] hash] ^
@@ -132,14 +128,13 @@
 
 - (NSString *)description {
   return [NSString stringWithFormat:@"%@, date copied from master: [{%@}, {%f}], \
-edit in progress: [%@], edit actor id: [%@], sync in progress: [%@], \
+edit in progress: [%@], sync in progress: [%@], \
 synced: [%@], in conflict: [%@], deleted: [%@], edit count: [%lu], \
 sync HTTP resp code: [%@], sync err mask: [%@], sync retry at: [%@]",
           [super description],
           _dateCopiedFromMaster,
           [_dateCopiedFromMaster timeIntervalSince1970],
           [PEUtils trueFalseFromBool:_editInProgress],
-          _editActorId,
           [PEUtils trueFalseFromBool:_syncInProgress],
           [PEUtils trueFalseFromBool:_synced],
           [PEUtils trueFalseFromBool:_inConflict],

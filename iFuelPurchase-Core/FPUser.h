@@ -7,20 +7,17 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "PELMMainSupport.h"
+#import "PELMUser.h"
 #import "FPVehicle.h"
 #import "FPFuelStation.h"
 #import "FPEnvironmentLog.h"
 
-FOUNDATION_EXPORT NSString * const FPUsersRelation;
-FOUNDATION_EXPORT NSString * const FPLoginRelation;
 FOUNDATION_EXPORT NSString * const FPVehiclesRelation;
 FOUNDATION_EXPORT NSString * const FPFuelStationsRelation;
 FOUNDATION_EXPORT NSString * const FPFuelPurchaseLogsRelation;
 FOUNDATION_EXPORT NSString * const FPEnvironmentLogsRelation;
-FOUNDATION_EXPORT NSString * const FPAppTransactionSetRelation;
 
-@interface FPUser : PELMMainSupport <NSCopying>
+@interface FPUser : PELMUser <NSCopying>
 
 #pragma mark - Initializers
 
@@ -33,7 +30,6 @@ FOUNDATION_EXPORT NSString * const FPAppTransactionSetRelation;
                         updatedAt:(NSDate *)updatedAt
              dateCopiedFromMaster:(NSDate *)dateCopiedFromMaster
                    editInProgress:(BOOL)editInProgress
-                      editActorId:(NSNumber *)editActorId
                    syncInProgress:(BOOL)syncInProgress
                            synced:(BOOL)synced
                        inConflict:(BOOL)inConflict
@@ -66,8 +62,6 @@ FOUNDATION_EXPORT NSString * const FPAppTransactionSetRelation;
 
 #pragma mark - Methods
 
-- (void)overwrite:(FPUser *)user;
-
 - (void)addVehicle:(FPVehicle *)vehicle;
 
 - (void)addFuelStation:(FPFuelStation *)fuelStation;
@@ -80,30 +74,14 @@ FOUNDATION_EXPORT NSString * const FPAppTransactionSetRelation;
 
 - (NSArray *)fuelStations;
 
-- (NSString *)usernameOrEmail;
-
 - (NSArray *)fuelPurchaseLogs;
 
 - (NSArray *)environmentLogs;
-
-#pragma mark - Properties
-
-@property (nonatomic) NSString *name;
-
-@property (nonatomic) NSString *email;
-
-@property (nonatomic) NSString *username;
-
-@property (nonatomic) NSString *password;
 
 #pragma mark - Known Relation Names
 
 + (NSString *)vehiclesRelation;
 
 + (NSString *)fuelStationsRelation;
-
-#pragma mark - Equality
-
-- (BOOL)isEqualToUser:(FPUser *)user;
 
 @end

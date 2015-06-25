@@ -30,9 +30,9 @@ NSString * const FPFuelPurchaseLogUpdatedAtKey                = @"fplog/updated-
 - (NSDictionary *)dictionaryWithResourceModel:(id)resourceModel {
   FPFuelPurchaseLog *fuelPurchaseLog = (FPFuelPurchaseLog *)resourceModel;
   NSMutableDictionary *fuelPurchaseLogDict = [NSMutableDictionary dictionary];
-  [fuelPurchaseLogDict setObjectIfNotNull:[fuelPurchaseLog vehicleGlobalIdentifier]
+  [fuelPurchaseLogDict setObjectIfNotNull:[fuelPurchaseLog vehicleMainIdentifier]
                                    forKey:FPFuelPurchaseLogVehicleGlobalIdKey];
-  [fuelPurchaseLogDict setObjectIfNotNull:[fuelPurchaseLog fuelStationGlobalIdentifier]
+  [fuelPurchaseLogDict setObjectIfNotNull:[fuelPurchaseLog fuelStationMainIdentifier]
                                    forKey:FPFuelPurchaseLogFuelStationGlobalIdKey];
   [fuelPurchaseLogDict setObjectIfNotNull:[fuelPurchaseLog numGallons]
                                    forKey:FPFuelPurchaseLogNumGallonsKey];
@@ -68,8 +68,8 @@ NSString * const FPFuelPurchaseLogUpdatedAtKey                = @"fplog/updated-
                           mediaType:mediaType
                           relations:relations
                           updatedAt:[resDict dateSince1970ForKey:FPFuelPurchaseLogUpdatedAtKey]];
-  [fplog setVehicleGlobalIdentifier:resDict[FPFuelPurchaseLogVehicleGlobalIdKey]];
-  [fplog setFuelStationGlobalIdentifier:resDict[FPFuelPurchaseLogFuelStationGlobalIdKey]];
+  [fplog setVehicleMainIdentifier:resDict[FPFuelPurchaseLogVehicleGlobalIdKey]];
+  [fplog setFuelStationMainIdentifier:resDict[FPFuelPurchaseLogFuelStationGlobalIdKey]];
   return fplog;
 }
 

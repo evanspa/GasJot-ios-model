@@ -33,6 +33,7 @@ NSString * const LAST_MODIFIED_HEADER = @"last-modified";
   FPFuelStationSerializer *_fuelStationSerializer;
   FPFuelPurchaseLogSerializer *_fuelPurchaseLogSerializer;
   FPEnvironmentLogSerializer *_environmentLogSerializer;
+  dispatch_queue_t _serialQueue;
 }
 
 #pragma mark - Initializers
@@ -79,6 +80,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
     _fuelStationSerializer = fuelStationSerializer;
     _fuelPurchaseLogSerializer = fuelPurchaseLogSerializer;
     _environmentLogSerializer = environmentLogSerializer;
+    _serialQueue = dispatch_queue_create("name.paulevans.fp.serialqueue", DISPATCH_QUEUE_SERIAL);
   }
   return self;
 }
@@ -194,20 +196,18 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
 - (void)doPostToRelation:(HCRelation *)relation
       resourceModelParam:(id)resourceModelParam
               serializer:(id<HCResourceSerializer>)serializer
-            asynchronous:(BOOL)asynchronous
                  timeout:(NSInteger)timeout
          remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
             authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
        completionHandler:(PELMRemoteMasterCompletionHandler)complHandler
-queueForCompletionHandler:(dispatch_queue_t)queue
             otherHeaders:(NSDictionary *)otherHeaders {
   [_relationExecutor
     doPostForTargetResource:[relation target]
          resourceModelParam:resourceModelParam
             paramSerializer:serializer
-    responseEntitySerializer:serializer
-               asynchronous:asynchronous
-            completionQueue:queue
+   responseEntitySerializer:serializer
+               asynchronous:YES
+            completionQueue:_serialQueue
               authorization:[self authorization]
                     success:[self newPostSuccessBlk:complHandler]
                 redirection:[self newRedirectionBlk:complHandler]
@@ -231,36 +231,30 @@ queueForCompletionHandler:(dispatch_queue_t)queue
 
 - (void)saveNewVehicle:(FPVehicle *)vehicle
                forUser:(FPUser *)user
-          asynchronous:(BOOL)asynchronous
                timeout:(NSInteger)timeout
        remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
           authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
-     completionHandler:(PELMRemoteMasterCompletionHandler)complHandler
-queueForCompletionHandler:(dispatch_queue_t)queue {
+     completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
   [self doPostToRelation:[[user relations] objectForKey:FPVehiclesRelation]
       resourceModelParam:vehicle
               serializer:_vehicleSerializer
-            asynchronous:asynchronous
                  timeout:timeout
          remoteStoreBusy:busyHandler
             authRequired:authRequired
        completionHandler:complHandler
-queueForCompletionHandler:queue
             otherHeaders:@{}];
 }
 
 - (void)saveExistingVehicle:(FPVehicle *)vehicle
-               asynchronous:(BOOL)asynchronous
                     timeout:(NSInteger)timeout
             remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
-          completionHandler:(PELMRemoteMasterCompletionHandler)complHandler
-  queueForCompletionHandler:(dispatch_queue_t)queue {
+          completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
   [_relationExecutor
     doPutForTargetResource:[FPRestRemoteMasterDao resourceFromModel:vehicle]
           targetSerializer:_vehicleSerializer
-              asynchronous:asynchronous
-           completionQueue:queue
+              asynchronous:YES
+           completionQueue:_serialQueue
              authorization:[self authorization]
                    success:[self newPutSuccessBlk:complHandler]
                redirection:[self newRedirectionBlk:complHandler]
@@ -276,16 +270,14 @@ queueForCompletionHandler:queue
 }
 
 - (void)deleteVehicle:(FPVehicle *)vehicle
-         asynchronous:(BOOL)asynchronous
               timeout:(NSInteger)timeout
       remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
          authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
-    completionHandler:(PELMRemoteMasterCompletionHandler)complHandler
-queueForCompletionHandler:(dispatch_queue_t)queue {
+    completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
   [_relationExecutor
     doDeleteOfTargetResource:[FPRestRemoteMasterDao resourceFromModel:vehicle]
-                asynchronous:asynchronous
-             completionQueue:queue
+                asynchronous:YES
+             completionQueue:_serialQueue
                authorization:[self authorization]
                      success:[self newDeleteSuccessBlk:complHandler]
                  redirection:[self newRedirectionBlk:complHandler]
@@ -304,36 +296,30 @@ queueForCompletionHandler:(dispatch_queue_t)queue {
 
 - (void)saveNewFuelStation:(FPFuelStation *)fuelStation
                    forUser:(FPUser *)user
-              asynchronous:(BOOL)asynchronous
                    timeout:(NSInteger)timeout
            remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
               authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
-         completionHandler:(PELMRemoteMasterCompletionHandler)complHandler
- queueForCompletionHandler:(dispatch_queue_t)queue {
+         completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
   [self doPostToRelation:[[user relations] objectForKey:FPFuelStationsRelation]
       resourceModelParam:fuelStation
               serializer:_fuelStationSerializer
-            asynchronous:asynchronous
                  timeout:timeout
          remoteStoreBusy:busyHandler
             authRequired:authRequired
        completionHandler:complHandler
-queueForCompletionHandler:queue
             otherHeaders:@{}];
 }
 
 - (void)saveExistingFuelStation:(FPFuelStation *)fuelStation
-                   asynchronous:(BOOL)asynchronous
                         timeout:(NSInteger)timeout
                 remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                    authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
-              completionHandler:(PELMRemoteMasterCompletionHandler)complHandler
-      queueForCompletionHandler:(dispatch_queue_t)queue {
+              completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
   [_relationExecutor
     doPutForTargetResource:[FPRestRemoteMasterDao resourceFromModel:fuelStation]
           targetSerializer:_fuelStationSerializer
-              asynchronous:asynchronous
-           completionQueue:queue
+              asynchronous:YES
+           completionQueue:_serialQueue
              authorization:[self authorization]
                    success:[self newPutSuccessBlk:complHandler]
                redirection:[self newRedirectionBlk:complHandler]
@@ -349,16 +335,14 @@ queueForCompletionHandler:queue
 }
 
 - (void)deleteFuelStation:(FPFuelStation *)fuelStation
-             asynchronous:(BOOL)asynchronous
                   timeout:(NSInteger)timeout
           remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
              authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
-        completionHandler:(PELMRemoteMasterCompletionHandler)complHandler
-queueForCompletionHandler:(dispatch_queue_t)queue {
+        completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
   [_relationExecutor
     doDeleteOfTargetResource:[FPRestRemoteMasterDao resourceFromModel:fuelStation]
-                asynchronous:asynchronous
-             completionQueue:queue
+                asynchronous:YES
+             completionQueue:_serialQueue
                authorization:[self authorization]
                      success:[self newDeleteSuccessBlk:complHandler]
                  redirection:[self newRedirectionBlk:complHandler]
@@ -377,182 +361,156 @@ queueForCompletionHandler:(dispatch_queue_t)queue {
 
 - (void)saveNewFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
                        forUser:(FPUser *)user
-                  asynchronous:(BOOL)asynchronous
                        timeout:(NSInteger)timeout
                remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                   authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
-             completionHandler:(PELMRemoteMasterCompletionHandler)complHandler
-     queueForCompletionHandler:(dispatch_queue_t)queue {
+             completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
   [self doPostToRelation:[[user relations] objectForKey:FPFuelPurchaseLogsRelation]
       resourceModelParam:fuelPurchaseLog
               serializer:_fuelPurchaseLogSerializer
-            asynchronous:asynchronous
                  timeout:timeout
          remoteStoreBusy:busyHandler
             authRequired:authRequired
        completionHandler:complHandler
-queueForCompletionHandler:queue
             otherHeaders:@{}];
 }
 
 - (void)saveExistingFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
-                       asynchronous:(BOOL)asynchronous
                             timeout:(NSInteger)timeout
                     remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                        authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
-                  completionHandler:(PELMRemoteMasterCompletionHandler)complHandler
-          queueForCompletionHandler:(dispatch_queue_t)queue {
-  [_relationExecutor
-   doPutForTargetResource:[FPRestRemoteMasterDao resourceFromModel:fuelPurchaseLog]
-   targetSerializer:_fuelPurchaseLogSerializer
-   asynchronous:asynchronous
-   completionQueue:queue
-   authorization:[self authorization]
-   success:[self newPutSuccessBlk:complHandler]
-   redirection:[self newRedirectionBlk:complHandler]
-   clientError:[self newClientErrBlk:complHandler]
-   authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired
-                                                          entity:fuelPurchaseLog]
-   serverError:[self newServerErrBlk:complHandler]
-   unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
-   conflict:[self newConflictBlk:complHandler]
-   connectionFailure:[self newConnFailureBlk:complHandler]
-   timeout:timeout
-   otherHeaders:@{}];
+                  completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
+  [_relationExecutor doPutForTargetResource:[FPRestRemoteMasterDao resourceFromModel:fuelPurchaseLog]
+                           targetSerializer:_fuelPurchaseLogSerializer
+                               asynchronous:YES
+                            completionQueue:_serialQueue
+                              authorization:[self authorization]
+                                    success:[self newPutSuccessBlk:complHandler]
+                                redirection:[self newRedirectionBlk:complHandler]
+                                clientError:[self newClientErrBlk:complHandler]
+                     authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired
+                                                                            entity:fuelPurchaseLog]
+                                serverError:[self newServerErrBlk:complHandler]
+                           unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
+                                   conflict:[self newConflictBlk:complHandler]
+                          connectionFailure:[self newConnFailureBlk:complHandler]
+                                    timeout:timeout
+                               otherHeaders:@{}];
 }
 
 - (void)deleteFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
-                 asynchronous:(BOOL)asynchronous
                       timeout:(NSInteger)timeout
               remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                  authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
-            completionHandler:(PELMRemoteMasterCompletionHandler)complHandler
-    queueForCompletionHandler:(dispatch_queue_t)queue {
-  [_relationExecutor
-   doDeleteOfTargetResource:[FPRestRemoteMasterDao resourceFromModel:fuelPurchaseLog]
-   asynchronous:asynchronous
-   completionQueue:queue
-   authorization:[self authorization]
-   success:[self newDeleteSuccessBlk:complHandler]
-   redirection:[self newRedirectionBlk:complHandler]
-   clientError:[self newClientErrBlk:complHandler]
-   authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired
-                                                          entity:fuelPurchaseLog]
-   serverError:[self newServerErrBlk:complHandler]
-   unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
-   conflict:[self newConflictBlk:complHandler]
-   connectionFailure:[self newConnFailureBlk:complHandler]
-   timeout:timeout
-   otherHeaders:@{}];
+            completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
+  [_relationExecutor doDeleteOfTargetResource:[FPRestRemoteMasterDao resourceFromModel:fuelPurchaseLog]
+                                 asynchronous:YES
+                              completionQueue:_serialQueue
+                                authorization:[self authorization]
+                                      success:[self newDeleteSuccessBlk:complHandler]
+                                  redirection:[self newRedirectionBlk:complHandler]
+                                  clientError:[self newClientErrBlk:complHandler]
+                       authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired
+                                                                              entity:fuelPurchaseLog]
+                                  serverError:[self newServerErrBlk:complHandler]
+                             unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
+                                     conflict:[self newConflictBlk:complHandler]
+                            connectionFailure:[self newConnFailureBlk:complHandler]
+                                      timeout:timeout
+                                 otherHeaders:@{}];
 }
 
 #pragma mark - Environment Log Operations
 
 - (void)saveNewEnvironmentLog:(FPEnvironmentLog *)environmentLog
                       forUser:(FPUser *)user
-                 asynchronous:(BOOL)asynchronous
                       timeout:(NSInteger)timeout
               remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                  authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
-            completionHandler:(PELMRemoteMasterCompletionHandler)complHandler
-    queueForCompletionHandler:(dispatch_queue_t)queue {
+            completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
   [self doPostToRelation:[[user relations] objectForKey:FPEnvironmentLogsRelation]
       resourceModelParam:environmentLog
               serializer:_environmentLogSerializer
-            asynchronous:asynchronous
                  timeout:timeout
          remoteStoreBusy:busyHandler
             authRequired:authRequired
        completionHandler:complHandler
-queueForCompletionHandler:queue
             otherHeaders:@{}];
 }
 
 - (void)saveExistingEnvironmentLog:(FPEnvironmentLog *)environmentLog
-                      asynchronous:(BOOL)asynchronous
                            timeout:(NSInteger)timeout
                    remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                       authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
-                 completionHandler:(PELMRemoteMasterCompletionHandler)complHandler
-         queueForCompletionHandler:(dispatch_queue_t)queue {
-  [_relationExecutor
-   doPutForTargetResource:[FPRestRemoteMasterDao resourceFromModel:environmentLog]
-   targetSerializer:_environmentLogSerializer
-   asynchronous:asynchronous
-   completionQueue:queue
-   authorization:[self authorization]
-   success:[self newPutSuccessBlk:complHandler]
-   redirection:[self newRedirectionBlk:complHandler]
-   clientError:[self newClientErrBlk:complHandler]
-   authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired
-                                                          entity:environmentLog]
-   serverError:[self newServerErrBlk:complHandler]
-   unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
-   conflict:[self newConflictBlk:complHandler]
-   connectionFailure:[self newConnFailureBlk:complHandler]
-   timeout:timeout
-   otherHeaders:@{}];
+                 completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
+  [_relationExecutor doPutForTargetResource:[FPRestRemoteMasterDao resourceFromModel:environmentLog]
+                           targetSerializer:_environmentLogSerializer
+                               asynchronous:YES
+                            completionQueue:_serialQueue
+                              authorization:[self authorization]
+                                    success:[self newPutSuccessBlk:complHandler]
+                                redirection:[self newRedirectionBlk:complHandler]
+                                clientError:[self newClientErrBlk:complHandler]
+                     authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired
+                                                                            entity:environmentLog]
+                                serverError:[self newServerErrBlk:complHandler]
+                           unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
+                                   conflict:[self newConflictBlk:complHandler]
+                          connectionFailure:[self newConnFailureBlk:complHandler]
+                                    timeout:timeout
+                               otherHeaders:@{}];
 }
 
 - (void)deleteEnvironmentLog:(FPEnvironmentLog *)environmentLog
-                asynchronous:(BOOL)asynchronous
                      timeout:(NSInteger)timeout
              remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                 authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
-           completionHandler:(PELMRemoteMasterCompletionHandler)complHandler
-   queueForCompletionHandler:(dispatch_queue_t)queue {
-  [_relationExecutor
-   doDeleteOfTargetResource:[FPRestRemoteMasterDao resourceFromModel:environmentLog]
-   asynchronous:asynchronous
-   completionQueue:queue
-   authorization:[self authorization]
-   success:[self newDeleteSuccessBlk:complHandler]
-   redirection:[self newRedirectionBlk:complHandler]
-   clientError:[self newClientErrBlk:complHandler]
-   authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired
-                                                          entity:environmentLog]
-   serverError:[self newServerErrBlk:complHandler]
-   unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
-   conflict:[self newConflictBlk:complHandler]
-   connectionFailure:[self newConnFailureBlk:complHandler]
-   timeout:timeout
-   otherHeaders:@{}];
+           completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
+  [_relationExecutor doDeleteOfTargetResource:[FPRestRemoteMasterDao resourceFromModel:environmentLog]
+                                 asynchronous:YES
+                              completionQueue:_serialQueue
+                                authorization:[self authorization]
+                                      success:[self newDeleteSuccessBlk:complHandler]
+                                  redirection:[self newRedirectionBlk:complHandler]
+                                  clientError:[self newClientErrBlk:complHandler]
+                       authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired
+                                                                              entity:environmentLog]
+                                  serverError:[self newServerErrBlk:complHandler]
+                             unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
+                                     conflict:[self newConflictBlk:complHandler]
+                            connectionFailure:[self newConnFailureBlk:complHandler]
+                                      timeout:timeout
+                                 otherHeaders:@{}];
 }
 
 
 #pragma mark - User Operations
 
 - (void)establishAccountForUser:(FPUser *)user
-                   asynchronous:(BOOL)asynchronous
                         timeout:(NSInteger)timeout
                 remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                    authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
-              completionHandler:(PELMRemoteMasterCompletionHandler)complHandler
-      queueForCompletionHandler:(dispatch_queue_t)queue {
-  [self doPostToRelation:[_restApiRelations objectForKey:FPUsersRelation]
+              completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
+  [self doPostToRelation:[_restApiRelations objectForKey:PELMUsersRelation]
       resourceModelParam:user
               serializer:_userSerializer
-            asynchronous:asynchronous
                  timeout:timeout
          remoteStoreBusy:busyHandler
             authRequired:authRequired
        completionHandler:complHandler
-queueForCompletionHandler:queue
             otherHeaders:@{_establishSessionHeaderName : @"true"}];
 }
 
 - (void)saveExistingUser:(FPUser *)user
-            asynchronous:(BOOL)asynchronous
                  timeout:(NSInteger)timeout
          remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
             authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
-       completionHandler:(PELMRemoteMasterCompletionHandler)complHandler
-queueForCompletionHandler:(dispatch_queue_t)queue {
+       completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
   [_relationExecutor
     doPutForTargetResource:[FPRestRemoteMasterDao resourceFromModel:user]
           targetSerializer:_userSerializer
-              asynchronous:asynchronous
-           completionQueue:queue
+              asynchronous:YES
+           completionQueue:_serialQueue
              authorization:[self authorization]
                    success:[self newPutSuccessBlk:complHandler]
                redirection:[self newRedirectionBlk:complHandler]
@@ -569,40 +527,34 @@ queueForCompletionHandler:(dispatch_queue_t)queue {
 
 - (void)loginWithUsernameOrEmail:(NSString *)usernameOrEmail
                         password:(NSString *)password
-                    asynchronous:(BOOL)asynchronous
                          timeout:(NSInteger)timeout
                  remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                     authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
-               completionHandler:(PELMRemoteMasterCompletionHandler)complHandler
-       queueForCompletionHandler:(dispatch_queue_t)queue {
+               completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
   NSMutableDictionary *headers = [NSMutableDictionary new];
   [headers setObject:@"true" forKey:_establishSessionHeaderName];
   PELMLoginUser *loginUser = [[PELMLoginUser alloc] init];
   [loginUser setUsernameOrEmail:usernameOrEmail];
   [loginUser setPassword:password];
-  [self doPostToRelation:[_restApiRelations objectForKey:FPLoginRelation]
+  [self doPostToRelation:[_restApiRelations objectForKey:PELMLoginRelation]
       resourceModelParam:loginUser
               serializer:_loginSerializer
-            asynchronous:asynchronous
                  timeout:timeout
          remoteStoreBusy:busyHandler
             authRequired:authRequired
        completionHandler:complHandler
-queueForCompletionHandler:queue
             otherHeaders:headers];
 }
 
 - (void)deleteUser:(FPUser *)user
-      asynchronous:(BOOL)asynchronous
            timeout:(NSInteger)timeout
    remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
       authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
- completionHandler:(PELMRemoteMasterCompletionHandler)complHandler
-queueForCompletionHandler:(dispatch_queue_t)queue {
+ completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
   [_relationExecutor
     doDeleteOfTargetResource:[FPRestRemoteMasterDao resourceFromModel:user]
-                asynchronous:asynchronous
-             completionQueue:queue
+                asynchronous:YES
+             completionQueue:_serialQueue
                authorization:[self authorization]
                      success:[self newDeleteSuccessBlk:complHandler]
                  redirection:[self newRedirectionBlk:complHandler]

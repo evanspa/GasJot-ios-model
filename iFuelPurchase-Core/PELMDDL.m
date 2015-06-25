@@ -27,7 +27,6 @@ NSString * const COL_MST_DELETED_DT = @"deleted_date";
 NSString * const COL_MAN_MASTER_UPDATED_AT = @"master_updated_at";
 NSString * const COL_MAN_DT_COPIED_DOWN_FROM_MASTER = @"date_copied_down_from_master";
 NSString * const COL_MAN_EDIT_IN_PROGRESS = @"edit_in_progress";
-NSString * const COL_MAN_EDIT_ACTOR_ID = @"edit_actor_id";
 NSString * const COL_MAN_SYNC_IN_PROGRESS = @"sync_in_progress";
 NSString * const COL_MAN_SYNCED = @"synced";
 NSString * const COL_MAN_IN_CONFLICT = @"in_conflict";
@@ -38,6 +37,18 @@ NSString * const COL_MAN_SYNC_ERR_MASK = @"sync_http_resp_err_mask";
 NSString * const COL_MAN_SYNC_RETRY_AT = @"sync_http_resp_retry_at";
 // ----Common table names-------------------------------------------------------
 NSString * const TBLSUFFIX_RELATION_ENTITY = @"_rel";
+
+//##############################################################################
+// User Entity (main and master)
+//##############################################################################
+// ----Table names--------------------------------------------------------------
+NSString * const TBL_MASTER_USER = @"master_user";
+NSString * const TBL_MAIN_USER = @"main_user";
+// ----Columns------------------------------------------------------------------
+NSString * const COL_USR_NAME = @"name";
+NSString * const COL_USR_EMAIL = @"email";
+NSString * const COL_USR_USERNAME = @"username";
+NSString * const COL_USR_PASSWORD_HASH = @"password_hash";
 
 @implementation PELMDDL
 

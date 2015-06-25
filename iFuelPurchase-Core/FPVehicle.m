@@ -9,7 +9,6 @@
 #import "FPVehicle.h"
 #import <PEObjc-Commons/PEUtils.h>
 #import "FPDDLUtils.h"
-#import "FPNotificationNames.h"
 
 @implementation FPVehicle
 
@@ -24,7 +23,6 @@
                         updatedAt:(NSDate *)updatedAt
              dateCopiedFromMaster:(NSDate *)dateCopiedFromMaster
                    editInProgress:(BOOL)editInProgress
-                      editActorId:(NSNumber *)editActorId
                    syncInProgress:(BOOL)syncInProgress
                            synced:(BOOL)synced
                        inConflict:(BOOL)inConflict
@@ -47,7 +45,6 @@
                                   updatedAt:updatedAt
                        dateCopiedFromMaster:dateCopiedFromMaster
                              editInProgress:editInProgress
-                                editActorId:editActorId
                              syncInProgress:syncInProgress
                                      synced:synced
                                  inConflict:inConflict
@@ -76,7 +73,6 @@
                                                          updatedAt:[self updatedAt]
                                               dateCopiedFromMaster:[self dateCopiedFromMaster]
                                                     editInProgress:[self editInProgress]
-                                                       editActorId:[self editActorId]
                                                     syncInProgress:[self syncInProgress]
                                                             synced:[self synced]
                                                         inConflict:[self inConflict]
@@ -122,7 +118,6 @@
                                               updatedAt:updatedAt
                                    dateCopiedFromMaster:nil
                                          editInProgress:NO
-                                            editActorId:nil
                                          syncInProgress:NO
                                                  synced:NO
                                              inConflict:NO
@@ -146,7 +141,6 @@
                                               updatedAt:nil
                                    dateCopiedFromMaster:nil
                                          editInProgress:NO
-                                            editActorId:nil
                                          syncInProgress:NO
                                                  synced:NO
                                              inConflict:NO

@@ -33,8 +33,7 @@
 
 #pragma mark - System related
 
-- (void)pruneAllSyncedEntitiesWithError:(PELMDaoErrorBlk)errorBlk
-                       systemPruneCount:(NSInteger)systemFlushCount;
+- (void)pruneAllSyncedEntitiesWithError:(PELMDaoErrorBlk)errorBlk;
 
 - (void)globalCancelSyncInProgressWithError:(PELMDaoErrorBlk)error;
 
@@ -65,52 +64,41 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
 - (FPUser *)userWithError:(PELMDaoErrorBlk)errorBlk;
 
 - (BOOL)prepareUserForEdit:(FPUser *)user
-               editActorId:(NSNumber *)editActorId
          entityBeingSynced:(void(^)(void))entityBeingSyncedBlk
              entityDeleted:(void(^)(void))entityDeletedBlk
           entityInConflict:(void(^)(void))entityInConflictBlk
-entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActorBlk
                      error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)saveUser:(FPUser *)user
-     editActorId:(NSNumber *)editActorId
            error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)markAsDoneEditingImmediateSyncUser:(FPUser *)user
-                               editActorId:(NSNumber *)editActorId
                                      error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)markAsDoneEditingUser:(FPUser *)user
-                  editActorId:(NSNumber *)editActorId
                         error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)reloadUser:(FPUser *)user
              error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)cancelEditOfUser:(FPUser *)user
-             editActorId:(NSNumber *)editActorId
                    error:(PELMDaoErrorBlk)errorBlk;
 
-- (void)markAsDeletedUser:(FPUser *)user
-              editActorId:(NSNumber *)editActorId
-                    error:(PELMDaoErrorBlk)errorBlk;
+- (void)markAsDeletedImmediateSyncUser:(FPUser *)user
+                                 error:(PELMDaoErrorBlk)errorBlk;
 
-- (FPUser *)markUserAsSyncInProgressWithEditActorId:(NSNumber *)editActorId
-                                              error:(PELMDaoErrorBlk)errorBlk;
+- (FPUser *)markUserAsSyncInProgressWithError:(PELMDaoErrorBlk)errorBlk;
 
 - (void)cancelSyncForUser:(FPUser *)user
              httpRespCode:(NSNumber *)httpRespCode
                 errorMask:(NSNumber *)errorMask
                   retryAt:(NSDate *)retryAt
-              editActorId:(NSNumber *)editActorId
                     error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)markAsInConflictForUser:(FPUser *)user
-                    editActorId:(NSNumber *)editActorId
                           error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)markAsSyncCompleteForUser:(FPUser *)user
-                      editActorId:(NSNumber *)editActorId
                             error:(PELMDaoErrorBlk)errorBlk;
 
 #pragma mark - Vehicle
@@ -138,58 +126,46 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
 
 - (BOOL)prepareVehicleForEdit:(FPVehicle *)vehicle
                       forUser:(FPUser *)user
-                  editActorId:(NSNumber *)editActorId
             entityBeingSynced:(void(^)(void))entityBeingSyncedBlk
                 entityDeleted:(void(^)(void))entityDeletedBlk
              entityInConflict:(void(^)(void))entityInConflictBlk
-entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActorBlk
                         error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)saveVehicle:(FPVehicle *)vehicle
-        editActorId:(NSNumber *)editActorId
               error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)markAsDoneEditingVehicle:(FPVehicle *)vehicle
-                     editActorId:(NSNumber *)editActorId
                            error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)markAsDoneEditingImmediateSyncVehicle:(FPVehicle *)vehicle
-                                  editActorId:(NSNumber *)editActorId
                                         error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)reloadVehicle:(FPVehicle *)vehicle
                 error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)cancelEditOfVehicle:(FPVehicle *)vehicle
-                editActorId:(NSNumber *)editActorId
                       error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)markAsDeletedVehicle:(FPVehicle *)vehicle
-                 editActorId:(NSNumber *)editActorId
                        error:(PELMDaoErrorBlk)errorBlk;
 
 - (NSArray *)markVehiclesAsSyncInProgressForUser:(FPUser *)user
-                                     editActorId:(NSNumber *)editActorId
                                            error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)cancelSyncForVehicle:(FPVehicle *)vehicle
                 httpRespCode:(NSNumber *)httpRespCode
                    errorMask:(NSNumber *)errorMask
                      retryAt:(NSDate *)retryAt
-                 editActorId:(NSNumber *)editActorId
                        error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)markAsInConflictForVehicle:(FPVehicle *)vehicle
-                       editActorId:(NSNumber *)editActorId
                              error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)markAsSyncCompleteForNewVehicle:(FPVehicle *)vehicle
                                 forUser:(FPUser *)user
-                            editActorId:(NSNumber *)editActorId
                                   error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)markAsSyncCompleteForUpdatedVehicle:(FPVehicle *)vehicle
-                                editActorId:(NSNumber *)editActorId
                                       error:(PELMDaoErrorBlk)errorBlk;
 
 #pragma mark - Fuel Station
@@ -217,62 +193,46 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
 
 - (BOOL)prepareFuelStationForEdit:(FPFuelStation *)fuelStation
                           forUser:(FPUser *)user
-                      editActorId:(NSNumber *)editActorId
                 entityBeingSynced:(void(^)(void))entityBeingSyncedBlk
                     entityDeleted:(void(^)(void))entityDeletedBlk
                  entityInConflict:(void(^)(void))entityInConflictBlk
-    entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActorBlk
                             error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)saveFuelStation:(FPFuelStation *)fuelStation
-            editActorId:(NSNumber *)editActorId
                   error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)markAsDoneEditingFuelStation:(FPFuelStation *)fuelStation
-                         editActorId:(NSNumber *)editActorId
                                error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)markAsDoneEditingImmediateSyncFuelStation:(FPFuelStation *)fuelStation
-                                      editActorId:(NSNumber *)editActorId
                                             error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)reloadFuelStation:(FPFuelStation *)fuelStation
                     error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)cancelEditOfFuelStation:(FPFuelStation *)fuelStation
-                    editActorId:(NSNumber *)editActorId
                           error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)markAsDeletedFuelStation:(FPFuelStation *)fuelStation
-                     editActorId:(NSNumber *)editActorId
                            error:(PELMDaoErrorBlk)errorBlk;
 
 - (NSArray *)markFuelStationsAsSyncInProgressForUser:(FPUser *)user
-                                         editActorId:(NSNumber *)editActorId
                                                error:(PELMDaoErrorBlk)errorBlk;
-
-- (NSArray *)markFuelStationsAsCoordinateComputeForUser:(FPUser *)user
-                                            editActorId:(NSNumber *)editActorId                                      
-                                                  error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)cancelSyncForFuelStation:(FPFuelStation *)fuelStation
                     httpRespCode:(NSNumber *)httpRespCode
                        errorMask:(NSNumber *)errorMask
                          retryAt:(NSDate *)retryAt
-                     editActorId:(NSNumber *)editActorId
                            error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)markAsInConflictForFuelStation:(FPFuelStation *)fuelStation
-                           editActorId:(NSNumber *)editActorId
                                  error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)markAsSyncCompleteForNewFuelStation:(FPFuelStation *)fuelStation
                                     forUser:(FPUser *)user
-                                editActorId:(NSNumber *)editActorId
                                       error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)markAsSyncCompleteForUpdatedFuelStation:(FPFuelStation *)fuelStation
-                                    editActorId:(NSNumber *)editActorId
                                           error:(PELMDaoErrorBlk)errorBlk;
 
 #pragma mark - Fuel Purchase Log
@@ -356,61 +316,49 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
 
 - (BOOL)prepareFuelPurchaseLogForEdit:(FPFuelPurchaseLog *)fuelPurchaseLog
                               forUser:(FPUser *)user
-                          editActorId:(NSNumber *)editActorId
                     entityBeingSynced:(void(^)(void))entityBeingSyncedBlk
                         entityDeleted:(void(^)(void))entityDeletedBlk
                      entityInConflict:(void(^)(void))entityInConflictBlk
-        entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActorBlk
                                 error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)saveFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
                     forUser:(FPUser *)user
                     vehicle:(FPVehicle *)vehicle
                 fuelStation:(FPFuelStation *)fuelStation
-                editActorId:(NSNumber *)editActorId
                       error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)markAsDoneEditingFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
-                             editActorId:(NSNumber *)editActorId
                                    error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)markAsDoneEditingImmediateSyncFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
-                                          editActorId:(NSNumber *)editActorId
                                                 error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)reloadFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
                         error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)cancelEditOfFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
-                        editActorId:(NSNumber *)editActorId
                               error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)markAsDeletedFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
-                         editActorId:(NSNumber *)editActorId
                                error:(PELMDaoErrorBlk)errorBlk;
 
 - (NSArray *)markFuelPurchaseLogsAsSyncInProgressForUser:(FPUser *)user
-                                             editActorId:(NSNumber *)editActorId
                                                    error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)cancelSyncForFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
                         httpRespCode:(NSNumber *)httpRespCode
                            errorMask:(NSNumber *)errorMask
                              retryAt:(NSDate *)retryAt
-                         editActorId:(NSNumber *)editActorId
                                error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)markAsInConflictForFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
-                               editActorId:(NSNumber *)editActorId
                                      error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)markAsSyncCompleteForNewFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
                                         forUser:(FPUser *)user
-                                    editActorId:(NSNumber *)editActorId
                                           error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)markAsSyncCompleteForUpdatedFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
-                                        editActorId:(NSNumber *)editActorId
                                               error:(PELMDaoErrorBlk)errorBlk;
 
 #pragma mark - Environment Log
@@ -469,60 +417,48 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
 
 - (BOOL)prepareEnvironmentLogForEdit:(FPEnvironmentLog *)environmentLog
                              forUser:(FPUser *)user
-                         editActorId:(NSNumber *)editActorId
                    entityBeingSynced:(void(^)(void))entityBeingSyncedBlk
                        entityDeleted:(void(^)(void))entityDeletedBlk
                     entityInConflict:(void(^)(void))entityInConflictBlk
-       entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActorBlk
                                error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)saveEnvironmentLog:(FPEnvironmentLog *)environmentLog
                    forUser:(FPUser *)user
                    vehicle:(FPVehicle *)vehicle
-               editActorId:(NSNumber *)editActorId
                      error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)markAsDoneEditingEnvironmentLog:(FPEnvironmentLog *)environmentLog
-                            editActorId:(NSNumber *)editActorId
                                   error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)markAsDoneEditingImmediateSyncEnvironmentLog:(FPEnvironmentLog *)environmentLog
-                                         editActorId:(NSNumber *)editActorId
                                                error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)reloadEnvironmentLog:(FPEnvironmentLog *)environmentLog
                        error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)cancelEditOfEnvironmentLog:(FPEnvironmentLog *)environmentLog
-                       editActorId:(NSNumber *)editActorId
                              error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)markAsDeletedEnvironmentLog:(FPEnvironmentLog *)environmentLog
-                        editActorId:(NSNumber *)editActorId
                               error:(PELMDaoErrorBlk)errorBlk;
 
 - (NSArray *)markEnvironmentLogsAsSyncInProgressForUser:(FPUser *)user
-                                            editActorId:(NSNumber *)editActorId
                                                   error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)cancelSyncForEnvironmentLog:(FPEnvironmentLog *)environmentLog
                        httpRespCode:(NSNumber *)httpRespCode
                           errorMask:(NSNumber *)errorMask
                             retryAt:(NSDate *)retryAt
-                        editActorId:(NSNumber *)editActorId
                               error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)markAsInConflictForEnvironmentLog:(FPEnvironmentLog *)environmentLog
-                              editActorId:(NSNumber *)editActorId
                                     error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)markAsSyncCompleteForNewEnvironmentLog:(FPEnvironmentLog *)environmentLog
                                        forUser:(FPUser *)user
-                                   editActorId:(NSNumber *)editActorId
                                          error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)markAsSyncCompleteForUpdatedEnvironmentLog:(FPEnvironmentLog *)environmentLog
-                                       editActorId:(NSNumber *)editActorId
                                              error:(PELMDaoErrorBlk)errorBlk;
 
 #pragma mark - Cascade Deletion

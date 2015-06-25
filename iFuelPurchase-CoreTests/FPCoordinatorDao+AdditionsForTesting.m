@@ -8,7 +8,6 @@
 
 #import "FPCoordinatorDao+AdditionsForTesting.h"
 #import <CocoaLumberjack/DDLog.h>
-#import "FPNotificationNames.h"
 #import "FPCoordDaoTestContext.h"
 #import "FPLogging.h"
 
@@ -16,22 +15,6 @@
 
 - (void)deleteAllUsers:(PELMDaoErrorBlk)errorBlk {
   [[self localDao] deleteAllUsers:errorBlk];
-}
-
-- (void)asynchronousWorkSynchronously:(PELMDaoErrorBlk)errorBlk {
-  if ([self authToken]) {
-    PELMRemoteMasterBusyBlk remoteStoreBusyBlk = ^(NSDate *retryAfter) {};
-    //[self synchronousComputeOfFuelStationCoordinates];
-    [self flushToRemoteMasterWithEditActorId:@(FPBackgroundActorId)
-                          remoteStoreBusyBlk:remoteStoreBusyBlk
-                                       error:errorBlk];
-    [[self localDao] pruneAllSyncedEntitiesWithError:errorBlk
-                                    systemPruneCount:1];
-    [[NSNotificationCenter defaultCenter] postNotificationName:FPSystemPruningComplete
-                                                        object:nil];
-  } else {
-    DDLogDebug(@"Skipping asynchronous-synchronously flush to remote master due to having a nil authentication token.");
-  }
 }
 
 @end

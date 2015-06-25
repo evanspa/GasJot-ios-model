@@ -14,7 +14,6 @@
 #import <PEObjc-Commons/PEUtils.h>
 #import "FPUser.h"
 #import "FPVehicle.h"
-#import "FPNotificationNames.h"
 #import "FPDDLUtils.h"
 #import "FPToggler.h"
 #import "FPCoordDaoTestContext.h"
@@ -26,7 +25,6 @@ __block FPCoordDaoTestContext *_coordTestCtx;
 __block FPCoordinatorDao *_coordDao;
 __block FPCoordTestingNumEntitiesComputer _numEntitiesBlk;
 __block FPCoordTestingMocker _mocker;
-__block FPCoordTestingFlusher _flusher;
 __block FPCoordTestingObserver _observer;
 
 describe(@"FPCoordinatorDao", ^{
@@ -40,12 +38,10 @@ describe(@"FPCoordinatorDao", ^{
     [_coordDao deleteAllUsers:^(NSError *error, int code, NSString *msg) { [_coordTestCtx setErrorDeletingUser:YES]; }];
     _numEntitiesBlk = [_coordTestCtx newNumEntitiesComputerWithCoordDao:_coordDao];
     _mocker = [_coordTestCtx newMocker];
-    _flusher = [_coordTestCtx newFlusherWithCoordDao:_coordDao];
     _observer = [_coordTestCtx newObserver];
   });
   
   afterAll(^{
-    [_coordTestCtx stopTimerForAsyncWork];
   });
 
   context(@"Tests", ^{
@@ -89,46 +85,23 @@ describe(@"FPCoordinatorDao", ^{
       _mocker(@"http-response.vehicles.POST.201", 0, 0);
       _mocker(@"http-response.fuelstations.POST.201", 0, 0);
       _mocker(@"http-response.fplogs.POST.201", 0, 0);
-      //FPToggler *sysPruneObserver = _observer(@[FPSystemPruningComplete]);
-      FPToggler *vehSyncedObserver = _observer(@[FPVehicleSynced]);
-      FPToggler *fuelStationSyncedObserver = _observer(@[FPFuelStationSynced]);
-      FPToggler *fplogSyncedObserver = _observer(@[FPFuelPurchaseLogSynced]);
-      _flusher(0.0); // flush to master, prune and pause
+      __block float overallFlushProgress = 0.0;
+      __block NSInteger totalSynced = 0;
+      NSInteger totalNumToSync = [_coordDao flushAllUnsyncedEditsToRemoteForUser:user
+                                                                      successBlk:^(float progress) {
+                                                                        overallFlushProgress += progress;
+                                                                        totalSynced++;
+                                                                      }
+                                                              remoteStoreBusyBlk:nil
+                                                              tempRemoteErrorBlk:nil
+                                                                  remoteErrorBlk:nil
+                                                                 authRequiredBlk:nil
+                                                                           error:nil];
+      [[theValue(totalNumToSync) should] equal:theValue(3)];
+      [[expectFutureValue(theValue(totalSynced)) shouldEventuallyBeforeTimingOutAfter(5)] equal:theValue(3)];
+      [[theValue(overallFlushProgress) should] equal:theValue(1.0)];
       [_coordDao pruneAllSyncedEntitiesWithError:[_coordTestCtx newLocalSaveErrBlkMaker]()];
-      //[[expectFutureValue(theValue([sysPruneObserver observedCount])) shouldEventuallyBeforeTimingOutAfter(5)] equal:theValue(1)];
-      [[expectFutureValue(theValue([vehSyncedObserver observedCount])) shouldEventuallyBeforeTimingOutAfter(5)] beGreaterThanOrEqualTo:theValue(1)];
-      [[expectFutureValue(theValue([fuelStationSyncedObserver observedCount])) shouldEventuallyBeforeTimingOutAfter(5)] beGreaterThanOrEqualTo:theValue(1)];
-      // vehicle synced but NOT pruned (because child FP-log instance couldn't be pruned)
-      [[_numEntitiesBlk(TBL_MAIN_VEHICLE) should] equal:[NSNumber numberWithInt:1]]; // not pruned
-      [[_numEntitiesBlk(TBL_MASTER_VEHICLE) should] equal:[NSNumber numberWithInt:1]]; // synced
-      // fuel station synced but NOT pruned (because child FP-log instance cound't be pruned)
-      [[_numEntitiesBlk(TBL_MAIN_FUEL_STATION) should] equal:[NSNumber numberWithInt:1]]; // not pruned
-      [[_numEntitiesBlk(TBL_MASTER_FUEL_STATION) should] equal:[NSNumber numberWithInt:1]]; // synced
-      // fuel purchase log NOT synced because vehicle and fuel station's hadn't
-      // synced yet (yes - even through the req/resp latencies are set to 0,
-      // their completion blocks will not have executed yet), and therefore also
-      // counldn't get pruned.
-      [[_numEntitiesBlk(TBL_MAIN_FUELPURCHASE_LOG) should] equal:[NSNumber numberWithInt:1]]; // not pruned
-      [[_numEntitiesBlk(TBL_MASTER_FUELPURCHASE_LOG) should] equal:[NSNumber numberWithInt:0]]; // not synced
-      // just to be safe, we'll sleep for 2 seconds and will then issue another
-      // flush job.
-      _flusher(0.0); // flush to master, pause
-      [[expectFutureValue(theValue([fplogSyncedObserver observedCount])) shouldEventuallyBeforeTimingOutAfter(5)] beGreaterThanOrEqualTo:theValue(1)];
-      // at this point, the FP-log will get synced
-      [[_numEntitiesBlk(TBL_MAIN_VEHICLE) should] equal:[NSNumber numberWithInt:1]]; // not pruned
-      [[_numEntitiesBlk(TBL_MASTER_VEHICLE) should] equal:[NSNumber numberWithInt:1]]; // synced
-      [[_numEntitiesBlk(TBL_MAIN_FUEL_STATION) should] equal:[NSNumber numberWithInt:1]]; // not pruned
-      [[_numEntitiesBlk(TBL_MASTER_FUEL_STATION) should] equal:[NSNumber numberWithInt:1]]; // sycned
-      [[_numEntitiesBlk(TBL_MAIN_FUELPURCHASE_LOG) should] equal:[NSNumber numberWithInt:1]]; // not pruned
-      [[_numEntitiesBlk(TBL_MASTER_FUELPURCHASE_LOG) should] equal:[NSNumber numberWithInt:1]]; // synced
-      // just to be safe, we'll sleep for 2 seconds and will then issue another
-      // flush/prune job.
-      _flusher(0.0); // flush to master, prune and pause
-      [_coordDao pruneAllSyncedEntitiesWithError:[_coordTestCtx newLocalSaveErrBlkMaker]()];
-      [_coordDao pruneAllSyncedEntitiesWithError:[_coordTestCtx newLocalSaveErrBlkMaker]()];
-      [_coordDao pruneAllSyncedEntitiesWithError:[_coordTestCtx newLocalSaveErrBlkMaker]()];
-      //[[expectFutureValue(theValue([sysPruneObserver observedCount])) shouldEventuallyBeforeTimingOutAfter(5)] equal:theValue(3)];
-      // Now everything will have been pruned.
+      // Now everything will have been synced and pruned.
       [[_numEntitiesBlk(TBL_MAIN_USER) should] equal:[NSNumber numberWithInt:0]]; // pruned
       [[_numEntitiesBlk(TBL_MASTER_USER) should] equal:[NSNumber numberWithInt:1]]; // synced
       [[_numEntitiesBlk(TBL_MAIN_VEHICLE) should] equal:[NSNumber numberWithInt:0]]; // pruned
@@ -151,11 +124,9 @@ describe(@"FPCoordinatorDao", ^{
       BOOL prepareForEditSuccess =
         [_coordDao prepareFuelPurchaseLogForEdit:fplog
                                          forUser:user
-                                     editActorId:@(FPForegroundActorId)
                                entityBeingSynced:[_coordTestCtx entityBeingSyncedBlk]
                                    entityDeleted:[_coordTestCtx entityDeletedBlk]
                                 entityInConflict:[_coordTestCtx entityInConflictBlk]
-                   entityBeingEditedByOtherActor:[_coordTestCtx entityBeingEditedByOtherActorBlk]
                                            error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[theValue(prepareForEditSuccess) should] beYes];
       [[theValue([_coordTestCtx prepareForEditEntityBeingSynced]) should] beNo];

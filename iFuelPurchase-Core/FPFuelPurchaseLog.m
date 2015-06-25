@@ -9,7 +9,6 @@
 #import <PEObjc-Commons/PEUtils.h>
 #import "FPFuelPurchaseLog.h"
 #import "FPDDLUtils.h"
-#import "FPNotificationNames.h"
 
 @implementation FPFuelPurchaseLog
 
@@ -24,7 +23,6 @@
                      updatedAt:(NSDate *)updatedAt
              dateCopiedFromMaster:(NSDate *)dateCopiedFromMaster
                    editInProgress:(BOOL)editInProgress
-                      editActorId:(NSNumber *)editActorId
                    syncInProgress:(BOOL)syncInProgress
                            synced:(BOOL)synced
                        inConflict:(BOOL)inConflict
@@ -33,8 +31,8 @@
                  syncHttpRespCode:(NSNumber *)syncHttpRespCode
                       syncErrMask:(NSNumber *)syncErrMask
                       syncRetryAt:(NSDate *)syncRetryAt
-          vehicleGlobalIdentifier:(NSString *)vehicleGlobalIdentifier
-      fuelStationGlobalIdentifier:(NSString *)fuelStationGlobalIdentifier
+            vehicleMainIdentifier:(NSNumber *)vehicleMainIdentifier
+        fuelStationMainIdentifier:(NSNumber *)fuelStationMainIdentifier
                        numGallons:(NSDecimalNumber *)numGallons
                            octane:(NSNumber *)octane
                       gallonPrice:(NSDecimalNumber *)gallonPrice
@@ -52,7 +50,6 @@
                                   updatedAt:updatedAt
                        dateCopiedFromMaster:dateCopiedFromMaster
                              editInProgress:editInProgress
-                                editActorId:editActorId
                              syncInProgress:syncInProgress
                                      synced:synced
                                  inConflict:inConflict
@@ -62,8 +59,8 @@
                                 syncErrMask:syncErrMask
                                 syncRetryAt:syncRetryAt];
   if (self) {
-    _vehicleGlobalIdentifier = vehicleGlobalIdentifier;
-    _fuelStationGlobalIdentifier = fuelStationGlobalIdentifier;
+    _vehicleMainIdentifier = vehicleMainIdentifier;
+    _fuelStationMainIdentifier = fuelStationMainIdentifier;
     _numGallons = numGallons;
     _gallonPrice = gallonPrice;
     _octane = octane;
@@ -86,7 +83,6 @@
                                                                          updatedAt:[self updatedAt]
                                                               dateCopiedFromMaster:[self dateCopiedFromMaster]
                                                                     editInProgress:[self editInProgress]
-                                                                       editActorId:[self editActorId]
                                                                     syncInProgress:[self syncInProgress]
                                                                             synced:[self synced]
                                                                         inConflict:[self inConflict]
@@ -95,8 +91,8 @@
                                                                   syncHttpRespCode:[self syncHttpRespCode]
                                                                        syncErrMask:[self syncErrMask]
                                                                        syncRetryAt:[self syncRetryAt]
-                                                           vehicleGlobalIdentifier:_vehicleGlobalIdentifier
-                                                       fuelStationGlobalIdentifier:_fuelStationGlobalIdentifier
+                                                           vehicleMainIdentifier:_vehicleMainIdentifier
+                                                       fuelStationMainIdentifier:_fuelStationMainIdentifier
                                                                         numGallons:_numGallons
                                                                             octane:_octane
                                                                        gallonPrice:_gallonPrice
@@ -146,7 +142,6 @@
                                                       updatedAt:updatedAt
                                            dateCopiedFromMaster:nil
                                                  editInProgress:NO
-                                                    editActorId:nil
                                                  syncInProgress:NO
                                                          synced:NO
                                                      inConflict:NO
@@ -155,8 +150,8 @@
                                                syncHttpRespCode:nil
                                                     syncErrMask:nil
                                                     syncRetryAt:nil
-                                        vehicleGlobalIdentifier:nil
-                                    fuelStationGlobalIdentifier:nil
+                                        vehicleMainIdentifier:nil
+                                    fuelStationMainIdentifier:nil
                                                      numGallons:numGallons
                                                          octane:octane
                                                     gallonPrice:gallonPrice

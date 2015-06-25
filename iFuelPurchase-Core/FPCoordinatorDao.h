@@ -61,8 +61,6 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
       environmentLogResMtVersion:(NSString *)environmentLogResMtVersion
       remoteSyncConflictDelegate:(id<FPRemoteStoreSyncConflictDelegate>)conflictDelegate
                authTokenDelegate:(id<FPAuthTokenDelegate>)authTokenDelegate
- errorBlkForBackgroundProcessing:(PELMDaoErrorBlk)bgProcessingErrorBlk
-                   bgEditActorId:(NSNumber *)bgEditActorId
         allowInvalidCertificates:(BOOL)allowInvalidCertifications;
 
 #pragma mark - Initialize Local Database
@@ -75,30 +73,23 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
 
 @property (nonatomic, readonly) FPLocalDao *localDao;
 
-@property (nonatomic) NSUInteger flushToRemoteMasterCount;
-
-@property (nonatomic) NSUInteger systemPruneCount;
-
-@property (nonatomic) BOOL includeUserInBackgroundFlush;
-
-#pragma mark - Flushing to Remote Master and other Background Work
-
-// by definition, this can only be invoked by the 'background' edit actor ID
-// (supplied to coordDao's initializer)
-- (void)asynchronousWork:(NSTimer *)timer;
-
-- (void)flushToRemoteMasterWithEditActorId:(NSNumber *)editActorId
-                        remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
-                                     error:(PELMDaoErrorBlk)errorBlk;
-
-- (void)computeOfFuelStationCoordsWithEditActorId:(NSNumber *)editActorId
-                                            error:(PELMDaoErrorBlk)error;
+#pragma mark - Pruning
 
 - (void)pruneAllSyncedEntitiesWithError:(PELMDaoErrorBlk)errorBlk;
 
 #pragma mark - System
 
 - (void)globalCancelSyncInProgressWithError:(PELMDaoErrorBlk)error;
+
+#pragma mark - Flushing to Remote Master
+
+- (NSInteger)flushAllUnsyncedEditsToRemoteForUser:(FPUser *)user
+                                       successBlk:(void(^)(float))successBlk
+                               remoteStoreBusyBlk:(void(^)(float, NSDate *))remoteStoreBusyBlk
+                               tempRemoteErrorBlk:(void(^)(float))tempRemoteErrorBlk
+                                   remoteErrorBlk:(void(^)(float, NSInteger))remoteErrorBlk
+                                  authRequiredBlk:(void(^)(float))authRequiredBlk
+                                            error:(PELMDaoErrorBlk)errorBlk;
 
 #pragma mark - User
 
@@ -136,19 +127,15 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
            localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler;
 
 - (BOOL)prepareUserForEdit:(FPUser *)user
-               editActorId:(NSNumber *)editActorId
          entityBeingSynced:(void(^)(void))entityBeingSyncedBlk
              entityDeleted:(void(^)(void))entityDeletedBlk
           entityInConflict:(void(^)(void))entityInConflictBlk
-entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActorBlk
                      error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)saveUser:(FPUser *)user
-     editActorId:(NSNumber *)editActorId
            error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)markAsDoneEditingAndSyncUserImmediate:(FPUser *)user
-                                  editActorId:(NSNumber *)editActorId
                                    successBlk:(void(^)(void))successBlk
                            remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
                            tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk
@@ -156,20 +143,19 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                               authRequiredBlk:(void(^)(void))authRequiredBlk
                                         error:(PELMDaoErrorBlk)errorBlk;
 
-- (void)markAsDoneEditingUser:(FPUser *)user
-                  editActorId:(NSNumber *)editActorId
-                        error:(PELMDaoErrorBlk)errorBlk;
-
 - (void)reloadUser:(FPUser *)user
              error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)cancelEditOfUser:(FPUser *)user
-             editActorId:(NSNumber *)editActorId
                    error:(PELMDaoErrorBlk)errorBlk;
 
-- (void)markAsDeletedUser:(FPUser *)user
-              editActorId:(NSNumber *)editActorId
-                    error:(PELMDaoErrorBlk)errorBlk;
+- (void)markAsDeletedAndSyncUserImmediate:(FPUser *)user
+                               successBlk:(void(^)(void))successBlk
+                       remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
+                       tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk
+                           remoteErrorBlk:(void(^)(NSInteger))remoteErrorBlk
+                          authRequiredBlk:(void(^)(void))authRequiredBlk
+                                    error:(PELMDaoErrorBlk)errorBlk;
 
 #pragma mark - Vehicle
 
@@ -201,24 +187,19 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
 
 - (BOOL)prepareVehicleForEdit:(FPVehicle *)vehicle
                       forUser:(FPUser *)user
-                  editActorId:(NSNumber *)editActorId
             entityBeingSynced:(void(^)(void))entityBeingSyncedBlk
                 entityDeleted:(void(^)(void))entityDeletedBlk
              entityInConflict:(void(^)(void))entityInConflictBlk
-entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActorBlk
                         error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)saveVehicle:(FPVehicle *)vehicle
-        editActorId:(NSNumber *)editActorId
               error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)markAsDoneEditingVehicle:(FPVehicle *)vehicle
-                     editActorId:(NSNumber *)editActorId
                            error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)markAsDoneEditingAndSyncVehicleImmediate:(FPVehicle *)vehicle
                                          forUser:(FPUser *)user
-                                     editActorId:(NSNumber *)editActorId
                                       successBlk:(void(^)(void))successBlk
                               remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
                               tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk
@@ -230,11 +211,9 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                 error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)cancelEditOfVehicle:(FPVehicle *)vehicle
-                editActorId:(NSNumber *)editActorId
                       error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)markAsDeletedVehicle:(FPVehicle *)vehicle
-                 editActorId:(NSNumber *)editActorId
                        error:(PELMDaoErrorBlk)errorBlk;
 
 #pragma mark - Fuel Station
@@ -271,24 +250,19 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
 
 - (BOOL)prepareFuelStationForEdit:(FPFuelStation *)fuelStation
                           forUser:(FPUser *)user
-                      editActorId:(NSNumber *)editActorId
                 entityBeingSynced:(void(^)(void))entityBeingSyncedBlk
                     entityDeleted:(void(^)(void))entityDeletedBlk
                  entityInConflict:(void(^)(void))entityInConflictBlk
-    entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActorBlk
                             error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)saveFuelStation:(FPFuelStation *)fuelStation
-            editActorId:(NSNumber *)editActorId
                   error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)markAsDoneEditingFuelStation:(FPFuelStation *)fuelStation
-                         editActorId:(NSNumber *)editActorId
                                error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)markAsDoneEditingAndSyncFuelStationImmediate:(FPFuelStation *)fuelStation
                                              forUser:(FPUser *)user
-                                         editActorId:(NSNumber *)editActorId
                                           successBlk:(void(^)(void))successBlk
                                   remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
                                   tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk
@@ -300,11 +274,9 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                     error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)cancelEditOfFuelStation:(FPFuelStation *)fuelStation
-                    editActorId:(NSNumber *)editActorId
                           error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)markAsDeletedFuelStation:(FPFuelStation *)fuelStation
-                     editActorId:(NSNumber *)editActorId
                            error:(PELMDaoErrorBlk)errorBlk;
 
 #pragma mark - Fuel Purchase Log
@@ -396,27 +368,22 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
 
 - (BOOL)prepareFuelPurchaseLogForEdit:(FPFuelPurchaseLog *)fuelPurchaseLog
                               forUser:(FPUser *)user
-                          editActorId:(NSNumber *)editActorId
                     entityBeingSynced:(void(^)(void))entityBeingSyncedBlk
                         entityDeleted:(void(^)(void))entityDeletedBlk
                      entityInConflict:(void(^)(void))entityInConflictBlk
-        entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActorBlk
                                 error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)saveFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
                     forUser:(FPUser *)user
                     vehicle:(FPVehicle *)vehicle
                 fuelStation:(FPFuelStation *)fuelStation
-                editActorId:(NSNumber *)editActorId
                       error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)markAsDoneEditingFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
-                             editActorId:(NSNumber *)editActorId
                                    error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)markAsDoneEditingAndSyncFuelPurchaseLogImmediate:(FPFuelPurchaseLog *)fuelPurchaseLog
                                                  forUser:(FPUser *)user
-                                             editActorId:(NSNumber *)editActorId
                                               successBlk:(void(^)(void))successBlk
                                       remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
                                       tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk
@@ -428,11 +395,9 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                         error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)cancelEditOfFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
-                        editActorId:(NSNumber *)editActorId
                               error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)markAsDeletedFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
-                         editActorId:(NSNumber *)editActorId
                                error:(PELMDaoErrorBlk)errorBlk;
 
 #pragma mark - Environment Log
@@ -499,26 +464,21 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
 
 - (BOOL)prepareEnvironmentLogForEdit:(FPEnvironmentLog *)envLog
                              forUser:(FPUser *)user
-                         editActorId:(NSNumber *)editActorId
                    entityBeingSynced:(void(^)(void))entityBeingSyncedBlk
                        entityDeleted:(void(^)(void))entityDeletedBlk
                     entityInConflict:(void(^)(void))entityInConflictBlk
-       entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActorBlk
                                error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)saveEnvironmentLog:(FPEnvironmentLog *)envLog
                    forUser:(FPUser *)user
                    vehicle:(FPVehicle *)vehicle
-               editActorId:(NSNumber *)editActorId
                      error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)markAsDoneEditingEnvironmentLog:(FPEnvironmentLog *)envLog
-                            editActorId:(NSNumber *)editActorId
                                   error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)markAsDoneEditingAndSyncEnvironmentLogImmediate:(FPEnvironmentLog *)envLog
                                                 forUser:(FPUser *)user
-                                            editActorId:(NSNumber *)editActorId
                                              successBlk:(void(^)(void))successBlk
                                      remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
                                      tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk
@@ -530,11 +490,9 @@ entityBeingEditedByOtherActor:(void(^)(NSNumber *))entityBeingEditedByOtherActor
                        error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)cancelEditOfEnvironmentLog:(FPEnvironmentLog *)envLog
-                       editActorId:(NSNumber *)editActorId
                              error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)markAsDeletedEnvironmentLog:(FPEnvironmentLog *)envLog
-                        editActorId:(NSNumber *)editActorId
                               error:(PELMDaoErrorBlk)errorBlk;
 
 @end

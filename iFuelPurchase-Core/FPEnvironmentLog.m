@@ -9,7 +9,6 @@
 #import <PEObjc-Commons/PEUtils.h>
 #import "FPEnvironmentLog.h"
 #import "FPDDLUtils.h"
-#import "FPNotificationNames.h"
 
 @implementation FPEnvironmentLog
 
@@ -24,7 +23,6 @@
                         updatedAt:(NSDate *)updatedAt
              dateCopiedFromMaster:(NSDate *)dateCopiedFromMaster
                    editInProgress:(BOOL)editInProgress
-                      editActorId:(NSNumber *)editActorId
                    syncInProgress:(BOOL)syncInProgress
                            synced:(BOOL)synced
                        inConflict:(BOOL)inConflict
@@ -33,7 +31,7 @@
                  syncHttpRespCode:(NSNumber *)syncHttpRespCode
                       syncErrMask:(NSNumber *)syncErrMask
                       syncRetryAt:(NSDate *)syncRetryAt
-          vehicleGlobalIdentifier:(NSString *)vehicleGlobalIdentifier
+            vehicleMainIdentifier:(NSNumber *)vehicleMainIdentifier
                          odometer:(NSDecimalNumber *)odometer
                    reportedAvgMpg:(NSDecimalNumber *)reportedAvgMpg
                    reportedAvgMph:(NSDecimalNumber *)reportedAvgMph
@@ -51,7 +49,6 @@
                                   updatedAt:updatedAt
                        dateCopiedFromMaster:dateCopiedFromMaster
                              editInProgress:editInProgress
-                                editActorId:editActorId
                              syncInProgress:syncInProgress
                                      synced:synced
                                  inConflict:inConflict
@@ -61,7 +58,7 @@
                                 syncErrMask:syncErrMask
                                 syncRetryAt:syncRetryAt];
   if (self) {
-    _vehicleGlobalIdentifier = vehicleGlobalIdentifier;
+    _vehicleMainIdentifier = vehicleMainIdentifier;
     _odometer = odometer;
     _reportedAvgMpg = reportedAvgMpg;
     _reportedAvgMph = reportedAvgMph;
@@ -84,7 +81,6 @@
                                                                        updatedAt:[self updatedAt]
                                                             dateCopiedFromMaster:[self dateCopiedFromMaster]
                                                                   editInProgress:[self editInProgress]
-                                                                     editActorId:[self editActorId]
                                                                   syncInProgress:[self syncInProgress]
                                                                           synced:[self synced]
                                                                       inConflict:[self inConflict]
@@ -93,7 +89,7 @@
                                                                 syncHttpRespCode:[self syncHttpRespCode]
                                                                      syncErrMask:[self syncErrMask]
                                                                      syncRetryAt:[self syncRetryAt]
-                                                         vehicleGlobalIdentifier:_vehicleGlobalIdentifier
+                                                         vehicleMainIdentifier:_vehicleMainIdentifier
                                                                         odometer:_odometer
                                                                   reportedAvgMpg:_reportedAvgMpg
                                                                   reportedAvgMph:_reportedAvgMph
@@ -143,7 +139,6 @@
                                                      updatedAt:updatedAt
                                           dateCopiedFromMaster:nil
                                                 editInProgress:NO
-                                                   editActorId:nil
                                                 syncInProgress:NO
                                                         synced:NO
                                                     inConflict:NO
@@ -152,7 +147,7 @@
                                               syncHttpRespCode:nil
                                                    syncErrMask:nil
                                                    syncRetryAt:nil
-                                       vehicleGlobalIdentifier:nil
+                                       vehicleMainIdentifier:nil
                                                       odometer:odometer
                                                 reportedAvgMpg:reportedAvgMpg
                                                 reportedAvgMph:reportedAvgMph

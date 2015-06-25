@@ -24,10 +24,6 @@ typedef FPToggler * (^FPCoordTestingObserver)(NSArray *);
 typedef void (^FPCoordTestingExpectedNumberOfEntitiesAsserter)(FPCoordinatorDao *, NSString *, int);
 typedef NSNumber *(^FPCoordTestingNumEntitiesComputer)(NSString *);
 typedef void (^FPCoordTestingMocker)(NSString *, NSInteger, NSInteger);
-typedef void (^FPCoordTestingFlusher)(NSInteger);
-
-FOUNDATION_EXPORT NSInteger const FPBackgroundActorId;
-FOUNDATION_EXPORT NSInteger const FPForegroundActorId;
 
 @interface FPCoordDaoTestContext : NSObject
 
@@ -53,7 +49,6 @@ FOUNDATION_EXPORT NSInteger const FPForegroundActorId;
 
 #pragma mark - Test Helpers
 
-- (FPCoordTestingFlusher)newFlusherWithCoordDao:(FPCoordinatorDao *)coordDao;
 - (FPCoordTestingMocker)newMocker;
 - (FPCoordTestingNumEntitiesComputer)newNumEntitiesComputerWithCoordDao:(FPCoordinatorDao *)coordDao;
 - (FPCoordTestingErrLogger)newErrLogger;
@@ -66,16 +61,11 @@ FOUNDATION_EXPORT NSInteger const FPForegroundActorId;
 - (void(^)(void))entityBeingSyncedBlk;
 - (void(^)(void))entityDeletedBlk;
 - (void(^)(void))entityInConflictBlk;
-- (void(^)(NSNumber *))entityBeingEditedByOtherActorBlk;
 
 - (FPCoordTestingNumValueFetcher)newNumValueFetcher;
 - (FPCoordTestingFreshUserMaker)newFreshUserMaker;
 - (FPCoordTestingFreshJoeSmithMaker)newFreshJoeSmithMaker;
 - (FPCoordTestingObserver)newObserver;
-
-- (void)stopTimerForAsyncWork;
-- (void)startTimerForAsyncWorkWithInterval:(NSInteger)timerInterval
-                                  coordDao:(FPCoordinatorDao *)coordDao;
 
 - (FPCoordinatorDao *)newStoreCoord;
 

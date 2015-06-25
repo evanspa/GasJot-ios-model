@@ -25,143 +25,111 @@
 
 - (void)saveNewVehicle:(FPVehicle *)vehicle
                forUser:(FPUser *)user
-          asynchronous:(BOOL)asynchronous
                timeout:(NSInteger)timeout
        remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
           authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
-     completionHandler:(PELMRemoteMasterCompletionHandler)complHandler
-queueForCompletionHandler:(dispatch_queue_t)queue;
+     completionHandler:(PELMRemoteMasterCompletionHandler)complHandler;
 
 - (void)saveExistingVehicle:(FPVehicle *)vehicle
-               asynchronous:(BOOL)asynchronous
                     timeout:(NSInteger)timeout
             remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
-          completionHandler:(PELMRemoteMasterCompletionHandler)complHandler
-  queueForCompletionHandler:(dispatch_queue_t)queue;
+          completionHandler:(PELMRemoteMasterCompletionHandler)complHandler;
 
 - (void)deleteVehicle:(FPVehicle *)vehicle
-         asynchronous:(BOOL)asynchronous
               timeout:(NSInteger)timeout
       remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
          authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
-    completionHandler:(PELMRemoteMasterCompletionHandler)complHandler
-queueForCompletionHandler:(dispatch_queue_t)queue;
+    completionHandler:(PELMRemoteMasterCompletionHandler)complHandler;
 
 #pragma mark - Fuel Station Operations
 
 - (void)saveNewFuelStation:(FPFuelStation *)fuelStation
                    forUser:(FPUser *)user
-              asynchronous:(BOOL)asynchronous
                    timeout:(NSInteger)timeout
            remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
               authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
-         completionHandler:(PELMRemoteMasterCompletionHandler)complHandler
- queueForCompletionHandler:(dispatch_queue_t)queue;
+         completionHandler:(PELMRemoteMasterCompletionHandler)complHandler;
 
 - (void)saveExistingFuelStation:(FPFuelStation *)fuelStation
-                   asynchronous:(BOOL)asynchronous
                         timeout:(NSInteger)timeout
                 remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                    authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
-              completionHandler:(PELMRemoteMasterCompletionHandler)complHandler
-      queueForCompletionHandler:(dispatch_queue_t)queue;
+              completionHandler:(PELMRemoteMasterCompletionHandler)complHandler;
 
 - (void)deleteFuelStation:(FPFuelStation *)fuelStation
-             asynchronous:(BOOL)asynchronous
                   timeout:(NSInteger)timeout
           remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
              authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
-        completionHandler:(PELMRemoteMasterCompletionHandler)complHandler
-queueForCompletionHandler:(dispatch_queue_t)queue;
+        completionHandler:(PELMRemoteMasterCompletionHandler)complHandler;
 
 #pragma mark - Fuel Purchase Log Operations
 
 - (void)saveNewFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
                        forUser:(FPUser *)user
-                  asynchronous:(BOOL)asynchronous
                        timeout:(NSInteger)timeout
                remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                   authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
-             completionHandler:(PELMRemoteMasterCompletionHandler)complHandler
-     queueForCompletionHandler:(dispatch_queue_t)queue;
+             completionHandler:(PELMRemoteMasterCompletionHandler)complHandler;
 
 - (void)saveExistingFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
-                       asynchronous:(BOOL)asynchronous
                             timeout:(NSInteger)timeout
                     remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                        authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
-                  completionHandler:(PELMRemoteMasterCompletionHandler)complHandler
-          queueForCompletionHandler:(dispatch_queue_t)queue;
+                  completionHandler:(PELMRemoteMasterCompletionHandler)complHandler;
 
 - (void)deleteFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
-                 asynchronous:(BOOL)asynchronous
                       timeout:(NSInteger)timeout
               remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                  authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
-            completionHandler:(PELMRemoteMasterCompletionHandler)complHandler
-    queueForCompletionHandler:(dispatch_queue_t)queue;
+            completionHandler:(PELMRemoteMasterCompletionHandler)complHandler;
 
 #pragma mark - Environment Log Operations
 
 - (void)saveNewEnvironmentLog:(FPEnvironmentLog *)fuelPurchaseLog
                       forUser:(FPUser *)user
-                 asynchronous:(BOOL)asynchronous
                       timeout:(NSInteger)timeout
               remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                  authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
-            completionHandler:(PELMRemoteMasterCompletionHandler)complHandler
-    queueForCompletionHandler:(dispatch_queue_t)queue;
+            completionHandler:(PELMRemoteMasterCompletionHandler)complHandler;
 
 - (void)saveExistingEnvironmentLog:(FPEnvironmentLog *)fuelPurchaseLog
-                      asynchronous:(BOOL)asynchronous
                            timeout:(NSInteger)timeout
                    remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                       authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
-                 completionHandler:(PELMRemoteMasterCompletionHandler)complHandler
-         queueForCompletionHandler:(dispatch_queue_t)queue;
+                 completionHandler:(PELMRemoteMasterCompletionHandler)complHandler;
 
 - (void)deleteEnvironmentLog:(FPEnvironmentLog *)fuelPurchaseLog
-                asynchronous:(BOOL)asynchronous
                      timeout:(NSInteger)timeout
              remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                 authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
-           completionHandler:(PELMRemoteMasterCompletionHandler)complHandler
-   queueForCompletionHandler:(dispatch_queue_t)queue;
+           completionHandler:(PELMRemoteMasterCompletionHandler)complHandler;
 
 #pragma mark - User Operations
 
 - (void)establishAccountForUser:(FPUser *)user
-                   asynchronous:(BOOL)asynchronous
                         timeout:(NSInteger)timeout
                 remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                    authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
-              completionHandler:(PELMRemoteMasterCompletionHandler)complHandler
-      queueForCompletionHandler:(dispatch_queue_t)queue;
+              completionHandler:(PELMRemoteMasterCompletionHandler)complHandler;
 
 - (void)saveExistingUser:(FPUser *)user
-            asynchronous:(BOOL)asynchronous
                  timeout:(NSInteger)timeout
          remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
             authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
-       completionHandler:(PELMRemoteMasterCompletionHandler)complHandler
-queueForCompletionHandler:(dispatch_queue_t)queue;
+       completionHandler:(PELMRemoteMasterCompletionHandler)complHandler;
 
 - (void)loginWithUsernameOrEmail:(NSString *)usernameOrEmail
                         password:(NSString *)password
-                    asynchronous:(BOOL)asynchronous
                          timeout:(NSInteger)timeout
                  remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                     authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
-               completionHandler:(PELMRemoteMasterCompletionHandler)complHandler
-       queueForCompletionHandler:(dispatch_queue_t)queue;
+               completionHandler:(PELMRemoteMasterCompletionHandler)complHandler;
 
 - (void)deleteUser:(FPUser *)user
-      asynchronous:(BOOL)asynchronous
            timeout:(NSInteger)timeout
    remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
       authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
- completionHandler:(PELMRemoteMasterCompletionHandler)complHandler
-queueForCompletionHandler:(dispatch_queue_t)queue;
+ completionHandler:(PELMRemoteMasterCompletionHandler)complHandler;
 
 @end

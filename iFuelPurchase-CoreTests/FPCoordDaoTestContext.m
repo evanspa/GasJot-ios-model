@@ -18,9 +18,6 @@
 #import "FPCoordinatorDao+AdditionsForTesting.h"
 #import "FPLogging.h"
 
-NSInteger const FPBackgroundActorId = 0;
-NSInteger const FPForegroundActorId = 1;
-
 @implementation FPCoordDaoTestContext {
   __block BOOL _authTokenReceived;
   __block BOOL _authRequired;
@@ -55,13 +52,6 @@ NSInteger const FPForegroundActorId = 1;
 }
 
 #pragma mark - Test Helpers
-
-- (FPCoordTestingFlusher)newFlusherWithCoordDao:(FPCoordinatorDao *)coordDao {
-  return ^(NSInteger waitInterval) {
-    [coordDao asynchronousWorkSynchronously:[self newLocalFetchErrBlkMaker]()];
-    [NSThread sleepForTimeInterval:waitInterval];
-  };
-}
 
 - (FPCoordTestingMocker)newMocker {
   return ^(NSString *mockResponseFile, NSInteger reqLatency, NSInteger respLatency) {
@@ -159,13 +149,6 @@ NSInteger const FPForegroundActorId = 1;
   };
 }
 
-- (void(^)(NSNumber *))entityBeingEditedByOtherActorBlk {
-  return ^(NSNumber *otherActorId) {
-    _prepareForEditEntityBeingEditedByOtherActor = YES;
-    _prepareForEditEntityBeingEditedByOtherActorId = otherActorId;
-  };
-}
-
 - (FPCoordTestingNumValueFetcher)newNumValueFetcher {
   return ^NSNumber *(FPCoordinatorDao *coordDao, NSString *table, NSString *selectColumn, NSNumber *keyValue) {
     return [[[coordDao localDao]
@@ -234,21 +217,6 @@ NSInteger const FPForegroundActorId = 1;
   };
 }
 
-- (void)stopTimerForAsyncWork {
-  [PEUtils stopTimer:_timerForAsyncWork];
-}
-
-- (void)startTimerForAsyncWorkWithInterval:(NSInteger)timerInterval
-                                  coordDao:(FPCoordinatorDao *)coordDao {
-  _timerForAsyncWork =
-    [PEUtils startNewTimerWithTargetObject:coordDao
-                                  selector:@selector(asynchronousWork:)
-                                  interval:timerInterval
-                                  oldTimer:_timerForAsyncWork];
-  [coordDao setSystemPruneCount:0];
-  [coordDao setFlushToRemoteMasterCount:0];
-}
-
 - (FPCoordinatorDao *)newStoreCoord {
   NSURL *localSqlLiteDataFileUrl =
   [_testBundle URLForResource:@"sqlite-datafile-for-testing"
@@ -288,8 +256,6 @@ NSInteger const FPForegroundActorId = 1;
                                    environmentLogResMtVersion:@"0.0.1"                                        
                                    remoteSyncConflictDelegate:nil
                                             authTokenDelegate:authTokenDelegate
-                              errorBlkForBackgroundProcessing:[self newLocalFetchErrBlkMaker]()
-                                                bgEditActorId:@(FPBackgroundActorId)
                                      allowInvalidCertificates:NO];
   [coordDao initializeLocalDatabaseWithError:[self newLocalSaveErrBlkMaker]()];
   return coordDao;

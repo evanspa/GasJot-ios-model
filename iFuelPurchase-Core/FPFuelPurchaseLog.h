@@ -22,7 +22,6 @@
                         updatedAt:(NSDate *)updatedAt
              dateCopiedFromMaster:(NSDate *)dateCopiedFromMaster
                    editInProgress:(BOOL)editInProgress
-                      editActorId:(NSNumber *)editActorId
                    syncInProgress:(BOOL)syncInProgress
                            synced:(BOOL)synced
                        inConflict:(BOOL)inConflict
@@ -31,8 +30,8 @@
                  syncHttpRespCode:(NSNumber *)syncHttpRespCode
                       syncErrMask:(NSNumber *)syncErrMask
                       syncRetryAt:(NSDate *)syncRetryAt
-          vehicleGlobalIdentifier:(NSString *)vehicleGlobalIdentifier
-      fuelStationGlobalIdentifier:(NSString *)fuelStationGlobalIdentifier
+            vehicleMainIdentifier:(NSNumber *)vehicleMainIdentifier
+        fuelStationMainIdentifier:(NSNumber *)fuelStationMainIdentifier
                        numGallons:(NSDecimalNumber *)numGallons
                            octane:(NSNumber *)octane
                       gallonPrice:(NSDecimalNumber *)gallonPrice
@@ -67,9 +66,9 @@
 
 #pragma mark - Properties
 
-@property (nonatomic) NSString *vehicleGlobalIdentifier;
+@property (nonatomic) NSNumber *vehicleMainIdentifier;
 
-@property (nonatomic) NSString *fuelStationGlobalIdentifier;
+@property (nonatomic) NSNumber *fuelStationMainIdentifier;
 
 @property (nonatomic) NSDecimalNumber *numGallons;
 

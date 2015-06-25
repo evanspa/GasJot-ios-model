@@ -9,15 +9,11 @@
 #import "FPUser.h"
 #import <PEObjc-Commons/PEUtils.h>
 #import "FPDDLUtils.h"
-#import "FPNotificationNames.h"
 
-NSString * const FPUsersRelation = @"users";
-NSString * const FPLoginRelation = @"login";
 NSString * const FPVehiclesRelation = @"vehicles";
 NSString * const FPFuelStationsRelation = @"fuelstations";
 NSString * const FPFuelPurchaseLogsRelation = @"fuelpurchase-logs";
 NSString * const FPEnvironmentLogsRelation = @"environment-logs";
-NSString * const FPAppTransactionSetRelation = @"apptxnset";
 
 @implementation FPUser {
   NSMutableArray *_vehicles;
@@ -34,10 +30,9 @@ NSString * const FPAppTransactionSetRelation = @"apptxnset";
                         mediaType:(HCMediaType *)mediaType
                         relations:(NSDictionary *)relations
                       deletedDate:(NSDate *)deletedDate
-                     updatedAt:(NSDate *)updatedAt
+                        updatedAt:(NSDate *)updatedAt
              dateCopiedFromMaster:(NSDate *)dateCopiedFromMaster
                    editInProgress:(BOOL)editInProgress
-                      editActorId:(NSNumber *)editActorId
                    syncInProgress:(BOOL)syncInProgress
                            synced:(BOOL)synced
                        inConflict:(BOOL)inConflict
@@ -53,15 +48,12 @@ NSString * const FPAppTransactionSetRelation = @"apptxnset";
   self = [super initWithLocalMainIdentifier:localMainIdentifier
                       localMasterIdentifier:localMasterIdentifier
                            globalIdentifier:globalIdentifier
-                            mainEntityTable:TBL_MAIN_USER
-                          masterEntityTable:TBL_MASTER_USER
                                   mediaType:mediaType
                                   relations:relations
                                 deletedDate:deletedDate
-                               updatedAt:updatedAt
+                                  updatedAt:updatedAt
                        dateCopiedFromMaster:dateCopiedFromMaster
                              editInProgress:editInProgress
-                                editActorId:editActorId
                              syncInProgress:syncInProgress
                                      synced:synced
                                  inConflict:inConflict
@@ -69,12 +61,12 @@ NSString * const FPAppTransactionSetRelation = @"apptxnset";
                                   editCount:editCount
                            syncHttpRespCode:syncHttpRespCode
                                 syncErrMask:syncErrMask
-                                syncRetryAt:syncRetryAt];
+                                syncRetryAt:syncRetryAt
+                                       name:name
+                                      email:email
+                                   username:username
+                                   password:password];
   if (self) {
-    _name = name;
-    _email = email;
-    _username = username;
-    _password = password;
     _vehicles = [NSMutableArray array];
     _fuelStations = [NSMutableArray array];
     _fuelPurchaseLogs = [NSMutableArray array];
@@ -95,7 +87,6 @@ NSString * const FPAppTransactionSetRelation = @"apptxnset";
                                                    updatedAt:[self updatedAt]
                                         dateCopiedFromMaster:[self dateCopiedFromMaster]
                                               editInProgress:[self editInProgress]
-                                                 editActorId:[self editActorId]
                                               syncInProgress:[self syncInProgress]
                                                       synced:[self synced]
                                                   inConflict:[self inConflict]
@@ -104,10 +95,10 @@ NSString * const FPAppTransactionSetRelation = @"apptxnset";
                                             syncHttpRespCode:[self syncHttpRespCode]
                                                  syncErrMask:[self syncErrMask]
                                                  syncRetryAt:[self syncRetryAt]
-                                                        name:_name
-                                                       email:_email
-                                                    username:_username
-                                                    password:_password];
+                                                        name:[self name]
+                                                       email:[self email]
+                                                    username:[self username]
+                                                    password:[self password]];
   return copy;
 }
 
@@ -135,7 +126,7 @@ NSString * const FPAppTransactionSetRelation = @"apptxnset";
         globalIdentifier:(NSString *)globalIdentifier
                mediaType:(HCMediaType *)mediaType
                relations:(NSDictionary *)relations
-            updatedAt:(NSDate *)updatedAt {
+               updatedAt:(NSDate *)updatedAt {
   return [[FPUser alloc] initWithLocalMainIdentifier:nil
                                localMasterIdentifier:nil
                                     globalIdentifier:globalIdentifier
@@ -145,7 +136,6 @@ NSString * const FPAppTransactionSetRelation = @"apptxnset";
                                            updatedAt:updatedAt
                                 dateCopiedFromMaster:nil
                                       editInProgress:NO
-                                         editActorId:nil
                                       syncInProgress:NO
                                               synced:NO
                                           inConflict:NO
@@ -161,14 +151,6 @@ NSString * const FPAppTransactionSetRelation = @"apptxnset";
 }
 
 #pragma mark - Methods
-
-- (void)overwrite:(FPUser *)user {
-  [super overwrite:user];
-  [self setName:[user name]];
-  [self setEmail:[user email]];
-  [self setPassword:[user password]];
-  [self setUsername:[user username]];
-}
 
 - (void)addVehicle:(FPVehicle *)vehicle {
   [_vehicles addObject:vehicle];
@@ -202,13 +184,6 @@ NSString * const FPAppTransactionSetRelation = @"apptxnset";
   return _environmentLogs;
 }
 
-- (NSString *)usernameOrEmail {
-  if (!([self username] == (id)[NSNull null] || [self username].length == 0)) {
-    return [self username];
-  }
-  return [self email];
-}
-
 #pragma mark - Known Relation Names
 
 + (NSString *)vehiclesRelation {
@@ -217,42 +192,6 @@ NSString * const FPAppTransactionSetRelation = @"apptxnset";
 
 + (NSString *)fuelStationsRelation {
   return FPFuelStationsRelation;
-}
-
-#pragma mark - Equality
-
-- (BOOL)isEqualToUser:(FPUser *)user {
-  if (!user) { return NO; }
-  if ([super isEqualToMainSupport:user]) {
-    return [PEUtils isString:[self name] equalTo:[user name]] &&
-      [PEUtils isString:[self email] equalTo:[user email]] &&
-      [PEUtils isString:[self username] equalTo:[user username]] &&
-      [PEUtils isString:[self password] equalTo:[user password]];
-  }
-  return NO;
-}
-
-#pragma mark - NSObject
-
-- (BOOL)isEqual:(id)object {
-  if (self == object) { return YES; }
-  if (![object isKindOfClass:[FPUser class]]) { return NO; }
-  return [self isEqualToUser:object];
-}
-
-- (NSUInteger)hash {
-  return [super hash] ^
-    [[self name] hash] ^
-    [[self email] hash] ^
-    [[self username] hash] ^
-    [[self password] hash];
-}
-
-- (NSString *)description {
-  return [NSString stringWithFormat:@"%@, name: [%@], email: [%@], \
-username: [%@], password: [%@]",
-          [super description],
-          _name, _email, _username, _password];
 }
 
 @end

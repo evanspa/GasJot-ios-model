@@ -23,7 +23,6 @@
                         updatedAt:(NSDate *)updatedAt
              dateCopiedFromMaster:(NSDate *)dateCopiedFromMaster
                    editInProgress:(BOOL)editInProgress
-                      editActorId:(NSNumber *)editActorId
                    syncInProgress:(BOOL)syncInProgress
                            synced:(BOOL)synced
                        inConflict:(BOOL)inConflict
@@ -40,8 +39,6 @@
 #pragma mark - Properties
 
 @property (nonatomic) NSDate *dateCopiedFromMaster;
-
-@property (nonatomic) NSNumber *editActorId;
 
 @property (nonatomic) BOOL editInProgress;
 

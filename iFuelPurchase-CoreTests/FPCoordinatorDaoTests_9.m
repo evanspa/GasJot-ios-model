@@ -14,7 +14,6 @@
 #import <PEObjc-Commons/PEUtils.h>
 #import "FPUser.h"
 #import "FPVehicle.h"
-#import "FPNotificationNames.h"
 #import "FPDDLUtils.h"
 #import "FPToggler.h"
 #import "FPCoordDaoTestContext.h"
@@ -26,7 +25,6 @@ __block FPCoordDaoTestContext *_coordTestCtx;
 __block FPCoordinatorDao *_coordDao;
 __block FPCoordTestingNumEntitiesComputer _numEntitiesBlk;
 __block FPCoordTestingMocker _mocker;
-__block FPCoordTestingFlusher _flusher;
 __block FPCoordTestingObserver _observer;
 
 describe(@"FPCoordinatorDao", ^{
@@ -40,12 +38,10 @@ describe(@"FPCoordinatorDao", ^{
     [_coordDao deleteAllUsers:^(NSError *error, int code, NSString *msg) { [_coordTestCtx setErrorDeletingUser:YES]; }];
     _numEntitiesBlk = [_coordTestCtx newNumEntitiesComputerWithCoordDao:_coordDao];
     _mocker = [_coordTestCtx newMocker];
-    _flusher = [_coordTestCtx newFlusherWithCoordDao:_coordDao];
     _observer = [_coordTestCtx newObserver];
   });
   
   afterAll(^{
-    [_coordTestCtx stopTimerForAsyncWork];
   });
   
   context(@"Tests", ^{
@@ -55,11 +51,9 @@ describe(@"FPCoordinatorDao", ^{
       });
       BOOL prepareForEditSuccess =
         [_coordDao prepareUserForEdit:user
-                          editActorId:@(FPForegroundActorId)
                     entityBeingSynced:[_coordTestCtx entityBeingSyncedBlk]
                         entityDeleted:[_coordTestCtx entityDeletedBlk]
                      entityInConflict:[_coordTestCtx entityInConflictBlk]
-        entityBeingEditedByOtherActor:[_coordTestCtx entityBeingEditedByOtherActorBlk]
                                 error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[theValue(prepareForEditSuccess) should] beYes];
       [[theValue([_coordTestCtx prepareForEditEntityBeingSynced]) should] beNo];
@@ -68,31 +62,33 @@ describe(@"FPCoordinatorDao", ^{
       [[theValue([_coordTestCtx prepareForEditEntityBeingEditedByOtherActor]) should] beNo];
       [user setName:@"Paul Evans"];
       [user setEmail:@"paul.evans@example.com"];
-      [_coordDao markAsDoneEditingUser:user
-                           editActorId:@(FPForegroundActorId)
-                                 error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+      _mocker(@"http-response.user.PUT.204", 0, 0);
+      __block BOOL syncUserSuccess = NO;
+      [_coordDao markAsDoneEditingAndSyncUserImmediate:user
+                                            successBlk:^{
+                                              syncUserSuccess = YES;
+                                            }
+                                    remoteStoreBusyBlk:nil
+                                    tempRemoteErrorBlk:nil
+                                        remoteErrorBlk:nil
+                                       authRequiredBlk:nil
+                                                 error:nil];
+      [[expectFutureValue(theValue(syncUserSuccess)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
       FPVehicle *vehicle = [_coordDao vehicleWithName:@"My Bimmer" defaultOctane:@87 fuelCapacity:[NSDecimalNumber decimalNumberWithString:@"20.5"]];
       [_coordDao saveNewVehicle:vehicle forUser:user error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
-      // the following will prevent syncing w/remote master on first timer fire
+      // the following will prevent syncing w/remote master on subsquent sync-attempt
       prepareForEditSuccess =
         [_coordDao prepareVehicleForEdit:vehicle
                                  forUser:user
-                             editActorId:@(FPForegroundActorId)
                        entityBeingSynced:[_coordTestCtx entityBeingSyncedBlk]
                            entityDeleted:[_coordTestCtx entityDeletedBlk]
                         entityInConflict:[_coordTestCtx entityInConflictBlk]
-           entityBeingEditedByOtherActor:[_coordTestCtx entityBeingEditedByOtherActorBlk]
                                    error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[theValue(prepareForEditSuccess) should] beYes];
       [[theValue([_coordTestCtx prepareForEditEntityBeingSynced]) should] beNo];
       [[theValue([_coordTestCtx prepareForEditEntityDeleted]) should] beNo];
       [[theValue([_coordTestCtx prepareForEditEntityInConflict]) should] beNo];
       [[theValue([_coordTestCtx prepareForEditEntityBeingEditedByOtherActor]) should] beNo];
-      _mocker(@"http-response.user.PUT.204", 0, 0);
-      FPToggler *userSyncCompleteToggler = _observer(@[FPUserSynced]);
-      [_coordTestCtx startTimerForAsyncWorkWithInterval:1 coordDao:_coordDao];
-      [[expectFutureValue(theValue([userSyncCompleteToggler observedCount]))
-        shouldEventuallyBeforeTimingOutAfter(60)] beGreaterThanOrEqualTo:theValue(1)];
       user = [[_coordDao localDao] mainUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
       [user shouldNotBeNil]; // user not pruned from main because vehicle (child) is in main_vehicle
       [[theValue([user synced]) should] beYes];
@@ -104,13 +100,25 @@ describe(@"FPCoordinatorDao", ^{
       // now  lets put HTTP system into a state such that a vehicle-POST will
       // be successful, and then mark 'editComplete' for the vehicle.
       [_coordDao markAsDoneEditingVehicle:vehicle
-                              editActorId:@(FPForegroundActorId)
                                     error:[_coordTestCtx newLocalSaveErrBlkMaker]()]; // should now get synced/pruned on next timer fire
       _mocker(@"http-response.vehicles.POST.201", 0, 0);
       [[_numEntitiesBlk(TBL_MAIN_VEHICLE) should] equal:[NSNumber numberWithInt:1]];
       [[_numEntitiesBlk(TBL_MASTER_VEHICLE) should] equal:[NSNumber numberWithInt:0]]; // not synced
-      FPToggler *vehicleSyncedToggler = _observer(@[FPVehicleSynced]);
-      [[expectFutureValue(theValue([vehicleSyncedToggler value])) shouldEventuallyBeforeTimingOutAfter(60)] beYes];
+      __block float overallFlushProgress = 0.0;
+      __block NSInteger totalSynced = 0;
+      NSInteger totalNumToSync = [_coordDao flushAllUnsyncedEditsToRemoteForUser:user
+                                                                      successBlk:^(float progress) {
+                                                                        overallFlushProgress += progress;
+                                                                        totalSynced++;
+                                                                      }
+                                                              remoteStoreBusyBlk:nil
+                                                              tempRemoteErrorBlk:nil
+                                                                  remoteErrorBlk:nil
+                                                                 authRequiredBlk:nil
+                                                                           error:nil];
+      [[theValue(totalNumToSync) should] equal:theValue(1)];
+      [[expectFutureValue(theValue(totalSynced)) shouldEventuallyBeforeTimingOutAfter(5)] equal:theValue(1)];
+      [[theValue(overallFlushProgress) should] equal:theValue(1.0)];
       [[_numEntitiesBlk(TBL_MAIN_VEHICLE) should] equal:[NSNumber numberWithInt:1]]; // not pruned
       [[_numEntitiesBlk(TBL_MASTER_VEHICLE) should] equal:[NSNumber numberWithInt:1]]; // synced
       

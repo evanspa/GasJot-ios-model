@@ -27,7 +27,6 @@ FOUNDATION_EXPORT NSString * const COL_MST_DELETED_DT;
 FOUNDATION_EXPORT NSString * const COL_MAN_MASTER_UPDATED_AT;
 FOUNDATION_EXPORT NSString * const COL_MAN_DT_COPIED_DOWN_FROM_MASTER;
 FOUNDATION_EXPORT NSString * const COL_MAN_EDIT_IN_PROGRESS;
-FOUNDATION_EXPORT NSString * const COL_MAN_EDIT_ACTOR_ID;
 FOUNDATION_EXPORT NSString * const COL_MAN_SYNC_IN_PROGRESS;
 FOUNDATION_EXPORT NSString * const COL_MAN_SYNCED;
 FOUNDATION_EXPORT NSString * const COL_MAN_IN_CONFLICT;
@@ -38,6 +37,18 @@ FOUNDATION_EXPORT NSString * const COL_MAN_SYNC_ERR_MASK;
 FOUNDATION_EXPORT NSString * const COL_MAN_SYNC_RETRY_AT;
 // ----Common table names-------------------------------------------------------
 FOUNDATION_EXPORT NSString * const TBLSUFFIX_RELATION_ENTITY;
+
+//##############################################################################
+// User Entity (main and master)
+//##############################################################################
+// ----Table names--------------------------------------------------------------
+FOUNDATION_EXPORT NSString * const TBL_MASTER_USER;
+FOUNDATION_EXPORT NSString * const TBL_MAIN_USER;
+// ----Columns------------------------------------------------------------------
+FOUNDATION_EXPORT NSString * const COL_USR_NAME;
+FOUNDATION_EXPORT NSString * const COL_USR_EMAIL;
+FOUNDATION_EXPORT NSString * const COL_USR_USERNAME;
+FOUNDATION_EXPORT NSString * const COL_USR_PASSWORD_HASH;
 
 @interface PELMDDL : NSObject
 

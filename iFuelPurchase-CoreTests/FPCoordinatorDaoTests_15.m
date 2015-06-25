@@ -14,7 +14,6 @@
 #import <PEObjc-Commons/PEUtils.h>
 #import "FPUser.h"
 #import "FPVehicle.h"
-#import "FPNotificationNames.h"
 #import "FPDDLUtils.h"
 #import "FPToggler.h"
 #import "FPCoordDaoTestContext.h"
@@ -26,7 +25,6 @@ __block FPCoordDaoTestContext *_coordTestCtx;
 __block FPCoordinatorDao *_coordDao;
 __block FPCoordTestingNumEntitiesComputer _numEntitiesBlk;
 __block FPCoordTestingMocker _mocker;
-__block FPCoordTestingFlusher _flusher;
 
 describe(@"FPCoordinatorDao", ^{
   
@@ -39,11 +37,9 @@ describe(@"FPCoordinatorDao", ^{
     [_coordDao deleteAllUsers:^(NSError *error, int code, NSString *msg) { [_coordTestCtx setErrorDeletingUser:YES]; }];
     _numEntitiesBlk = [_coordTestCtx newNumEntitiesComputerWithCoordDao:_coordDao];
     _mocker = [_coordTestCtx newMocker];
-    _flusher = [_coordTestCtx newFlusherWithCoordDao:_coordDao];
   });
   
   afterAll(^{
-    [_coordTestCtx stopTimerForAsyncWork];
   });
 
   context(@"Tests", ^{
@@ -98,9 +94,30 @@ describe(@"FPCoordinatorDao", ^{
       [[fplogs should] haveCountOf:2];
       _mocker(@"http-response.vehicles.POST.201", 0, 0);
       _mocker(@"http-response.fuelstations.POST.201", 0, 0);
-      _mocker(@"http-response.fplogs.POST.500", 0, 0);
-      _flusher(5.0); // flush to master, prune and pause
-      [[_numEntitiesBlk(TBL_MAIN_VEHICLE) should] equal:[NSNumber numberWithInt:1]]; // not pruned
+      _mocker(@"http-response.fplogs.POST.500", 0, 0);            
+      __block float overallFlushProgress = 0.0;
+      __block NSInteger totalSynced = 0;
+      __block NSInteger totalSyncAttempts = 0;
+      NSInteger totalNumToSync = [_coordDao flushAllUnsyncedEditsToRemoteForUser:user
+                                                                      successBlk:^(float progress) {
+                                                                        overallFlushProgress += progress;
+                                                                        totalSynced++;
+                                                                        totalSyncAttempts++;
+                                                                      }
+                                                              remoteStoreBusyBlk:nil
+                                                              tempRemoteErrorBlk:^(float progress) {
+                                                                overallFlushProgress += progress;
+                                                                totalSyncAttempts++;
+                                                              }
+                                                                  remoteErrorBlk:nil
+                                                                 authRequiredBlk:nil
+                                                                           error:nil];
+      [[theValue(totalNumToSync) should] equal:theValue(4)];
+      [[expectFutureValue(theValue(totalSyncAttempts)) shouldEventuallyBeforeTimingOutAfter(5)] equal:theValue(4)];
+      [[theValue(totalSynced) should] equal:theValue(2)];
+      [[theValue(overallFlushProgress) should] equal:theValue(1.0)];
+      [_coordDao pruneAllSyncedEntitiesWithError:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+      [[_numEntitiesBlk(TBL_MAIN_VEHICLE) should] equal:[NSNumber numberWithInt:1]]; // not pruned (because child main fp-logs still exist)
       [[_numEntitiesBlk(TBL_MASTER_VEHICLE) should] equal:[NSNumber numberWithInt:1]]; // synced
       [[_numEntitiesBlk(TBL_MAIN_FUEL_STATION) should] equal:[NSNumber numberWithInt:1]]; // not pruned
       [[_numEntitiesBlk(TBL_MASTER_FUEL_STATION) should] equal:[NSNumber numberWithInt:1]]; // sycned

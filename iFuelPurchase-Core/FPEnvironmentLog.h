@@ -22,7 +22,6 @@
                         updatedAt:(NSDate *)updatedAt
              dateCopiedFromMaster:(NSDate *)dateCopiedFromMaster
                    editInProgress:(BOOL)editInProgress
-                      editActorId:(NSNumber *)editActorId
                    syncInProgress:(BOOL)syncInProgress
                            synced:(BOOL)synced
                        inConflict:(BOOL)inConflict
@@ -31,7 +30,7 @@
                  syncHttpRespCode:(NSNumber *)syncHttpRespCode
                       syncErrMask:(NSNumber *)syncErrMask
                       syncRetryAt:(NSDate *)syncRetryAt
-          vehicleGlobalIdentifier:(NSString *)vehicleGlobalIdentifier
+            vehicleMainIdentifier:(NSNumber *)vehicleMainIdentifier
                          odometer:(NSDecimalNumber *)odometer
                    reportedAvgMpg:(NSDecimalNumber *)reportedAvgMpg
                    reportedAvgMph:(NSDecimalNumber *)reportedAvgMph
@@ -66,7 +65,7 @@
 
 #pragma mark - Properties
 
-@property (nonatomic) NSString *vehicleGlobalIdentifier;
+@property (nonatomic) NSNumber *vehicleMainIdentifier;
 
 @property (nonatomic) NSDecimalNumber *odometer;
 

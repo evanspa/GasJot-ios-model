@@ -12,6 +12,4 @@
 
 - (void)deleteAllUsers:(PELMDaoErrorBlk)errorBlk;
 
-- (void)asynchronousWorkSynchronously:(PELMDaoErrorBlk)errorBlk;
-
 @end
