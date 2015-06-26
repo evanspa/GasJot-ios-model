@@ -89,6 +89,7 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
                                tempRemoteErrorBlk:(void(^)(float))tempRemoteErrorBlk
                                    remoteErrorBlk:(void(^)(float, NSInteger))remoteErrorBlk
                                   authRequiredBlk:(void(^)(float))authRequiredBlk
+                                          allDone:(void(^)(void))allDoneBlk
                                             error:(PELMDaoErrorBlk)errorBlk;
 
 #pragma mark - User
@@ -367,6 +368,8 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
                             tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk
                                 remoteErrorBlk:(void(^)(NSInteger))remoteErrorBlk
                                authRequiredBlk:(void(^)(void))authRequiredBlk
+                  skippedDueToVehicleNotSynced:(void(^)(void))skippedDueToVehicleNotSynced
+              skippedDueToFuelStationNotSynced:(void(^)(void))skippedDueToFuelStationNotSynced
                                          error:(PELMDaoErrorBlk)errorBlk;
 
 - (BOOL)prepareFuelPurchaseLogForEdit:(FPFuelPurchaseLog *)fuelPurchaseLog
@@ -392,6 +395,8 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
                                       tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk
                                           remoteErrorBlk:(void(^)(NSInteger))remoteErrorBlk
                                          authRequiredBlk:(void(^)(void))authRequiredBlk
+                            skippedDueToVehicleNotSynced:(void(^)(void))skippedDueToVehicleNotSynced
+                        skippedDueToFuelStationNotSynced:(void(^)(void))skippedDueToFuelStationNotSynced
                                                    error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)reloadFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
@@ -463,6 +468,7 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
                            tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk
                                remoteErrorBlk:(void(^)(NSInteger))remoteErrorBlk
                               authRequiredBlk:(void(^)(void))authRequiredBlk
+                 skippedDueToVehicleNotSynced:(void(^)(void))skippedDueToVehicleNotSynced
                                         error:(PELMDaoErrorBlk)errorBlk;
 
 - (BOOL)prepareEnvironmentLogForEdit:(FPEnvironmentLog *)envLog
@@ -487,6 +493,7 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
                                      tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk
                                          remoteErrorBlk:(void(^)(NSInteger))remoteErrorBlk
                                         authRequiredBlk:(void(^)(void))authRequiredBlk
+                           skippedDueToVehicleNotSynced:(void(^)(void))skippedDueToVehicleNotSynced
                                                   error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)reloadEnvironmentLog:(FPEnvironmentLog *)environmentLog

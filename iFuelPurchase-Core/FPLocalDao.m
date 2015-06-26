@@ -1610,8 +1610,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
 - (void)persistDeepFuelPurchaseLogFromRemoteMaster:(FPFuelPurchaseLog *)fuelPurchaseLog
                                            forUser:(FPUser *)user
                                              error:(PELMDaoErrorBlk)errorBlk {
-  NSAssert([fuelPurchaseLog vehicleMainIdentifier], @"Fuel purchase log's vehicle global ID is nil");
-  NSAssert([fuelPurchaseLog fuelStationMainIdentifier], @"Fuel purchase log's fuel station global ID is nil");
   [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
     [self persistDeepFuelPurchaseLogFromRemoteMaster:fuelPurchaseLog
                                              forUser:user
@@ -1624,8 +1622,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                            forUser:(FPUser *)user
                                                 db:(FMDatabase *)db
                                              error:(PELMDaoErrorBlk)errorBlk {
-  NSAssert([fuelPurchaseLog vehicleMainIdentifier], @"Fuel purchase log's vehicle global ID is nil");
-  NSAssert([fuelPurchaseLog fuelStationMainIdentifier], @"Fuel purchase log's fuel station global ID is nil");
   [self insertIntoMasterFuelPurchaseLog:fuelPurchaseLog
                                 forUser:user
                                      db:db
@@ -1729,6 +1725,10 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
          mainTableInserterBlk:^(PELMMasterSupport *entity) {[self insertIntoMainFuelStation:(FPFuelStation *)entity forUser:user db:db error:errorBlk];}
                            db:db
                         error:errorBlk];
+  [fuelPurchaseLog setVehicleGlobalIdentifier:[vehicle globalIdentifier]];
+  [fuelPurchaseLog setVehicleMainIdentifier:[vehicle localMainIdentifier]];
+  [fuelPurchaseLog setFuelStationGlobalIdentifier:[fuelStation globalIdentifier]];
+  [fuelPurchaseLog setFuelStationMainIdentifier:[fuelStation localMainIdentifier]];
   return [PELMUtils prepareEntityForEdit:fuelPurchaseLog
                                       db:db
                                mainTable:TBL_MAIN_FUELPURCHASE_LOG
@@ -2210,7 +2210,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
 - (void)persistDeepEnvironmentLogFromRemoteMaster:(FPEnvironmentLog *)environmentLog
                                           forUser:(FPUser *)user
                                             error:(PELMDaoErrorBlk)errorBlk {
-  NSAssert([environmentLog vehicleMainIdentifier], @"Environment log's vehicle main local identifier is nil");
   [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
     [self persistDeepEnvironmentLogFromRemoteMaster:environmentLog
                                             forUser:user
@@ -2223,7 +2222,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                           forUser:(FPUser *)user
                                                db:(FMDatabase *)db
                                             error:(PELMDaoErrorBlk)errorBlk {
-  NSAssert([environmentLog vehicleMainIdentifier], @"Environment log's vehicle main local identifier is nil");
   [self insertIntoMasterEnvironmentLog:environmentLog
                                forUser:user
                                     db:db
@@ -2308,6 +2306,8 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
          mainTableInserterBlk:^(PELMMasterSupport *entity) {[self insertIntoMainVehicle:(FPVehicle *)entity forUser:user db:db error:errorBlk];}
                            db:db
                         error:errorBlk];
+  [environmentLog setVehicleGlobalIdentifier:[vehicle globalIdentifier]];
+  [environmentLog setVehicleMainIdentifier:[vehicle localMainIdentifier]];
   return [PELMUtils prepareEntityForEdit:environmentLog
                                       db:db
                                mainTable:TBL_MAIN_ENV_LOG
@@ -3714,8 +3714,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                 forUser:(FPUser *)user
                                      db:(FMDatabase *)db
                                   error:(PELMDaoErrorBlk)errorBlk {
-  //NSAssert([fuelPurchaseLog vehicleMainIdentifier], @"Fuel purchase log's vehicle global ID is nil");
-  //NSAssert([fuelPurchaseLog fuelStationMainIdentifier], @"Fuel purchase log's fuel station global ID is nil");
   NSString *vehicleGlobalId = [PELMUtils stringFromTable:TBL_MAIN_VEHICLE
                                             selectColumn:COL_GLOBAL_ID
                                              whereColumn:COL_LOCAL_ID

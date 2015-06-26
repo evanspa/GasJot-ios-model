@@ -1858,8 +1858,11 @@ Entity: %@", entity]
                                db:(FMDatabase *)db
                             error:(PELMDaoErrorBlk)errorBlk {
   FMResultSet *rs = [db executeQuery:[NSString stringWithFormat:@"SELECT COUNT(*) FROM %@", table]];
-  [rs next];
-  return [rs intForColumnIndex:0];
+  NSInteger numEntities = 0;
+  while ([rs next]) {
+    numEntities = [rs intForColumnIndex:0];
+  }
+  return numEntities;
 }
 
 - (NSNumber *)numberFromTable:(NSString *)table

@@ -68,6 +68,7 @@ describe(@"FPCoordinatorDao", ^{
       _mocker(@"http-response.vehicles.POST.500", 0, 0);
       
       __block float overallFlushProgress = 0.0;
+      __block BOOL allDone = NO;
       NSInteger totalNumToSync = [_coordDao flushAllUnsyncedEditsToRemoteForUser:user
                                                                       successBlk:nil
                                                               remoteStoreBusyBlk:nil
@@ -76,9 +77,11 @@ describe(@"FPCoordinatorDao", ^{
                                                               }
                                                                   remoteErrorBlk:nil
                                                                  authRequiredBlk:nil
+                                                                         allDone:^{ allDone = YES; }
                                                                            error:nil];
+      [[expectFutureValue(theValue(allDone)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
       [[theValue(totalNumToSync) should] equal:theValue(1)];
-      [[expectFutureValue(theValue(overallFlushProgress)) shouldEventuallyBeforeTimingOutAfter(5)] equal:theValue(1.0)];
+      [[theValue(overallFlushProgress) should] equal:theValue(1.0)];
       [[_numEntitiesBlk(TBL_MAIN_VEHICLE) should] equal:[NSNumber numberWithInt:1]];
       [[_numEntitiesBlk(TBL_MASTER_VEHICLE) should] equal:[NSNumber numberWithInt:2]];
       [_coordDao pruneAllSyncedEntitiesWithError:[_coordTestCtx newLocalSaveErrBlkMaker]()];
@@ -99,6 +102,7 @@ describe(@"FPCoordinatorDao", ^{
       
       _mocker(@"http-response.vehicles.POST.422", 0, 0);
       overallFlushProgress = 0.0;
+      allDone = NO;
       totalNumToSync = [_coordDao flushAllUnsyncedEditsToRemoteForUser:user
                                                             successBlk:nil
                                                     remoteStoreBusyBlk:nil
@@ -107,9 +111,11 @@ describe(@"FPCoordinatorDao", ^{
                                                           overallFlushProgress += progress;
                                                         }
                                                        authRequiredBlk:nil
+                                                               allDone:^{ allDone = YES; }
                                                                  error:nil];
+      [[expectFutureValue(theValue(allDone)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
       [[theValue(totalNumToSync) should] equal:theValue(1)];
-      [[expectFutureValue(theValue(overallFlushProgress)) shouldEventuallyBeforeTimingOutAfter(5)] equal:theValue(1.0)];
+      [[theValue(overallFlushProgress) should] equal:theValue(1.0)];
       newVehicle = [_coordDao vehiclesForUser:user error:[_coordTestCtx newLocalSaveErrBlkMaker]()][0];
       [[[newVehicle name] should] equal:@"My Z Car"];
       [[theValue([newVehicle synced]) should] beNo];
@@ -130,6 +136,7 @@ describe(@"FPCoordinatorDao", ^{
       [_coordDao markAsDoneEditingVehicle:newVehicle error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       _mocker(@"http-response.vehicles.POST.503", 0, 0);
       overallFlushProgress = 0.0;
+      allDone = NO;
       totalNumToSync = [_coordDao flushAllUnsyncedEditsToRemoteForUser:user
                                                             successBlk:nil
                                                     remoteStoreBusyBlk:^(float progress, NSDate *retryAfter) {
@@ -138,9 +145,11 @@ describe(@"FPCoordinatorDao", ^{
                                                     tempRemoteErrorBlk:nil
                                                         remoteErrorBlk:nil
                                                        authRequiredBlk:nil
+                                                               allDone:^{ allDone = YES; }
                                                                  error:nil];
+      [[expectFutureValue(theValue(allDone)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
       [[theValue(totalNumToSync) should] equal:theValue(1)];
-      [[expectFutureValue(theValue(overallFlushProgress)) shouldEventuallyBeforeTimingOutAfter(5)] equal:theValue(1.0)];
+      [[theValue(overallFlushProgress) should] equal:theValue(1.0)];
       newVehicle = [_coordDao vehiclesForUser:user error:[_coordTestCtx newLocalSaveErrBlkMaker]()][0];
       [[[newVehicle name] should] equal:@"My Z Car"];
       [[theValue([newVehicle synced]) should] beNo];
@@ -160,6 +169,7 @@ describe(@"FPCoordinatorDao", ^{
       [_coordDao markAsDoneEditingVehicle:newVehicle error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       _mocker(@"http-response.vehicles.POST.401", 0, 0);
       overallFlushProgress = 0.0;
+      allDone = NO;
       totalNumToSync = [_coordDao flushAllUnsyncedEditsToRemoteForUser:user
                                                             successBlk:nil
                                                     remoteStoreBusyBlk:nil
@@ -168,9 +178,11 @@ describe(@"FPCoordinatorDao", ^{
                                                        authRequiredBlk:^(float progress) {
                                                          overallFlushProgress += progress;
                                                        }
+                                                               allDone:^{ allDone = YES; }
                                                                  error:nil];
+      [[expectFutureValue(theValue(allDone)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
       [[theValue(totalNumToSync) should] equal:theValue(1)];
-      [[expectFutureValue(theValue(overallFlushProgress)) shouldEventuallyBeforeTimingOutAfter(5)] equal:theValue(1.0)];
+      [[theValue(overallFlushProgress) should] equal:theValue(1.0)];
       newVehicle = [_coordDao vehiclesForUser:user error:[_coordTestCtx newLocalSaveErrBlkMaker]()][0];
       [[[newVehicle name] should] equal:@"My Z Car"];
       [[theValue([newVehicle synced]) should] beNo];

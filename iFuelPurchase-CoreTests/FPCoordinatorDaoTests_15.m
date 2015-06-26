@@ -98,6 +98,7 @@ describe(@"FPCoordinatorDao", ^{
       __block float overallFlushProgress = 0.0;
       __block NSInteger totalSynced = 0;
       __block NSInteger totalSyncAttempts = 0;
+      __block BOOL allDone = NO;
       NSInteger totalNumToSync = [_coordDao flushAllUnsyncedEditsToRemoteForUser:user
                                                                       successBlk:^(float progress) {
                                                                         overallFlushProgress += progress;
@@ -111,9 +112,11 @@ describe(@"FPCoordinatorDao", ^{
                                                               }
                                                                   remoteErrorBlk:nil
                                                                  authRequiredBlk:nil
+                                                                         allDone:^{ allDone = YES; }
                                                                            error:nil];
+      [[expectFutureValue(theValue(allDone)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
       [[theValue(totalNumToSync) should] equal:theValue(4)];
-      [[expectFutureValue(theValue(totalSyncAttempts)) shouldEventuallyBeforeTimingOutAfter(5)] equal:theValue(4)];
+      [[theValue(totalSyncAttempts) should] equal:theValue(4)];
       [[theValue(totalSynced) should] equal:theValue(2)];
       [[theValue(overallFlushProgress) should] equal:theValue(1.0)];
       [_coordDao pruneAllSyncedEntitiesWithError:[_coordTestCtx newLocalSaveErrBlkMaker]()];

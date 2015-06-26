@@ -78,6 +78,7 @@ describe(@"FPCoordinatorDao", ^{
       _mocker(@"http-response.envlogs.POST.201", 0, 0);
       __block float overallFlushProgress = 0.0;
       __block NSInteger totalSynced = 0;
+      __block BOOL allDone = NO;
       NSInteger totalNumToSync = [_coordDao flushAllUnsyncedEditsToRemoteForUser:user
                                                                       successBlk:^(float progress) {
                                                                         overallFlushProgress += progress;
@@ -87,9 +88,11 @@ describe(@"FPCoordinatorDao", ^{
                                                               tempRemoteErrorBlk:nil
                                                                   remoteErrorBlk:nil
                                                                  authRequiredBlk:nil
+                                                                         allDone:^{ allDone = YES; }
                                                                            error:nil];
+      [[expectFutureValue(theValue(allDone)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
       [[theValue(totalNumToSync) should] equal:theValue(2)];
-      [[expectFutureValue(theValue(totalSynced)) shouldEventuallyBeforeTimingOutAfter(5)] equal:theValue(2)];
+      [[theValue(totalSynced) should] equal:theValue(2)];
       [[theValue(overallFlushProgress) should] equal:theValue(1.0)];
       [_coordDao pruneAllSyncedEntitiesWithError:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       // vehicle synced but NOT pruned (because child envlog instance couldn't be pruned)

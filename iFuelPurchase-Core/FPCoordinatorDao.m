@@ -531,9 +531,21 @@
                        addlTempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
                            addlRemoteErrorBlk:(void(^)(NSInteger))addlRemoteErrorBlk
                           addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
+                 skippedDueToVehicleNotSynced:(void(^)(void))skippedDueToVehicleNotSynced
+             skippedDueToFuelStationNotSynced:(void(^)(void))skippedDueToFuelStationNotSynced
                                         error:(PELMDaoErrorBlk)errorBlk {
-  NSAssert([fuelPurchaseLog vehicleMainIdentifier], @"Fuel purchase log's vehicle global ID is nil");
-  NSAssert([fuelPurchaseLog fuelStationMainIdentifier], @"Fuel purchase log's fuel station global ID is nil");
+  FPVehicle *vehicleForFpLog = [_localDao vehicleForFuelPurchaseLog:fuelPurchaseLog error:errorBlk];
+  FPFuelStation *fuelStationForFpLog = [_localDao fuelStationForFuelPurchaseLog:fuelPurchaseLog error:errorBlk];
+  [fuelPurchaseLog setVehicleGlobalIdentifier:[vehicleForFpLog globalIdentifier]];
+  [fuelPurchaseLog setFuelStationGlobalIdentifier:[fuelStationForFpLog globalIdentifier]];
+  if ([vehicleForFpLog globalIdentifier] == nil) {
+    skippedDueToVehicleNotSynced();
+    return;
+  }
+  if ([fuelStationForFpLog globalIdentifier] == nil) {
+    skippedDueToFuelStationNotSynced();
+    return;
+  }
   void (^markAsConflictBlk)(id, PELMMainSupport *) = ^ (id latestResourceModel, PELMMainSupport *unsyncedFuelPurchaseLog) {
     [_localDao markAsInConflictForFuelPurchaseLog:(FPFuelPurchaseLog *)unsyncedFuelPurchaseLog
                                             error:errorBlk];
@@ -639,8 +651,14 @@
                       addlTempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
                           addlRemoteErrorBlk:(void(^)(NSInteger))addlRemoteErrorBlk
                          addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
+                skippedDueToVehicleNotSynced:(void(^)(void))skippedDueToVehicleNotSynced
                                        error:(PELMDaoErrorBlk)errorBlk {
-  NSAssert([environmentLog vehicleMainIdentifier], @"Environment log's vehicle main local identifier is nil");
+  FPVehicle *vehicleForEnvLog = [_localDao vehicleForEnvironmentLog:environmentLog error:errorBlk];
+  [environmentLog setVehicleGlobalIdentifier:[vehicleForEnvLog globalIdentifier]];
+  if ([vehicleForEnvLog globalIdentifier] == nil) {
+    skippedDueToVehicleNotSynced();
+    return;
+  }
   void (^markAsConflictBlk)(id, PELMMainSupport *) = ^ (id latestResourceModel, PELMMainSupport *unsyncedEnvironmentLog) {
     [_localDao markAsInConflictForEnvironmentLog:(FPEnvironmentLog *)unsyncedEnvironmentLog
                                            error:errorBlk];
@@ -758,6 +776,7 @@
                                tempRemoteErrorBlk:(void(^)(float))tempRemoteErrorBlk
                                    remoteErrorBlk:(void(^)(float, NSInteger))remoteErrorBlk
                                   authRequiredBlk:(void(^)(float))authRequiredBlk
+                                          allDone:(void(^)(void))allDoneBlk
                                             error:(PELMDaoErrorBlk)errorBlk {
   NSArray *vehiclesToSync = [_localDao markVehiclesAsSyncInProgressForUser:user error:errorBlk];
   NSArray *fuelStationsToSync = [_localDao markFuelStationsAsSyncInProgressForUser:user error:errorBlk];
@@ -765,21 +784,38 @@
   NSArray *envLogsToSync = [_localDao markEnvironmentLogsAsSyncInProgressForUser:user error:errorBlk];
   NSInteger totalNumToSync = [vehiclesToSync count] + [fuelStationsToSync count] + [fpLogsToSync count] + [envLogsToSync count];
   NSDecimalNumber *individualEntitySyncProgress = [[NSDecimalNumber one] decimalNumberByDividingBy:[NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%ld", (long)totalNumToSync]]];
+  __block NSInteger totalSyncAttempted = 0;
+  
+  void (^incrementSyncAttemptedAndCheckDoneness)(void) = ^{
+    totalSyncAttempted++;
+    if (totalSyncAttempted == totalNumToSync) {
+      allDoneBlk();
+    }
+  };
+  
   void (^commonSuccessBlk)(id) = ^(id entity) {
     if (successBlk) successBlk([individualEntitySyncProgress floatValue]);
+    incrementSyncAttemptedAndCheckDoneness();
   };
   void (^commonRemoteStoreyBusyBlk)(NSDate *) = ^(NSDate *retryAfter) {
     if (remoteStoreBusyBlk) remoteStoreBusyBlk([individualEntitySyncProgress floatValue], retryAfter);
+    incrementSyncAttemptedAndCheckDoneness();
   };
   void (^commonTempRemoteErrorBlk)(void) = ^{
     if (tempRemoteErrorBlk) tempRemoteErrorBlk([individualEntitySyncProgress floatValue]);
+    incrementSyncAttemptedAndCheckDoneness();
   };
   void (^commonRemoteErrorBlk)(NSInteger) = ^(NSInteger errMask) {
     if (remoteErrorBlk) remoteErrorBlk([individualEntitySyncProgress floatValue], errMask);
+    incrementSyncAttemptedAndCheckDoneness();
   };
   void (^commonAuthReqdBlk)(void) = ^{
     if (authRequiredBlk) authRequiredBlk([individualEntitySyncProgress floatValue]);
-  };  
+    incrementSyncAttemptedAndCheckDoneness();
+  };
+  void (^commonSyncSkippedBlk)(void) = ^{
+    incrementSyncAttemptedAndCheckDoneness();
+  };
   void (^syncFpLogs)(void) = ^{
     [self flushUnsyncedChangesToEntities:fpLogsToSync
                                   syncer:^(PELMMainSupport *entity){[self flushUnsyncedChangesToFuelPurchaseLog:(FPFuelPurchaseLog *)entity
@@ -789,17 +825,20 @@
                                                                                          addlTempRemoteErrorBlk:commonTempRemoteErrorBlk
                                                                                              addlRemoteErrorBlk:commonRemoteErrorBlk
                                                                                             addlAuthRequiredBlk:commonAuthReqdBlk
+                                                                                   skippedDueToVehicleNotSynced:commonSyncSkippedBlk
+                                                                               skippedDueToFuelStationNotSynced:commonSyncSkippedBlk
                                                                                                           error:errorBlk];}];
   };
   void (^syncEnvLogs)(void) = ^{
     [self flushUnsyncedChangesToEntities:envLogsToSync
                                   syncer:^(PELMMainSupport *entity){[self flushUnsyncedChangesToEnvironmentLog:(FPEnvironmentLog *)entity
                                                                                                        forUser:user
-                                                                                                addlSuccessBlk:^(id e){commonSuccessBlk(e);}
+                                                                                                addlSuccessBlk:commonSuccessBlk
                                                                                         addlRemoteStoreBusyBlk:commonRemoteStoreyBusyBlk
                                                                                         addlTempRemoteErrorBlk:commonTempRemoteErrorBlk
                                                                                             addlRemoteErrorBlk:commonRemoteErrorBlk
                                                                                            addlAuthRequiredBlk:commonAuthReqdBlk
+                                                                                  skippedDueToVehicleNotSynced:commonSyncSkippedBlk
                                                                                                          error:errorBlk];}];
   };
   
@@ -1461,27 +1500,42 @@
                             tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk
                                 remoteErrorBlk:(void(^)(NSInteger))remoteErrorBlk
                                authRequiredBlk:(void(^)(void))authRequiredBlk
+                  skippedDueToVehicleNotSynced:(void(^)(void))skippedDueToVehicleNotSynced
+              skippedDueToFuelStationNotSynced:(void(^)(void))skippedDueToFuelStationNotSynced
                                          error:(PELMDaoErrorBlk)errorBlk {
-  if ([vehicle globalIdentifier] && [fuelStation globalIdentifier]) {
-    [_localDao saveNewAndSyncImmediateFuelPurchaseLog:fuelPurchaseLog
-                                              forUser:user
-                                              vehicle:vehicle
-                                          fuelStation:fuelStation
-                                                error:errorBlk];
-    [self flushUnsyncedChangesToFuelPurchaseLog:fuelPurchaseLog
-                                        forUser:user
-                                 addlSuccessBlk:^(PELMMainSupport *fplog) {successBlk();}
-                         addlRemoteStoreBusyBlk:remoteStoreBusyBlk
-                         addlTempRemoteErrorBlk:tempRemoteErrorBlk
-                             addlRemoteErrorBlk:remoteErrorBlk
-                            addlAuthRequiredBlk:authRequiredBlk
-                                          error:errorBlk];
+  
+  if ([vehicle globalIdentifier]) {
+    if ([fuelStation globalIdentifier]) {
+      [_localDao saveNewAndSyncImmediateFuelPurchaseLog:fuelPurchaseLog
+                                                forUser:user
+                                                vehicle:vehicle
+                                            fuelStation:fuelStation
+                                                  error:errorBlk];
+      [self flushUnsyncedChangesToFuelPurchaseLog:fuelPurchaseLog
+                                          forUser:user
+                                   addlSuccessBlk:^(PELMMainSupport *fplog) {successBlk();}
+                           addlRemoteStoreBusyBlk:remoteStoreBusyBlk
+                           addlTempRemoteErrorBlk:tempRemoteErrorBlk
+                               addlRemoteErrorBlk:remoteErrorBlk
+                              addlAuthRequiredBlk:authRequiredBlk
+                     skippedDueToVehicleNotSynced:skippedDueToVehicleNotSynced
+                 skippedDueToFuelStationNotSynced:skippedDueToFuelStationNotSynced
+                                            error:errorBlk];
+    } else {
+      [self saveNewFuelPurchaseLog:fuelPurchaseLog
+                           forUser:user
+                           vehicle:vehicle
+                       fuelStation:fuelStation
+                             error:errorBlk];
+      skippedDueToFuelStationNotSynced();
+    }
   } else {
     [self saveNewFuelPurchaseLog:fuelPurchaseLog
                          forUser:user
                          vehicle:vehicle
                      fuelStation:fuelStation
                            error:errorBlk];
+    skippedDueToVehicleNotSynced();
   }
 }
 
@@ -1524,19 +1578,29 @@
                                       tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk
                                           remoteErrorBlk:(void(^)(NSInteger))remoteErrorBlk
                                          authRequiredBlk:(void(^)(void))authRequiredBlk
+                            skippedDueToVehicleNotSynced:(void(^)(void))skippedDueToVehicleNotSynced
+                        skippedDueToFuelStationNotSynced:(void(^)(void))skippedDueToFuelStationNotSynced
                                                    error:(PELMDaoErrorBlk)errorBlk {
-  if ([fuelPurchaseLog vehicleMainIdentifier] && [fuelPurchaseLog fuelStationMainIdentifier]) {
-    [_localDao markAsDoneEditingImmediateSyncFuelPurchaseLog:fuelPurchaseLog error:errorBlk];
-    [self flushUnsyncedChangesToFuelPurchaseLog:fuelPurchaseLog
-                                        forUser:user
-                                 addlSuccessBlk:^(PELMMainSupport *fplog) {successBlk();}
-                         addlRemoteStoreBusyBlk:remoteStoreBusyBlk
-                         addlTempRemoteErrorBlk:tempRemoteErrorBlk
-                             addlRemoteErrorBlk:remoteErrorBlk
-                            addlAuthRequiredBlk:authRequiredBlk
-                                          error:errorBlk];
+  if ([fuelPurchaseLog vehicleGlobalIdentifier]) {
+    if ([fuelPurchaseLog fuelStationGlobalIdentifier]) {
+      [_localDao markAsDoneEditingImmediateSyncFuelPurchaseLog:fuelPurchaseLog error:errorBlk];
+      [self flushUnsyncedChangesToFuelPurchaseLog:fuelPurchaseLog
+                                          forUser:user
+                                   addlSuccessBlk:^(PELMMainSupport *fplog) {successBlk();}
+                           addlRemoteStoreBusyBlk:remoteStoreBusyBlk
+                           addlTempRemoteErrorBlk:tempRemoteErrorBlk
+                               addlRemoteErrorBlk:remoteErrorBlk
+                              addlAuthRequiredBlk:authRequiredBlk
+                     skippedDueToVehicleNotSynced:skippedDueToVehicleNotSynced
+                 skippedDueToFuelStationNotSynced:skippedDueToFuelStationNotSynced
+                                            error:errorBlk];
+    } else {
+      [self markAsDoneEditingFuelPurchaseLog:fuelPurchaseLog error:errorBlk];
+      skippedDueToFuelStationNotSynced();
+    }
   } else {
     [self markAsDoneEditingFuelPurchaseLog:fuelPurchaseLog error:errorBlk];
+    skippedDueToVehicleNotSynced();
   }
 }
 
@@ -1666,6 +1730,7 @@
                            tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk
                                remoteErrorBlk:(void(^)(NSInteger))remoteErrorBlk
                               authRequiredBlk:(void(^)(void))authRequiredBlk
+                 skippedDueToVehicleNotSynced:(void(^)(void))skippedDueToVehicleNotSynced
                                         error:(PELMDaoErrorBlk)errorBlk {
   if ([vehicle globalIdentifier]) {
     [_localDao saveNewAndSyncImmediateEnvironmentLog:envLog forUser:user vehicle:vehicle error:errorBlk];
@@ -1676,9 +1741,11 @@
                         addlTempRemoteErrorBlk:tempRemoteErrorBlk
                             addlRemoteErrorBlk:remoteErrorBlk
                            addlAuthRequiredBlk:authRequiredBlk
+                  skippedDueToVehicleNotSynced:skippedDueToVehicleNotSynced
                                          error:errorBlk];
   } else {
     [self saveNewEnvironmentLog:envLog forUser:user vehicle:vehicle error:errorBlk];
+    skippedDueToVehicleNotSynced();
   }
 }
 
@@ -1719,8 +1786,9 @@
                                      tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk
                                          remoteErrorBlk:(void(^)(NSInteger))remoteErrorBlk
                                         authRequiredBlk:(void(^)(void))authRequiredBlk
+                           skippedDueToVehicleNotSynced:(void(^)(void))skippedDueToVehicleNotSynced
                                                   error:(PELMDaoErrorBlk)errorBlk {
-  if ([envLog vehicleMainIdentifier]) {
+  if ([envLog vehicleGlobalIdentifier]) {
     [_localDao markAsDoneEditingImmediateSyncEnvironmentLog:envLog error:errorBlk];
     [self flushUnsyncedChangesToEnvironmentLog:envLog
                                        forUser:user
@@ -1729,9 +1797,11 @@
                         addlTempRemoteErrorBlk:tempRemoteErrorBlk
                             addlRemoteErrorBlk:remoteErrorBlk
                            addlAuthRequiredBlk:authRequiredBlk
+                  skippedDueToVehicleNotSynced:skippedDueToVehicleNotSynced
                                          error:errorBlk];
   } else {
     [self markAsDoneEditingEnvironmentLog:envLog error:errorBlk];
+    skippedDueToVehicleNotSynced();
   }
 }
 

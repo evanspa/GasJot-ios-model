@@ -106,6 +106,7 @@ describe(@"FPCoordinatorDao", ^{
       [[_numEntitiesBlk(TBL_MASTER_VEHICLE) should] equal:[NSNumber numberWithInt:0]]; // not synced
       __block float overallFlushProgress = 0.0;
       __block NSInteger totalSynced = 0;
+      __block BOOL allDone = NO;
       NSInteger totalNumToSync = [_coordDao flushAllUnsyncedEditsToRemoteForUser:user
                                                                       successBlk:^(float progress) {
                                                                         overallFlushProgress += progress;
@@ -115,9 +116,11 @@ describe(@"FPCoordinatorDao", ^{
                                                               tempRemoteErrorBlk:nil
                                                                   remoteErrorBlk:nil
                                                                  authRequiredBlk:nil
+                                                                         allDone:^{ allDone = YES; }
                                                                            error:nil];
+      [[expectFutureValue(theValue(allDone)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
       [[theValue(totalNumToSync) should] equal:theValue(1)];
-      [[expectFutureValue(theValue(totalSynced)) shouldEventuallyBeforeTimingOutAfter(5)] equal:theValue(1)];
+      [[theValue(totalSynced) should] equal:theValue(1)];
       [[theValue(overallFlushProgress) should] equal:theValue(1.0)];
       [[_numEntitiesBlk(TBL_MAIN_VEHICLE) should] equal:[NSNumber numberWithInt:1]]; // not pruned
       [[_numEntitiesBlk(TBL_MASTER_VEHICLE) should] equal:[NSNumber numberWithInt:1]]; // synced
