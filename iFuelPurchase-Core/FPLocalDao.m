@@ -1694,6 +1694,8 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                         error:errorBlk];
   [fuelPurchaseLog setVehicleMainIdentifier:[vehicle localMainIdentifier]];
   [fuelPurchaseLog setFuelStationMainIdentifier:[fuelStation localMainIdentifier]];
+  [fuelPurchaseLog setVehicleGlobalIdentifier:[vehicle globalIdentifier]];
+  [fuelPurchaseLog setFuelStationGlobalIdentifier:[fuelStation globalIdentifier]];
   [fuelPurchaseLog setEditCount:1];
   [self insertIntoMainFuelPurchaseLog:fuelPurchaseLog
                               forUser:user
@@ -2279,6 +2281,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                            db:db
                         error:errorBlk];
   [environmentLog setVehicleMainIdentifier:[vehicle localMainIdentifier]];
+  [environmentLog setVehicleGlobalIdentifier:[vehicle globalIdentifier]];
   [environmentLog setEditCount:1];
   [self insertIntoMainEnvironmentLog:environmentLog
                              forUser:user

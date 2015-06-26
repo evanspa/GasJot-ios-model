@@ -29,7 +29,7 @@ NSString * const FPEnvironmentLogUpdatedAtKey           = @"envlog/updated-at";
 - (NSDictionary *)dictionaryWithResourceModel:(id)resourceModel {
   FPEnvironmentLog *environmentLog = (FPEnvironmentLog *)resourceModel;
   NSMutableDictionary *environmentLogDict = [NSMutableDictionary dictionary];
-  [environmentLogDict setObjectIfNotNull:[environmentLog vehicleMainIdentifier] forKey:FPEnvironmentLogVehicleGlobalIdKey];
+  [environmentLogDict setObjectIfNotNull:[environmentLog vehicleGlobalIdentifier] forKey:FPEnvironmentLogVehicleGlobalIdKey];
   [environmentLogDict setObjectIfNotNull:[environmentLog odometer] forKey:FPEnvironmentLogOdometerKey];
   [environmentLogDict setObjectIfNotNull:[environmentLog reportedDte] forKey:FPEnvironmentLogReportedDteKey];
   [environmentLogDict setObjectIfNotNull:[environmentLog reportedAvgMpg] forKey:FPEnvironmentLogReportedAvgMpgKey];
@@ -59,7 +59,7 @@ NSString * const FPEnvironmentLogUpdatedAtKey           = @"envlog/updated-at";
               mediaType:mediaType
               relations:relations
               updatedAt:[resDict dateSince1970ForKey:FPEnvironmentLogUpdatedAtKey]];
-  [envlog setVehicleMainIdentifier:resDict[FPEnvironmentLogVehicleGlobalIdKey]];
+  [envlog setVehicleGlobalIdentifier:resDict[FPEnvironmentLogVehicleGlobalIdKey]];
   return envlog;
 }
 

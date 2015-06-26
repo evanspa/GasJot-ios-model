@@ -68,7 +68,11 @@
 
 @property (nonatomic) NSNumber *vehicleMainIdentifier;
 
+@property (nonatomic) NSString *vehicleGlobalIdentifier;
+
 @property (nonatomic) NSNumber *fuelStationMainIdentifier;
+
+@property (nonatomic) NSString *fuelStationGlobalIdentifier;
 
 @property (nonatomic) NSDecimalNumber *numGallons;
 

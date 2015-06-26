@@ -67,6 +67,8 @@
 
 @property (nonatomic) NSNumber *vehicleMainIdentifier;
 
+@property (nonatomic) NSString *vehicleGlobalIdentifier;
+
 @property (nonatomic) NSDecimalNumber *odometer;
 
 @property (nonatomic) NSDecimalNumber *reportedAvgMpg;
