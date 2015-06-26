@@ -783,6 +783,10 @@
   NSArray *fpLogsToSync = [_localDao markFuelPurchaseLogsAsSyncInProgressForUser:user error:errorBlk];
   NSArray *envLogsToSync = [_localDao markEnvironmentLogsAsSyncInProgressForUser:user error:errorBlk];
   NSInteger totalNumToSync = [vehiclesToSync count] + [fuelStationsToSync count] + [fpLogsToSync count] + [envLogsToSync count];
+  if (totalNumToSync == 0) {
+    allDoneBlk();
+    return 0;
+  }
   NSDecimalNumber *individualEntitySyncProgress = [[NSDecimalNumber one] decimalNumberByDividingBy:[NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%ld", (long)totalNumToSync]]];
   __block NSInteger totalSyncAttempted = 0;
   
