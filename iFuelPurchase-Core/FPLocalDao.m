@@ -3714,18 +3714,26 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                 forUser:(FPUser *)user
                                      db:(FMDatabase *)db
                                   error:(PELMDaoErrorBlk)errorBlk {
-  NSString *vehicleGlobalId = [PELMUtils stringFromTable:TBL_MAIN_VEHICLE
-                                            selectColumn:COL_GLOBAL_ID
-                                             whereColumn:COL_LOCAL_ID
-                                              whereValue:[fuelPurchaseLog vehicleMainIdentifier]
-                                                      db:db
-                                                   error:errorBlk];
-  NSString *fuelStationGlobalId = [PELMUtils stringFromTable:TBL_MAIN_FUEL_STATION
-                                                selectColumn:COL_GLOBAL_ID
-                                                 whereColumn:COL_LOCAL_ID
-                                                  whereValue:[fuelPurchaseLog fuelStationMainIdentifier]
-                                                          db:db
-                                                       error:errorBlk];
+  NSString *vehicleGlobalId = [fuelPurchaseLog vehicleGlobalIdentifier];
+  if (!vehicleGlobalId && [fuelPurchaseLog vehicleMainIdentifier]) {
+    vehicleGlobalId = [PELMUtils stringFromTable:TBL_MAIN_VEHICLE
+                                    selectColumn:COL_GLOBAL_ID
+                                     whereColumn:COL_LOCAL_ID
+                                      whereValue:[fuelPurchaseLog vehicleMainIdentifier]
+                                              db:db
+                                           error:errorBlk];
+  }
+  NSString *fuelStationGlobalId = [fuelPurchaseLog fuelStationGlobalIdentifier];
+  if (!fuelStationGlobalId && [fuelPurchaseLog fuelStationMainIdentifier]) {
+    fuelStationGlobalId = [PELMUtils stringFromTable:TBL_MAIN_FUEL_STATION
+                                        selectColumn:COL_GLOBAL_ID
+                                         whereColumn:COL_LOCAL_ID
+                                          whereValue:[fuelPurchaseLog fuelStationMainIdentifier]
+                                                  db:db
+                                               error:errorBlk];
+  }
+  NSAssert(vehicleGlobalId, @"Fuel purchase log's vehicle global ID is nil");
+  NSAssert(fuelStationGlobalId, @"Fuel purchase log's fuel station global ID is nil");
   FPVehicle *vehicle =
   (FPVehicle *)[PELMUtils entityFromQuery:[NSString stringWithFormat:@"SELECT * FROM %@ WHERE %@ = ?", TBL_MASTER_VEHICLE, COL_GLOBAL_ID]
                               entityTable:TBL_MASTER_VEHICLE
@@ -4067,17 +4075,21 @@ WHERE %@ = ?",
                                forUser:(FPUser *)user
                                     db:(FMDatabase *)db
                                  error:(PELMDaoErrorBlk)errorBlk {
-  NSString *vehicleGlobalId = [PELMUtils stringFromTable:TBL_MAIN_VEHICLE
-                                            selectColumn:COL_GLOBAL_ID
-                                             whereColumn:COL_LOCAL_ID
-                                              whereValue:[environmentLog vehicleMainIdentifier]
-                                                      db:db
-                                                   error:errorBlk];
+  NSString *vehicleGlobalId = [environmentLog vehicleGlobalIdentifier];
+  if (!vehicleGlobalId && [environmentLog vehicleMainIdentifier]) {
+    vehicleGlobalId = [PELMUtils stringFromTable:TBL_MAIN_VEHICLE
+                                    selectColumn:COL_GLOBAL_ID
+                                     whereColumn:COL_LOCAL_ID
+                                      whereValue:[environmentLog vehicleMainIdentifier]
+                                              db:db
+                                           error:errorBlk];
+  }
+  NSAssert(vehicleGlobalId, @"Environment log's vehicle global ID is nil");
   FPVehicle *vehicle =
   (FPVehicle *)[PELMUtils entityFromQuery:[NSString stringWithFormat:@"SELECT * FROM %@ WHERE %@ = ?", TBL_MASTER_VEHICLE, COL_GLOBAL_ID]
                               entityTable:TBL_MASTER_VEHICLE
                             localIdGetter:^NSNumber *(PELMModelSupport *entity){return [entity localMasterIdentifier];}
-                                argsArray:@[vehicleGlobalId] //[environmentLog vehicleMainIdentifier]]
+                                argsArray:@[vehicleGlobalId]
                               rsConverter:^(FMResultSet *rs){return [self masterVehicleFromResultSet:rs];}
                                        db:db
                                     error:errorBlk];
