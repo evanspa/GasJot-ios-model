@@ -159,6 +159,9 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
 
 #pragma mark - Vehicle
 
+- (void)copyVehicleToMaster:(FPVehicle *)vehicle
+                      error:(PELMDaoErrorBlk)errorBlk;
+
 - (NSInteger)numVehiclesForUser:(FPUser *)user
                           error:(PELMDaoErrorBlk)errorBlk;
 

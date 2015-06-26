@@ -565,6 +565,17 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
 
 #pragma mark - Vehicle
 
+- (void)copyVehicleToMaster:(FPVehicle *)vehicle
+                      error:(PELMDaoErrorBlk)errorBlk {
+  [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
+    [PELMUtils copyMasterEntity:vehicle
+                    toMainTable:TBL_MAIN_VEHICLE
+           mainTableInserterBlk:nil
+                             db:db
+                          error:errorBlk];
+  }];
+}
+
 - (NSInteger)numVehiclesForUser:(FPUser *)user
                           error:(PELMDaoErrorBlk)errorBlk {
   __block NSInteger numVehicles = 0;
@@ -1681,6 +1692,8 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
          mainTableInserterBlk:^(PELMMasterSupport *entity) {[self insertIntoMainFuelStation:(FPFuelStation *)entity forUser:user db:db error:errorBlk];}
                            db:db
                         error:errorBlk];
+  [fuelPurchaseLog setVehicleMainIdentifier:[vehicle localMainIdentifier]];
+  [fuelPurchaseLog setFuelStationMainIdentifier:[fuelStation localMainIdentifier]];
   [fuelPurchaseLog setEditCount:1];
   [self insertIntoMainFuelPurchaseLog:fuelPurchaseLog
                               forUser:user
@@ -2265,6 +2278,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
          mainTableInserterBlk:^(PELMMasterSupport *entity) {[self insertIntoMainVehicle:(FPVehicle *)entity forUser:user db:db error:errorBlk];}
                            db:db
                         error:errorBlk];
+  [environmentLog setVehicleMainIdentifier:[vehicle localMainIdentifier]];
   [environmentLog setEditCount:1];
   [self insertIntoMainEnvironmentLog:environmentLog
                              forUser:user

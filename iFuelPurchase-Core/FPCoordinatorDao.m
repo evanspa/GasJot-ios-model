@@ -1063,6 +1063,11 @@
 
 #pragma mark - Vehicle
 
+- (void)copyVehicleToMaster:(FPVehicle *)vehicle
+                      error:(PELMDaoErrorBlk)errorBlk {
+  
+}
+
 - (NSInteger)numVehiclesForUser:(FPUser *)user
                           error:(PELMDaoErrorBlk)errorBlk {
   return [_localDao numVehiclesForUser:user error:errorBlk];
