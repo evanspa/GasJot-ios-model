@@ -1912,7 +1912,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
     [PELMUtils numberFromTable:TBL_MASTER_VEHICLE
                   selectColumn:COL_LOCAL_ID
                    whereColumn:COL_GLOBAL_ID
-                    whereValue:[fuelPurchaseLog vehicleMainIdentifier]
+                    whereValue:[fuelPurchaseLog vehicleGlobalIdentifier]
                             db:db
                          error:errorBlk];
     FPVehicle *masterVehicle = [FPVehicle vehicleWithLocalMasterIdentifier:masterLocalIdentifier];
@@ -1920,7 +1920,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
     [PELMUtils numberFromTable:TBL_MASTER_FUEL_STATION
                   selectColumn:COL_LOCAL_ID
                    whereColumn:COL_GLOBAL_ID
-                    whereValue:[fuelPurchaseLog fuelStationMainIdentifier]
+                    whereValue:[fuelPurchaseLog fuelStationGlobalIdentifier]
                             db:db
                          error:errorBlk];
     FPFuelStation *masterFuelStation = [FPFuelStation fuelStationWithLocalMasterIdentifier:masterLocalIdentifier];
@@ -2472,7 +2472,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
     [PELMUtils numberFromTable:TBL_MASTER_VEHICLE
                   selectColumn:COL_LOCAL_ID
                    whereColumn:COL_GLOBAL_ID
-                    whereValue:[environmentLog vehicleMainIdentifier]
+                    whereValue:[environmentLog vehicleGlobalIdentifier]
                             db:db
                          error:errorBlk];
     FPVehicle *masterVehicle = [FPVehicle vehicleWithLocalMasterIdentifier:masterLocalIdentifier];
