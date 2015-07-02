@@ -83,6 +83,14 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
 
 #pragma mark - Flushing to Remote Master
 
+- (void)flushUnsyncedChangesToUser:(FPUser *)user
+                    addlSuccessBlk:(void(^)(PELMMainSupport *))addlSuccessBlk
+            addlRemoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)addlRemoteStoreBusyBlk
+            addlTempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
+                addlRemoteErrorBlk:(void(^)(NSInteger))addlRemoteErrorBlk
+               addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
+                             error:(PELMDaoErrorBlk)errorBlk;
+
 - (void)flushUnsyncedChangesToVehicle:(FPVehicle *)vehicle
                               forUser:(FPUser *)user
                        addlSuccessBlk:(void(^)(PELMMainSupport *))addlSuccessBlk
@@ -91,6 +99,26 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
                    addlRemoteErrorBlk:(void(^)(NSInteger))addlRemoteErrorBlk
                   addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
                                 error:(PELMDaoErrorBlk)errorBlk;
+
+- (void)flushUnsyncedChangesToFuelStation:(FPFuelStation *)fuelStation
+                                  forUser:(FPUser *)user
+                           addlSuccessBlk:(void(^)(PELMMainSupport *))addlSuccessBlk
+                   addlRemoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)addlRemoteStoreBusyBlk
+                   addlTempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
+                       addlRemoteErrorBlk:(void(^)(NSInteger))addlRemoteErrorBlk
+                      addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
+                                    error:(PELMDaoErrorBlk)errorBlk;
+
+- (void)flushUnsyncedChangesToFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
+                                      forUser:(FPUser *)user
+                               addlSuccessBlk:(void(^)(PELMMainSupport *))addlSuccessBlk
+                       addlRemoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)addlRemoteStoreBusyBlk
+                       addlTempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
+                           addlRemoteErrorBlk:(void(^)(NSInteger))addlRemoteErrorBlk
+                          addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
+                 skippedDueToVehicleNotSynced:(void(^)(void))skippedDueToVehicleNotSynced
+             skippedDueToFuelStationNotSynced:(void(^)(void))skippedDueToFuelStationNotSynced
+                                        error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)flushUnsyncedChangesToEnvironmentLog:(FPEnvironmentLog *)environmentLog
                                      forUser:(FPUser *)user

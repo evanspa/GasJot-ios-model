@@ -66,6 +66,7 @@
       simulateResponseFromXml:[NSString stringWithContentsOfFile:path
                                                     usedEncoding:&enc
                                                            error:&err]
+        pathsRelativeToBundle:_testBundle
                requestLatency:reqLatency
               responseLatency:respLatency];
   };

@@ -42,9 +42,10 @@ PODS:
     - CocoaLumberjack (~> 1.9)
     - PEObjc-Commons (~> 1.0.1)
   - PEObjc-Commons (1.0.8)
-  - PEWire-Control (1.0.1):
+  - PEWire-Control (1.0.2):
+    - KissXML (~> 5.0)
     - OHHTTPStubs (~> 3.1.10)
-    - PEObjc-Commons (~> 1.0.1)
+    - PEObjc-Commons (~> 1.0.8)
     - PEXML-Utils (~> 1.0.1)
   - PEXML-Utils (1.0.1):
     - KissXML (~> 5.0)
@@ -54,6 +55,7 @@ PODS:
 DEPENDENCIES:
   - CocoaLumberjack (~> 1.9)
   - FMDB (~> 2.5)
+  - KissXML (~> 5.0)
   - Kiwi (~> 2.3.1)
   - PEFuelPurchase-Common (~> 1.0.8)
   - PEHateoas-Client (~> 1.0.2)
@@ -71,7 +73,7 @@ SPEC CHECKSUMS:
   PEFuelPurchase-Common: 315cd43955e69e5be94373405f1b55b6723d30b6
   PEHateoas-Client: 9729b1e9099a9626c644e730f6ab7c37f0e55ccd
   PEObjc-Commons: c40bea2ce7f44ed636a74b7c78cd7a2753120d4e
-  PEWire-Control: 408b26f34312ef844d9682c5dc8c8e42ba9c84ff
+  PEWire-Control: 2aeefa4014575adbc52cfbf3206395d9a7c07b22
   PEXML-Utils: f7e0759b8e4e2ec3a39c781b362d7fb233fc8421
   UICKeyChainStore: c5719c814e8bd69e74e4a0fc09daf8f4d6257a59
 
