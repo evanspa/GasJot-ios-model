@@ -11,5 +11,6 @@ pod 'UICKeyChainStore', '~> 2.0.4'
 
 # These pods are only needed by the iFuelPurchase-CoreTests target.
 # (see podfile-build-settings-explanation.txt for an explanation)
+pod 'KissXML', '~> 5.0', :inhibit_warnings => true
 pod 'Kiwi', '~> 2.3.1'
 pod 'PEWire-Control', '~> 1.0.1'

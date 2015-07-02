@@ -83,6 +83,25 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
 
 #pragma mark - Flushing to Remote Master
 
+- (void)flushUnsyncedChangesToVehicle:(FPVehicle *)vehicle
+                              forUser:(FPUser *)user
+                       addlSuccessBlk:(void(^)(PELMMainSupport *))addlSuccessBlk
+               addlRemoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)addlRemoteStoreBusyBlk
+               addlTempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
+                   addlRemoteErrorBlk:(void(^)(NSInteger))addlRemoteErrorBlk
+                  addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
+                                error:(PELMDaoErrorBlk)errorBlk;
+
+- (void)flushUnsyncedChangesToEnvironmentLog:(FPEnvironmentLog *)environmentLog
+                                     forUser:(FPUser *)user
+                              addlSuccessBlk:(void(^)(PELMMainSupport *))addlSuccessBlk
+                      addlRemoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)addlRemoteStoreBusyBlk
+                      addlTempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
+                          addlRemoteErrorBlk:(void(^)(NSInteger))addlRemoteErrorBlk
+                         addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
+                skippedDueToVehicleNotSynced:(void(^)(void))skippedDueToVehicleNotSynced
+                                       error:(PELMDaoErrorBlk)errorBlk;
+
 - (NSInteger)flushAllUnsyncedEditsToRemoteForUser:(FPUser *)user
                                        successBlk:(void(^)(float))successBlk
                                remoteStoreBusyBlk:(void(^)(float, NSDate *))remoteStoreBusyBlk

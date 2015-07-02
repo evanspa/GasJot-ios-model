@@ -202,7 +202,7 @@
   [_localDao globalCancelSyncInProgressWithError:error];
 }
 
-#pragma mark - Flushing to Remote Master Helpers
+#pragma mark - Flushing to Remote Master
 
 + (void)invokeErrorBlocksForHttpStatusCode:(NSNumber *)httpStatusCode
                                      error:(NSError *)err
@@ -767,8 +767,6 @@
     }
   }
 }
-
-#pragma mark - Flushing to Remote Master
 
 - (NSInteger)flushAllUnsyncedEditsToRemoteForUser:(FPUser *)user
                                        successBlk:(void(^)(float))successBlk
