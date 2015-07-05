@@ -1,7 +1,7 @@
 #!/bin/bash
 
 readonly PROJECT_NAME="PEFuelPurchase-Model"
-readonly SDK_VERSION="8.3"
+readonly SDK_VERSION="8.4"
 readonly ARCH="i386"
 export LC_CTYPE=en_US.UTF-8
 

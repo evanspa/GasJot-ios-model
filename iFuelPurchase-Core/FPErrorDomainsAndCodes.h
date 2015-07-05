@@ -49,7 +49,9 @@ typedef NS_OPTIONS(NSUInteger, FPSaveUserMsg) {
 typedef NS_OPTIONS(NSUInteger, FPSaveEnvironmentLogMsg) {
   FPSaveEnvironmentLogAnyIssues                 = 1 << 0,
   FPSaveEnvironmentLogDateNotProvided           = 1 << 1,
-  FPSaveEnvironmentLogOdometerNotProvided       = 1 << 2
+  FPSaveEnvironmentLogOdometerNotProvided       = 1 << 2,
+  FPSaveEnvironmentLogOutsideTempNotProvided    = 1 << 3,
+  FPSaveEnvironmentLogOdometerNegative          = 1 << 4
 };
 
 /**
@@ -61,7 +63,10 @@ typedef NS_OPTIONS(NSUInteger, FPSaveFuelPurchaseLogMsg) {
   FPSaveFuelPurchaseLogPurchaseDateNotProvided   = 1 << 1,
   FPSaveFuelPurchaseLogNumGallonsNotProvided     = 1 << 2,
   FPSaveFuelPurchaseLogOctaneNotProvided         = 1 << 3,
-  FPSaveFuelPurchaseLogGallonPriceNotProvided    = 1 << 4
+  FPSaveFuelPurchaseLogGallonPriceNotProvided    = 1 << 4,
+  FPSaveFuelPurchaseLogGallonPriceNegative       = 1 << 5,
+  FPSaveFuelPurchaseLogNumGallonsNegative        = 1 << 6,
+  FPSaveFuelPurchaseLogOctaneNegative            = 1 << 7
 };
 
 /**
@@ -81,6 +86,8 @@ typedef NS_OPTIONS(NSUInteger, FPSaveVehicleMsg) {
   FPSaveVehicleAnyIssues              = 1 << 0,
   FPSaveVehicleNameNotProvided        = 1 << 1, // ctx: Create/Edit vehicle
   FPSaveVehicleVehicleAlreadyExists   = 1 << 2, // ctx: Create vehicle
+  FPSaveVehicleNameContainsPurple     = 1 << 3,
+  FPSaveVehicleNameContainsRed        = 1 << 4
 };
 
 /**
