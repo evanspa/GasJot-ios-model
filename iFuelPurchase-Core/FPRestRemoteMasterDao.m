@@ -527,6 +527,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
 
 - (void)loginWithUsernameOrEmail:(NSString *)usernameOrEmail
                         password:(NSString *)password
+                   loginRelation:(NSString *)loginRelation
                          timeout:(NSInteger)timeout
                  remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                     authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
@@ -536,7 +537,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
   PELMLoginUser *loginUser = [[PELMLoginUser alloc] init];
   [loginUser setUsernameOrEmail:usernameOrEmail];
   [loginUser setPassword:password];
-  [self doPostToRelation:[_restApiRelations objectForKey:PELMLoginRelation]
+  [self doPostToRelation:[_restApiRelations objectForKey:loginRelation]
       resourceModelParam:loginUser
               serializer:_loginSerializer
                  timeout:timeout
@@ -544,6 +545,36 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
             authRequired:authRequired
        completionHandler:complHandler
             otherHeaders:headers];
+}
+
+- (void)loginWithUsernameOrEmail:(NSString *)usernameOrEmail
+                        password:(NSString *)password
+                         timeout:(NSInteger)timeout
+                 remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
+                    authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
+               completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
+  [self loginWithUsernameOrEmail:usernameOrEmail
+                        password:password
+                   loginRelation:PELMLoginRelation
+                         timeout:timeout
+                 remoteStoreBusy:busyHandler
+                    authRequired:authRequired
+               completionHandler:complHandler];
+}
+
+- (void)lightLoginForUser:(FPUser *)user
+                 password:(NSString *)password
+                  timeout:(NSInteger)timeout
+          remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
+             authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
+        completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
+  [self loginWithUsernameOrEmail:[user usernameOrEmail]
+                        password:password
+                   loginRelation:PELMLightLoginRelation
+                         timeout:timeout
+                 remoteStoreBusy:busyHandler
+                    authRequired:authRequired
+               completionHandler:complHandler];
 }
 
 - (void)deleteUser:(FPUser *)user

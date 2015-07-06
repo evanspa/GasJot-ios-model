@@ -126,6 +126,13 @@
                     authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
                completionHandler:(PELMRemoteMasterCompletionHandler)complHandler;
 
+- (void)lightLoginForUser:(FPUser *)user
+                 password:(NSString *)password
+                  timeout:(NSInteger)timeout
+          remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
+             authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
+        completionHandler:(PELMRemoteMasterCompletionHandler)complHandler;
+
 - (void)deleteUser:(FPUser *)user
            timeout:(NSInteger)timeout
    remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler

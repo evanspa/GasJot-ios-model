@@ -1037,6 +1037,34 @@
                            completionHandler:masterStoreComplHandler];
 }
 
+- (void)lightLoginForUser:(FPUser *)user
+                 password:(NSString *)password
+          remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
+        completionHandler:(void(^)(NSError *))complHandler
+    localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler {
+  PELMRemoteMasterCompletionHandler masterStoreComplHandler =
+  ^(NSString *newAuthTkn, NSString *globalId, id resourceModel, NSDictionary *rels,
+    NSDate *lastModified, BOOL isConflict, BOOL gone, BOOL notFound, BOOL movedPermanently,
+    BOOL notModified, NSError *err, NSHTTPURLResponse *httpResp) {
+    if (newAuthTkn) {
+      [self processNewAuthToken:newAuthTkn forUser:user];
+    }
+    complHandler(err);
+  };
+  PELMRemoteMasterAuthReqdBlk authReqdBlk = ^(PELMMainSupport *entity, HCAuthentication *authReqd) {
+    NSError *error = [NSError errorWithDomain:FPUserFaultedErrorDomain
+                                         code:(FPSignInAnyIssues | FPSignInInvalidCredentials)
+                                     userInfo:nil];
+    complHandler(error);
+  };
+  [_remoteMasterDao lightLoginForUser:user
+                             password:password
+                              timeout:_timeout
+                      remoteStoreBusy:busyHandler
+                         authRequired:authReqdBlk
+                    completionHandler:masterStoreComplHandler];
+}
+
 - (FPUser *)userWithError:(PELMDaoErrorBlk)errorBlk {
   return [_localDao userWithError:errorBlk];
 }

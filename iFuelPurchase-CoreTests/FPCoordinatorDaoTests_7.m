@@ -66,10 +66,10 @@ describe(@"FPCoordinatorDao", ^{
   });
   
   context(@"Tests", ^{
-    it(@"Can fetch an existing user (login)", ^{
+    it(@"Can do a normal login followed by a light login.", ^{
       FPUser *user = [_coordDao userWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
       [user shouldBeNil];
-      _mocker(@"http-response.users.POST.200", 0, 0);
+      _mocker(@"http-response.login.POST.200", 0, 0);
       user = [_coordDao newLocalUserWithError:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [_coordDao loginWithUsernameOrEmail:@"evansp2"
                                  password:@"1n53cur3"
@@ -79,6 +79,7 @@ describe(@"FPCoordinatorDao", ^{
                         completionHandler:[_coordTestCtx new1ErrArgComplHandlerBlkMaker]()
                     localSaveErrorHandler:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[expectFutureValue(theValue([_coordTestCtx authTokenReceived])) shouldEventuallyBeforeTimingOutAfter(60)] beYes];
+      [[[_coordTestCtx authToken] should] equal:@"1092348123049OLSDFJLIE001234"];
       user = [_coordDao userWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
       [user shouldNotBeNil]; // sanity check
       [[[user name] should] equal:@"Paul Evans"];
@@ -120,6 +121,17 @@ describe(@"FPCoordinatorDao", ^{
       [[[vehicle updatedAt] should] equal:[HCUtils rfc7231DateFromString:@"Fri, 05 Sep 2014 10:34:22 GMT"]];
       rels = [vehicle relations];
       [[rels should] haveCountOf:0];
+      
+      // now we'll do a light login
+      [_coordTestCtx setAuthTokenReceived:NO]; // reset this
+      _mocker(@"http-response.light-login.POST.204", 0, 0);
+      [_coordDao lightLoginForUser:user
+                          password:@"1n53cur3"
+                   remoteStoreBusy:[_coordTestCtx newRemoteStoreBusyBlkMaker]()
+                 completionHandler:[_coordTestCtx new0ErrArgComplHandlerBlkMaker]()
+             localSaveErrorHandler:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+      [[expectFutureValue(theValue([_coordTestCtx authTokenReceived])) shouldEventuallyBeforeTimingOutAfter(60)] beYes];
+      [[[_coordTestCtx authToken] should] equal:@"1092348123049OLSDFJLIE001234_5"];
     });
   });
 });

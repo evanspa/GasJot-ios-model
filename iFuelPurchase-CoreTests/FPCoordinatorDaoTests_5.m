@@ -48,7 +48,7 @@ describe(@"FPCoordinatorDao", ^{
     it(@"Sync-in-progress entity goes from YES to NO after failed sync attempt", ^{
       FPUser *user = [_coordDao userWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
       [user shouldBeNil];
-      _mocker(@"http-response.users.POST.200", 0, 0);
+      _mocker(@"http-response.login.POST.200", 0, 0);
       user = [_coordDao newLocalUserWithError:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [_coordDao loginWithUsernameOrEmail:@"evansp2"
                                  password:@"1n53cur3"

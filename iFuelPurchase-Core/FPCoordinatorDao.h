@@ -174,6 +174,12 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
                completionHandler:(FPFetchedEntityCompletionHandler)complHandler
            localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler;
 
+- (void)lightLoginForUser:(FPUser *)user
+                 password:(NSString *)password
+          remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
+        completionHandler:(void(^)(NSError *))complHandler
+    localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler;
+
 - (BOOL)prepareUserForEdit:(FPUser *)user
          entityBeingSynced:(void(^)(void))entityBeingSyncedBlk
              entityDeleted:(void(^)(void))entityDeletedBlk

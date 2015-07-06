@@ -11,6 +11,7 @@
 
 FOUNDATION_EXPORT NSString * const PELMUsersRelation;
 FOUNDATION_EXPORT NSString * const PELMLoginRelation;
+FOUNDATION_EXPORT NSString * const PELMLightLoginRelation;
 
 @interface PELMUser : PELMMainSupport <NSCopying>
 

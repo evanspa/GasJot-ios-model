@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<http-response statusCode="204">
+  <annotation name="POST success"
+              host="example.com"
+              port="80"
+              scheme="http"
+              uri-path="/fp/light-login"
+              request-method="POST">This is the description for this mock response.</annotation>
+  <headers>
+    <header name="Content-Type" value="application/vnd.fp.user-v0.0.1+json" />
+    <header name="Content-Language" value="en-US" />
+    <header name="fp-auth-token" value="1092348123049OLSDFJLIE001234_5" />
+  </headers>
+  <cookies />
+  <body />
+</http-response>

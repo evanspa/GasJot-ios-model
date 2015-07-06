@@ -12,6 +12,7 @@
 
 NSString * const PELMUsersRelation = @"users";
 NSString * const PELMLoginRelation = @"login";
+NSString * const PELMLightLoginRelation = @"light-login";
 
 @implementation PELMUser
 

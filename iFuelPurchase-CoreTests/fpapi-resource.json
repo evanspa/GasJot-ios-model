@@ -1,3 +1,4 @@
 { "_links": {
     "users": { "href": "http://example.com/fp/users" },
-    "login": { "href": "http://example.com/fp/login" }}}
+    "login": { "href": "http://example.com/fp/login" },
+    "light-login": { "href": "http://example.com/fp/light-login" }}}

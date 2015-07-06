@@ -132,6 +132,18 @@
   };
 }
 
+- (FPCoordTestingNew0ErrArgComplHandlerBlkMaker)new0ErrArgComplHandlerBlkMaker {
+  return ^{
+    return (^(NSError *error) {
+      if (error) {
+        _generalComplError = YES;
+      } else {
+        _success = YES;
+      }
+    });
+  };
+}
+
 - (void(^)(void))entityBeingSyncedBlk {
   return ^{
     _prepareForEditEntityBeingSynced = YES;

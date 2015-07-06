@@ -17,6 +17,7 @@ typedef void (^(^FPCoordTestingNewLocalFetchErrBlkMaker)(void))(NSError *, int, 
 typedef void (^(^FPCoordTestingNewLocalBgErrBlkMaker)(void))(NSError *, int, NSString *);
 typedef void (^(^FPCoordTestingNewRemoteStoreBusyBlkMaker)(void))(NSDate *);
 typedef void (^(^FPCoordTestingNew1ErrArgComplHandlerBlkMaker)(void))(FPUser *, NSError *);
+typedef void (^(^FPCoordTestingNew0ErrArgComplHandlerBlkMaker)(void))(NSError *);
 typedef NSNumber * (^FPCoordTestingNumValueFetcher)(FPCoordinatorDao *, NSString *, NSString *, NSNumber *);
 typedef FPUser *(^FPCoordTestingFreshUserMaker)(NSString *, NSString *, NSString *, NSString *, NSString *, FPCoordinatorDao *, void (^)(void));
 typedef FPUser * (^FPCoordTestingFreshJoeSmithMaker)(FPCoordinatorDao *, void (^waitBlock)(void));
@@ -57,6 +58,7 @@ typedef void (^FPCoordTestingMocker)(NSString *, NSInteger, NSInteger);
 - (FPCoordTestingNewLocalBgErrBlkMaker)newLocalBgErrBlkMaker;
 - (FPCoordTestingNewRemoteStoreBusyBlkMaker)newRemoteStoreBusyBlkMaker;
 - (FPCoordTestingNew1ErrArgComplHandlerBlkMaker)new1ErrArgComplHandlerBlkMaker;
+- (FPCoordTestingNew0ErrArgComplHandlerBlkMaker)new0ErrArgComplHandlerBlkMaker;
 
 - (void(^)(void))entityBeingSyncedBlk;
 - (void(^)(void))entityDeletedBlk;
