@@ -621,6 +621,10 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
 - (NSArray *)unsyncedVehiclesForUser:(FPUser *)user
                                   db:(FMDatabase *)db
                                error:(PELMDaoErrorBlk)errorBlk {
+  
+  
+  
+  
   return [PELMUtils unsyncedEntitiesForParentEntity:user
                               parentEntityMainTable:TBL_MAIN_USER
                         parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainUserFromResultSet:rs];}

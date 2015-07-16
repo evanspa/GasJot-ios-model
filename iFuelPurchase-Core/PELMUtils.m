@@ -574,20 +574,10 @@ version of entity not found!  It's global ID is: [%@]", [entity globalIdentifier
                 orderByDomainColumnDirection:(NSString *)orderByDomainColumnDirection
                                           db:(FMDatabase *)db
                                        error:(PELMDaoErrorBlk)errorBlk {
-  NSString *(^masterQueryTransformer)(NSString *) = ^ NSString *(NSString *qry) {
-    if (orderByDomainColumn) {
-      qry = [qry stringByAppendingFormat:@" ORDER BY mstr.%@", orderByDomainColumn];
-      if (orderByDomainColumnDirection) {
-        qry = [qry stringByAppendingFormat:@" %@", orderByDomainColumnDirection];
-      }
-    }
-    return qry;
-  };
   NSArray *(^argsArrayTransformer)(NSArray *) = ^ NSArray *(NSArray *argsArray) {
     return argsArray;
   };
   NSString *(^mainQueryTransformer)(NSString *) = ^ NSString *(NSString *qry) {
-    qry = [qry stringByAppendingFormat:@" AND %@ = 0", COL_MAN_SYNCED];
     if (orderByDomainColumn) {
       qry = [qry stringByAppendingFormat:@" ORDER BY %@", orderByDomainColumn];
       if (orderByDomainColumnDirection) {
@@ -602,23 +592,19 @@ version of entity not found!  It's global ID is: [%@]", [entity globalIdentifier
       return [entities sortedArrayUsingComparator:comparatorForSort];
     };
   }
-  return [PELMUtils entitiesForParentEntity:parentEntity
-                      parentEntityMainTable:parentEntityMainTable
-                parentEntityMainRsConverter:parentEntityMainRsConverter
-                 parentEntityMasterIdColumn:parentEntityMasterIdColumn
-                   parentEntityMainIdColumn:parentEntityMainIdColumn
-                                   pageSize:nil
-                          entityMasterTable:entityMasterTable
-             masterEntityResultSetConverter:masterEntityResultSetConverter
-                            entityMainTable:entityMainTable
-               mainEntityResultSetConverter:mainEntityResultSetConverter
-                     masterQueryTransformer:masterQueryTransformer
-                 masterArgsArrayTransformer:argsArrayTransformer
-                       mainQueryTransformer:mainQueryTransformer
-                   mainArgsArrayTransformer:argsArrayTransformer
-                             entitiesFilter:entitiesFilter
-                                         db:db
-                                      error:errorBlk];
+  return [PELMUtils unsyncedEntitiesForParentEntity:parentEntity
+                              parentEntityMainTable:parentEntityMainTable
+                        parentEntityMainRsConverter:parentEntityMainRsConverter
+                           parentEntityMainIdColumn:parentEntityMainIdColumn
+                                           pageSize:nil
+                                  entityMasterTable:entityMasterTable
+                                    entityMainTable:entityMainTable
+                       mainEntityResultSetConverter:mainEntityResultSetConverter
+                               mainQueryTransformer:mainQueryTransformer
+                           mainArgsArrayTransformer:argsArrayTransformer
+                                     entitiesFilter:entitiesFilter
+                                                 db:db
+                                              error:errorBlk];
 }
 
 + (NSArray *)entitiesForParentEntity:(PELMModelSupport *)parentEntity
@@ -805,6 +791,70 @@ version of entity not found!  It's global ID is: [%@]", [entity globalIdentifier
                      parentEntityMainIdColumn,
                      COL_MAN_DELETED,
                      COL_MAN_IN_CONFLICT];
+    NSArray *argsArray = @[[parentEntity localMainIdentifier]];
+    qry = mainQueryTransformer(qry);
+    argsArray = mainArgsArrayTransformer(argsArray);
+    NSArray *mainEntities = [PELMUtils mainEntitiesFromQuery:qry
+                                                  numAllowed:pageSize
+                                                 entityTable:entityMainTable
+                                                   argsArray:argsArray
+                                                 rsConverter:mainEntityResultSetConverter
+                                                          db:db
+                                                       error:errorBlk];
+    NSInteger numMainEntities = [mainEntities count];
+    for (int i = 0; i < numMainEntities; i++) {
+      PELMMainSupport *mainEntity = mainEntities[i];
+      if ([mainEntity globalIdentifier]) {
+        NSNumber *masterLocalIdentifier =
+        [PELMUtils numberFromTable:entityMasterTable
+                      selectColumn:COL_LOCAL_ID
+                       whereColumn:COL_GLOBAL_ID
+                        whereValue:[mainEntity globalIdentifier]
+                                db:db
+                             error:errorBlk];
+        if (masterLocalIdentifier) {
+          [mainEntity setLocalMasterIdentifier:masterLocalIdentifier];
+        }
+      }
+    }
+    [entities addObjectsFromArray:mainEntities];
+  }
+  if (entitiesFilter) {
+    return entitiesFilter(entities);
+  } else {
+    return entities;
+  }
+}
+
++ (NSArray *)unsyncedEntitiesForParentEntity:(PELMModelSupport *)parentEntity
+                       parentEntityMainTable:(NSString *)parentEntityMainTable
+                 parentEntityMainRsConverter:(entityFromResultSetBlk)parentEntityMainRsConverter
+                    parentEntityMainIdColumn:(NSString *)parentEntityMainIdColumn
+                                    pageSize:(NSNumber *)pageSize
+                           entityMasterTable:(NSString *)entityMasterTable
+                             entityMainTable:(NSString *)entityMainTable
+                mainEntityResultSetConverter:(entityFromResultSetBlk)mainEntityResultSetConverter
+                        mainQueryTransformer:(NSString *(^)(NSString *))mainQueryTransformer
+                    mainArgsArrayTransformer:(NSArray *(^)(NSArray *))mainArgsArrayTransformer
+                              entitiesFilter:(NSArray *(^)(NSArray *))entitiesFilter
+                                          db:(FMDatabase *)db
+                                       error:(PELMDaoErrorBlk)errorBlk {
+  [PELMUtils reloadEntity:parentEntity
+            fromMainTable:parentEntityMainTable
+              rsConverter:parentEntityMainRsConverter
+                       db:db
+                    error:errorBlk];
+  NSMutableArray *entities = [NSMutableArray array];
+  if ([parentEntity localMainIdentifier]) {
+    NSString *qry = [NSString stringWithFormat:@"\
+                     SELECT * \
+                     FROM %@ \
+                     WHERE %@ = ? AND \
+                           %@ = 0 AND \
+                           %@ = 0", entityMainTable,
+                     parentEntityMainIdColumn,
+                     COL_MAN_DELETED,
+                     COL_MAN_SYNCED];
     NSArray *argsArray = @[[parentEntity localMainIdentifier]];
     qry = mainQueryTransformer(qry);
     argsArray = mainArgsArrayTransformer(argsArray);
