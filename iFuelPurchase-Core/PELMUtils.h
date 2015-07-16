@@ -203,6 +203,21 @@ markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCom
                                   db:(FMDatabase *)db
                                error:(PELMDaoErrorBlk)errorBlk;
 
++ (NSArray *)unsyncedEntitiesForParentEntity:(PELMModelSupport *)parentEntity
+                       parentEntityMainTable:(NSString *)parentEntityMainTable
+                 parentEntityMainRsConverter:(entityFromResultSetBlk)parentEntityMainRsConverter
+                  parentEntityMasterIdColumn:(NSString *)parentEntityMasterIdColumn
+                    parentEntityMainIdColumn:(NSString *)parentEntityMainIdColumn
+                           entityMasterTable:(NSString *)entityMasterTable
+              masterEntityResultSetConverter:(entityFromResultSetBlk)masterEntityResultSetConverter
+                             entityMainTable:(NSString *)entityMainTable
+                mainEntityResultSetConverter:(entityFromResultSetBlk)mainEntityResultSetConverter
+                           comparatorForSort:(NSComparisonResult(^)(id, id))comparatorForSort
+                         orderByDomainColumn:(NSString *)orderByDomainColumn
+                orderByDomainColumnDirection:(NSString *)orderByDomainColumnDirection
+                                          db:(FMDatabase *)db
+                                       error:(PELMDaoErrorBlk)errorBlk;
+
 + (NSArray *)entitiesForParentEntity:(PELMModelSupport *)parentEntity
                parentEntityMainTable:(NSString *)parentEntityMainTable
          parentEntityMainRsConverter:(entityFromResultSetBlk)parentEntityMainRsConverter

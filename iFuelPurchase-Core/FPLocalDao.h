@@ -49,6 +49,8 @@
 
 - (NSInteger)numUnsyncedEnvironmentLogsForUser:(FPUser *)user;
 
+- (NSInteger)totalNumUnsyncedEntitiesForUser:(FPUser *)user;
+
 - (void)saveNewLocalUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)saveNewRemoteUser:(FPUser *)remoteUser
@@ -111,6 +113,9 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
 
 - (NSArray *)vehiclesForUser:(FPUser *)user
                        error:(PELMDaoErrorBlk)errorBlk;
+
+- (NSArray *)unsyncedVehiclesForUser:(FPUser *)user
+                               error:(PELMDaoErrorBlk)errorBlk;
 
 - (FPUser *)userForVehicle:(FPVehicle *)vehicle
                      error:(PELMDaoErrorBlk)errorBlk;

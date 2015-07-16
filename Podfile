@@ -2,7 +2,7 @@ source 'https://github.com/CocoaPods/Specs.git'
 
 platform :ios, '8.3'
 
-pod 'PEObjc-Commons', '~> 1.0.7'
+pod 'PEObjc-Commons', '~> 1.0.27'
 pod 'PEFuelPurchase-Common', '~> 1.0.8'
 pod 'FMDB', '~> 2.5'
 pod 'PEHateoas-Client', '~> 1.0.2'
@@ -13,4 +13,4 @@ pod 'UICKeyChainStore', '~> 2.0.4'
 # (see podfile-build-settings-explanation.txt for an explanation)
 pod 'KissXML', '~> 5.0', :inhibit_warnings => true
 pod 'Kiwi', '~> 2.3.1'
-pod 'PEWire-Control', '~> 1.0.1'
+pod 'PEWire-Control', '~> 1.0.2'

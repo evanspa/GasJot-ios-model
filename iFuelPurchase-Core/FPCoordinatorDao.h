@@ -149,6 +149,8 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
 
 - (NSInteger)numUnsyncedEnvironmentLogsForUser:(FPUser *)user;
 
+- (NSInteger)totalNumUnsyncedEntitiesForUser:(FPUser *)user;
+
 - (BOOL)doesUserHaveAnyUnsyncedEntities:(FPUser *)user;
 
 - (void)deleteRemoteAuthenticationTokenWithRemoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
@@ -225,6 +227,9 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
 
 - (NSArray *)vehiclesForUser:(FPUser *)user
                        error:(PELMDaoErrorBlk)errorBlk;
+
+- (NSArray *)unsyncedVehiclesForUser:(FPUser *)user
+                               error:(PELMDaoErrorBlk)errorBlk;
 
 - (FPUser *)userForVehicle:(FPVehicle *)vehicle
                      error:(PELMDaoErrorBlk)errorBlk;

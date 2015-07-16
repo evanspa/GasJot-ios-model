@@ -560,6 +560,67 @@ version of entity not found!  It's global ID is: [%@]", [entity globalIdentifier
                                       error:errorBlk];
 }
 
++ (NSArray *)unsyncedEntitiesForParentEntity:(PELMModelSupport *)parentEntity
+                       parentEntityMainTable:(NSString *)parentEntityMainTable
+                 parentEntityMainRsConverter:(entityFromResultSetBlk)parentEntityMainRsConverter
+                  parentEntityMasterIdColumn:(NSString *)parentEntityMasterIdColumn
+                    parentEntityMainIdColumn:(NSString *)parentEntityMainIdColumn
+                           entityMasterTable:(NSString *)entityMasterTable
+              masterEntityResultSetConverter:(entityFromResultSetBlk)masterEntityResultSetConverter
+                             entityMainTable:(NSString *)entityMainTable
+                mainEntityResultSetConverter:(entityFromResultSetBlk)mainEntityResultSetConverter
+                           comparatorForSort:(NSComparisonResult(^)(id, id))comparatorForSort
+                         orderByDomainColumn:(NSString *)orderByDomainColumn
+                orderByDomainColumnDirection:(NSString *)orderByDomainColumnDirection
+                                          db:(FMDatabase *)db
+                                       error:(PELMDaoErrorBlk)errorBlk {
+  NSString *(^masterQueryTransformer)(NSString *) = ^ NSString *(NSString *qry) {
+    if (orderByDomainColumn) {
+      qry = [qry stringByAppendingFormat:@" ORDER BY mstr.%@", orderByDomainColumn];
+      if (orderByDomainColumnDirection) {
+        qry = [qry stringByAppendingFormat:@" %@", orderByDomainColumnDirection];
+      }
+    }
+    return qry;
+  };
+  NSArray *(^argsArrayTransformer)(NSArray *) = ^ NSArray *(NSArray *argsArray) {
+    return argsArray;
+  };
+  NSString *(^mainQueryTransformer)(NSString *) = ^ NSString *(NSString *qry) {
+    qry = [qry stringByAppendingFormat:@" AND %@ = 0", COL_MAN_SYNCED];
+    if (orderByDomainColumn) {
+      qry = [qry stringByAppendingFormat:@" ORDER BY %@", orderByDomainColumn];
+      if (orderByDomainColumnDirection) {
+        qry = [qry stringByAppendingFormat:@" %@", orderByDomainColumnDirection];
+      }
+    }
+    return qry;
+  };
+  NSArray *(^entitiesFilter)(NSArray *) = nil;
+  if (comparatorForSort) {
+    entitiesFilter = ^ NSArray *(NSArray *entities) {
+      return [entities sortedArrayUsingComparator:comparatorForSort];
+    };
+  }
+  return [PELMUtils entitiesForParentEntity:parentEntity
+                      parentEntityMainTable:parentEntityMainTable
+                parentEntityMainRsConverter:parentEntityMainRsConverter
+                 parentEntityMasterIdColumn:parentEntityMasterIdColumn
+                   parentEntityMainIdColumn:parentEntityMainIdColumn
+                                   pageSize:nil
+                          entityMasterTable:entityMasterTable
+             masterEntityResultSetConverter:masterEntityResultSetConverter
+                            entityMainTable:entityMainTable
+               mainEntityResultSetConverter:mainEntityResultSetConverter
+                     masterQueryTransformer:masterQueryTransformer
+                 masterArgsArrayTransformer:argsArrayTransformer
+                       mainQueryTransformer:mainQueryTransformer
+                   mainArgsArrayTransformer:argsArrayTransformer
+                             entitiesFilter:entitiesFilter
+                                         db:db
+                                      error:errorBlk];
+}
+
 + (NSArray *)entitiesForParentEntity:(PELMModelSupport *)parentEntity
                parentEntityMainTable:(NSString *)parentEntityMainTable
          parentEntityMainRsConverter:(entityFromResultSetBlk)parentEntityMainRsConverter

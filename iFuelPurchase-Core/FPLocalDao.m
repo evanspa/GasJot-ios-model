@@ -224,6 +224,13 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   return [self numUnsyncedEntitiesForUser:user mainEntityTable:TBL_MAIN_ENV_LOG];
 }
 
+- (NSInteger)totalNumUnsyncedEntitiesForUser:(FPUser *)user {
+  return [self numUnsyncedVehiclesForUser:user] +
+    [self numUnsyncedFuelStationsForUser:user] +
+    [self numUnsyncedFuelPurchaseLogsForUser:user] +
+    [self numUnsyncedEnvironmentLogsForUser:user];
+}
+
 - (void)saveNewLocalUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk {
   [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
     [self saveNewLocalUser:user db:db error:errorBlk];
@@ -600,6 +607,34 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
     vehicles = [self vehiclesForUser:user db:db error:errorBlk];
   }];
   return vehicles;
+}
+
+- (NSArray *)unsyncedVehiclesForUser:(FPUser *)user
+                               error:(PELMDaoErrorBlk)errorBlk {
+  __block NSArray *vehicles = @[];
+  [_databaseQueue inDatabase:^(FMDatabase *db) {
+    vehicles = [self unsyncedVehiclesForUser:user db:db error:errorBlk];
+  }];
+  return vehicles;
+}
+
+- (NSArray *)unsyncedVehiclesForUser:(FPUser *)user
+                                  db:(FMDatabase *)db
+                               error:(PELMDaoErrorBlk)errorBlk {
+  return [PELMUtils unsyncedEntitiesForParentEntity:user
+                              parentEntityMainTable:TBL_MAIN_USER
+                        parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainUserFromResultSet:rs];}
+                         parentEntityMasterIdColumn:COL_MASTER_USER_ID
+                           parentEntityMainIdColumn:COL_MAIN_USER_ID
+                                  entityMasterTable:TBL_MASTER_VEHICLE
+                     masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterVehicleFromResultSet:rs];}
+                                    entityMainTable:TBL_MAIN_VEHICLE
+                       mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainVehicleFromResultSet:rs];}
+                                  comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPVehicle *)o2 name] compare:[(FPVehicle *)o1 name]];}
+                                orderByDomainColumn:COL_VEH_NAME
+                       orderByDomainColumnDirection:@"ASC"
+                                                 db:db
+                                              error:errorBlk];
 }
 
 - (NSArray *)vehiclesForUser:(FPUser *)user

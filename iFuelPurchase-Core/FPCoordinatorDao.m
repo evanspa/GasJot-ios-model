@@ -936,11 +936,12 @@
   return [_localDao numUnsyncedEnvironmentLogsForUser:user];
 }
 
+- (NSInteger)totalNumUnsyncedEntitiesForUser:(FPUser *)user {
+  return [_localDao totalNumUnsyncedEntitiesForUser:user];
+}
+
 - (BOOL)doesUserHaveAnyUnsyncedEntities:(FPUser *)user {
-  return ([self numUnsyncedVehiclesForUser:user] > 0) ||
-         ([self numUnsyncedFuelStationsForUser:user] > 0) ||
-         ([self numUnsyncedFuelPurchaseLogsForUser:user] > 0)||
-         ([self numUnsyncedEnvironmentLogsForUser:user] > 0);
+  return ([self totalNumUnsyncedEntitiesForUser:user] > 0);
 }
 
 - (void)deleteRemoteAuthenticationTokenWithRemoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
@@ -1155,6 +1156,11 @@
                        error:(PELMDaoErrorBlk)errorBlk {
   return [_localDao vehiclesForUser:user
                               error:errorBlk];
+}
+
+- (NSArray *)unsyncedVehiclesForUser:(FPUser *)user
+                               error:(PELMDaoErrorBlk)errorBlk {
+  return [_localDao unsyncedVehiclesForUser:user error:errorBlk];
 }
 
 - (FPUser *)userForVehicle:(FPVehicle *)vehicle
