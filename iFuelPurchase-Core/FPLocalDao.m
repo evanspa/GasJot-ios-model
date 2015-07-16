@@ -621,10 +621,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
 - (NSArray *)unsyncedVehiclesForUser:(FPUser *)user
                                   db:(FMDatabase *)db
                                error:(PELMDaoErrorBlk)errorBlk {
-  
-  
-  
-  
   return [PELMUtils unsyncedEntitiesForParentEntity:user
                               parentEntityMainTable:TBL_MAIN_USER
                         parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainUserFromResultSet:rs];}
@@ -928,9 +924,37 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainFuelStationFromResultSet:rs];}
                           comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPFuelStation *)o2 name] compare:[(FPFuelStation *)o1 name]];}
                         orderByDomainColumn:COL_FUELST_NAME
-               orderByDomainColumnDirection:@"DESC"
+               orderByDomainColumnDirection:@"ASC"
                                          db:db
                                       error:errorBlk];
+}
+
+- (NSArray *)unsyncedFuelStationsForUser:(FPUser *)user
+                                   error:(PELMDaoErrorBlk)errorBlk {
+  __block NSArray *fuelstations = @[];
+  [_databaseQueue inDatabase:^(FMDatabase *db) {
+    fuelstations = [self unsyncedFuelStationsForUser:user db:db error:errorBlk];
+  }];
+  return fuelstations;
+}
+
+- (NSArray *)unsyncedFuelStationsForUser:(FPUser *)user
+                                      db:(FMDatabase *)db
+                                   error:(PELMDaoErrorBlk)errorBlk {
+  return [PELMUtils unsyncedEntitiesForParentEntity:user
+                              parentEntityMainTable:TBL_MAIN_USER
+                        parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainUserFromResultSet:rs];}
+                         parentEntityMasterIdColumn:COL_MASTER_USER_ID
+                           parentEntityMainIdColumn:COL_MAIN_USER_ID
+                                  entityMasterTable:TBL_MASTER_FUEL_STATION
+                     masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelStationFromResultSet:rs];}
+                                    entityMainTable:TBL_MAIN_FUEL_STATION
+                       mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainFuelStationFromResultSet:rs];}
+                                  comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPFuelStation *)o2 name] compare:[(FPFuelStation *)o1 name]];}
+                                orderByDomainColumn:COL_FUELST_NAME
+                       orderByDomainColumnDirection:@"ASC"
+                                                 db:db
+                                              error:errorBlk];
 }
 
 - (NSArray *)fuelStationsWithNonNilLocationForUser:(FPUser *)user
@@ -1272,6 +1296,34 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                      error:errorBlk];
   }];
   return fpLogs;
+}
+
+- (NSArray *)unsyncedFuelPurchaseLogsForUser:(FPUser *)user
+                                       error:(PELMDaoErrorBlk)errorBlk {
+  __block NSArray *fpLogs = @[];
+  [_databaseQueue inDatabase:^(FMDatabase *db) {
+    fpLogs = [self unsyncedFuelPurchaseLogsForUser:user db:db error:errorBlk];
+  }];
+  return fpLogs;
+}
+
+- (NSArray *)unsyncedFuelPurchaseLogsForUser:(FPUser *)user
+                                          db:(FMDatabase *)db
+                                       error:(PELMDaoErrorBlk)errorBlk {
+  return [PELMUtils unsyncedEntitiesForParentEntity:user
+                              parentEntityMainTable:TBL_MAIN_USER
+                        parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainUserFromResultSet:rs];}
+                         parentEntityMasterIdColumn:COL_MASTER_USER_ID
+                           parentEntityMainIdColumn:COL_MAIN_USER_ID
+                                  entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
+                     masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
+                                    entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                       mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSet:rs];}
+                                  comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPFuelPurchaseLog *)o2 purchasedAt] compare:[(FPFuelPurchaseLog *)o1 purchasedAt]];}
+                                orderByDomainColumn:COL_FUELPL_PURCHASED_AT
+                       orderByDomainColumnDirection:@"DESC"
+                                                 db:db
+                                              error:errorBlk];
 }
 
 - (NSInteger)numFuelPurchaseLogsForVehicle:(FPVehicle *)vehicle
@@ -2038,6 +2090,34 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                      error:errorBlk];
   }];
   return envLogs;
+}
+
+- (NSArray *)unsyncedEnvironmentLogsForUser:(FPUser *)user
+                                      error:(PELMDaoErrorBlk)errorBlk {
+  __block NSArray *envLogs = @[];
+  [_databaseQueue inDatabase:^(FMDatabase *db) {
+    envLogs = [self unsyncedEnvironmentLogsForUser:user db:db error:errorBlk];
+  }];
+  return envLogs;
+}
+
+- (NSArray *)unsyncedEnvironmentLogsForUser:(FPUser *)user
+                                         db:(FMDatabase *)db
+                                      error:(PELMDaoErrorBlk)errorBlk {
+  return [PELMUtils unsyncedEntitiesForParentEntity:user
+                              parentEntityMainTable:TBL_MAIN_USER
+                        parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainUserFromResultSet:rs];}
+                         parentEntityMasterIdColumn:COL_MASTER_USER_ID
+                           parentEntityMainIdColumn:COL_MAIN_USER_ID
+                                  entityMasterTable:TBL_MASTER_ENV_LOG
+                     masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterEnvironmentLogFromResultSet:rs];}
+                                    entityMainTable:TBL_MAIN_ENV_LOG
+                       mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainEnvironmentLogFromResultSet:rs];}
+                                  comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPEnvironmentLog *)o2 logDate] compare:[(FPEnvironmentLog *)o1 logDate]];}
+                                orderByDomainColumn:COL_ENVL_LOG_DT
+                       orderByDomainColumnDirection:@"DESC"
+                                                 db:db
+                                              error:errorBlk];
 }
 
 - (NSInteger)numEnvironmentLogsForVehicle:(FPVehicle *)vehicle

@@ -184,6 +184,9 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
 - (NSArray *)fuelStationsForUser:(FPUser *)user
                            error:(PELMDaoErrorBlk)errorBlk;
 
+- (NSArray *)unsyncedFuelStationsForUser:(FPUser *)user
+                                   error:(PELMDaoErrorBlk)errorBlk;
+
 - (FPUser *)userForFuelStation:(FPFuelStation *)fuelStation
                          error:(PELMDaoErrorBlk)errorBlk;
 
@@ -255,6 +258,9 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
 - (NSArray *)fuelPurchaseLogsForUser:(FPUser *)user
                             pageSize:(NSInteger)pageSize
                                error:(PELMDaoErrorBlk)errorBlk;
+
+- (NSArray *)unsyncedFuelPurchaseLogsForUser:(FPUser *)user
+                                       error:(PELMDaoErrorBlk)errorBlk;
 
 - (NSArray *)fuelPurchaseLogsForUser:(FPUser *)user
                             pageSize:(NSInteger)pageSize
@@ -381,6 +387,9 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
 - (NSArray *)environmentLogsForUser:(FPUser *)user
                            pageSize:(NSInteger)pageSize
                               error:(PELMDaoErrorBlk)errorBlk;
+
+- (NSArray *)unsyncedEnvironmentLogsForUser:(FPUser *)user
+                                      error:(PELMDaoErrorBlk)errorBlk;
 
 - (NSArray *)environmentLogsForUser:(FPUser *)user
                            pageSize:(NSInteger)pageSize

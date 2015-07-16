@@ -1280,6 +1280,11 @@
                                   error:errorBlk];
 }
 
+- (NSArray *)unsyncedFuelStationsForUser:(FPUser *)user
+                                   error:(PELMDaoErrorBlk)errorBlk {
+  return [_localDao unsyncedFuelStationsForUser:user error:errorBlk];
+}
+
 - (FPUser *)userForFuelStation:(FPFuelStation *)fuelStation
                          error:(PELMDaoErrorBlk)errorBlk {
   return [_localDao userForFuelStation:fuelStation error:errorBlk];
@@ -1410,6 +1415,11 @@
                               pageSize:pageSize
                       beforeDateLogged:nil
                                  error:errorBlk];
+}
+
+- (NSArray *)unsyncedFuelPurchaseLogsForUser:(FPUser *)user
+                                       error:(PELMDaoErrorBlk)errorBlk {
+  return [_localDao unsyncedFuelPurchaseLogsForUser:user error:errorBlk];
 }
 
 - (NSArray *)fuelPurchaseLogsForUser:(FPUser *)user
@@ -1698,6 +1708,11 @@
                                   pageSize:pageSize
                           beforeDateLogged:beforeDateLogged
                                      error:errorBlk];
+}
+
+- (NSArray *)unsyncedEnvironmentLogsForUser:(FPUser *)user
+                                      error:(PELMDaoErrorBlk)errorBlk {
+  return [_localDao unsyncedEnvironmentLogsForUser:user error:errorBlk];
 }
 
 - (NSInteger)numEnvironmentLogsForVehicle:(FPVehicle *)vehicle

@@ -294,6 +294,9 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
 - (NSArray *)fuelStationsForUser:(FPUser *)user
                            error:(PELMDaoErrorBlk)errorBlk;
 
+- (NSArray *)unsyncedFuelStationsForUser:(FPUser *)user
+                                   error:(PELMDaoErrorBlk)errorBlk;
+
 - (FPUser *)userForFuelStation:(FPFuelStation *)fuelStation
                          error:(PELMDaoErrorBlk)errorBlk;
 
@@ -360,6 +363,9 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
 - (NSArray *)fuelPurchaseLogsForUser:(FPUser *)user
                             pageSize:(NSInteger)pageSize
                                error:(PELMDaoErrorBlk)errorBlk;
+
+- (NSArray *)unsyncedFuelPurchaseLogsForUser:(FPUser *)user
+                                       error:(PELMDaoErrorBlk)errorBlk;
 
 - (NSArray *)fuelPurchaseLogsForUser:(FPUser *)user
                             pageSize:(NSInteger)pageSize
@@ -485,6 +491,9 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
 - (NSArray *)environmentLogsForUser:(FPUser *)user
                            pageSize:(NSInteger)pageSize
                               error:(PELMDaoErrorBlk)errorBlk;
+
+- (NSArray *)unsyncedEnvironmentLogsForUser:(FPUser *)user
+                                      error:(PELMDaoErrorBlk)errorBlk;
 
 - (NSArray *)environmentLogsForUser:(FPUser *)user
                            pageSize:(NSInteger)pageSize
