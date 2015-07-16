@@ -787,14 +787,12 @@
   }
   NSDecimalNumber *individualEntitySyncProgress = [[NSDecimalNumber one] decimalNumberByDividingBy:[NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%ld", (long)totalNumToSync]]];
   __block NSInteger totalSyncAttempted = 0;
-  
   void (^incrementSyncAttemptedAndCheckDoneness)(void) = ^{
     totalSyncAttempted++;
     if (totalSyncAttempted == totalNumToSync) {
       allDoneBlk();
     }
   };
-  
   void (^commonSuccessBlk)(id) = ^(id entity) {
     if (successBlk) successBlk([individualEntitySyncProgress floatValue]);
     incrementSyncAttemptedAndCheckDoneness();
@@ -813,7 +811,7 @@
   };
   void (^commonAuthReqdBlk)(void) = ^{
     if (authRequiredBlk) authRequiredBlk([individualEntitySyncProgress floatValue]);
-    incrementSyncAttemptedAndCheckDoneness();
+    allDoneBlk();
   };
   void (^commonSyncSkippedBlk)(void) = ^{
     incrementSyncAttemptedAndCheckDoneness();
@@ -822,93 +820,89 @@
     [self flushUnsyncedChangesToEntities:fpLogsToSync
                                   syncer:^(PELMMainSupport *entity){[self flushUnsyncedChangesToFuelPurchaseLog:(FPFuelPurchaseLog *)entity
                                                                                                         forUser:user
-                                                                                                 addlSuccessBlk:commonSuccessBlk
-                                                                                         addlRemoteStoreBusyBlk:commonRemoteStoreyBusyBlk
-                                                                                         addlTempRemoteErrorBlk:commonTempRemoteErrorBlk
-                                                                                             addlRemoteErrorBlk:commonRemoteErrorBlk
-                                                                                            addlAuthRequiredBlk:commonAuthReqdBlk
-                                                                                   skippedDueToVehicleNotSynced:commonSyncSkippedBlk
-                                                                               skippedDueToFuelStationNotSynced:commonSyncSkippedBlk
+                                                                                                 addlSuccessBlk:^(id e){ commonSuccessBlk(e); }
+                                                                                         addlRemoteStoreBusyBlk:^(NSDate *d) {commonRemoteStoreyBusyBlk(d); }
+                                                                                         addlTempRemoteErrorBlk:^{ commonTempRemoteErrorBlk(); }
+                                                                                             addlRemoteErrorBlk:^(NSInteger m) {commonRemoteErrorBlk(m);}
+                                                                                            addlAuthRequiredBlk:^{ commonAuthReqdBlk(); }
+                                                                                   skippedDueToVehicleNotSynced:^{ commonSyncSkippedBlk(); }
+                                                                               skippedDueToFuelStationNotSynced:^{ commonSyncSkippedBlk(); }
                                                                                                           error:errorBlk];}];
   };
   void (^syncEnvLogs)(void) = ^{
     [self flushUnsyncedChangesToEntities:envLogsToSync
                                   syncer:^(PELMMainSupport *entity){[self flushUnsyncedChangesToEnvironmentLog:(FPEnvironmentLog *)entity
                                                                                                        forUser:user
-                                                                                                addlSuccessBlk:commonSuccessBlk
-                                                                                        addlRemoteStoreBusyBlk:commonRemoteStoreyBusyBlk
-                                                                                        addlTempRemoteErrorBlk:commonTempRemoteErrorBlk
-                                                                                            addlRemoteErrorBlk:commonRemoteErrorBlk
-                                                                                           addlAuthRequiredBlk:commonAuthReqdBlk
-                                                                                  skippedDueToVehicleNotSynced:commonSyncSkippedBlk
+                                                                                                addlSuccessBlk:^(id e){ commonSuccessBlk(e); }
+                                                                                        addlRemoteStoreBusyBlk:^(NSDate *d) {commonRemoteStoreyBusyBlk(d); }
+                                                                                        addlTempRemoteErrorBlk:^{ commonTempRemoteErrorBlk(); }
+                                                                                            addlRemoteErrorBlk:^(NSInteger m) {commonRemoteErrorBlk(m);}
+                                                                                           addlAuthRequiredBlk:^{ commonAuthReqdBlk(); }
+                                                                                  skippedDueToVehicleNotSynced:^{ commonSyncSkippedBlk(); }
                                                                                                          error:errorBlk];}];
   };
-  
-  __block NSInteger totalVehiclesSynced = 0;
+  __block NSInteger totalVehiclesSyncAttempted = 0;
   __block NSInteger totalFuelStationsSynced = 0;
-  
   NSInteger totalNumVehiclesToSync = [vehiclesToSync count];
   NSInteger totalNumFuelStationsToSync = [fuelStationsToSync count];
   __block BOOL haveSyncedFpLogs = NO;
-  
   // FYI, we won't have a concurrency issue with the inner-most calls to syncFpLogs
   // because all completion blocks associated with network calls execute in a serial
   // queue.  This is a guarantee made by our remote store DAO.  So, in the case where
   // we have vehicles, fuelstations and fp logs to sync, we're guaranteed that syncFpLogs
   // will only get invoked once.
-  
   if (totalNumVehiclesToSync > 0) {
+    void (^vehicleSyncAttempted)(void) = ^{
+      totalVehiclesSyncAttempted++;
+      if (totalVehiclesSyncAttempted == totalNumVehiclesToSync) {
+        syncEnvLogs();
+        if (totalNumFuelStationsToSync > 0) {
+          if (totalFuelStationsSynced == totalNumFuelStationsToSync) {
+            if (!haveSyncedFpLogs) {
+              haveSyncedFpLogs = YES;
+              syncFpLogs();
+            }
+          }
+        } else {
+          syncFpLogs();
+        }
+      }
+    };
     [self flushUnsyncedChangesToEntities:vehiclesToSync
                                   syncer:^(PELMMainSupport *entity){[self flushUnsyncedChangesToVehicle:(FPVehicle *)entity
                                                                                                 forUser:user
-                                                                                         addlSuccessBlk:^(id e) {
-                                                                                           commonSuccessBlk(e);
-                                                                                           totalVehiclesSynced++;
-                                                                                           if (totalVehiclesSynced == totalNumVehiclesToSync) {
-                                                                                             syncEnvLogs();
-                                                                                             if (totalNumFuelStationsToSync > 0) {
-                                                                                               if (totalFuelStationsSynced == totalNumFuelStationsToSync) {
-                                                                                                 if (!haveSyncedFpLogs) {
-                                                                                                   haveSyncedFpLogs = YES;
-                                                                                                   syncFpLogs();
-                                                                                                 }
-                                                                                               }
-                                                                                             } else {
-                                                                                               syncFpLogs();
-                                                                                             }
-                                                                                           }
-                                                                                         }
-                                                                                 addlRemoteStoreBusyBlk:commonRemoteStoreyBusyBlk
-                                                                                 addlTempRemoteErrorBlk:commonTempRemoteErrorBlk
-                                                                                     addlRemoteErrorBlk:commonRemoteErrorBlk
+                                                                                         addlSuccessBlk:^(id e) { commonSuccessBlk(e); vehicleSyncAttempted(); }
+                                                                                 addlRemoteStoreBusyBlk:^(NSDate *d) { commonRemoteStoreyBusyBlk(d); vehicleSyncAttempted(); }
+                                                                                 addlTempRemoteErrorBlk:^{ commonTempRemoteErrorBlk(); vehicleSyncAttempted(); }
+                                                                                     addlRemoteErrorBlk:^(NSInteger mask) { commonRemoteErrorBlk(mask); vehicleSyncAttempted(); }
                                                                                     addlAuthRequiredBlk:commonAuthReqdBlk
                                                                                                   error:errorBlk];}];
   } else {
     syncEnvLogs();
   }
   if (totalNumFuelStationsToSync > 0) {
+    void (^fuelStationSyncAttempted)(void) = ^{
+      totalFuelStationsSynced++;
+      if (totalFuelStationsSynced == totalNumFuelStationsToSync) {
+        if (totalNumVehiclesToSync > 0) {
+          if (totalVehiclesSyncAttempted == totalNumVehiclesToSync) {
+            if (!haveSyncedFpLogs) {
+              haveSyncedFpLogs = YES;
+              syncFpLogs();
+            }
+          }
+        } else {
+          syncFpLogs();
+        }
+      }
+    };
     [self flushUnsyncedChangesToEntities:fuelStationsToSync
                                   syncer:^(PELMMainSupport *entity){[self flushUnsyncedChangesToFuelStation:(FPFuelStation *)entity
                                                                                                     forUser:user
-                                                                                             addlSuccessBlk:^(id e) {
-                                                                                               commonSuccessBlk(e);
-                                                                                               totalFuelStationsSynced++;
-                                                                                               if (totalFuelStationsSynced == totalNumFuelStationsToSync) {
-                                                                                                 if (totalNumVehiclesToSync > 0) {
-                                                                                                   if (totalVehiclesSynced == totalNumVehiclesToSync) {
-                                                                                                     if (!haveSyncedFpLogs) {
-                                                                                                       haveSyncedFpLogs = YES;
-                                                                                                       syncFpLogs();
-                                                                                                     }
-                                                                                                   }
-                                                                                                 } else {
-                                                                                                   syncFpLogs();
-                                                                                                 }
-                                                                                               }
-                                                                                             }
-                                                                                     addlRemoteStoreBusyBlk:commonRemoteStoreyBusyBlk
-                                                                                     addlTempRemoteErrorBlk:commonTempRemoteErrorBlk
-                                                                                         addlRemoteErrorBlk:commonRemoteErrorBlk
+                                                                                             addlSuccessBlk:^(id e) { commonSuccessBlk(e); fuelStationSyncAttempted(); }
+                                                                                     addlRemoteStoreBusyBlk:^(NSDate *d) { commonRemoteStoreyBusyBlk(d); fuelStationSyncAttempted(); }
+                                                                                     addlTempRemoteErrorBlk:^{ commonTempRemoteErrorBlk(); fuelStationSyncAttempted(); }
+                                                                                         addlRemoteErrorBlk:^(NSInteger mask) { commonRemoteErrorBlk(mask); fuelStationSyncAttempted(); }
                                                                                         addlAuthRequiredBlk:commonAuthReqdBlk
                                                                                                       error:errorBlk];}];
   }

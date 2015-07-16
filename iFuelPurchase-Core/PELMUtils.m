@@ -1363,16 +1363,17 @@ Entity: %@", entity]
                      db:db
                   error:errorBlk];
   };
-  __block NSArray *entities = nil;
+  __block NSArray *resultEntities = nil;
+  NSMutableArray *entitesToSync = [NSMutableArray array];
   [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
-    entities =
+    resultEntities =
     [PELMUtils mainEntitiesFromQuery:query
                          entityTable:mainTable
                            argsArray:@[]
                          rsConverter:entityFromResultSet
                                   db:db
                                error:errorBlk];
-    for (PELMMainSupport *entity in entities) {
+    for (PELMMainSupport *entity in resultEntities) {
       if (![entity editInProgress] &&
           ![entity syncInProgress] &&
           ![entity inConflict] &&
@@ -1380,24 +1381,26 @@ Entity: %@", entity]
           (([entity syncErrMask] == nil) ||
            ([entity syncErrMask].integerValue <= 0)) && // less than zero means it represents a system connectivity-related issue (thus temporary); zero occurs if no explicit err-mask header was in response
           (([entity syncHttpRespCode] == nil) ||
-           ([entity syncHttpRespCode].integerValue == 401) || 
+           ([entity syncHttpRespCode].integerValue == 401) ||
            ([entity syncHttpRespCode].integerValue == 503) ||
            ([entity syncHttpRespCode].integerValue == 502) ||
            ([entity syncHttpRespCode].integerValue == 504) ||
            ([entity syncHttpRespCode].integerValue == 500)) && // each of these err codes can be temporary, so even if the previous sync attempt yielded one of these, we can still try again on the next attempt
           (([entity syncRetryAt] == nil) ||
            ([NSDate date] > [entity syncRetryAt]))) {
-        if (filterBlk) {
-          if (filterBlk(entity)) {
-            markSyncInProgressAction(entity, db);
+            if (filterBlk) {
+              if (filterBlk(entity)) {
+                markSyncInProgressAction(entity, db);
+                [entitesToSync addObject:entity];
+              }
+            } else {
+              markSyncInProgressAction(entity, db); // no filter provided, therefore we do action
+              [entitesToSync addObject:entity];
+            }
           }
-        } else {
-          markSyncInProgressAction(entity, db); // no filter provided, therefore we do action
-        }
-      }
     }
   }];
-  return entities;
+  return entitesToSync;
 }
 
 - (NSArray *)markEntitiesAsSyncInProgressInMainTable:(NSString *)mainTable
