@@ -138,7 +138,6 @@ FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MASTER_ENV_LOG,
 %@ INTEGER, \
 %@ INTEGER, \
 %@ INTEGER, \
-%@ INTEGER, \
 FOREIGN KEY (%@) REFERENCES %@(%@), \
 FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MAIN_ENV_LOG,
                    COL_LOCAL_ID,                       // col1
@@ -158,7 +157,6 @@ FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MAIN_ENV_LOG,
                    COL_MAN_SYNC_IN_PROGRESS,           // col14
                    COL_MAN_SYNCED,                     // col15
                    COL_MAN_IN_CONFLICT,                // col16
-                   COL_MAN_DELETED,                    // col16
                    COL_MAN_EDIT_COUNT,                 // col18
                    COL_MAN_SYNC_HTTP_RESP_CODE,        // col19
                    COL_MAN_SYNC_ERR_MASK,              // col20
@@ -241,7 +239,6 @@ FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MASTER_FUELPURCHASE_LOG,
 %@ INTEGER, \
 %@ INTEGER, \
 %@ INTEGER, \
-%@ INTEGER, \
 FOREIGN KEY (%@) REFERENCES %@(%@), \
 FOREIGN KEY (%@) REFERENCES %@(%@), \
 FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MAIN_FUELPURCHASE_LOG,
@@ -263,7 +260,6 @@ FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MAIN_FUELPURCHASE_LOG,
                    COL_MAN_SYNC_IN_PROGRESS,                // col16
                    COL_MAN_SYNCED,                          // col17
                    COL_MAN_IN_CONFLICT,                     // col18
-                   COL_MAN_DELETED,                         // col19
                    COL_MAN_EDIT_COUNT,                      // col20
                    COL_MAN_SYNC_HTTP_RESP_CODE,             // col21
                    COL_MAN_SYNC_ERR_MASK,                   // col22
@@ -335,7 +331,6 @@ FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MASTER_FUEL_STATION,
 %@ INTEGER, \
 %@ INTEGER, \
 %@ INTEGER, \
-%@ INTEGER, \
 FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MAIN_FUEL_STATION,
                    COL_LOCAL_ID,                       // col1
                    COL_MAIN_USER_ID,                   // col2
@@ -353,7 +348,6 @@ FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MAIN_FUEL_STATION,
                    COL_MAN_SYNC_IN_PROGRESS,           // col15
                    COL_MAN_SYNCED,                     // col16
                    COL_MAN_IN_CONFLICT,                // col17
-                   COL_MAN_DELETED,                    // col18
                    COL_MAN_EDIT_COUNT,                 // col19
                    COL_MAN_SYNC_HTTP_RESP_CODE,        // col20
                    COL_MAN_SYNC_ERR_MASK,              // col21
@@ -417,7 +411,6 @@ FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MASTER_VEHICLE,
 %@ INTEGER, \
 %@ INTEGER, \
 %@ INTEGER, \
-%@ INTEGER, \
 FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MAIN_VEHICLE,
                    COL_LOCAL_ID,                       // col1
                    COL_MAIN_USER_ID,                   // col2
@@ -432,7 +425,6 @@ FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MAIN_VEHICLE,
                    COL_MAN_SYNC_IN_PROGRESS,           // col10
                    COL_MAN_SYNCED,                     // col11
                    COL_MAN_IN_CONFLICT,                // col12
-                   COL_MAN_DELETED,                    // col13
                    COL_MAN_EDIT_COUNT,                 // col14
                    COL_MAN_SYNC_HTTP_RESP_CODE,        // col15
                    COL_MAN_SYNC_ERR_MASK,              // col16
@@ -493,7 +485,6 @@ FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MAIN_VEHICLE,
 %@ INTEGER, \
 %@ INTEGER, \
 %@ INTEGER, \
-%@ INTEGER, \
 FOREIGN KEY (%@) REFERENCES %@(%@))",
                    TBL_MAIN_USER,                      // table
                    COL_LOCAL_ID,                       // col1
@@ -510,7 +501,6 @@ FOREIGN KEY (%@) REFERENCES %@(%@))",
                    COL_MAN_SYNC_IN_PROGRESS,           // col13
                    COL_MAN_SYNCED,                     // col14
                    COL_MAN_IN_CONFLICT,                // col15
-                   COL_MAN_DELETED,                    // col16
                    COL_MAN_EDIT_COUNT,                 // col17
                    COL_MAN_SYNC_HTTP_RESP_CODE,        // col18
                    COL_MAN_SYNC_ERR_MASK,              // col19

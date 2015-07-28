@@ -33,7 +33,6 @@ FOUNDATION_EXPORT NSString * const FPEnvironmentLogsRelation;
                    syncInProgress:(BOOL)syncInProgress
                            synced:(BOOL)synced
                        inConflict:(BOOL)inConflict
-                          deleted:(BOOL)deleted
                         editCount:(NSUInteger)editCount
                  syncHttpRespCode:(NSNumber *)syncHttpRespCode
                       syncErrMask:(NSNumber *)syncErrMask

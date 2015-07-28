@@ -43,15 +43,13 @@ typedef void (^PELMRemoteMasterCompletionHandler)(NSString *, // auth token
 
 typedef void (^PELMRemoteMasterBusyBlk)(NSDate *);
 
-typedef void (^PELMRemoteMasterAuthReqdBlk)(PELMMainSupport *, HCAuthentication *);
+typedef void (^PELMRemoteMasterAuthReqdBlk)(HCAuthentication *);
 
-typedef void (^PELMRemoteMasterDeletionBlk)(PELMMainSupport *,
-                                            PELMRemoteMasterBusyBlk,
+typedef void (^PELMRemoteMasterDeletionBlk)(PELMRemoteMasterBusyBlk,
                                             PELMRemoteMasterAuthReqdBlk,
                                             PELMRemoteMasterCompletionHandler);
 
-typedef void (^PELMRemoteMasterSaveBlk)(PELMMainSupport *,
-                                        PELMRemoteMasterBusyBlk,
+typedef void (^PELMRemoteMasterSaveBlk)(PELMRemoteMasterBusyBlk,
                                         PELMRemoteMasterAuthReqdBlk,
                                         PELMRemoteMasterCompletionHandler);
 
@@ -83,21 +81,29 @@ void (^LogSyncLocal)(NSString *, NSInteger);
 
 - (id)initWithDatabaseQueue:(FMDatabaseQueue *)databaseQueue;
 
-#pragma mark - Syncing
+#pragma mark - Syncing and Deleting
 
 + (void)flushUnsyncedChangesToEntity:(PELMMainSupport *)entity
                   remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
                  remoteStoreErrorBlk:(void(^)(PELMMainSupport *, NSError *, NSNumber *))remoteStoreErrorBlk
-                   markAsConflictBlk:(void(^)(id, PELMMainSupport *))markAsConflictBlk
+                   markAsConflictBlk:(void(^)(id))markAsConflictBlk
    markAsSyncCompleteForNewEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCompleteForNewEntityBlk
 markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCompleteForExistingEntityBlk
- markAsSyncCompleteForDeletedEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCompleteForDeletedEntityBlk
                  authRequiredHandler:(PELMRemoteMasterAuthReqdBlk)authRequiredHandler
                      newAuthTokenBlk:(void(^)(NSString *))newAuthTokenBlk
-               remoteMasterDeleteBlk:(PELMRemoteMasterDeletionBlk)remoteMasterDeleteBlk
               remoteMasterSaveNewBlk:(PELMRemoteMasterSaveBlk)remoteMasterSaveNewBlk
          remoteMasterSaveExistingBlk:(PELMRemoteMasterSaveBlk)remoteMasterSaveExistingBlk
                localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrHandler;
+
++ (void)deleteEntity:(PELMMainSupport *)entity
+  remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
+ remoteStoreErrorBlk:(void(^)(PELMMainSupport *, NSError *, NSNumber *))remoteStoreErrorBlk
+   markAsConflictBlk:(void(^)(id))markAsConflictBlk
+   deleteCompleteBlk:(void(^)(void))markAsSyncCompleteForNewEntityBlk
+ authRequiredHandler:(PELMRemoteMasterAuthReqdBlk)authRequiredHandler
+     newAuthTokenBlk:(void(^)(NSString *))newAuthTokenBlk
+remoteMasterDeleteBlk:(PELMRemoteMasterDeletionBlk)remoteMasterDeleteBlk
+localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrHandler;
 
 + (void)cancelSyncInProgressForEntityTable:(NSString *)mainEntityTable
                                         db:(FMDatabase *)db
@@ -151,12 +157,6 @@ markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCom
                               mainUpdateStmt:(NSString *)mainUpdateStmt
                            mainUpdateArgsBlk:(NSArray *(^)(id))mainUpdateArgsBlk
                                        error:(PELMDaoErrorBlk)errorBlk;
-
-- (void)markAsDeletedImmediateSyncEntity:(PELMMainSupport *)entity
-                               mainTable:(NSString *)mainTable
-                          mainUpdateStmt:(NSString *)mainUpdateStmt
-                       mainUpdateArgsBlk:(NSArray *(^)(id))mainUpdateArgsBlk
-                                   error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)markAsSyncCompleteForNewEntity:(PELMMainSupport *)entity
                              mainTable:(NSString *)mainTable
@@ -352,7 +352,6 @@ markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCom
      editPrepInvariantChecks:(editPrepInvariantChecksBlk)editPrepInvariantChecks
            mainEntityUpdater:(mainEntityUpdaterBlk)mainEntityUpdater
            entityBeingSynced:(void(^)(void))entityBeingSynced
-               entityDeleted:(void(^)(void))entityDeleted
             entityInConflict:(void(^)(void))entityInConflict
                        error:(PELMDaoErrorBlk)errorBlk;
 
@@ -363,7 +362,6 @@ markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCom
           editPrepInvariantChecks:(editPrepInvariantChecksBlk)editPrepInvariantChecks
                 mainEntityUpdater:(mainEntityUpdaterBlk)mainEntityUpdater
                 entityBeingSynced:(void(^)(void))entityBeingSyncedBlk
-                    entityDeleted:(void(^)(void))entityDeletedBlk
                  entityInConflict:(void(^)(void))entityInConflictBlk
                             error:(PELMDaoErrorBlk)errorBlk;
 

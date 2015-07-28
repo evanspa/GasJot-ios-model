@@ -30,7 +30,6 @@ NSString * const COL_MAN_EDIT_IN_PROGRESS = @"edit_in_progress";
 NSString * const COL_MAN_SYNC_IN_PROGRESS = @"sync_in_progress";
 NSString * const COL_MAN_SYNCED = @"synced";
 NSString * const COL_MAN_IN_CONFLICT = @"in_conflict";
-NSString * const COL_MAN_DELETED = @"deleted";
 NSString * const COL_MAN_EDIT_COUNT = @"edit_count";
 NSString * const COL_MAN_SYNC_HTTP_RESP_CODE = @"sync_http_resp_code";
 NSString * const COL_MAN_SYNC_ERR_MASK = @"sync_http_resp_err_mask";

@@ -101,7 +101,6 @@ describe(@"FPCoordinatorDao", ^{
         [_coordDao prepareVehicleForEdit:vehicle
                                  forUser:user
                        entityBeingSynced:[_coordTestCtx entityBeingSyncedBlk]
-                           entityDeleted:[_coordTestCtx entityDeletedBlk]
                         entityInConflict:[_coordTestCtx entityInConflictBlk]
                                    error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[theValue(prepareForEditSuccess) should] beYes];

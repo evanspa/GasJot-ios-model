@@ -128,7 +128,6 @@ describe(@"FPCoordinatorDao", ^{
       [_coordDao prepareVehicleForEdit:newVehicle
                                forUser:user
                      entityBeingSynced:nil
-                         entityDeleted:nil
                       entityInConflict:nil
                                  error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [newVehicle setSyncErrMask:nil];
@@ -161,8 +160,7 @@ describe(@"FPCoordinatorDao", ^{
       [_coordDao prepareVehicleForEdit:newVehicle
                                forUser:user
                        entityBeingSynced:nil
-                         entityDeleted:nil
-                      entityInConflict:nil
+                        entityInConflict:nil
                                    error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [newVehicle setSyncRetryAt:nil];
       [_coordDao saveVehicle:newVehicle error:[_coordTestCtx newLocalSaveErrBlkMaker]()];

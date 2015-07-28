@@ -27,7 +27,6 @@
                    syncInProgress:(BOOL)syncInProgress
                            synced:(BOOL)synced
                        inConflict:(BOOL)inConflict
-                          deleted:(BOOL)deleted
                         editCount:(NSUInteger)editCount
                  syncHttpRespCode:(NSNumber *)syncHttpRespCode
                       syncErrMask:(NSNumber *)syncErrMask
@@ -47,7 +46,6 @@
     _syncInProgress = syncInProgress;
     _synced = synced;
     _inConflict = inConflict;
-    _deleted = deleted;
     _editCount = editCount;
     _syncHttpRespCode = syncHttpRespCode;
     _syncErrMask = syncErrMask;
@@ -65,7 +63,6 @@
   [self setSyncInProgress:[entity syncInProgress]];
   [self setSynced:[entity synced]];
   [self setInConflict:[entity inConflict]];
-  [self setDeleted:[entity deleted]];
   [self setEditCount:[entity editCount]];
   [self setSyncHttpRespCode:[entity syncHttpRespCode]];
   [self setSyncErrMask:[entity syncErrMask]];
@@ -97,7 +94,6 @@
       ([self syncInProgress] == [mainSupport syncInProgress]) &&
       ([self synced] == [mainSupport synced]) &&
       ([self inConflict] == [mainSupport inConflict]) &&
-      ([self deleted] == [mainSupport deleted]) &&
       [PEUtils isNumber:[self syncHttpRespCode] equalTo:[mainSupport syncHttpRespCode]] &&
       [PEUtils isNumber:[self syncErrMask] equalTo:[mainSupport syncErrMask]] &&
       hasEqualSyncRetryAtDates;
@@ -120,7 +116,6 @@
     [[NSNumber numberWithBool:[self syncInProgress]] hash] ^
     [[NSNumber numberWithBool:[self synced]] hash] ^
     [[NSNumber numberWithBool:[self inConflict]] hash] ^
-    [[NSNumber numberWithBool:[self deleted]] hash] ^
     [_syncHttpRespCode hash] ^
     [_syncErrMask hash] ^
     [_syncRetryAt hash];
@@ -129,7 +124,7 @@
 - (NSString *)description {
   return [NSString stringWithFormat:@"%@, date copied from master: [{%@}, {%f}], \
 edit in progress: [%@], sync in progress: [%@], \
-synced: [%@], in conflict: [%@], deleted: [%@], edit count: [%lu], \
+synced: [%@], in conflict: [%@], edit count: [%lu], \
 sync HTTP resp code: [%@], sync err mask: [%@], sync retry at: [%@]",
           [super description],
           _dateCopiedFromMaster,
@@ -138,7 +133,6 @@ sync HTTP resp code: [%@], sync err mask: [%@], sync retry at: [%@]",
           [PEUtils trueFalseFromBool:_syncInProgress],
           [PEUtils trueFalseFromBool:_synced],
           [PEUtils trueFalseFromBool:_inConflict],
-          [PEUtils trueFalseFromBool:_deleted],
           (unsigned long)_editCount,
           _syncHttpRespCode,
           _syncErrMask,

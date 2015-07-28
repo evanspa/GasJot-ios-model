@@ -45,7 +45,6 @@ PELMMainSupport * (^toMainSupport)(FMResultSet *, NSString *, NSDictionary *) = 
                                                syncInProgress:[rs boolForColumn:COL_MAN_SYNC_IN_PROGRESS]
                                                        synced:[rs boolForColumn:COL_MAN_SYNCED]
                                                    inConflict:[rs boolForColumn:COL_MAN_IN_CONFLICT]
-                                                      deleted:[rs boolForColumn:COL_MAN_DELETED]
                                                     editCount:[rs intForColumn:COL_MAN_EDIT_COUNT]
                                              syncHttpRespCode:[rs objectForColumnName:COL_MAN_SYNC_HTTP_RESP_CODE]
                                                   syncErrMask:[rs objectForColumnName:COL_MAN_SYNC_ERR_MASK]
@@ -69,13 +68,11 @@ PELMMainSupport * (^toMainSupport)(FMResultSet *, NSString *, NSDictionary *) = 
 + (void)flushUnsyncedChangesToEntity:(PELMMainSupport *)entity
                   remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
                  remoteStoreErrorBlk:(void(^)(PELMMainSupport *, NSError *, NSNumber *))remoteStoreErrorBlk
-                   markAsConflictBlk:(void(^)(id, PELMMainSupport *))markAsConflictBlk
+                   markAsConflictBlk:(void(^)(id))markAsConflictBlk
    markAsSyncCompleteForNewEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCompleteForNewEntityBlk
 markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCompleteForExistingEntityBlk
- markAsSyncCompleteForDeletedEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCompleteForDeletedEntityBlk
                  authRequiredHandler:(PELMRemoteMasterAuthReqdBlk)authRequiredHandler
                      newAuthTokenBlk:(void(^)(NSString *))newAuthTokenBlk
-               remoteMasterDeleteBlk:(PELMRemoteMasterDeletionBlk)remoteMasterDeleteBlk
               remoteMasterSaveNewBlk:(PELMRemoteMasterSaveBlk)remoteMasterSaveNewBlk
          remoteMasterSaveExistingBlk:(PELMRemoteMasterSaveBlk)remoteMasterSaveExistingBlk
                localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrHandler {
@@ -85,9 +82,6 @@ markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCom
     }
     PELMRemoteMasterBusyBlk remoteStoreBusyHandler = ^(NSDate *retryAfter) {
       remoteStoreBusyBlk(retryAfter);
-    };
-    void (^processConflict)(id) = ^ (id latestResourceModel) {
-      markAsConflictBlk(latestResourceModel, entity);
     };
     void (^nonDeleteSuccessfulSync)(PELMMainSupport *, BOOL) = ^(PELMMainSupport *respEntity, BOOL wasPut) {
       if (respEntity) {
@@ -112,23 +106,18 @@ markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCom
     void (^notifyUnsuccessfulSync)(NSError *, NSNumber *) = ^(NSError *error, NSNumber *httpStatusCode) {
       remoteStoreErrorBlk(entity, error, httpStatusCode);
     };
-    PELMRemoteMasterAuthReqdBlk authReqdWithNotification = ^(PELMMainSupport *entity, HCAuthentication *auth) {
-      authRequiredHandler(entity, auth);
-    };
-    if ([entity deleted]) {
+    if ([entity globalIdentifier]) {
       PELMRemoteMasterCompletionHandler remoteStoreComplHandler =
       ^(NSString *newAuthTkn, NSString *globalId, id resourceModel, NSDictionary *rels,
         NSDate *lastModified, BOOL isConflict, BOOL gone, BOOL notFound, BOOL movedPermanently,
         BOOL notModified, NSError *err, NSHTTPURLResponse *httpResp) {
         newAuthTokenBlk(newAuthTkn);
-        if (movedPermanently) {
+        if (movedPermanently) { // this block will get executed again
           [entity setGlobalIdentifier:globalId];
         } else if (isConflict) {
-          processConflict(resourceModel);
+          markAsConflictBlk(resourceModel);
         } else if (gone) {
-          // if we're supposed to delete the entity on the server, and the server
-          // is saying it's already gone, then, I guess we're good!  Sync success!
-          markAsSyncCompleteForDeletedEntityBlk(entity);
+          // weird - this should not happen
         } else if (notFound) {
           // weird - this should not happen
         } else if (notModified) {
@@ -140,79 +129,87 @@ markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCom
             notifyUnsuccessfulSync(err, nil);
           }
         } else {
-          markAsSyncCompleteForDeletedEntityBlk(entity);
+          nonDeleteSuccessfulSync(resourceModel, YES);
         }
       };
-      remoteMasterDeleteBlk(entity,
-                            remoteStoreBusyHandler,
-                            authReqdWithNotification,
-                            remoteStoreComplHandler);
+      remoteMasterSaveExistingBlk(remoteStoreBusyHandler, authRequiredHandler, remoteStoreComplHandler);
     } else {
-      if ([entity globalIdentifier]) {
-        PELMRemoteMasterCompletionHandler remoteStoreComplHandler =
-        ^(NSString *newAuthTkn, NSString *globalId, id resourceModel, NSDictionary *rels,
-          NSDate *lastModified, BOOL isConflict, BOOL gone, BOOL notFound, BOOL movedPermanently,
-          BOOL notModified, NSError *err, NSHTTPURLResponse *httpResp) {
-          newAuthTokenBlk(newAuthTkn);
-          if (movedPermanently) { // this block will get executed again
-            [entity setGlobalIdentifier:globalId];
-          } else if (isConflict) {
-            processConflict(resourceModel);
-          } else if (gone) {
-            // weird - this should not happen
-          } else if (notFound) {
-            // weird - this should not happen
-          } else if (notModified) {
-            // should not happen since we're doing a PUT
-          } else if (err) {
-            if (httpResp) { // will deduce that error is from server
-              notifyUnsuccessfulSync(err, [NSNumber numberWithInteger:[httpResp statusCode]]);
-            } else {  // will deduce that error is connecton-related
-              notifyUnsuccessfulSync(err, nil);
-            }
-          } else {
-            nonDeleteSuccessfulSync(resourceModel, YES);
+      PELMRemoteMasterCompletionHandler remoteStoreComplHandler =
+      ^(NSString *newAuthTkn, NSString *globalId, id resourceModel, NSDictionary *rels,
+        NSDate *lastModified, BOOL isConflict, BOOL gone, BOOL notFound, BOOL movedPermanently,
+        BOOL notModified, NSError *err, NSHTTPURLResponse *httpResp) {
+        newAuthTokenBlk(newAuthTkn);
+        if (movedPermanently) { // this block will get executed again
+          [entity setGlobalIdentifier:globalId];
+        } else if (isConflict) {
+          // weird - this should not happen
+        } else if (gone) {
+          // weird - this should not happen
+        } else if (notFound) {
+          // weird - this should not happen
+        } else if (notModified) {
+          // should not happen since we're doing a POST
+        } else if (err) {
+          if (httpResp) { // will deduce that error is from server
+            notifyUnsuccessfulSync(err, [NSNumber numberWithInteger:[httpResp statusCode]]);
+          } else {  // will deduce that error is connecton-related
+            notifyUnsuccessfulSync(err, nil);
           }
-        };
-        remoteMasterSaveExistingBlk(entity,
-                                    remoteStoreBusyHandler,
-                                    authReqdWithNotification,
-                                    remoteStoreComplHandler);
-      } else {
-        PELMRemoteMasterCompletionHandler remoteStoreComplHandler =
-        ^(NSString *newAuthTkn, NSString *globalId, id resourceModel, NSDictionary *rels,
-          NSDate *lastModified, BOOL isConflict, BOOL gone, BOOL notFound, BOOL movedPermanently,
-          BOOL notModified, NSError *err, NSHTTPURLResponse *httpResp) {
-          newAuthTokenBlk(newAuthTkn);
-          if (movedPermanently) { // this block will get executed again
-            [entity setGlobalIdentifier:globalId];
-          } else if (isConflict) {
-            // weird - this should not happen
-          } else if (gone) {
-            // weird - this should not happen
-          } else if (notFound) {
-            // weird - this should not happen
-          } else if (notModified) {
-            // should not happen since we're doing a POST
-          } else if (err) {
-            if (httpResp) { // will deduce that error is from server
-              notifyUnsuccessfulSync(err, [NSNumber numberWithInteger:[httpResp statusCode]]);
-            } else {  // will deduce that error is connecton-related
-              notifyUnsuccessfulSync(err, nil);
-            }
-          } else {
-            nonDeleteSuccessfulSync(resourceModel, NO);
-          }
-        };
-        if (remoteMasterSaveNewBlk) {
-          remoteMasterSaveNewBlk(entity,
-                                 remoteStoreBusyHandler,
-                                 authReqdWithNotification,
-                                 remoteStoreComplHandler);
+        } else {
+          nonDeleteSuccessfulSync(resourceModel, NO);
         }
+      };
+      if (remoteMasterSaveNewBlk) {
+        remoteMasterSaveNewBlk(remoteStoreBusyHandler, authRequiredHandler, remoteStoreComplHandler);
       }
     }
   }
+}
+
++ (void)deleteEntity:(PELMMainSupport *)entity
+  remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
+ remoteStoreErrorBlk:(void(^)(PELMMainSupport *, NSError *, NSNumber *))remoteStoreErrorBlk
+   markAsConflictBlk:(void(^)(id))markAsConflictBlk
+   deleteCompleteBlk:(void(^)(void))deleteCompleteBlk
+ authRequiredHandler:(PELMRemoteMasterAuthReqdBlk)authRequiredHandler
+     newAuthTokenBlk:(void(^)(NSString *))newAuthTokenBlk
+remoteMasterDeleteBlk:(PELMRemoteMasterDeletionBlk)remoteMasterDeleteBlk
+localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrHandler {
+  PELMRemoteMasterBusyBlk remoteStoreBusyHandler = ^(NSDate *retryAfter) {
+    remoteStoreBusyBlk(retryAfter);
+  };
+  void (^notifyUnsuccessfulDelete)(NSError *, NSNumber *) = ^(NSError *error, NSNumber *httpStatusCode) {
+    remoteStoreErrorBlk(entity, error, httpStatusCode);
+  };
+  PELMRemoteMasterCompletionHandler remoteStoreComplHandler =
+  ^(NSString *newAuthTkn, NSString *globalId, id resourceModel, NSDictionary *rels,
+    NSDate *lastModified, BOOL isConflict, BOOL gone, BOOL notFound, BOOL movedPermanently,
+    BOOL notModified, NSError *err, NSHTTPURLResponse *httpResp) {
+    newAuthTokenBlk(newAuthTkn);
+    if (movedPermanently) {
+      [entity setGlobalIdentifier:globalId];
+    } else if (isConflict) {
+      markAsConflictBlk(resourceModel);
+    } else if (gone) {
+      // if we're supposed to delete the entity on the server, and the server
+      // is saying it's already gone, then, I guess we're good!  Delete success!
+      deleteCompleteBlk();
+    } else if (notFound) {
+      // weird - this should not happen, but, we'll consider this delete success too.
+      deleteCompleteBlk();
+    } else if (notModified) {
+      // should not happen since we're doing a DELETE
+    } else if (err) {
+      if (httpResp) { // will deduce that error is from server
+        notifyUnsuccessfulDelete(err, [NSNumber numberWithInteger:[httpResp statusCode]]);
+      } else {  // will deduce that error is connecton-related
+        notifyUnsuccessfulDelete(err, nil);
+      }
+    } else {
+      deleteCompleteBlk();
+    }
+  };
+  remoteMasterDeleteBlk(remoteStoreBusyHandler, authRequiredHandler, remoteStoreComplHandler);
 }
 
 + (void)cancelSyncInProgressForEntityTable:(NSString *)mainEntityTable
@@ -357,25 +354,6 @@ version of entity not found!  It's global ID is: [%@]", [entity globalIdentifier
     [entity setSyncHttpRespCode:nil];
     [entity setSyncErrMask:nil];
     [entity setEditInProgress:NO];
-    [entity setSyncInProgress:YES];
-    [PELMUtils doUpdate:mainUpdateStmt
-              argsArray:mainUpdateArgsBlk(entity)
-                     db:db
-                  error:errorBlk];
-  }];
-}
-
-- (void)markAsDeletedImmediateSyncEntity:(PELMMainSupport *)entity
-                               mainTable:(NSString *)mainTable
-                          mainUpdateStmt:(NSString *)mainUpdateStmt
-                       mainUpdateArgsBlk:(NSArray *(^)(id))mainUpdateArgsBlk
-                                   error:(PELMDaoErrorBlk)errorBlk {
-  [PELMUtils saveEntityInvariantChecks:entity];
-  [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
-    [entity setSyncHttpRespCode:nil];
-    [entity setSyncErrMask:nil];
-    [entity setEditInProgress:NO];
-    [entity setDeleted:YES];
     [entity setSyncInProgress:YES];
     [PELMUtils doUpdate:mainUpdateStmt
               argsArray:mainUpdateArgsBlk(entity)
@@ -726,7 +704,6 @@ version of entity not found!  It's global ID is: [%@]", [entity globalIdentifier
                                    FROM %@ man \
                                    WHERE man.%@ = ? AND \
                                          man.%@ = 0 AND \
-                                         man.%@ = 0 AND \
                                          man.%@ IS NOT NULL) AND \
                    mstr.%@ IS NULL",
              entityMasterTable,
@@ -735,7 +712,6 @@ version of entity not found!  It's global ID is: [%@]", [entity globalIdentifier
              COL_GLOBAL_ID,
              entityMainTable,
              parentEntityMainIdColumn,
-             COL_MAN_DELETED,
              COL_MAN_IN_CONFLICT,
              COL_GLOBAL_ID,
              COL_MST_DELETED_DT];
@@ -795,10 +771,8 @@ version of entity not found!  It's global ID is: [%@]", [entity globalIdentifier
                      SELECT * \
                      FROM %@ \
                      WHERE %@ = ? AND \
-                           %@ = 0 AND \
                            %@ = 0", entityMainTable,
                      parentEntityMainIdColumn,
-                     COL_MAN_DELETED,
                      COL_MAN_IN_CONFLICT];
     NSArray *argsArray = @[[parentEntity localMainIdentifier]];
     qry = mainQueryTransformer(qry);
@@ -859,10 +833,8 @@ version of entity not found!  It's global ID is: [%@]", [entity globalIdentifier
                      SELECT * \
                      FROM %@ \
                      WHERE %@ = ? AND \
-                           %@ = 0 AND \
                            %@ = 0", entityMainTable,
                      parentEntityMainIdColumn,
-                     COL_MAN_DELETED,
                      COL_MAN_SYNCED];
     NSArray *argsArray = @[[parentEntity localMainIdentifier]];
     qry = mainQueryTransformer(qry);
@@ -1004,7 +976,6 @@ version of entity not found!  It's global ID is: [%@]", [entity globalIdentifier
                            FROM %@ innerman \
                            WHERE innerman.%@ = ? AND \
                                  innerman.%@ = 0 AND \
-                                 innerman.%@ = 0 AND \
                                  innerman.%@ IS NOT NULL) AND \
            mstr.%@ IS NULL",
      entityMasterTable,
@@ -1013,7 +984,6 @@ version of entity not found!  It's global ID is: [%@]", [entity globalIdentifier
      COL_GLOBAL_ID,
      entityMainTable,
      parentEntityMainIdColumn,
-     COL_MAN_DELETED,
      COL_MAN_IN_CONFLICT,
      COL_GLOBAL_ID,
      COL_MST_DELETED_DT];
@@ -1043,12 +1013,10 @@ version of entity not found!  It's global ID is: [%@]", [entity globalIdentifier
                      SELECT count(%@) \
                      FROM %@ \
                      WHERE %@ = ? AND \
-                     %@ = 0 AND \
-                     %@ = 0",
+                           %@ = 0",
                      COL_LOCAL_ID,
                      entityMainTable,
                      parentEntityMainIdColumn,
-                     COL_MAN_DELETED,
                      COL_MAN_IN_CONFLICT];
     qry = mainQueryTransformer(qry);
     NSArray *argsArray = @[[parentEntity localMainIdentifier]];
@@ -1433,7 +1401,6 @@ Entity: %@", entity]
      editPrepInvariantChecks:(editPrepInvariantChecksBlk)editPrepInvariantChecks
            mainEntityUpdater:(mainEntityUpdaterBlk)mainEntityUpdater
            entityBeingSynced:(void(^)(void))entityBeingSyncedBlk
-               entityDeleted:(void(^)(void))entityDeletedBlk
             entityInConflict:(void(^)(void))entityInConflictBlk
                        error:(PELMDaoErrorBlk)errorBlk {
   void (^actionIfEntityNotInMain)(void) = ^{
@@ -1484,10 +1451,6 @@ Entity: %@", entity]
       entityBeingSyncedBlk();
       return NO;
     }
-    if ([fetchedEntity deleted]) {
-      entityDeletedBlk();
-      return NO;
-    }
     if ([fetchedEntity inConflict]) {
       entityInConflictBlk();
       return NO;
@@ -1504,7 +1467,6 @@ Entity: %@", entity]
           editPrepInvariantChecks:(editPrepInvariantChecksBlk)editPrepInvariantChecks
                 mainEntityUpdater:(mainEntityUpdaterBlk)mainEntityUpdater
                 entityBeingSynced:(void(^)(void))entityBeingSyncedBlk
-                    entityDeleted:(void(^)(void))entityDeletedBlk
                  entityInConflict:(void(^)(void))entityInConflictBlk
                             error:(PELMDaoErrorBlk)errorBlk {
   NSAssert([entity localMainIdentifier], @"Entity does not have a localMainIdentifier.");
@@ -1518,7 +1480,6 @@ Entity: %@", entity]
                         editPrepInvariantChecks:editPrepInvariantChecks
                               mainEntityUpdater:mainEntityUpdater
                               entityBeingSynced:entityBeingSyncedBlk
-                                  entityDeleted:entityDeletedBlk
                                entityInConflict:entityInConflictBlk
                                           error:errorBlk];
   }];
@@ -2108,7 +2069,6 @@ Entity: %@", entity]
   NSAssert([mainEntity editInProgress], @"Entity is not currently in edit-in-progress mode.");
   NSAssert(![mainEntity synced], @"Entity is currently marked as 'synced.'");
   NSAssert(![mainEntity syncInProgress], @"Entity is currently marked as 'sync-in-progress.'");
-  NSAssert(![mainEntity deleted], @"Entity is currently marked as 'deleted.'");
 }
 
 /*+ (void)prepareEntityForEditInvariantChecks:(PELMMainSupport *)mainEntity {
@@ -2142,7 +2102,6 @@ Entity: %@", entity]
                           mustMatchModelSupport:mainSupport];
   cannotBe([mainMainSupport syncInProgress], @"Cannot prepare user for edit if sync is in progress.");
   cannotBe([mainMainSupport inConflict], @"Cannot prepare user for edit if marked as in-conflict.");
-  cannotBe([mainMainSupport deleted], @"Cannot prepare user for edit if marked as deleted.");
 }
 
 @end

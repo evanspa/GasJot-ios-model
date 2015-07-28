@@ -55,7 +55,6 @@ describe(@"FPCoordinatorDao", ^{
       BOOL prepareForEditSuccess =
         [_coordDao prepareUserForEdit:user
                     entityBeingSynced:[_coordTestCtx entityBeingSyncedBlk]
-                        entityDeleted:[_coordTestCtx entityDeletedBlk]
                      entityInConflict:[_coordTestCtx entityInConflictBlk]
                                 error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[theValue(prepareForEditSuccess) should] beYes];
@@ -90,7 +89,6 @@ describe(@"FPCoordinatorDao", ^{
       // ok - now lets try with a connection error
       [_coordDao prepareUserForEdit:user
                   entityBeingSynced:[_coordTestCtx entityBeingSyncedBlk]
-                      entityDeleted:[_coordTestCtx entityDeletedBlk]
                    entityInConflict:[_coordTestCtx entityInConflictBlk]
                               error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [PEHttpResponseSimulator simulateCannotConnectToHostForRequestUrl:[NSURL URLWithString:@"http://example.com/fp/users/U8890209302"]
@@ -115,7 +113,6 @@ describe(@"FPCoordinatorDao", ^{
       // ok - now lets try with a temporary server error
       [_coordDao prepareUserForEdit:user
                   entityBeingSynced:[_coordTestCtx entityBeingSyncedBlk]
-                      entityDeleted:[_coordTestCtx entityDeletedBlk]
                    entityInConflict:[_coordTestCtx entityInConflictBlk]
                               error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       _mocker(@"http-response.user.PUT.500", 0, 0);
@@ -139,7 +136,6 @@ describe(@"FPCoordinatorDao", ^{
       // ok - now lets try with a non-temporary server error
       [_coordDao prepareUserForEdit:user
                   entityBeingSynced:[_coordTestCtx entityBeingSyncedBlk]
-                      entityDeleted:[_coordTestCtx entityDeletedBlk]
                    entityInConflict:[_coordTestCtx entityInConflictBlk]
                               error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       _mocker(@"http-response.user.PUT.422", 0, 0);
@@ -165,7 +161,6 @@ describe(@"FPCoordinatorDao", ^{
       // ok - now lets try with a temporary 503 server error
       [_coordDao prepareUserForEdit:user
                   entityBeingSynced:[_coordTestCtx entityBeingSyncedBlk]
-                      entityDeleted:[_coordTestCtx entityDeletedBlk]
                    entityInConflict:[_coordTestCtx entityInConflictBlk]
                               error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       _mocker(@"http-response.user.PUT.503", 0, 0);
@@ -192,7 +187,6 @@ describe(@"FPCoordinatorDao", ^{
       // ok - now lets try with an authentication failure
       [_coordDao prepareUserForEdit:user
                   entityBeingSynced:[_coordTestCtx entityBeingSyncedBlk]
-                      entityDeleted:[_coordTestCtx entityDeletedBlk]
                    entityInConflict:[_coordTestCtx entityInConflictBlk]
                               error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       _mocker(@"http-response.user.PUT.401", 0, 0);

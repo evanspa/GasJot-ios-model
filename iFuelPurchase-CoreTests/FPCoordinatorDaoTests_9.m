@@ -52,7 +52,6 @@ describe(@"FPCoordinatorDao", ^{
       BOOL prepareForEditSuccess =
         [_coordDao prepareUserForEdit:user
                     entityBeingSynced:[_coordTestCtx entityBeingSyncedBlk]
-                        entityDeleted:[_coordTestCtx entityDeletedBlk]
                      entityInConflict:[_coordTestCtx entityInConflictBlk]
                                 error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[theValue(prepareForEditSuccess) should] beYes];
@@ -81,7 +80,6 @@ describe(@"FPCoordinatorDao", ^{
         [_coordDao prepareVehicleForEdit:vehicle
                                  forUser:user
                        entityBeingSynced:[_coordTestCtx entityBeingSyncedBlk]
-                           entityDeleted:[_coordTestCtx entityDeletedBlk]
                         entityInConflict:[_coordTestCtx entityInConflictBlk]
                                    error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[theValue(prepareForEditSuccess) should] beYes];

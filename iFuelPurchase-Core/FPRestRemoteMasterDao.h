@@ -12,6 +12,7 @@
 #import "FPRemoteMasterDao.h"
 #import "FPUserSerializer.h"
 #import "FPLoginSerializer.h"
+#import "FPLogoutSerializer.h"
 #import "FPVehicleSerializer.h"
 #import "FPFuelStationSerializer.h"
 #import "FPFuelPurchaseLogSerializer.h"
@@ -37,6 +38,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
             apiResMtVersion:(NSString *)apiResMtVersion
              userSerializer:(FPUserSerializer *)userSerializer
             loginSerializer:(FPLoginSerializer *)loginSerializer
+           logoutSerializer:(FPLogoutSerializer *)logoutSerializer
           vehicleSerializer:(FPVehicleSerializer *)vehicleSerializer
       fuelStationSerializer:(FPFuelStationSerializer *)fuelStationSerializer
   fuelPurchaseLogSerializer:(FPFuelPurchaseLogSerializer *)fuelPurchaseLogSerializer

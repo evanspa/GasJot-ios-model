@@ -13,6 +13,7 @@
 NSString * const PELMUsersRelation = @"users";
 NSString * const PELMLoginRelation = @"login";
 NSString * const PELMLightLoginRelation = @"light-login";
+NSString * const PELMLogoutRelation = @"logout";
 
 @implementation PELMUser
 
@@ -30,7 +31,6 @@ NSString * const PELMLightLoginRelation = @"light-login";
                    syncInProgress:(BOOL)syncInProgress
                            synced:(BOOL)synced
                        inConflict:(BOOL)inConflict
-                          deleted:(BOOL)deleted
                         editCount:(NSUInteger)editCount
                  syncHttpRespCode:(NSNumber *)syncHttpRespCode
                       syncErrMask:(NSNumber *)syncErrMask
@@ -53,7 +53,6 @@ NSString * const PELMLightLoginRelation = @"light-login";
                              syncInProgress:syncInProgress
                                      synced:synced
                                  inConflict:inConflict
-                                    deleted:deleted
                                   editCount:editCount
                            syncHttpRespCode:syncHttpRespCode
                                 syncErrMask:syncErrMask
@@ -82,7 +81,6 @@ NSString * const PELMLightLoginRelation = @"light-login";
                                                   syncInProgress:[self syncInProgress]
                                                           synced:[self synced]
                                                       inConflict:[self inConflict]
-                                                         deleted:[self deleted]
                                                        editCount:[self editCount]
                                                 syncHttpRespCode:[self syncHttpRespCode]
                                                      syncErrMask:[self syncErrMask]
@@ -131,7 +129,6 @@ NSString * const PELMLightLoginRelation = @"light-login";
                                         syncInProgress:NO
                                                 synced:NO
                                             inConflict:NO
-                                               deleted:NO
                                              editCount:0
                                       syncHttpRespCode:nil
                                            syncErrMask:nil

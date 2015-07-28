@@ -150,12 +150,6 @@
   };
 }
 
-- (void(^)(void))entityDeletedBlk {
-  return ^{
-    _prepareForEditEntityDeleted = YES;
-  };
-}
-
 - (void(^)(void))entityInConflictBlk {
   return ^{
     _prepareForEditEntityInConflict = YES;

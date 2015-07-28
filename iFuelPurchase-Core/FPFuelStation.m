@@ -26,7 +26,6 @@
                    syncInProgress:(BOOL)syncInProgress
                            synced:(BOOL)synced
                        inConflict:(BOOL)inConflict
-                          deleted:(BOOL)deleted
                         editCount:(NSUInteger)editCount
                  syncHttpRespCode:(NSNumber *)syncHttpRespCode
                       syncErrMask:(NSNumber *)syncErrMask
@@ -52,7 +51,6 @@
                              syncInProgress:syncInProgress
                                      synced:synced
                                  inConflict:inConflict
-                                    deleted:deleted
                                   editCount:editCount
                            syncHttpRespCode:syncHttpRespCode
                                 syncErrMask:syncErrMask
@@ -84,7 +82,6 @@
                                                             syncInProgress:[self syncInProgress]
                                                                     synced:[self synced]
                                                                 inConflict:[self inConflict]
-                                                                   deleted:[self deleted]
                                                                  editCount:[self editCount]
                                                           syncHttpRespCode:[self syncHttpRespCode]
                                                                syncErrMask:[self syncErrMask]
@@ -145,7 +142,6 @@
                                              syncInProgress:NO
                                                      synced:NO
                                                  inConflict:NO
-                                                    deleted:NO
                                                   editCount:0
                                            syncHttpRespCode:nil
                                                 syncErrMask:nil
@@ -172,7 +168,6 @@
                                              syncInProgress:NO
                                                      synced:NO
                                                  inConflict:NO
-                                                    deleted:NO
                                                   editCount:0
                                            syncHttpRespCode:nil
                                                 syncErrMask:nil

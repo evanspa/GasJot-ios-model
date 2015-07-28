@@ -12,8 +12,6 @@
 #import <PEHateoas-Client/HCRelation.h>
 #import "FPErrorDomainsAndCodes.h"
 #import "FPRemoteDaoErrorDomains.h"
-#import "FPUserSerializer.h"
-#import "FPLoginSerializer.h"
 #import "FPKnownMediaTypes.h"
 #import "PELMLoginUser.h"
 
@@ -29,6 +27,7 @@ NSString * const LAST_MODIFIED_HEADER = @"last-modified";
   NSDictionary *_restApiRelations;
   FPUserSerializer *_userSerializer;
   FPLoginSerializer *_loginSerializer;
+  FPLogoutSerializer *_logoutSerializer;
   FPVehicleSerializer *_vehicleSerializer;
   FPFuelStationSerializer *_fuelStationSerializer;
   FPFuelPurchaseLogSerializer *_fuelPurchaseLogSerializer;
@@ -52,6 +51,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
             apiResMtVersion:(NSString *)apiResMtVersion
              userSerializer:(FPUserSerializer *)userSerializer
             loginSerializer:(FPLoginSerializer *)loginSerializer
+           logoutSerializer:(FPLogoutSerializer *)logoutSerializer
           vehicleSerializer:(FPVehicleSerializer *)vehicleSerializer
       fuelStationSerializer:(FPFuelStationSerializer *)fuelStationSerializer
   fuelPurchaseLogSerializer:(FPFuelPurchaseLogSerializer *)fuelPurchaseLogSerializer
@@ -76,6 +76,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
                        resourceApiMediaType:[FPKnownMediaTypes apiMediaTypeWithVersion:apiResMtVersion]];
     _userSerializer = userSerializer;
     _loginSerializer = loginSerializer;
+    _logoutSerializer = logoutSerializer;
     _vehicleSerializer = vehicleSerializer;
     _fuelStationSerializer = fuelStationSerializer;
     _fuelPurchaseLogSerializer = fuelPurchaseLogSerializer;
@@ -89,7 +90,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
 
 + (HCServerUnavailableBlk)serverUnavailableBlk:(PELMRemoteMasterBusyBlk)busyHandler {
   return ^(NSDate *retryAfter, NSHTTPURLResponse *resp) {
-    busyHandler(retryAfter);
+    if (busyHandler) { busyHandler(retryAfter); }
   };
 }
 
@@ -100,10 +101,9 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
                        model:model];
 }
 
-+ (HCAuthReqdErrorBlk)toHCAuthReqdBlk:(PELMRemoteMasterAuthReqdBlk)authReqdBlk
-                               entity:(id)entity {
++ (HCAuthReqdErrorBlk)toHCAuthReqdBlk:(PELMRemoteMasterAuthReqdBlk)authReqdBlk {
   return ^(HCAuthentication *auth, NSHTTPURLResponse *resp) {
-    authReqdBlk(entity, auth);
+    if (authReqdBlk) { authReqdBlk(auth); }
   };
 }
 
@@ -212,8 +212,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
                     success:[self newPostSuccessBlk:complHandler]
                 redirection:[self newRedirectionBlk:complHandler]
                 clientError:[self newClientErrBlk:complHandler]
-     authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired
-                                                            entity:resourceModelParam]
+     authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired]
                 serverError:[self newServerErrBlk:complHandler]
            unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
           connectionFailure:[self newConnFailureBlk:complHandler]
@@ -259,8 +258,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
                    success:[self newPutSuccessBlk:complHandler]
                redirection:[self newRedirectionBlk:complHandler]
                clientError:[self newClientErrBlk:complHandler]
-    authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired
-                                                           entity:vehicle]
+    authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired]
                serverError:[self newServerErrBlk:complHandler]
           unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
                   conflict:[self newConflictBlk:complHandler]
@@ -282,8 +280,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
                      success:[self newDeleteSuccessBlk:complHandler]
                  redirection:[self newRedirectionBlk:complHandler]
                  clientError:[self newClientErrBlk:complHandler]
-      authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired
-                                                             entity:vehicle]
+      authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired]
                  serverError:[self newServerErrBlk:complHandler]
             unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
                     conflict:[self newConflictBlk:complHandler]
@@ -324,8 +321,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
                    success:[self newPutSuccessBlk:complHandler]
                redirection:[self newRedirectionBlk:complHandler]
                clientError:[self newClientErrBlk:complHandler]
-    authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired
-                                                           entity:fuelStation]
+    authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired]
                serverError:[self newServerErrBlk:complHandler]
           unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
                   conflict:[self newConflictBlk:complHandler]
@@ -347,8 +343,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
                      success:[self newDeleteSuccessBlk:complHandler]
                  redirection:[self newRedirectionBlk:complHandler]
                  clientError:[self newClientErrBlk:complHandler]
-      authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired
-                                                             entity:fuelStation]
+      authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired]
                  serverError:[self newServerErrBlk:complHandler]
             unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
                     conflict:[self newConflictBlk:complHandler]
@@ -388,8 +383,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
                                     success:[self newPutSuccessBlk:complHandler]
                                 redirection:[self newRedirectionBlk:complHandler]
                                 clientError:[self newClientErrBlk:complHandler]
-                     authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired
-                                                                            entity:fuelPurchaseLog]
+                     authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired]
                                 serverError:[self newServerErrBlk:complHandler]
                            unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
                                    conflict:[self newConflictBlk:complHandler]
@@ -410,8 +404,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
                                       success:[self newDeleteSuccessBlk:complHandler]
                                   redirection:[self newRedirectionBlk:complHandler]
                                   clientError:[self newClientErrBlk:complHandler]
-                       authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired
-                                                                              entity:fuelPurchaseLog]
+                       authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired]
                                   serverError:[self newServerErrBlk:complHandler]
                              unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
                                      conflict:[self newConflictBlk:complHandler]
@@ -451,8 +444,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
                                     success:[self newPutSuccessBlk:complHandler]
                                 redirection:[self newRedirectionBlk:complHandler]
                                 clientError:[self newClientErrBlk:complHandler]
-                     authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired
-                                                                            entity:environmentLog]
+                     authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired]
                                 serverError:[self newServerErrBlk:complHandler]
                            unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
                                    conflict:[self newConflictBlk:complHandler]
@@ -473,8 +465,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
                                       success:[self newDeleteSuccessBlk:complHandler]
                                   redirection:[self newRedirectionBlk:complHandler]
                                   clientError:[self newClientErrBlk:complHandler]
-                       authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired
-                                                                              entity:environmentLog]
+                       authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired]
                                   serverError:[self newServerErrBlk:complHandler]
                              unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
                                      conflict:[self newConflictBlk:complHandler]
@@ -485,6 +476,20 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
 
 
 #pragma mark - User Operations
+
+- (void)logoutUser:(FPUser *)user
+           timeout:(NSInteger)timeout
+   remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
+ completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
+  [self doPostToRelation:[_restApiRelations objectForKey:PELMLogoutRelation]
+      resourceModelParam:user
+              serializer:_logoutSerializer
+                 timeout:timeout
+         remoteStoreBusy:busyHandler
+            authRequired:nil
+       completionHandler:complHandler
+            otherHeaders:@{}];
+}
 
 - (void)establishAccountForUser:(FPUser *)user
                         timeout:(NSInteger)timeout
@@ -515,8 +520,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
                    success:[self newPutSuccessBlk:complHandler]
                redirection:[self newRedirectionBlk:complHandler]
                clientError:[self newClientErrBlk:complHandler]
-    authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired
-                                                           entity:user]
+    authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired]
                serverError:[self newServerErrBlk:complHandler]
           unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
                   conflict:[self newConflictBlk:complHandler]
@@ -590,8 +594,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
                      success:[self newDeleteSuccessBlk:complHandler]
                  redirection:[self newRedirectionBlk:complHandler]
                  clientError:[self newClientErrBlk:complHandler]
-      authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired
-                                                             entity:user]
+      authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired]
                  serverError:[self newServerErrBlk:complHandler]
             unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
                     conflict:[self newConflictBlk:complHandler]

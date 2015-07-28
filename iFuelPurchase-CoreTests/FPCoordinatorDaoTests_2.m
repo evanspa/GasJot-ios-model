@@ -128,7 +128,6 @@ describe(@"FPCoordinatorDao", ^{
         [_coordDao prepareFuelPurchaseLogForEdit:fplog
                                          forUser:user
                                entityBeingSynced:[_coordTestCtx entityBeingSyncedBlk]
-                                   entityDeleted:[_coordTestCtx entityDeletedBlk]
                                 entityInConflict:[_coordTestCtx entityInConflictBlk]
                                            error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[theValue(prepareForEditSuccess) should] beYes];

@@ -59,7 +59,6 @@ describe(@"FPCoordinatorDao", ^{
       BOOL prepareForEditSuccess =
         [_coordDao prepareUserForEdit:user
                     entityBeingSynced:[_coordTestCtx entityBeingSyncedBlk]
-                        entityDeleted:[_coordTestCtx entityDeletedBlk]
                      entityInConflict:[_coordTestCtx entityInConflictBlk]
                                 error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[theValue(prepareForEditSuccess) should] beYes];
@@ -71,15 +70,13 @@ describe(@"FPCoordinatorDao", ^{
       [[theValue([_coordTestCtx localSaveError]) should] beNo];
       _mocker(@"http-response.user.DELETE.204", 0, 0);
       __block BOOL saveSuccess = NO;
-      [_coordDao markAsDeletedAndSyncUserImmediate:user
-                                        successBlk:^{
-                                          saveSuccess = YES;
-                                        }
-                                remoteStoreBusyBlk:nil
-                                tempRemoteErrorBlk:nil
-                                    remoteErrorBlk:nil
-                                   authRequiredBlk:nil
-                                             error:nil];
+      [_coordDao deleteUser:user
+             addlSuccessBlk:^{ saveSuccess = YES; }
+     addlRemoteStoreBusyBlk:nil
+     addlTempRemoteErrorBlk:nil
+         addlRemoteErrorBlk:nil
+        addlAuthRequiredBlk:nil
+                      error:nil];
       [[expectFutureValue(theValue(saveSuccess)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
       user = [_coordDao userWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
       [user shouldBeNil];

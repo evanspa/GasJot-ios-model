@@ -74,6 +74,7 @@
 		CAAC57171B3DD96600D60D62 /* FPCoordinatorDaoTests_13.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBDF1A5CF12C00747936 /* FPCoordinatorDaoTests_13.m */; };
 		CAAC57181B3DD96600D60D62 /* FPCoordinatorDaoTests_14.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBE01A5CF12C00747936 /* FPCoordinatorDaoTests_14.m */; };
 		CAAC57191B3DD96600D60D62 /* FPCoordinatorDaoTests_15.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBF21A5D045D00747936 /* FPCoordinatorDaoTests_15.m */; };
+		CADD42491B681756005E1DF8 /* FPLogoutSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = CADD42481B681756005E1DF8 /* FPLogoutSerializer.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -208,6 +209,8 @@
 		CA7D5AAC1B3B07B500433581 /* PELMLoginUser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PELMLoginUser.h; sourceTree = "<group>"; };
 		CA7D5AAD1B3B07B500433581 /* PELMLoginUser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PELMLoginUser.m; sourceTree = "<group>"; };
 		CA848CE01B2F660500411A09 /* FPCoordinatorDaoTests_8_1.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FPCoordinatorDaoTests_8_1.m; sourceTree = "<group>"; };
+		CADD42471B681756005E1DF8 /* FPLogoutSerializer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FPLogoutSerializer.h; sourceTree = "<group>"; };
+		CADD42481B681756005E1DF8 /* FPLogoutSerializer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FPLogoutSerializer.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -820,6 +823,7 @@
 		18F23AA419A152F80059DA22 /* Model JSON Serializers */ = {
 			isa = PBXGroup;
 			children = (
+				CADD42461B68172B005E1DF8 /* Logout Serializer */,
 				18417F3D1AA1797C007B8489 /* Login Serializer */,
 				187289DE19FA145C00B5D7B0 /* Environment Log */,
 				18EC862719E81D45006C104A /* Fuel Purchase Log */,
@@ -864,6 +868,15 @@
 				CA7D5AAD1B3B07B500433581 /* PELMLoginUser.m */,
 			);
 			name = "Login User";
+			sourceTree = "<group>";
+		};
+		CADD42461B68172B005E1DF8 /* Logout Serializer */ = {
+			isa = PBXGroup;
+			children = (
+				CADD42471B681756005E1DF8 /* FPLogoutSerializer.h */,
+				CADD42481B681756005E1DF8 /* FPLogoutSerializer.m */,
+			);
+			name = "Logout Serializer";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1018,6 +1031,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CADD42491B681756005E1DF8 /* FPLogoutSerializer.m in Sources */,
 				1824816E19B95DBD00A71C97 /* FPFuelStation.m in Sources */,
 				187289E119FA147B00B5D7B0 /* FPEnvironmentLogSerializer.m in Sources */,
 				18823C2019B80B3B001DB778 /* FPVehicleSerializer.m in Sources */,

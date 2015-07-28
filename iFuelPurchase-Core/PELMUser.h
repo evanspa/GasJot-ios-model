@@ -12,6 +12,7 @@
 FOUNDATION_EXPORT NSString * const PELMUsersRelation;
 FOUNDATION_EXPORT NSString * const PELMLoginRelation;
 FOUNDATION_EXPORT NSString * const PELMLightLoginRelation;
+FOUNDATION_EXPORT NSString * const PELMLogoutRelation;
 
 @interface PELMUser : PELMMainSupport <NSCopying>
 
@@ -29,7 +30,6 @@ FOUNDATION_EXPORT NSString * const PELMLightLoginRelation;
                    syncInProgress:(BOOL)syncInProgress
                            synced:(BOOL)synced
                        inConflict:(BOOL)inConflict
-                          deleted:(BOOL)deleted
                         editCount:(NSUInteger)editCount
                  syncHttpRespCode:(NSNumber *)syncHttpRespCode
                       syncErrMask:(NSNumber *)syncErrMask

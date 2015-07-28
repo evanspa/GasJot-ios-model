@@ -81,7 +81,7 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
 
 - (void)globalCancelSyncInProgressWithError:(PELMDaoErrorBlk)error;
 
-#pragma mark - Flushing to Remote Master
+#pragma mark - Flushing and Deleting to Remote Master
 
 - (void)flushUnsyncedChangesToUser:(FPUser *)user
                     addlSuccessBlk:(void(^)(PELMMainSupport *))addlSuccessBlk
@@ -90,6 +90,14 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
                 addlRemoteErrorBlk:(void(^)(NSInteger))addlRemoteErrorBlk
                addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
                              error:(PELMDaoErrorBlk)errorBlk;
+
+- (void)deleteUser:(FPUser *)user
+    addlSuccessBlk:(void(^)(void))addlSuccessBlk
+addlRemoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)addlRemoteStoreBusyBlk
+addlTempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
+addlRemoteErrorBlk:(void(^)(NSInteger))addlRemoteErrorBlk
+addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
+              error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)flushUnsyncedChangesToVehicle:(FPVehicle *)vehicle
                               forUser:(FPUser *)user
@@ -100,6 +108,15 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
                   addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
                                 error:(PELMDaoErrorBlk)errorBlk;
 
+- (void)deleteVehicle:(FPVehicle *)vehicle
+              forUser:(FPUser *)user
+       addlSuccessBlk:(void(^)(void))addlSuccessBlk
+addlRemoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)addlRemoteStoreBusyBlk
+addlTempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
+   addlRemoteErrorBlk:(void(^)(NSInteger))addlRemoteErrorBlk
+  addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
+                error:(PELMDaoErrorBlk)errorBlk;
+
 - (void)flushUnsyncedChangesToFuelStation:(FPFuelStation *)fuelStation
                                   forUser:(FPUser *)user
                            addlSuccessBlk:(void(^)(PELMMainSupport *))addlSuccessBlk
@@ -108,6 +125,15 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
                        addlRemoteErrorBlk:(void(^)(NSInteger))addlRemoteErrorBlk
                       addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
                                     error:(PELMDaoErrorBlk)errorBlk;
+
+- (void)deleteFuelStation:(FPFuelStation *)fuelStation
+                  forUser:(FPUser *)user
+           addlSuccessBlk:(void(^)(void))addlSuccessBlk
+   addlRemoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)addlRemoteStoreBusyBlk
+   addlTempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
+       addlRemoteErrorBlk:(void(^)(NSInteger))addlRemoteErrorBlk
+      addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
+                    error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)flushUnsyncedChangesToFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
                                       forUser:(FPUser *)user
@@ -120,6 +146,15 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
              skippedDueToFuelStationNotSynced:(void(^)(void))skippedDueToFuelStationNotSynced
                                         error:(PELMDaoErrorBlk)errorBlk;
 
+- (void)deleteFuelPurchaseLog:(FPFuelPurchaseLog *)fplog
+                      forUser:(FPUser *)user
+               addlSuccessBlk:(void(^)(void))addlSuccessBlk
+       addlRemoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)addlRemoteStoreBusyBlk
+       addlTempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
+           addlRemoteErrorBlk:(void(^)(NSInteger))addlRemoteErrorBlk
+          addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
+                        error:(PELMDaoErrorBlk)errorBlk;
+
 - (void)flushUnsyncedChangesToEnvironmentLog:(FPEnvironmentLog *)environmentLog
                                      forUser:(FPUser *)user
                               addlSuccessBlk:(void(^)(PELMMainSupport *))addlSuccessBlk
@@ -129,6 +164,15 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
                          addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
                 skippedDueToVehicleNotSynced:(void(^)(void))skippedDueToVehicleNotSynced
                                        error:(PELMDaoErrorBlk)errorBlk;
+
+- (void)deleteEnvironmentLog:(FPEnvironmentLog *)envlog
+                     forUser:(FPUser *)user
+              addlSuccessBlk:(void(^)(void))addlSuccessBlk
+      addlRemoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)addlRemoteStoreBusyBlk
+      addlTempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
+          addlRemoteErrorBlk:(void(^)(NSInteger))addlRemoteErrorBlk
+         addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
+                       error:(PELMDaoErrorBlk)errorBlk;
 
 - (NSInteger)flushAllUnsyncedEditsToRemoteForUser:(FPUser *)user
                                        successBlk:(void(^)(float))successBlk
@@ -156,9 +200,6 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
 
 - (BOOL)doesUserHaveAnyUnsyncedEntities:(FPUser *)user;
 
-- (void)deleteRemoteAuthenticationTokenWithRemoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
-                                     addlCompletionHandler:(void(^)(void))addlCompletionHandler;
-
 - (void)resetAsLocalUser:(FPUser *)user error:(PELMDaoErrorBlk)error;
 
 - (FPUser *)newLocalUserWithError:(PELMDaoErrorBlk)errorBlk;
@@ -185,9 +226,13 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
         completionHandler:(void(^)(NSError *))complHandler
     localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler;
 
+- (void)logoutUser:(FPUser *)user
+addlRemoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)addlRemoteStoreBusyBlk
+ addlCompletionBlk:(void(^)(void))addlCompletionBlk
+localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler;
+
 - (BOOL)prepareUserForEdit:(FPUser *)user
          entityBeingSynced:(void(^)(void))entityBeingSyncedBlk
-             entityDeleted:(void(^)(void))entityDeletedBlk
           entityInConflict:(void(^)(void))entityInConflictBlk
                      error:(PELMDaoErrorBlk)errorBlk;
 
@@ -207,14 +252,6 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
 
 - (void)cancelEditOfUser:(FPUser *)user
                    error:(PELMDaoErrorBlk)errorBlk;
-
-- (void)markAsDeletedAndSyncUserImmediate:(FPUser *)user
-                               successBlk:(void(^)(void))successBlk
-                       remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
-                       tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk
-                           remoteErrorBlk:(void(^)(NSInteger))remoteErrorBlk
-                          authRequiredBlk:(void(^)(void))authRequiredBlk
-                                    error:(PELMDaoErrorBlk)errorBlk;
 
 #pragma mark - Vehicle
 
@@ -253,7 +290,6 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
 - (BOOL)prepareVehicleForEdit:(FPVehicle *)vehicle
                       forUser:(FPUser *)user
             entityBeingSynced:(void(^)(void))entityBeingSyncedBlk
-                entityDeleted:(void(^)(void))entityDeletedBlk
              entityInConflict:(void(^)(void))entityInConflictBlk
                         error:(PELMDaoErrorBlk)errorBlk;
 
@@ -277,9 +313,6 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
 
 - (void)cancelEditOfVehicle:(FPVehicle *)vehicle
                       error:(PELMDaoErrorBlk)errorBlk;
-
-- (void)markAsDeletedVehicle:(FPVehicle *)vehicle
-                       error:(PELMDaoErrorBlk)errorBlk;
 
 #pragma mark - Fuel Station
 
@@ -319,7 +352,6 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
 - (BOOL)prepareFuelStationForEdit:(FPFuelStation *)fuelStation
                           forUser:(FPUser *)user
                 entityBeingSynced:(void(^)(void))entityBeingSyncedBlk
-                    entityDeleted:(void(^)(void))entityDeletedBlk
                  entityInConflict:(void(^)(void))entityInConflictBlk
                             error:(PELMDaoErrorBlk)errorBlk;
 
@@ -343,9 +375,6 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
 
 - (void)cancelEditOfFuelStation:(FPFuelStation *)fuelStation
                           error:(PELMDaoErrorBlk)errorBlk;
-
-- (void)markAsDeletedFuelStation:(FPFuelStation *)fuelStation
-                           error:(PELMDaoErrorBlk)errorBlk;
 
 #pragma mark - Fuel Purchase Log
 
@@ -442,7 +471,6 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
 - (BOOL)prepareFuelPurchaseLogForEdit:(FPFuelPurchaseLog *)fuelPurchaseLog
                               forUser:(FPUser *)user
                     entityBeingSynced:(void(^)(void))entityBeingSyncedBlk
-                        entityDeleted:(void(^)(void))entityDeletedBlk
                      entityInConflict:(void(^)(void))entityInConflictBlk
                                 error:(PELMDaoErrorBlk)errorBlk;
 
@@ -471,9 +499,6 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
 
 - (void)cancelEditOfFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
                               error:(PELMDaoErrorBlk)errorBlk;
-
-- (void)markAsDeletedFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
-                               error:(PELMDaoErrorBlk)errorBlk;
 
 #pragma mark - Environment Log
 
@@ -544,7 +569,6 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
 - (BOOL)prepareEnvironmentLogForEdit:(FPEnvironmentLog *)envLog
                              forUser:(FPUser *)user
                    entityBeingSynced:(void(^)(void))entityBeingSyncedBlk
-                       entityDeleted:(void(^)(void))entityDeletedBlk
                     entityInConflict:(void(^)(void))entityInConflictBlk
                                error:(PELMDaoErrorBlk)errorBlk;
 
@@ -571,8 +595,5 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
 
 - (void)cancelEditOfEnvironmentLog:(FPEnvironmentLog *)envLog
                              error:(PELMDaoErrorBlk)errorBlk;
-
-- (void)markAsDeletedEnvironmentLog:(FPEnvironmentLog *)envLog
-                              error:(PELMDaoErrorBlk)errorBlk;
 
 @end
