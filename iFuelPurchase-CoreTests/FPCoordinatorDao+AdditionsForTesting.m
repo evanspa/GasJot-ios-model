@@ -13,8 +13,11 @@
 
 @implementation FPCoordinatorDao (AdditionsForTesting)
 
-- (void)deleteAllUsers:(PELMDaoErrorBlk)errorBlk {
-  [[self localDao] deleteAllUsers:errorBlk];
+- (void)deleteUser:(PELMDaoErrorBlk)errorBlk {
+  FPUser *user = [self userWithError:errorBlk];
+  if (user) {
+    [self deleteUser:user error:errorBlk];
+  }
 }
 
 @end

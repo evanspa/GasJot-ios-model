@@ -141,6 +141,9 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
 
 #pragma mark - User
 
+- (void)deleteUser:(FPUser *)user
+             error:(PELMDaoErrorBlk)errorBlk;
+
 - (NSInteger)numUnsyncedVehiclesForUser:(FPUser *)user;
 
 - (NSInteger)numUnsyncedFuelStationsForUser:(FPUser *)user;

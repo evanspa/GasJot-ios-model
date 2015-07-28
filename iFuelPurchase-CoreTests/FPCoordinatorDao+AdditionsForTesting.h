@@ -10,6 +10,6 @@
 
 @interface FPCoordinatorDao (AdditionsForTesting)
 
-- (void)deleteAllUsers:(PELMDaoErrorBlk)errorBlk;
+- (void)deleteUser:(PELMDaoErrorBlk)errorBlk;
 
 @end

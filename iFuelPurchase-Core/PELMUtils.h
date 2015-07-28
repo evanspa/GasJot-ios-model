@@ -190,7 +190,7 @@ markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCom
          parentEntityMainRsConverter:(entityFromResultSetBlk)parentEntityMainRsConverter
           parentEntityMasterIdColumn:(NSString *)parentEntityMasterIdColumn
             parentEntityMainIdColumn:(NSString *)parentEntityMainIdColumn
-                            pageSize:(NSInteger)pageSize
+                            pageSize:(NSNumber *)pageSize
                    pageBoundaryWhere:(NSString *)pageBoundaryWhere
                      pageBoundaryArg:(id)pageBoundaryArg
                    entityMasterTable:(NSString *)entityMasterTable
@@ -370,45 +370,15 @@ markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCom
 + (void)invokeError:(PELMDaoErrorBlk)errorBlk db:(FMDatabase *)db;
 
 + (void)deleteEntity:(PELMModelSupport *)entity
-         entityTable:(NSString *)entityTable
-     localIdentifier:(NSNumber *)localIdentifier
+     entityMainTable:(NSString *)entityMainTable
+   entityMasterTable:(NSString *)entityMasterTable
                   db:(FMDatabase *)db
                error:(PELMDaoErrorBlk)errorBlk;
 
-+ (void)deleteRelationsForEntity:(PELMModelSupport *)entity
-                     entityTable:(NSString *)entityTable
-                 localIdentifier:(NSNumber *)localIdentifier
-                              db:(FMDatabase *)db
-                           error:(PELMDaoErrorBlk)errorBlk;
-
-+ (void)deleteFromTable:(NSString *)table
-           whereColumns:(NSArray *)whereColumns
-            whereValues:(NSArray *)whereValues
-                     db:(FMDatabase *)db
-                  error:(PELMDaoErrorBlk)errorBlk;
-
-- (void)deleteFromTableInTxn:(NSString *)table
-                whereColumns:(NSArray *)whereColumns
-                 whereValues:(NSArray *)whereValues
-                       error:(PELMDaoErrorBlk)errorBlk;
-
-+ (void)deleteFromTables:(NSArray *)tables
-            whereColumns:(NSArray *)whereColumns
-             whereValues:(NSArray *)whereValues
-                      db:(FMDatabase *)db
-                   error:(PELMDaoErrorBlk)errorBlk;
-
-- (void)deleteFromTablesInTxn:(NSArray *)tables
-                 whereColumns:(NSArray *)whereColumns
-                  whereValues:(NSArray *)whereValues
-                        error:(PELMDaoErrorBlk)errorBlk;
-
-+ (void)deleteAllEntities:(NSString *)table
-                       db:(FMDatabase *)db
-                    error:(PELMDaoErrorBlk)errorBlk;
-
-- (void)deleteAllEntitiesInTxn:(NSString *)table
-                         error:(PELMDaoErrorBlk)errorBlk;
++ (void)deleteRelationsFromEntityTable:(NSString *)entityTable
+                       localIdentifier:(NSNumber *)localIdentifier
+                                    db:(FMDatabase *)db
+                                 error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)pruneAllSyncedFromMainTables:(NSArray *)tableNames
                                error:(PELMDaoErrorBlk)errorBlk;

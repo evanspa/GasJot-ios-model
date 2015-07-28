@@ -37,9 +37,14 @@
 
 - (void)globalCancelSyncInProgressWithError:(PELMDaoErrorBlk)error;
 
-- (void)deleteAllUsers:(PELMDaoErrorBlk)errorBlk;
-
 #pragma mark - User
+
+- (void)deleteUser:(FPUser *)user
+             error:(PELMDaoErrorBlk)errorBlk;
+
+- (void)deleteUser:(FPUser *)user
+                db:(FMDatabase *)db
+             error:(PELMDaoErrorBlk)errorBlk;
 
 - (NSInteger)numUnsyncedVehiclesForUser:(FPUser *)user;
 
@@ -104,6 +109,9 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                             error:(PELMDaoErrorBlk)errorBlk;
 
 #pragma mark - Vehicle
+
+- (void)deleteVehicle:(FPVehicle *)vehicle
+                error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)copyVehicleToMaster:(FPVehicle *)vehicle
                       error:(PELMDaoErrorBlk)errorBlk;
@@ -178,6 +186,9 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
 
 #pragma mark - Fuel Station
 
+- (void)deleteFuelstation:(FPFuelStation *)fuelstation
+                    error:(PELMDaoErrorBlk)errorBlk;
+
 - (NSInteger)numFuelStationsForUser:(FPUser *)user
                               error:(PELMDaoErrorBlk)errorBlk;
 
@@ -247,6 +258,9 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                                           error:(PELMDaoErrorBlk)errorBlk;
 
 #pragma mark - Fuel Purchase Log
+
+- (void)deleteFuelPurchaseLog:(FPFuelPurchaseLog *)fplog
+                        error:(PELMDaoErrorBlk)errorBlk;
 
 - (NSInteger)numFuelPurchaseLogsForUser:(FPUser *)user
                                   error:(PELMDaoErrorBlk)errorBlk;
@@ -377,6 +391,9 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
 
 #pragma mark - Environment Log
 
+- (void)deleteEnvironmentLog:(FPEnvironmentLog *)envlog
+                       error:(PELMDaoErrorBlk)errorBlk;
+
 - (NSInteger)numEnvironmentLogsForUser:(FPUser *)user
                                  error:(PELMDaoErrorBlk)errorBlk;
 
@@ -477,22 +494,6 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
 
 - (void)markAsSyncCompleteForUpdatedEnvironmentLog:(FPEnvironmentLog *)environmentLog
                                              error:(PELMDaoErrorBlk)errorBlk;
-
-#pragma mark - Cascade Deletion
-
-- (void)cascadeDeleteEnvironmentLog:(FPEnvironmentLog *)environmentLog
-                              error:(PELMDaoErrorBlk)errorBlk;
-
-- (void)cascadeDeleteFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
-                               error:(PELMDaoErrorBlk)errorBlk;
-
-- (void)cascadeDeleteFuelStation:(FPFuelStation *)fuelStation
-                           error:(PELMDaoErrorBlk)errorBlk;
-
-- (void)cascadeDeleteVehicle:(FPVehicle *)vehicle
-                       error:(PELMDaoErrorBlk)errorBlk;
-
-- (void)cascadeDeleteUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk;
 
 #pragma mark - User data access helpers (quasi-private)
 

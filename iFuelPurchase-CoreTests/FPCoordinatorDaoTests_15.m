@@ -34,7 +34,7 @@ describe(@"FPCoordinatorDao", ^{
     [DDLog addLogger:[DDTTYLogger sharedInstance]];
     _coordTestCtx = [[FPCoordDaoTestContext alloc] initWithTestBundle:[NSBundle bundleForClass:[self class]]];
     _coordDao = [_coordTestCtx newStoreCoord];
-    [_coordDao deleteAllUsers:^(NSError *error, int code, NSString *msg) { [_coordTestCtx setErrorDeletingUser:YES]; }];
+    [_coordDao deleteUser:^(NSError *error, int code, NSString *msg) { [_coordTestCtx setErrorDeletingUser:YES]; }];
     _numEntitiesBlk = [_coordTestCtx newNumEntitiesComputerWithCoordDao:_coordDao];
     _mocker = [_coordTestCtx newMocker];
   });

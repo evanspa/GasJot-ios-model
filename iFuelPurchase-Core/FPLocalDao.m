@@ -171,24 +171,43 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   }];
 }
 
-- (void)deleteAllUsers:(PELMDaoErrorBlk)errorBlk {
-  [[self databaseQueue] inTransaction:^(FMDatabase *db, BOOL *rollback) {
-    // main tables
-    [PELMUtils deleteAllEntities:TBL_MAIN_FUELPURCHASE_LOG db:db error:errorBlk];
-    [PELMUtils deleteAllEntities:TBL_MAIN_ENV_LOG db:db error:errorBlk];
-    [PELMUtils deleteAllEntities:TBL_MAIN_FUEL_STATION db:db error:errorBlk];
-    [PELMUtils deleteAllEntities:TBL_MAIN_VEHICLE db:db error:errorBlk];
-    [PELMUtils deleteAllEntities:TBL_MAIN_USER db:db error:errorBlk];
-    // master tables
-    [PELMUtils deleteAllEntities:TBL_MASTER_FUELPURCHASE_LOG db:db error:errorBlk];
-    [PELMUtils deleteAllEntities:TBL_MASTER_ENV_LOG db:db error:errorBlk];
-    [PELMUtils deleteAllEntities:TBL_MASTER_FUEL_STATION db:db error:errorBlk];
-    [PELMUtils deleteAllEntities:TBL_MASTER_VEHICLE db:db error:errorBlk];
-    [PELMUtils deleteAllEntities:TBL_MASTER_USER db:db error:errorBlk];
+#pragma mark - User
+
+- (void)deleteUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk {
+  [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
+    [self deleteUser:user db:db error:errorBlk];
   }];
 }
 
-#pragma mark - User
+- (void)deleteUser:(FPUser *)user
+                db:(FMDatabase *)db
+             error:(PELMDaoErrorBlk)errorBlk {
+  [self deleteVehiclesOfUser:user db:db error:errorBlk];
+  [self deleteFuelstationsOfUser:user db:db error:errorBlk];
+  [PELMUtils deleteEntity:user
+          entityMainTable:TBL_MAIN_USER
+        entityMasterTable:TBL_MASTER_USER
+                       db:db
+                    error:errorBlk];
+}
+
+- (void)deleteVehiclesOfUser:(FPUser *)user
+                          db:(FMDatabase *)db
+                       error:(PELMDaoErrorBlk)errorBlk {
+  NSArray *vehicles = [self vehiclesForUser:user db:db error:errorBlk];
+  for (FPVehicle *vehicle in vehicles) {
+    [self deleteVehicle:vehicle db:db error:errorBlk];
+  }
+}
+
+- (void)deleteFuelstationsOfUser:(FPUser *)user
+                              db:(FMDatabase *)db
+                           error:(PELMDaoErrorBlk)errorBlk {
+  NSArray *fuelstations = [self fuelStationsForUser:user db:db error:errorBlk];
+  for (FPFuelStation *fuelstation in fuelstations) {
+    [self deleteFuelstation:fuelstation db:db error:errorBlk];
+  }
+}
 
 - (NSInteger)numUnsyncedEntitiesForUser:(FPUser *)user
                         mainEntityTable:(NSString *)entityTable {
@@ -278,11 +297,10 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                         [mainUser localMainIdentifier]]
                    db:db
                 error:errorBlk];
-  [PELMUtils deleteRelationsForEntity:mainUser
-                          entityTable:TBL_MAIN_USER
-                      localIdentifier:[mainUser localMainIdentifier]
-                                   db:db
-                                error:errorBlk];
+  [PELMUtils deleteRelationsFromEntityTable:TBL_MAIN_USER
+                            localIdentifier:[mainUser localMainIdentifier]
+                                         db:db
+                                      error:errorBlk];
   [PELMUtils insertRelations:[masterUser relations]
                    forEntity:mainUser
                  entityTable:TBL_MAIN_USER
@@ -324,10 +342,8 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                        error:errorBlk];
   [self linkMainUser:localUser toMasterUser:newRemoteUser db:db error:errorBlk];
   if (!preserveExistingLocalEntities) {
-    [PELMUtils deleteAllEntities:TBL_MAIN_FUELPURCHASE_LOG db:db error:errorBlk];
-    [PELMUtils deleteAllEntities:TBL_MAIN_ENV_LOG db:db error:errorBlk];
-    [PELMUtils deleteAllEntities:TBL_MAIN_FUEL_STATION db:db error:errorBlk];
-    [PELMUtils deleteAllEntities:TBL_MAIN_VEHICLE db:db error:errorBlk];
+    [self deleteVehiclesOfUser:localUser db:db error:errorBlk];
+    [self deleteFuelstationsOfUser:localUser db:db error:errorBlk];
   }
 }
 
@@ -433,11 +449,10 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                    argsArray:[self updateArgsForMainUser:user]
                                           db:db
                                        error:errorBlk];
-                         [PELMUtils deleteRelationsForEntity:entity
-                                                 entityTable:TBL_MAIN_USER
-                                             localIdentifier:[entity localMainIdentifier]
-                                                          db:db
-                                                       error:errorBlk];
+                         [PELMUtils deleteRelationsFromEntityTable:TBL_MAIN_USER
+                                                   localIdentifier:[entity localMainIdentifier]
+                                                                db:db
+                                                             error:errorBlk];
                          [PELMUtils insertRelations:[user relations]
                                           forEntity:user
                                         entityTable:TBL_MAIN_USER
@@ -573,6 +588,30 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
 }
 
 #pragma mark - Vehicle
+
+- (void)deleteVehicle:(FPVehicle *)vehicle error:(PELMDaoErrorBlk)errorBlk {
+  [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
+    [self deleteVehicle:vehicle db:db error:errorBlk];
+  }];
+}
+
+- (void)deleteVehicle:(FPVehicle *)vehicle
+                   db:(FMDatabase *)db
+                error:(PELMDaoErrorBlk)errorBlk {
+  NSArray *fplogs = [self fuelPurchaseLogsForVehicle:vehicle db:db error:errorBlk];
+  for (FPFuelPurchaseLog *fplog in fplogs) {
+    [self deleteFuelPurchaseLog:fplog db:db error:errorBlk];
+  }
+  NSArray *envlogs = [self environmentLogsForVehicle:vehicle db:db error:errorBlk];
+  for (FPEnvironmentLog *envlog in envlogs) {
+    [self deleteEnvironmentLog:envlog db:db error:errorBlk];
+  }
+  [PELMUtils deleteEntity:vehicle
+          entityMainTable:TBL_MAIN_VEHICLE
+        entityMasterTable:TBL_MASTER_VEHICLE
+                       db:db
+                    error:errorBlk];
+}
 
 - (void)copyVehicleToMaster:(FPVehicle *)vehicle
                       error:(PELMDaoErrorBlk)errorBlk {
@@ -884,6 +923,26 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
 }
 
 #pragma mark - Fuel Station
+
+- (void)deleteFuelstation:(FPFuelStation *)fuelstation error:(PELMDaoErrorBlk)errorBlk {
+  [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
+    [self deleteFuelstation:fuelstation db:db error:errorBlk];
+  }];
+}
+
+- (void)deleteFuelstation:(FPFuelStation *)fuelstation
+                       db:(FMDatabase *)db
+                    error:(PELMDaoErrorBlk)errorBlk {
+  NSArray *fplogs = [self fuelPurchaseLogsForFuelStation:fuelstation db:db error:errorBlk];
+  for (FPFuelPurchaseLog *fplog in fplogs) {
+    [self deleteFuelPurchaseLog:fplog db:db error:errorBlk];
+  }
+  [PELMUtils deleteEntity:fuelstation
+          entityMainTable:TBL_MAIN_FUEL_STATION
+        entityMasterTable:TBL_MASTER_FUEL_STATION
+                       db:db
+                    error:errorBlk];
+}
 
 - (NSInteger)numFuelStationsForUser:(FPUser *)user
                               error:(PELMDaoErrorBlk)errorBlk {
@@ -1239,6 +1298,23 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
 
 #pragma mark - Fuel Purchase Log
 
+- (void)deleteFuelPurchaseLog:(FPFuelPurchaseLog *)fplog
+                        error:(PELMDaoErrorBlk)errorBlk {
+  [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
+    [self deleteFuelPurchaseLog:fplog db:db error:errorBlk];
+  }];
+}
+
+- (void)deleteFuelPurchaseLog:(FPFuelPurchaseLog *)fplog
+                           db:(FMDatabase *)db
+                        error:(PELMDaoErrorBlk)errorBlk {
+  [PELMUtils deleteEntity:fplog
+          entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+        entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
+                       db:db
+                    error:errorBlk];
+}
+
 - (NSInteger)numFuelPurchaseLogsForUser:(FPUser *)user
                                   error:(PELMDaoErrorBlk)errorBlk {
   __block NSInteger numEntities = 0;
@@ -1292,7 +1368,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
   __block NSArray *fpLogs = @[];
   [_databaseQueue inDatabase:^(FMDatabase *db) {
     fpLogs = [self fuelPurchaseLogsForUser:user
-                                  pageSize:pageSize
+                                  pageSize:@(pageSize)
                           beforeDateLogged:beforeDateLogged
                                         db:db
                                      error:errorBlk];
@@ -1381,7 +1457,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
   __block NSArray *fpLogs = @[];
   [_databaseQueue inDatabase:^(FMDatabase *db) {
     fpLogs = [self fuelPurchaseLogsForVehicle:vehicle
-                                     pageSize:pageSize
+                                     pageSize:@(pageSize)
                              beforeDateLogged:beforeDateLogged
                                            db:db
                                         error:errorBlk];
@@ -1442,7 +1518,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
   __block NSArray *fpLogs = @[];
   [_databaseQueue inDatabase:^(FMDatabase *db) {
     fpLogs = [self fuelPurchaseLogsForFuelStation:fuelStation
-                                         pageSize:pageSize
+                                         pageSize:@(pageSize)
                                  beforeDateLogged:beforeDateLogged
                                                db:db
                                             error:errorBlk];
@@ -1451,11 +1527,21 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
 }
 
 - (NSArray *)fuelPurchaseLogsForUser:(FPUser *)user
+                                  db:(FMDatabase *)db
+                               error:(PELMDaoErrorBlk)errorBlk {
+  return [self fuelPurchaseLogsForUser:user
+                              pageSize:nil
+                      beforeDateLogged:nil
+                                    db:db
+                                 error:errorBlk];
+}
+
+- (NSArray *)fuelPurchaseLogsForUser:(FPUser *)user
                             pageSize:(NSInteger)pageSize
                                   db:(FMDatabase *)db
                                error:(PELMDaoErrorBlk)errorBlk {
   return [self fuelPurchaseLogsForUser:user
-                              pageSize:pageSize
+                              pageSize:@(pageSize)
                       beforeDateLogged:nil
                                     db:db
                                  error:errorBlk];
@@ -1466,7 +1552,17 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                      db:(FMDatabase *)db
                                   error:(PELMDaoErrorBlk)errorBlk {
   return [self fuelPurchaseLogsForVehicle:vehicle
-                                 pageSize:pageSize
+                                 pageSize:@(pageSize)
+                         beforeDateLogged:nil
+                                       db:db
+                                    error:errorBlk];
+}
+
+- (NSArray *)fuelPurchaseLogsForVehicle:(FPVehicle *)vehicle
+                                      db:(FMDatabase *)db
+                                  error:(PELMDaoErrorBlk)errorBlk {
+  return [self fuelPurchaseLogsForVehicle:vehicle
+                                 pageSize:nil
                          beforeDateLogged:nil
                                        db:db
                                     error:errorBlk];
@@ -1477,7 +1573,17 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                          db:(FMDatabase *)db
                                       error:(PELMDaoErrorBlk)errorBlk {
   return [self fuelPurchaseLogsForFuelStation:fuelStation
-                                     pageSize:pageSize
+                                     pageSize:@(pageSize)
+                             beforeDateLogged:nil
+                                           db:db
+                                        error:errorBlk];
+}
+
+- (NSArray *)fuelPurchaseLogsForFuelStation:(FPFuelStation *)fuelStation
+                                         db:(FMDatabase *)db
+                                      error:(PELMDaoErrorBlk)errorBlk {
+  return [self fuelPurchaseLogsForFuelStation:fuelStation
+                                     pageSize:nil
                              beforeDateLogged:nil
                                            db:db
                                         error:errorBlk];
@@ -1625,7 +1731,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
 }
 
 - (NSArray *)fuelPurchaseLogsForUser:(FPUser *)user
-                            pageSize:(NSInteger)pageSize
+                            pageSize:(NSNumber *)pageSize
                     beforeDateLogged:(NSDate *)beforeDateLogged
                                   db:(FMDatabase *)db
                                error:(PELMDaoErrorBlk)errorBlk {
@@ -1641,7 +1747,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
 }
 
 - (NSArray *)fuelPurchaseLogsForVehicle:(FPVehicle *)vehicle
-                               pageSize:(NSInteger)pageSize
+                               pageSize:(NSNumber *)pageSize
                        beforeDateLogged:(NSDate *)beforeDateLogged
                                      db:(FMDatabase *)db
                                   error:(PELMDaoErrorBlk)errorBlk {
@@ -1657,7 +1763,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
 }
 
 - (NSArray *)fuelPurchaseLogsForFuelStation:(FPFuelStation *)fuelStation
-                                   pageSize:(NSInteger)pageSize
+                                   pageSize:(NSNumber *)pageSize
                            beforeDateLogged:(NSDate *)beforeDateLogged
                                          db:(FMDatabase *)db
                                       error:(PELMDaoErrorBlk)errorBlk {
@@ -1677,7 +1783,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                  parentEntityMainRsConverter:(entityFromResultSetBlk)parentEntityMainRsConverter
                   parentEntityMasterIdColumn:(NSString *)parentEntityMasterIdCol
                     parentEntityMainIdColumn:(NSString *)parentEntityMainIdCol
-                                    pageSize:(NSInteger)pageSize
+                                    pageSize:(NSNumber *)pageSize
                             beforeDateLogged:(NSDate *)beforeDateLogged
                                           db:(FMDatabase *)db
                                        error:(PELMDaoErrorBlk)errorBlk {
@@ -1941,18 +2047,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
 
 - (NSArray *)markFuelPurchaseLogsAsSyncInProgressForUser:(FPUser *)user
                                                    error:(PELMDaoErrorBlk)errorBlk {
-  /*BOOL (^additionalFilter)(PELMMainSupport *) = ^ BOOL (PELMMainSupport *entity) {
-    FPFuelPurchaseLog *fplog = (FPFuelPurchaseLog *)entity;
-    return [fplog vehicleMainIdentifier] && [fplog fuelStationMainIdentifier];
-  };
-  return
-  [_localModelUtils markEntitiesAsSyncInProgressInMainTable:TBL_MAIN_FUELPURCHASE_LOG
-                                                 usingQuery:[self selectStmtForMainFuelPurchaseLog]
-                                        entityFromResultSet:^(FMResultSet *rs){return  [self mainFuelPurchaseLogFromResultSetForSync:rs];}
-                                                 updateStmt:[self updateStmtForMainFuelPurchaseLogSansVehicleFuelStationFks]
-                                              updateArgsBlk:^NSArray *(PELMMainSupport *entity){return [self updateArgsForMainFuelPurchaseLog:(FPFuelPurchaseLog *)entity];}
-                                                  filterBlk:additionalFilter
-                                                      error:errorBlk];*/
   return [_localModelUtils markEntitiesAsSyncInProgressInMainTable:TBL_MAIN_FUELPURCHASE_LOG
                                                entityFromResultSet:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSetForSync:rs];}
                                                         updateStmt:[self updateStmtForMainFuelPurchaseLogSansVehicleFuelStationFks]
@@ -2033,6 +2127,23 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
 
 #pragma mark - Environment Log
 
+- (void)deleteEnvironmentLog:(FPEnvironmentLog *)envlog
+                       error:(PELMDaoErrorBlk)errorBlk {
+  [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
+    [self deleteEnvironmentLog:envlog db:db error:errorBlk];
+  }];
+}
+
+- (void)deleteEnvironmentLog:(FPEnvironmentLog *)envlog
+                          db:(FMDatabase *)db
+                       error:(PELMDaoErrorBlk)errorBlk {
+  [PELMUtils deleteEntity:envlog
+          entityMainTable:TBL_MAIN_ENV_LOG
+        entityMasterTable:TBL_MASTER_ENV_LOG
+                       db:db
+                    error:errorBlk];
+}
+
 - (NSInteger)numEnvironmentLogsForUser:(FPUser *)user
                                  error:(PELMDaoErrorBlk)errorBlk {
   __block NSInteger numEntities = 0;
@@ -2086,7 +2197,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
   __block NSArray *envLogs = @[];
   [_databaseQueue inDatabase:^(FMDatabase *db) {
     envLogs = [self environmentLogsForUser:user
-                                  pageSize:pageSize
+                                  pageSize:@(pageSize)
                           beforeDateLogged:beforeDateLogged
                                         db:db
                                      error:errorBlk];
@@ -2175,7 +2286,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
   __block NSArray *envLogs = @[];
   [_databaseQueue inDatabase:^(FMDatabase *db) {
     envLogs = [self environmentLogsForVehicle:vehicle
-                                     pageSize:pageSize
+                                     pageSize:@(pageSize)
                              beforeDateLogged:beforeDateLogged
                                            db:db
                                         error:errorBlk];
@@ -2188,7 +2299,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                  db:(FMDatabase *)db
                               error:(PELMDaoErrorBlk)errorBlk {
   return [self environmentLogsForUser:user
-                             pageSize:pageSize
+                             pageSize:@(pageSize)
                      beforeDateLogged:nil
                                    db:db
                                 error:errorBlk];
@@ -2199,7 +2310,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                     db:(FMDatabase *)db
                                  error:(PELMDaoErrorBlk)errorBlk {
   return [self environmentLogsForVehicle:vehicle
-                                pageSize:pageSize
+                                pageSize:@(pageSize)
                         beforeDateLogged:nil
                                       db:db
                                    error:errorBlk];
@@ -2269,7 +2380,17 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
 }
 
 - (NSArray *)environmentLogsForUser:(FPUser *)user
-                           pageSize:(NSInteger)pageSize
+                                 db:(FMDatabase *)db
+                              error:(PELMDaoErrorBlk)errorBlk {
+  return [self environmentLogsForUser:user
+                             pageSize:nil
+                     beforeDateLogged:nil
+                                   db:db
+                                error:errorBlk];
+}
+
+- (NSArray *)environmentLogsForUser:(FPUser *)user
+                           pageSize:(NSNumber *)pageSize
                    beforeDateLogged:(NSDate *)beforeDateLogged
                                  db:(FMDatabase *)db
                               error:(PELMDaoErrorBlk)errorBlk {
@@ -2285,7 +2406,17 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
 }
 
 - (NSArray *)environmentLogsForVehicle:(FPVehicle *)vehicle
-                              pageSize:(NSInteger)pageSize
+                                    db:(FMDatabase *)db
+                                 error:(PELMDaoErrorBlk)errorBlk {
+  return [self environmentLogsForVehicle:vehicle
+                                pageSize:nil
+                        beforeDateLogged:nil
+                                      db:db
+                                   error:errorBlk];
+}
+
+- (NSArray *)environmentLogsForVehicle:(FPVehicle *)vehicle
+                              pageSize:(NSNumber *)pageSize
                       beforeDateLogged:(NSDate *)beforeDateLogged
                                     db:(FMDatabase *)db
                                  error:(PELMDaoErrorBlk)errorBlk {
@@ -2305,7 +2436,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                 parentEntityMainRsConverter:(entityFromResultSetBlk)parentEntityMainRsConverter
                  parentEntityMasterIdColumn:(NSString *)parentEntityMasterIdCol
                    parentEntityMainIdColumn:(NSString *)parentEntityMainIdCol
-                                   pageSize:(NSInteger)pageSize
+                                   pageSize:(NSNumber *)pageSize
                            beforeDateLogged:(NSDate *)beforeDateLogged
                                          db:(FMDatabase *)db
                                       error:(PELMDaoErrorBlk)errorBlk {
@@ -2608,197 +2739,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                                       db:db
                                                    error:errorBlk];
   }];
-}
-
-#pragma mark - Cascade Deletion
-
-- (void)cascadeDeleteEnvironmentLog:(FPEnvironmentLog *)environmentLog
-                              error:(PELMDaoErrorBlk)errorBlk {
-  [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
-    [self cascadeDeleteEnvironmentLog:environmentLog
-                                   db:db
-                                error:errorBlk];
-  }];
-}
-
-- (void)cascadeDeleteEnvironmentLog:(FPEnvironmentLog *)environmentLog
-                                 db:(FMDatabase *)db
-                              error:(PELMDaoErrorBlk)errorBlk {
-  //TODO
-}
-
-- (void)cascadeDeleteFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
-                               error:(PELMDaoErrorBlk)errorBlk {
-  [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
-    [self cascadeDeleteFuelPurchaseLog:fuelPurchaseLog
-                                    db:db
-                                 error:errorBlk];
-  }];
-}
-
-- (void)cascadeDeleteFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
-                                  db:(FMDatabase *)db
-                               error:(PELMDaoErrorBlk)errorBlk {
-  //TODO
-}
-
-- (void)cascadeDeleteFuelStation:(FPFuelStation *)fuelStation
-                           error:(PELMDaoErrorBlk)errorBlk {
-  [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
-    [self cascadeDeleteFuelStation:fuelStation db:db error:errorBlk];
-  }];
-
-}
-
-- (void)cascadeDeleteFuelStation:(FPFuelStation *)fuelStation
-                              db:(FMDatabase *)db
-                           error:(PELMDaoErrorBlk)errorBlk {
-  //TODO
-}
-
-- (void)cascadeDeleteVehicle:(FPVehicle *)vehicle
-                       error:(PELMDaoErrorBlk)errorBlk {
-  [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
-    [self cascadeDeleteVehicle:vehicle db:db error:errorBlk];
-  }];
-}
-
-- (void)cascadeDeleteVehicle:(FPVehicle *)vehicle
-                          db:(FMDatabase *)db
-                       error:(PELMDaoErrorBlk)errorBlk {
-  // TODO - Get all fuel purchase log instances, loop over them, invoke
-  // 'cascadeDeleteFuelPurchaseLog...'
-}
-
-- (void)cascadeDeleteUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk {
-  /*[_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
-   NSArray * (^childEntities)(NSString *, NSString *, NSNumber *(^)(PELMModelSupport *), NSNumber *, entityFromResultSetBlk) =
-   ^ NSArray * (NSString *table, NSString *fkColumn, NSNumber *(^localIdGetter)(PELMModelSupport *), NSNumber *localIdentifier, entityFromResultSetBlk rsConverter) {
-   __block NSArray *entities = @[];
-   if (localIdentifier) {
-   entities = [PELMUtils entitiesFromEntityTable:table
-   whereClause:[NSString stringWithFormat:@"%@ = ?", fkColumn]
-   localIdGetter:localIdGetter
-   argsArray:@[localIdentifier]
-   rsConverter:rsConverter
-   db:db
-   error:errorBlk];
-   }
-   return entities;
-   };
-   NSArray *vehicles =
-   childEntities(TBL_MAIN_VEHICLE,
-   COL_MAIN_USER_ID,
-   ^NSNumber *(PELMModelSupport *entity) { return [entity localMainIdentifier]; },
-   [user localMainIdentifier],
-   ^(FMResultSet *rs){return [self mainVehicleFromResultSet:rs];});
-   for (FPVehicle *vehicle in vehicles) {
-   NSArray *logs = childEntities(TBL_MAIN_FUELPURCHASE_LOG,
-   COL_MAIN_VEHICLE_ID,
-   ^NSNumber *(PELMModelSupport *entity) { return [entity localMainIdentifier]; },
-   [vehicle localMainIdentifier],
-   ^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSet:rs];});
-   for (FPFuelPurchaseLog *fpLog in logs) {
-   [PELMUtils deleteEntity:fpLog
-   entityTable:TBL_MAIN_FUELPURCHASE_LOG
-   localIdentifier:[fpLog localMainIdentifier]
-   db:db
-   error:errorBlk];
-   }
-   logs = childEntities(TBL_MAIN_ENV_LOG,
-   COL_MAIN_VEHICLE_ID,
-   ^NSNumber *(PELMModelSupport *entity) { return [entity localMainIdentifier]; },
-   [vehicle localMainIdentifier],
-   ^(FMResultSet *rs){return [self mainEnvironmentLogFromResultSet:rs];});
-   for (FPEnvironmentLog *envLog in logs) {
-   [PELMUtils deleteEntity:envLog
-   entityTable:TBL_MAIN_ENV_LOG
-   localIdentifier:[envLog localMainIdentifier]
-   db:db
-   error:errorBlk];
-   }
-   [PELMUtils deleteEntity:vehicle
-   entityTable:TBL_MAIN_VEHICLE
-   localIdentifier:[vehicle localMainIdentifier]
-   db:db
-   error:errorBlk];
-   }
-   vehicles =
-   childEntities(TBL_MASTER_VEHICLE,
-   COL_MASTER_USER_ID,
-   ^NSNumber *(PELMModelSupport *entity) { return [entity localMasterIdentifier]; },
-   [user localMasterIdentifier],
-   ^(FMResultSet *rs){return [self masterVehicleFromResultSet:rs];});
-   for (FPVehicle *vehicle in vehicles) {
-   NSArray *logs = childEntities(TBL_MASTER_FUELPURCHASE_LOG,
-   COL_MASTER_VEHICLE_ID,
-   ^NSNumber *(PELMModelSupport *entity) { return [entity localMainIdentifier]; },
-   [vehicle localMasterIdentifier],
-   ^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];});
-   for (FPFuelPurchaseLog *fpLog in logs) {
-   [PELMUtils deleteEntity:fpLog
-   entityTable:TBL_MASTER_FUELPURCHASE_LOG
-   localIdentifier:[fpLog localMasterIdentifier]
-   db:db
-   error:errorBlk];
-   }
-   logs = childEntities(TBL_MASTER_ENV_LOG,
-   COL_MASTER_VEHICLE_ID,
-   ^NSNumber *(PELMModelSupport *entity) { return [entity localMainIdentifier]; },
-   [vehicle localMasterIdentifier],
-   ^(FMResultSet *rs){return [self masterEnvironmentLogFromResultSet:rs];});
-   for (FPEnvironmentLog *envLog in logs) {
-   [PELMUtils deleteEntity:envLog
-   entityTable:TBL_MASTER_ENV_LOG
-   localIdentifier:[envLog localMasterIdentifier]
-   db:db
-   error:errorBlk];
-   }
-   [PELMUtils deleteEntity:vehicle
-   entityTable:TBL_MASTER_VEHICLE
-   localIdentifier:[vehicle localMasterIdentifier]
-   db:db
-   error:errorBlk];
-   }
-   NSArray *fuelStations =
-   childEntities(TBL_MAIN_FUEL_STATION,
-   COL_MAIN_USER_ID,
-   ^NSNumber *(PELMModelSupport *entity) { return [entity localMainIdentifier]; },
-   [user localMainIdentifier],
-   ^(FMResultSet *rs){return [self mainFuelStationFromResultSet:rs];});
-   for (FPFuelStation *fuelStation in fuelStations) {
-   [PELMUtils deleteEntity:fuelStation
-   entityTable:TBL_MAIN_FUEL_STATION
-   localIdentifier:[fuelStation localMainIdentifier]
-   db:db
-   error:errorBlk];
-   }
-   fuelStations =
-   childEntities(TBL_MASTER_FUEL_STATION,
-   COL_MASTER_USER_ID,
-   ^NSNumber *(PELMModelSupport *entity) { return [entity localMasterIdentifier]; },
-   [user localMasterIdentifier],
-   ^(FMResultSet *rs){return [self masterFuelStationFromResultSet:rs];});
-   for (FPFuelStation *fuelStation in fuelStations) {
-   [PELMUtils deleteEntity:fuelStation
-   entityTable:TBL_MASTER_FUEL_STATION
-   localIdentifier:[fuelStation localMasterIdentifier]
-   db:db
-   error:errorBlk];
-   }
-   if ([user localMainIdentifier]) {
-   [PELMUtils deleteEntity:user
-   entityTable:TBL_MAIN_USER
-   localIdentifier:[user localMainIdentifier]
-   db:db
-   error:errorBlk];
-   }
-   [PELMUtils deleteEntity:user
-   entityTable:TBL_MASTER_USER
-   localIdentifier:[user localMasterIdentifier]
-   db:db
-   error:errorBlk];
-   }];*/
 }
 
 #pragma mark - Invariant-violation checkers (private)

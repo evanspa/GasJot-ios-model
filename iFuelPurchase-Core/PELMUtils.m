@@ -271,11 +271,10 @@ markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCom
   [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
     [entity setEditInProgress:NO];
     if ([entity decrementEditCount] == 0) {
-      [PELMUtils deleteRelationsForEntity:entity
-                              entityTable:mainTable
-                          localIdentifier:[entity localMainIdentifier]
-                                       db:db
-                                    error:errorBlk];
+      [PELMUtils deleteRelationsFromEntityTable:mainTable
+                                localIdentifier:[entity localMainIdentifier]
+                                             db:db
+                                          error:errorBlk];
       __block BOOL pruneSuccess = YES;
       [PELMUtils deleteFromTable:mainTable
                     whereColumns:@[COL_LOCAL_ID]
@@ -475,7 +474,7 @@ version of entity not found!  It's global ID is: [%@]", [entity globalIdentifier
          parentEntityMainRsConverter:(entityFromResultSetBlk)parentEntityMainRsConverter
           parentEntityMasterIdColumn:(NSString *)parentEntityMasterIdColumn
             parentEntityMainIdColumn:(NSString *)parentEntityMainIdColumn
-                            pageSize:(NSInteger)pageSize
+                            pageSize:(NSNumber *)pageSize
                    pageBoundaryWhere:(NSString *)pageBoundaryWhere
                      pageBoundaryArg:(id)pageBoundaryArg
                    entityMasterTable:(NSString *)entityMasterTable
@@ -505,23 +504,27 @@ version of entity not found!  It's global ID is: [%@]", [entity globalIdentifier
     }
     return [qry stringByAppendingFormat:@" ORDER BY %@ %@", orderByDomainColumn, orderByDomainColumnDirection];
   };
-  NSArray *(^entitiesFilter)(NSArray *) = ^ NSArray *(NSArray *entities) {
-    NSArray *sortedEntities = [entities sortedArrayUsingComparator:comparatorForSort];
-    if ([sortedEntities count] > pageSize) {
-      NSMutableArray *truncatedEntities = [NSMutableArray arrayWithCapacity:pageSize];
-      for (int i = 0; i < pageSize; i++) {
-        [truncatedEntities addObject:sortedEntities[i]];
+  NSArray *(^entitiesFilter)(NSArray *) = nil;
+  if (pageSize) {
+    NSInteger pageSizeInt = [pageSize integerValue];
+    entitiesFilter = ^ NSArray *(NSArray *entities) {
+      NSArray *sortedEntities = [entities sortedArrayUsingComparator:comparatorForSort];
+      if ([sortedEntities count] > pageSizeInt) {
+        NSMutableArray *truncatedEntities = [NSMutableArray arrayWithCapacity:pageSizeInt];
+        for (int i = 0; i < pageSizeInt; i++) {
+          [truncatedEntities addObject:sortedEntities[i]];
+        }
+        sortedEntities = truncatedEntities;
       }
-      sortedEntities = truncatedEntities;
-    }
-    return sortedEntities;
-  };
+      return sortedEntities;
+    };
+  }
   return [PELMUtils entitiesForParentEntity:parentEntity
                       parentEntityMainTable:parentEntityMainTable
                 parentEntityMainRsConverter:parentEntityMainRsConverter
                  parentEntityMasterIdColumn:parentEntityMasterIdColumn
                    parentEntityMainIdColumn:parentEntityMainIdColumn
-                                   pageSize:@(pageSize)
+                                   pageSize:pageSize
                           entityMasterTable:entityMasterTable
              masterEntityResultSetConverter:masterEntityResultSetConverter
                             entityMainTable:entityMainTable
@@ -1318,11 +1321,10 @@ Entity: %@", entity]
                  localIdentifier:(NSNumber *)localIdentifier
                               db:(FMDatabase *)db
                            error:(PELMDaoErrorBlk)errorBlk {
-  [PELMUtils deleteRelationsForEntity:entity
-                          entityTable:entityTable
-                      localIdentifier:localIdentifier
-                                   db:db
-                                error:errorBlk];
+  [PELMUtils deleteRelationsFromEntityTable:entityTable
+                            localIdentifier:localIdentifier
+                                         db:db
+                                      error:errorBlk];
   [PELMUtils insertRelations:[entity relations]
                    forEntity:entity
                  entityTable:entityTable
@@ -1528,27 +1530,41 @@ Entity: %@", entity]
 }
 
 + (void)deleteEntity:(PELMModelSupport *)entity
-         entityTable:(NSString *)entityTable
-     localIdentifier:(NSNumber *)localIdentifier
+     entityMainTable:(NSString *)entityMainTable
+   entityMasterTable:(NSString *)entityMasterTable
                   db:(FMDatabase *)db
                error:(PELMDaoErrorBlk)errorBlk {
-  [PELMUtils deleteRelationsForEntity:entity
-                          entityTable:entityTable
-                      localIdentifier:localIdentifier
-                                   db:db
-                                error:errorBlk];
-  [self deleteFromTable:entityTable
-           whereColumns:@[COL_LOCAL_ID]
-            whereValues:@[localIdentifier]
-                     db:db
-                  error:errorBlk];
+  [self deleteFromEntityTable:entityMainTable
+              localIdentifier:[entity localMainIdentifier]
+                           db:db
+                        error:errorBlk];
+  [self deleteFromEntityTable:entityMasterTable
+              localIdentifier:[entity localMasterIdentifier]
+                           db:db
+                        error:errorBlk];
 }
 
-+ (void)deleteRelationsForEntity:(PELMModelSupport *)entity
-                     entityTable:(NSString *)entityTable
-                 localIdentifier:(NSNumber *)localIdentifier
-                              db:(FMDatabase *)db
-                           error:(PELMDaoErrorBlk)errorBlk {
++ (void)deleteFromEntityTable:(NSString *)entityTable
+              localIdentifier:(NSNumber *)localIdentifier
+                           db:(FMDatabase *)db
+                        error:(PELMDaoErrorBlk)errorBlk {
+  if (localIdentifier) {
+    [PELMUtils deleteRelationsFromEntityTable:entityTable
+                              localIdentifier:localIdentifier
+                                           db:db
+                                        error:errorBlk];
+    [self deleteFromTable:entityTable
+             whereColumns:@[COL_LOCAL_ID]
+              whereValues:@[localIdentifier]
+                       db:db
+                    error:errorBlk];
+  }
+}
+
++ (void)deleteRelationsFromEntityTable:(NSString *)entityTable
+                       localIdentifier:(NSNumber *)localIdentifier
+                                    db:(FMDatabase *)db
+                                 error:(PELMDaoErrorBlk)errorBlk {
   NSString *relsTable = [PELMDDL relTableForEntityTable:entityTable];
   NSString *delWhereColumn = [PELMDDL relFkColumnForEntityTable:entityTable
                                                  entityPkColumn:COL_LOCAL_ID];
@@ -1618,28 +1634,6 @@ Entity: %@", entity]
   }];
 }
 
-+ (void)deleteAllEntities:(NSString *)table
-                       db:(FMDatabase *)db
-                    error:(PELMDaoErrorBlk)errorBlk {
-  [PELMUtils deleteFromTable:[PELMDDL relTableForEntityTable:table]
-                whereColumns:@[]
-                 whereValues:@[]
-                          db:db
-                       error:errorBlk];
-  [PELMUtils deleteFromTable:table
-                whereColumns:@[]
-                 whereValues:@[]
-                          db:db
-                       error:errorBlk];
-}
-
-- (void)deleteAllEntitiesInTxn:(NSString *)table
-                         error:(PELMDaoErrorBlk)errorBlk {
-  [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
-    [PELMUtils deleteAllEntities:table db:db error:errorBlk];
-  }];
-}
-
 - (void)pruneAllSyncedFromMainTables:(NSArray *)tableNames
                                error:(PELMDaoErrorBlk)errorBlk {
   NSString *entityKey = @"entity";
@@ -1662,11 +1656,10 @@ Entity: %@", entity]
     if ([syncedEntity localMainIdentifier]) { // it shouldn't be possible for localMainIdentifier to be nil here, but, just 'cause
       NSString *table = [syncedEntityDict objectForKey:tableKey];
       [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
-        [PELMUtils deleteRelationsForEntity:syncedEntity
-                                entityTable:table
-                            localIdentifier:[syncedEntity localMainIdentifier]
-                                         db:db
-                                      error:errorBlk];
+        [PELMUtils deleteRelationsFromEntityTable:table
+                                  localIdentifier:[syncedEntity localMainIdentifier]
+                                               db:db
+                                            error:errorBlk];
         [PELMUtils doUpdate:[NSString stringWithFormat:@"DELETE FROM %@ WHERE %@ = ?", table, COL_LOCAL_ID]
                   argsArray:@[[syncedEntity localMainIdentifier]]
                          db:db

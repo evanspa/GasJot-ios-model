@@ -51,7 +51,8 @@ describe(@"FPLocalDao", ^{
     DDLogDebug(@"FPLocalDaoTest SQLite data file: [%@]", sqliteDataFilePath);
     localDao = [[FPLocalDao alloc] initWithSqliteDataFilePath:sqliteDataFilePath];
     [localDao initializeDatabaseWithError:errLogger];
-    [localDao deleteAllUsers:errLogger];    
+    FPUser *user = [localDao userWithError:errLogger];
+    [localDao deleteUser:user error:errLogger];
     _coordTestCtx = [[FPCoordDaoTestContext alloc] initWithTestBundle:testBundle];
   });
   

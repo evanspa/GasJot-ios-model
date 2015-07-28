@@ -290,7 +290,7 @@
      }
    }
                 markAsSyncCompleteForDeletedEntityBlk:^(PELMMainSupport *unsyncedUser){
-                  [_localDao deleteAllUsers:errorBlk];
+                  [self deleteUser:(FPUser *)unsyncedUser error:errorBlk];
                   if (addlSuccessBlk) {
                     addlSuccessBlk((FPUser *)unsyncedUser);
                   }
@@ -398,8 +398,8 @@
        addlSuccessBlk((FPVehicle *)unsyncedVehicle);
      }
    }
-                markAsSyncCompleteForDeletedEntityBlk:^(PELMMainSupport *unsyncedVehicle){[_localDao cascadeDeleteVehicle:(FPVehicle *)unsyncedVehicle
-                                                                                                        error:errorBlk];}
+                markAsSyncCompleteForDeletedEntityBlk:^(PELMMainSupport *unsyncedVehicle){[_localDao deleteVehicle:(FPVehicle *)unsyncedVehicle
+                                                                                                             error:errorBlk];}
                       authRequiredHandler:^(PELMMainSupport *unsyncedVehicle, HCAuthentication *auth) {
                         [self authReqdBlk](unsyncedVehicle, auth);
                         [_localDao cancelSyncForVehicle:(FPVehicle *)unsyncedVehicle
@@ -504,8 +504,8 @@
        addlSuccessBlk((FPFuelStation *)unsyncedFuelStation);
      }
    }
-                markAsSyncCompleteForDeletedEntityBlk:^(PELMMainSupport *unsyncedFuelStation){[_localDao cascadeDeleteFuelStation:(FPFuelStation *)unsyncedFuelStation
-                                                                                                                error:errorBlk];}
+                markAsSyncCompleteForDeletedEntityBlk:^(PELMMainSupport *unsyncedFuelStation){[_localDao deleteFuelstation:(FPFuelStation *)unsyncedFuelStation
+                                                                                                                     error:errorBlk];}
                       authRequiredHandler:^(PELMMainSupport *unsyncedFuelStation, HCAuthentication *auth) {
                         [self authReqdBlk](unsyncedFuelStation, auth);
                         [_localDao cancelSyncForFuelStation:(FPFuelStation *)unsyncedFuelStation
@@ -624,8 +624,8 @@
        addlSuccessBlk((FPFuelPurchaseLog *)unsyncedFuelPurchaseLog);
      }
    }
-                markAsSyncCompleteForDeletedEntityBlk:^(PELMMainSupport *unsyncedFuelPurchaseLog){[_localDao cascadeDeleteFuelPurchaseLog:(FPFuelPurchaseLog *)unsyncedFuelPurchaseLog
-                                                                                                                        error:errorBlk];}
+                markAsSyncCompleteForDeletedEntityBlk:^(PELMMainSupport *unsyncedFuelPurchaseLog){[_localDao deleteFuelPurchaseLog:(FPFuelPurchaseLog *)unsyncedFuelPurchaseLog
+                                                                                                                             error:errorBlk];}
                       authRequiredHandler:^(PELMMainSupport *unsyncedFpLog, HCAuthentication *auth) {
                         [self authReqdBlk](unsyncedFpLog, auth);
                         [_localDao cancelSyncForFuelPurchaseLog:(FPFuelPurchaseLog *)unsyncedFpLog
@@ -738,8 +738,8 @@
      }
    }
                 markAsSyncCompleteForDeletedEntityBlk:^(PELMMainSupport *unsyncedEnvironmentLog) {
-                  [_localDao cascadeDeleteEnvironmentLog:(FPEnvironmentLog *)unsyncedEnvironmentLog
-                                                   error:errorBlk];
+                  [_localDao deleteEnvironmentLog:(FPEnvironmentLog *)unsyncedEnvironmentLog
+                                            error:errorBlk];
                 }
                       authRequiredHandler:^(PELMMainSupport *unsyncedEnvLog, HCAuthentication *auth) {
                         [self authReqdBlk](unsyncedEnvLog, auth);
@@ -914,6 +914,11 @@
 
 #pragma mark - User
 
+- (void)deleteUser:(FPUser *)user
+             error:(PELMDaoErrorBlk)errorBlk {
+  [_localDao deleteUser:user error:errorBlk];
+}
+
 - (NSInteger)numUnsyncedVehiclesForUser:(FPUser *)user {
   return [_localDao numUnsyncedVehiclesForUser:user];
 }
@@ -946,7 +951,7 @@
 }
 
 - (void)resetAsLocalUser:(FPUser *)user error:(PELMDaoErrorBlk)error {
-  [_localDao deleteAllUsers:error];
+  [_localDao deleteUser:user error:error];
   FPUser *newLocalUser = [self newLocalUserWithError:error];
   [user overwrite:newLocalUser];
   [user setLocalMainIdentifier:[newLocalUser localMainIdentifier]];
