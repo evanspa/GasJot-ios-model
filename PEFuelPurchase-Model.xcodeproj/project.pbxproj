@@ -57,6 +57,7 @@
 		18F23AB019A1EF6D0059DA22 /* FPRestRemoteMasterDao.m in Sources */ = {isa = PBXBuildFile; fileRef = 18F23AAF19A1EF6D0059DA22 /* FPRestRemoteMasterDao.m */; };
 		18F23AB519A1F4730059DA22 /* FPErrorDomains.m in Sources */ = {isa = PBXBuildFile; fileRef = 18F23AB419A1F4730059DA22 /* FPErrorDomains.m */; };
 		18F5FD23198D1DC100D6BB13 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 18F5FD21198D1D6A00D6BB13 /* libsqlite3.dylib */; };
+		3A1D39AC44C9AF498E050705 /* libPods-PEFuelPurchase-ModelTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 97D994DB608A1FC554052190 /* libPods-PEFuelPurchase-ModelTests.a */; };
 		CA7D5AAA1B39EF5000433581 /* FPCoordinatorDaoTests_1.m in Sources */ = {isa = PBXBuildFile; fileRef = 182267E11A5BA75200242806 /* FPCoordinatorDaoTests_1.m */; };
 		CA7D5AAE1B3B07B500433581 /* PELMLoginUser.m in Sources */ = {isa = PBXBuildFile; fileRef = CA7D5AAD1B3B07B500433581 /* PELMLoginUser.m */; };
 		CAAC570C1B3DD96600D60D62 /* FPCoordinatorDaoTests_2.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBC61A5CD98A00747936 /* FPCoordinatorDaoTests_2.m */; };
@@ -198,8 +199,11 @@
 		18F5FD21198D1D6A00D6BB13 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		4246F24D9E3B45A09AA91C6B /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		5813A12436A5669F705ADB14 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
+		97D994DB608A1FC554052190 /* libPods-PEFuelPurchase-ModelTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-PEFuelPurchase-ModelTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		9A6BD3B0D574C7E922BFBF8D /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 		A6C811B0429F450C845608ED /* libPods-iFuelPurchase-CoreTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-iFuelPurchase-CoreTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		CA1949C21B66C7180039C83A /* Pods-PEFuelPurchase-ModelTests.debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = "Pods-PEFuelPurchase-ModelTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-PEFuelPurchase-ModelTests/Pods-PEFuelPurchase-ModelTests.debug.xcconfig"; sourceTree = "<group>"; };
+		CA1949C31B66C7180039C83A /* Pods-PEFuelPurchase-ModelTests.release.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = "Pods-PEFuelPurchase-ModelTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-PEFuelPurchase-ModelTests/Pods-PEFuelPurchase-ModelTests.release.xcconfig"; sourceTree = "<group>"; };
 		CA73FB4B1B2CF37F00451D50 /* FPCoordinatorDaoTests_11.1.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FPCoordinatorDaoTests_11.1.m; sourceTree = "<group>"; };
 		CA7D5AAC1B3B07B500433581 /* PELMLoginUser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PELMLoginUser.h; sourceTree = "<group>"; };
 		CA7D5AAD1B3B07B500433581 /* PELMLoginUser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PELMLoginUser.m; sourceTree = "<group>"; };
@@ -226,6 +230,7 @@
 				1803BC83198436BF00225613 /* UIKit.framework in Frameworks */,
 				1803BC81198436BF00225613 /* Foundation.framework in Frameworks */,
 				1803BC86198436BF00225613 /* libPEFuelPurchase-Model.a in Frameworks */,
+				3A1D39AC44C9AF498E050705 /* libPods-PEFuelPurchase-ModelTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -235,6 +240,8 @@
 		0BD08702DB50114B2250D029 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
+				CA1949C21B66C7180039C83A /* Pods-PEFuelPurchase-ModelTests.debug.xcconfig */,
+				CA1949C31B66C7180039C83A /* Pods-PEFuelPurchase-ModelTests.release.xcconfig */,
 				5813A12436A5669F705ADB14 /* Pods.debug.xcconfig */,
 				9A6BD3B0D574C7E922BFBF8D /* Pods.release.xcconfig */,
 			);
@@ -349,6 +356,7 @@
 				1803BC82198436BF00225613 /* UIKit.framework */,
 				4246F24D9E3B45A09AA91C6B /* libPods.a */,
 				A6C811B0429F450C845608ED /* libPods-iFuelPurchase-CoreTests.a */,
+				97D994DB608A1FC554052190 /* libPods-PEFuelPurchase-ModelTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -888,6 +896,7 @@
 				1803BC7A198436BF00225613 /* Sources */,
 				1803BC7B198436BF00225613 /* Frameworks */,
 				1803BC7C198436BF00225613 /* Resources */,
+				A3B9225E6343FC30612D0C6B /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -955,6 +964,21 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		A3B9225E6343FC30612D0C6B /* Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-PEFuelPurchase-ModelTests/Pods-PEFuelPurchase-ModelTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		E30E448E916C4E8FAFB73F08 /* Check Pods Manifest.lock */ = {
@@ -1081,6 +1105,7 @@
 /* Begin XCBuildConfiguration section */
 		1803BC8F198436BF00225613 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 5813A12436A5669F705ADB14 /* Pods.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
@@ -1120,6 +1145,7 @@
 		};
 		1803BC90198436C000225613 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9A6BD3B0D574C7E922BFBF8D /* Pods.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
@@ -1184,7 +1210,7 @@
 		};
 		1803BC95198436C000225613 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5813A12436A5669F705ADB14 /* Pods.debug.xcconfig */;
+			baseConfigurationReference = CA1949C21B66C7180039C83A /* Pods-PEFuelPurchase-ModelTests.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -1197,11 +1223,7 @@
 				INFOPLIST_FILE = "iFuelPurchase-CoreTests/PEFuelPurchase-ModelTests-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = (
-					"-ObjC",
-					"-l\"sqlite3\"",
-					"-l\"xml2\"",
-				);
+				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_NAME = "PEFuelPurchase-ModelTests";
 				WRAPPER_EXTENSION = xctest;
 			};
@@ -1209,7 +1231,7 @@
 		};
 		1803BC96198436C000225613 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9A6BD3B0D574C7E922BFBF8D /* Pods.release.xcconfig */;
+			baseConfigurationReference = CA1949C31B66C7180039C83A /* Pods-PEFuelPurchase-ModelTests.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -1218,11 +1240,7 @@
 				INFOPLIST_FILE = "iFuelPurchase-CoreTests/PEFuelPurchase-ModelTests-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = (
-					"-ObjC",
-					"-l\"sqlite3\"",
-					"-l\"xml2\"",
-				);
+				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_NAME = "PEFuelPurchase-ModelTests";
 				WRAPPER_EXTENSION = xctest;
 			};

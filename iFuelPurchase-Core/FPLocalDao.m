@@ -193,18 +193,20 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
 - (NSInteger)numUnsyncedEntitiesForUser:(FPUser *)user
                         mainEntityTable:(NSString *)entityTable {
   __block NSInteger numEntities = 0;
-  [_databaseQueue inDatabase:^(FMDatabase *db) {
-    NSString *qry = [NSString stringWithFormat:@"select count(*) from %@ where \
-                     %@ = ? and \
-                     %@ = 0", entityTable,
-                     COL_MAIN_USER_ID,
-                     COL_MAN_SYNCED];
-    FMResultSet *rs = [db executeQuery:qry
-                  withArgumentsInArray:@[[user localMainIdentifier]]];
-    [rs next];
-    numEntities = [rs intForColumnIndex:0];
-    [rs next]; // to not have 'open result set' warning
-  }];
+  if ([user localMainIdentifier]) {
+    [_databaseQueue inDatabase:^(FMDatabase *db) {
+      NSString *qry = [NSString stringWithFormat:@"select count(*) from %@ where \
+                       %@ = ? and \
+                       %@ = 0", entityTable,
+                       COL_MAIN_USER_ID,
+                       COL_MAN_SYNCED];
+      FMResultSet *rs = [db executeQuery:qry
+                    withArgumentsInArray:@[[user localMainIdentifier]]];
+      [rs next];
+      numEntities = [rs intForColumnIndex:0];
+      [rs next]; // to not have 'open result set' warning
+    }];
+  }
   return numEntities;
 }
 

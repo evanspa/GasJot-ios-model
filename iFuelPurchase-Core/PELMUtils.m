@@ -276,12 +276,18 @@ markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCom
                           localIdentifier:[entity localMainIdentifier]
                                        db:db
                                     error:errorBlk];
+      __block BOOL pruneSuccess = YES;
       [PELMUtils deleteFromTable:mainTable
                     whereColumns:@[COL_LOCAL_ID]
                      whereValues:@[[entity localMainIdentifier]]
                               db:db
-                           error:errorBlk];
-      [entity setLocalMainIdentifier:nil];
+                           error:^ (NSError *err, int code, NSString *msg) {
+                             errorBlk(err, code, msg);
+                             pruneSuccess = NO;
+                           }];
+      if (pruneSuccess) {
+        [entity setLocalMainIdentifier:nil];
+      }
       if ([entity globalIdentifier]) {
         DDLogDebug(@"In PELMUtils/cancelEditOfEntity..., canceled edit of entity resulted in it being pruned \
 from its main table.  However its global ID is not nil.  Proceeding to load the entity \
@@ -1503,16 +1509,16 @@ Entity: %@", entity]
   __block BOOL returnVal;
   [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
     returnVal = [PELMUtils prepareEntityForEdit:entity
-                                 db:db
-                          mainTable:mainTable
-                entityFromResultSet:entityFromResultSet
-                 mainEntityInserter:mainEntityInserter
-            editPrepInvariantChecks:editPrepInvariantChecks
-                  mainEntityUpdater:mainEntityUpdater
-                  entityBeingSynced:entityBeingSyncedBlk
-                      entityDeleted:entityDeletedBlk
-                   entityInConflict:entityInConflictBlk
-                              error:errorBlk];
+                                             db:db
+                                      mainTable:mainTable
+                            entityFromResultSet:entityFromResultSet
+                             mainEntityInserter:mainEntityInserter
+                        editPrepInvariantChecks:editPrepInvariantChecks
+                              mainEntityUpdater:mainEntityUpdater
+                              entityBeingSynced:entityBeingSyncedBlk
+                                  entityDeleted:entityDeletedBlk
+                               entityInConflict:entityInConflictBlk
+                                          error:errorBlk];
   }];
   return returnVal;
 }
