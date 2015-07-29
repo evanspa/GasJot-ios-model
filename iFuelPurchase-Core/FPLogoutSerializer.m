@@ -16,4 +16,15 @@
   return @{};
 }
 
+#pragma mark - Deserialization (JSON Dictionary -> Resource Model)
+
+- (id)resourceModelWithDictionary:(NSDictionary *)resDict
+                        relations:(NSDictionary *)relations
+                        mediaType:(HCMediaType *)mediaType
+                         location:(NSString *)location
+                     lastModified:(NSDate *)lastModified {
+  // need to return SOMETHING
+  return [[NSObject alloc] init];
+}
+
 @end
