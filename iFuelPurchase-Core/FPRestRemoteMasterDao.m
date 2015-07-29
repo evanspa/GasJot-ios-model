@@ -97,6 +97,18 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
 
 #pragma mark - Helpers
 
+- (NSDictionary *)addFpIfUnmodifiedSinceHeaderToHeader:(NSDictionary *)headers
+                                                entity:(PELMMasterSupport *)entity {
+  if ([entity updatedAt]) {
+    NSMutableDictionary *newHeaders = [headers mutableCopy];
+    [newHeaders setObject:[[NSNumber numberWithInteger:([[entity updatedAt] timeIntervalSince1970] * 1000)] description]
+                   forKey:_ifUnmodifiedSinceHeaderName];
+    return newHeaders;
+  } else {
+    return headers;
+  }
+}
+
 + (HCServerUnavailableBlk)serverUnavailableBlk:(PELMRemoteMasterBusyBlk)busyHandler {
   return ^(NSDate *retryAfter, NSHTTPURLResponse *resp) {
     if (busyHandler) { busyHandler(retryAfter); }
@@ -273,7 +285,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
                   conflict:[self newConflictBlk:complHandler]
          connectionFailure:[self newConnFailureBlk:complHandler]
                    timeout:timeout
-              otherHeaders:@{}];
+              otherHeaders:[self addFpIfUnmodifiedSinceHeaderToHeader:@{} entity:vehicle]];
 }
 
 - (void)deleteVehicle:(FPVehicle *)vehicle
@@ -295,7 +307,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
                     conflict:[self newConflictBlk:complHandler]
            connectionFailure:[self newConnFailureBlk:complHandler]
                      timeout:timeout
-                otherHeaders:@{}];
+                otherHeaders:[self addFpIfUnmodifiedSinceHeaderToHeader:@{} entity:vehicle]];
 }
 
 #pragma mark - FuelStation Operations
@@ -336,7 +348,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
                   conflict:[self newConflictBlk:complHandler]
          connectionFailure:[self newConnFailureBlk:complHandler]
                    timeout:timeout
-              otherHeaders:@{}];
+              otherHeaders:[self addFpIfUnmodifiedSinceHeaderToHeader:@{} entity:fuelStation]];
 }
 
 - (void)deleteFuelStation:(FPFuelStation *)fuelStation
@@ -358,7 +370,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
                     conflict:[self newConflictBlk:complHandler]
            connectionFailure:[self newConnFailureBlk:complHandler]
                      timeout:timeout
-                otherHeaders:@{}];
+                otherHeaders:[self addFpIfUnmodifiedSinceHeaderToHeader:@{} entity:fuelStation]];
 }
 
 #pragma mark - Fuel Purchase Log Operations
@@ -398,7 +410,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
                                    conflict:[self newConflictBlk:complHandler]
                           connectionFailure:[self newConnFailureBlk:complHandler]
                                     timeout:timeout
-                               otherHeaders:@{}];
+                               otherHeaders:[self addFpIfUnmodifiedSinceHeaderToHeader:@{} entity:fuelPurchaseLog]];
 }
 
 - (void)deleteFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
@@ -419,7 +431,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
                                      conflict:[self newConflictBlk:complHandler]
                             connectionFailure:[self newConnFailureBlk:complHandler]
                                       timeout:timeout
-                                 otherHeaders:@{}];
+                                 otherHeaders:[self addFpIfUnmodifiedSinceHeaderToHeader:@{} entity:fuelPurchaseLog]];
 }
 
 #pragma mark - Environment Log Operations
@@ -459,7 +471,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
                                    conflict:[self newConflictBlk:complHandler]
                           connectionFailure:[self newConnFailureBlk:complHandler]
                                     timeout:timeout
-                               otherHeaders:@{}];
+                               otherHeaders:[self addFpIfUnmodifiedSinceHeaderToHeader:@{} entity:environmentLog]];
 }
 
 - (void)deleteEnvironmentLog:(FPEnvironmentLog *)environmentLog
@@ -480,7 +492,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
                                      conflict:[self newConflictBlk:complHandler]
                             connectionFailure:[self newConnFailureBlk:complHandler]
                                       timeout:timeout
-                                 otherHeaders:@{}];
+                                 otherHeaders:[self addFpIfUnmodifiedSinceHeaderToHeader:@{} entity:environmentLog]];
 }
 
 
@@ -535,7 +547,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
                   conflict:[self newConflictBlk:complHandler]
          connectionFailure:[self newConnFailureBlk:complHandler]
                    timeout:timeout
-              otherHeaders:@{}];
+              otherHeaders:[self addFpIfUnmodifiedSinceHeaderToHeader:@{} entity:user]];
 }
 
 - (void)loginWithUsernameOrEmail:(NSString *)usernameOrEmail
@@ -609,7 +621,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
                     conflict:[self newConflictBlk:complHandler]
            connectionFailure:[self newConnFailureBlk:complHandler]
                      timeout:timeout
-                otherHeaders:@{}];
+                otherHeaders:[self addFpIfUnmodifiedSinceHeaderToHeader:@{} entity:user]];
 }
 
 @end

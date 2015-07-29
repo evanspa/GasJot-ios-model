@@ -35,8 +35,8 @@ NSString * const FPEnvironmentLogUpdatedAtKey           = @"envlog/updated-at";
   [environmentLogDict setObjectIfNotNull:[environmentLog reportedAvgMpg] forKey:FPEnvironmentLogReportedAvgMpgKey];
   [environmentLogDict setObjectIfNotNull:[environmentLog reportedAvgMph] forKey:FPEnvironmentLogReportedAvgMphKey];
   [environmentLogDict setObjectIfNotNull:[environmentLog reportedOutsideTemp] forKey:FPEnvironmentLogReportedOutsideTempKey];
-  [environmentLogDict setSecondsSince1970FromDate:[environmentLog logDate]
-                                           forKey:FPEnvironmentLogLogDateKey];
+  [environmentLogDict setMillisecondsSince1970FromDate:[environmentLog logDate]
+                                                forKey:FPEnvironmentLogLogDateKey];
   return environmentLogDict;
 }
 

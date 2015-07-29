@@ -44,8 +44,8 @@ NSString * const FPFuelPurchaseLogUpdatedAtKey                = @"fplog/updated-
                                    forKey:FPFuelPurchaseLogGotCarWashKey];
   [fuelPurchaseLogDict setObjectIfNotNull:[fuelPurchaseLog carWashPerGallonDiscount]
                                    forKey:FPFuelPurchaseLogCarWashPerGallonDiscountKey];
-  [fuelPurchaseLogDict setSecondsSince1970FromDate:[fuelPurchaseLog purchasedAt]
-                                            forKey:FPFuelPurchaseLogPurchasedAtKey];
+  [fuelPurchaseLogDict setMillisecondsSince1970FromDate:[fuelPurchaseLog purchasedAt]
+                                                 forKey:FPFuelPurchaseLogPurchasedAtKey];
   return fuelPurchaseLogDict;
 }
 
