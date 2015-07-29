@@ -502,7 +502,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
            timeout:(NSInteger)timeout
    remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
  completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
-  [self doPostToRelation:[_restApiRelations objectForKey:PELMLogoutRelation]
+  [self doPostToRelation:[[user relations] objectForKey:PELMLogoutRelation]
       resourceModelParam:user
               serializer:_logoutSerializer
                  timeout:timeout
