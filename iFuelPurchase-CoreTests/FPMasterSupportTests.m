@@ -27,7 +27,7 @@ describe(@"FPMasterSupport", ^{
                                              masterEntityTable:nil
                                                      mediaType:[HCMediaType MediaTypeFromString:@"application/json"]
                                                      relations:nil
-                                                   deletedDate:now
+                                                   deletedAt:now
                                                   updatedAt:now];
       ms2 =
         [[PELMMasterSupport alloc] initWithLocalMainIdentifier:[NSNumber numberWithInt:0]
@@ -37,7 +37,7 @@ describe(@"FPMasterSupport", ^{
                                              masterEntityTable:nil
                                                      mediaType:[HCMediaType MediaTypeFromString:@"application/json"]
                                                      relations:nil
-                                                   deletedDate:now
+                                                   deletedAt:now
                                                   updatedAt:now];
     });
     
@@ -56,7 +56,7 @@ describe(@"FPMasterSupport", ^{
     });
     
     it(@"Works when deleted dates are different", ^{
-      [ms1 setDeletedDate:[NSDate dateWithTimeIntervalSinceNow:5000]];
+      [ms1 setDeletedAt:[NSDate dateWithTimeIntervalSinceNow:5000]];
       [[ms1 shouldNot] equal:ms2];
     });
     

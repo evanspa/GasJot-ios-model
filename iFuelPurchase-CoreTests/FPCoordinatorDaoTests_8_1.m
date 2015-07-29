@@ -70,17 +70,22 @@ describe(@"FPCoordinatorDao", ^{
       FPVehicle *vehicle = [_coordDao vehicleWithName:@"My Bimmer"
                                         defaultOctane:@87
                                          fuelCapacity:[NSDecimalNumber decimalNumberWithString:@"20.5"]];
+      [[vehicle updatedAt] shouldBeNil];
       _mocker(@"http-response.vehicles.POST.201", 0, 0);
       __block BOOL saveSuccess = NO;
       [_coordDao saveNewAndSyncImmediateVehicle:vehicle
                                         forUser:user
+                            notFoundOnServerBlk:^{}
                                      successBlk:^{saveSuccess = YES;}
                              remoteStoreBusyBlk:^(NSDate *retryAfter) {}
                              tempRemoteErrorBlk:^{}
                                  remoteErrorBlk:^(NSInteger fpErrMask) {}
+                                    conflictBlk:^(FPVehicle *latestVehicle) {}
                                 authRequiredBlk:^{}
                                           error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[expectFutureValue(theValue(saveSuccess)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
+      NSDate *createdAt = [vehicle updatedAt];
+      [createdAt shouldNotBeNil];
       // our user had to have been copied down to main from master in order for the
       // new vehicle to have been saved to its main_vehicle table
       [[_numEntitiesBlk(TBL_MAIN_USER) should] equal:[NSNumber numberWithInt:1]];
@@ -118,22 +123,83 @@ describe(@"FPCoordinatorDao", ^{
       saveSuccess = NO;
       [_coordDao markAsDoneEditingAndSyncVehicleImmediate:vehicle
                                                   forUser:user
+                                      notFoundOnServerBlk:^{}
                                                successBlk:^{saveSuccess = YES;}
                                        remoteStoreBusyBlk:^(NSDate *retryAfter) {}
                                        tempRemoteErrorBlk:^{}
                                            remoteErrorBlk:^(NSInteger fpErrMask) {}
+                                              conflictBlk:^(FPVehicle *latestVehicle) {}
                                           authRequiredBlk:^{}
-                                                    error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
-      
+                                                    error:[_coordTestCtx newLocalSaveErrBlkMaker]()];      
       [[expectFutureValue(theValue(saveSuccess)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
+      [[theValue([[vehicle updatedAt] timeIntervalSince1970]) should] beGreaterThan:theValue([createdAt timeIntervalSince1970])];
       [_coordDao pruneAllSyncedEntitiesWithError:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[_numEntitiesBlk(TBL_MAIN_VEHICLE) should] equal:[NSNumber numberWithInt:0]]; // pruned
       [[_numEntitiesBlk(TBL_MASTER_VEHICLE) should] equal:[NSNumber numberWithInt:1]]; // synced
       [[_numEntitiesBlk(TBL_MAIN_USER) should] equal:[NSNumber numberWithInt:0]]; // pruned
       [[_numEntitiesBlk(TBL_MASTER_USER) should] equal:[NSNumber numberWithInt:1]];
-      [[[[[_coordDao vehiclesForUser:user
-                               error:[_coordTestCtx newLocalFetchErrBlkMaker]()]
-          objectAtIndex:0] name] should] equal:@"My Blue Bimmer"];
+      [[[[[_coordDao vehiclesForUser:user error:[_coordTestCtx newLocalFetchErrBlkMaker]()] objectAtIndex:0] name] should] equal:@"My Blue Bimmer"];
+      
+      // now lets try another update, but this time we'll get a conflict response
+      prepareForEditSuccess =
+      [_coordDao prepareVehicleForEdit:vehicle
+                               forUser:user
+                     entityBeingSynced:[_coordTestCtx entityBeingSyncedBlk]
+                      entityInConflict:[_coordTestCtx entityInConflictBlk]
+                                 error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+      [[theValue(prepareForEditSuccess) should] beYes];
+      [[theValue([_coordTestCtx prepareForEditEntityBeingSynced]) should] beNo];
+      [[theValue([_coordTestCtx prepareForEditEntityDeleted]) should] beNo];
+      [[theValue([_coordTestCtx prepareForEditEntityInConflict]) should] beNo];
+      [[theValue([_coordTestCtx prepareForEditEntityBeingEditedByOtherActor]) should] beNo];
+      [[_numEntitiesBlk(TBL_MAIN_VEHICLE) should] equal:[NSNumber numberWithInt:1]];
+      [[_numEntitiesBlk(TBL_MASTER_VEHICLE) should] equal:[NSNumber numberWithInt:1]];
+      [[_numEntitiesBlk(TBL_MAIN_USER) should] equal:[NSNumber numberWithInt:1]];
+      [[_numEntitiesBlk(TBL_MASTER_USER) should] equal:[NSNumber numberWithInt:1]];
+      [vehicle setName:@"Orange Bimmer"];
+      _mocker(@"http-response.vehicle.PUT.409.1", 0, 0);
+      [_coordDao saveVehicle:vehicle error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+      __block BOOL conflict = NO;
+      __block FPVehicle *serverVehicle = nil;
+      [[theValue([vehicle inConflict]) should] beNo];
+      [_coordDao markAsDoneEditingAndSyncVehicleImmediate:vehicle
+                                                  forUser:user
+                                      notFoundOnServerBlk:^{}
+                                               successBlk:^{}
+                                       remoteStoreBusyBlk:^(NSDate *retryAfter) {}
+                                       tempRemoteErrorBlk:^{}
+                                           remoteErrorBlk:^(NSInteger fpErrMask) {}
+                                              conflictBlk:^(FPVehicle *latestVehicle) { conflict = YES; serverVehicle = latestVehicle; }
+                                          authRequiredBlk:^{}
+                                                    error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+      [[expectFutureValue(theValue(conflict)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
+      [[theValue([vehicle inConflict]) should] beYes];
+      [serverVehicle shouldNotBeNil];
+      [[[serverVehicle name] should] equal:@"Black Bimmer"];
+      
+      // now lets try another update, but this time we'll get a 'not found' response
+      /*prepareForEditSuccess =
+      [_coordDao prepareVehicleForEdit:vehicle
+                               forUser:user
+                     entityBeingSynced:[_coordTestCtx entityBeingSyncedBlk]
+                      entityInConflict:[_coordTestCtx entityInConflictBlk]
+                                 error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+      [[theValue(prepareForEditSuccess) should] beYes];
+      [vehicle setName:@"Red Bimmer"];
+      _mocker(@"http-response.vehicle.PUT.404.1", 0, 0);
+      [_coordDao saveVehicle:vehicle error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+      __block BOOL notFound = NO;
+      [_coordDao markAsDoneEditingAndSyncVehicleImmediate:vehicle
+                                                  forUser:user
+                                      notFoundOnServerBlk:^{ notFound = YES; }
+                                               successBlk:^{}
+                                       remoteStoreBusyBlk:^(NSDate *retryAfter) {}
+                                       tempRemoteErrorBlk:^{}
+                                           remoteErrorBlk:^(NSInteger fpErrMask) {}
+                                              conflictBlk:^(FPVehicle *latestVehicle) {}
+                                          authRequiredBlk:^{}
+                                                    error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+      [[expectFutureValue(theValue(notFound)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];*/
     });
   });
 });

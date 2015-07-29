@@ -80,6 +80,7 @@ describe(@"FPCoordinatorDao", ^{
       __block NSInteger totalSynced = 0;
       __block BOOL allDone = NO;
       NSInteger totalNumToSync = [_coordDao flushAllUnsyncedEditsToRemoteForUser:user
+                                                               entityNotFoundBlk:nil
                                                                       successBlk:^(float progress) {
                                                                         overallFlushProgress += progress;
                                                                         totalSynced++;
@@ -87,6 +88,7 @@ describe(@"FPCoordinatorDao", ^{
                                                               remoteStoreBusyBlk:nil
                                                               tempRemoteErrorBlk:nil
                                                                   remoteErrorBlk:nil
+                                                                     conflictBlk:nil
                                                                  authRequiredBlk:nil
                                                                          allDone:^{ allDone = YES; }
                                                                            error:nil];
@@ -118,10 +120,12 @@ describe(@"FPCoordinatorDao", ^{
       __block BOOL success = NO;
       [_coordDao deleteEnvironmentLog:envlogs[0]
                               forUser:user
+                  notFoundOnServerBlk:nil
                        addlSuccessBlk:^{ success = YES; }
                addlRemoteStoreBusyBlk:nil
                addlTempRemoteErrorBlk:nil
                    addlRemoteErrorBlk:nil
+                      addlConflictBlk:nil
                   addlAuthRequiredBlk:nil
                                 error:[_coordTestCtx newLocalFetchErrBlkMaker]()];
       [[expectFutureValue(theValue(success)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];

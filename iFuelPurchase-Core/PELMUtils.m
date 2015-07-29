@@ -38,7 +38,7 @@ PELMMainSupport * (^toMainSupport)(FMResultSet *, NSString *, NSDictionary *) = 
                                             masterEntityTable:nil
                                                     mediaType:[HCMediaType MediaTypeFromString:[rs stringForColumn:COL_MEDIA_TYPE]]
                                                     relations:relations
-                                                  deletedDate:nil // NA (this is a master entity-only column)
+                                                  deletedAt:nil // NA (this is a master entity-only column)
                                                     updatedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MAN_MASTER_UPDATED_AT]
                                          dateCopiedFromMaster:[PELMUtils dateFromResultSet:rs columnName:COL_MAN_DT_COPIED_DOWN_FROM_MASTER]
                                                editInProgress:[rs boolForColumn:COL_MAN_EDIT_IN_PROGRESS]
@@ -68,9 +68,10 @@ PELMMainSupport * (^toMainSupport)(FMResultSet *, NSString *, NSDictionary *) = 
 + (void)flushUnsyncedChangesToEntity:(PELMMainSupport *)entity
                   remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
                  remoteStoreErrorBlk:(void(^)(PELMMainSupport *, NSError *, NSNumber *))remoteStoreErrorBlk
+                   entityNotFoundBlk:(void(^)(void))entityNotFoundBlk
                    markAsConflictBlk:(void(^)(id))markAsConflictBlk
-   markAsSyncCompleteForNewEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCompleteForNewEntityBlk
-markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCompleteForExistingEntityBlk
+   markAsSyncCompleteForNewEntityBlk:(void(^)(void))markAsSyncCompleteForNewEntityBlk
+markAsSyncCompleteForExistingEntityBlk:(void(^)(void))markAsSyncCompleteForExistingEntityBlk
                  authRequiredHandler:(PELMRemoteMasterAuthReqdBlk)authRequiredHandler
                      newAuthTokenBlk:(void(^)(NSString *))newAuthTokenBlk
               remoteMasterSaveNewBlk:(PELMRemoteMasterSaveBlk)remoteMasterSaveNewBlk
@@ -83,7 +84,7 @@ markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCom
     PELMRemoteMasterBusyBlk remoteStoreBusyHandler = ^(NSDate *retryAfter) {
       remoteStoreBusyBlk(retryAfter);
     };
-    void (^nonDeleteSuccessfulSync)(PELMMainSupport *, BOOL) = ^(PELMMainSupport *respEntity, BOOL wasPut) {
+    void (^successfulSync)(PELMMainSupport *, BOOL) = ^(PELMMainSupport *respEntity, BOOL wasPut) {
       if (respEntity) {
         NSString *unsyncedEntityGlobalId = [entity globalIdentifier];
         [entity overwrite:respEntity];
@@ -98,15 +99,15 @@ markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCom
         }
       }
       if (wasPut) {
-        markAsSyncCompleteForExistingEntityBlk(entity);
+        markAsSyncCompleteForExistingEntityBlk();
       } else {
-        markAsSyncCompleteForNewEntityBlk(entity);
+        markAsSyncCompleteForNewEntityBlk();
       }
     };
     void (^notifyUnsuccessfulSync)(NSError *, NSNumber *) = ^(NSError *error, NSNumber *httpStatusCode) {
       remoteStoreErrorBlk(entity, error, httpStatusCode);
     };
-    if ([entity globalIdentifier]) {
+    if ([entity globalIdentifier]) { // PUT
       PELMRemoteMasterCompletionHandler remoteStoreComplHandler =
       ^(NSString *newAuthTkn, NSString *globalId, id resourceModel, NSDictionary *rels,
         NSDate *lastModified, BOOL isConflict, BOOL gone, BOOL notFound, BOOL movedPermanently,
@@ -117,11 +118,11 @@ markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCom
         } else if (isConflict) {
           markAsConflictBlk(resourceModel);
         } else if (gone) {
-          // weird - this should not happen
+          entityNotFoundBlk();
         } else if (notFound) {
-          // weird - this should not happen
+          entityNotFoundBlk();
         } else if (notModified) {
-          // should not happen since we're doing a PUT
+          // this is only relevant on a GET
         } else if (err) {
           if (httpResp) { // will deduce that error is from server
             notifyUnsuccessfulSync(err, [NSNumber numberWithInteger:[httpResp statusCode]]);
@@ -129,11 +130,11 @@ markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCom
             notifyUnsuccessfulSync(err, nil);
           }
         } else {
-          nonDeleteSuccessfulSync(resourceModel, YES);
+          successfulSync(resourceModel, YES);
         }
       };
       remoteMasterSaveExistingBlk(remoteStoreBusyHandler, authRequiredHandler, remoteStoreComplHandler);
-    } else {
+    } else { // POST
       PELMRemoteMasterCompletionHandler remoteStoreComplHandler =
       ^(NSString *newAuthTkn, NSString *globalId, id resourceModel, NSDictionary *rels,
         NSDate *lastModified, BOOL isConflict, BOOL gone, BOOL notFound, BOOL movedPermanently,
@@ -142,13 +143,13 @@ markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCom
         if (movedPermanently) { // this block will get executed again
           [entity setGlobalIdentifier:globalId];
         } else if (isConflict) {
-          // weird - this should not happen
+          markAsConflictBlk(resourceModel); // weird - this should not happen on a POST
         } else if (gone) {
-          // weird - this should not happen
+          entityNotFoundBlk(); // weird - this should not happen on a POST
         } else if (notFound) {
-          // weird - this should not happen
+          entityNotFoundBlk(); // weird - this should not happen on a POST
         } else if (notModified) {
-          // should not happen since we're doing a POST
+          // this is only relevant on a GET
         } else if (err) {
           if (httpResp) { // will deduce that error is from server
             notifyUnsuccessfulSync(err, [NSNumber numberWithInteger:[httpResp statusCode]]);
@@ -156,7 +157,7 @@ markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCom
             notifyUnsuccessfulSync(err, nil);
           }
         } else {
-          nonDeleteSuccessfulSync(resourceModel, NO);
+          successfulSync(resourceModel, NO);
         }
       };
       if (remoteMasterSaveNewBlk) {
@@ -169,6 +170,7 @@ markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCom
 + (void)deleteEntity:(PELMMainSupport *)entity
   remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
  remoteStoreErrorBlk:(void(^)(PELMMainSupport *, NSError *, NSNumber *))remoteStoreErrorBlk
+   entityNotFoundBlk:(void(^)(void))entityNotFoundBlk
    markAsConflictBlk:(void(^)(id))markAsConflictBlk
    deleteCompleteBlk:(void(^)(void))deleteCompleteBlk
  authRequiredHandler:(PELMRemoteMasterAuthReqdBlk)authRequiredHandler
@@ -191,12 +193,9 @@ localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrHandler {
     } else if (isConflict) {
       markAsConflictBlk(resourceModel);
     } else if (gone) {
-      // if we're supposed to delete the entity on the server, and the server
-      // is saying it's already gone, then, I guess we're good!  Delete success!
-      deleteCompleteBlk();
+      entityNotFoundBlk();
     } else if (notFound) {
-      // weird - this should not happen, but, we'll consider this delete success too.
-      deleteCompleteBlk();
+      entityNotFoundBlk();
     } else if (notModified) {
       // should not happen since we're doing a DELETE
     } else if (err) {

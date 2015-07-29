@@ -64,12 +64,14 @@ describe(@"FPCoordinatorDao", ^{
       _mocker(@"http-response.user.PUT.204", 0, 0);
       __block BOOL syncUserSuccess = NO;
       [_coordDao markAsDoneEditingAndSyncUserImmediate:user
+                                   notFoundOnServerBlk:nil
                                             successBlk:^{
                                               syncUserSuccess = YES;
                                             }
                                     remoteStoreBusyBlk:nil
                                     tempRemoteErrorBlk:nil
                                         remoteErrorBlk:nil
+                                           conflictBlk:nil
                                        authRequiredBlk:nil
                                                  error:nil];
       [[expectFutureValue(theValue(syncUserSuccess)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
@@ -106,6 +108,7 @@ describe(@"FPCoordinatorDao", ^{
       __block NSInteger totalSynced = 0;
       __block BOOL allDone = NO;
       NSInteger totalNumToSync = [_coordDao flushAllUnsyncedEditsToRemoteForUser:user
+                                                               entityNotFoundBlk:nil
                                                                       successBlk:^(float progress) {
                                                                         overallFlushProgress += progress;
                                                                         totalSynced++;
@@ -113,6 +116,7 @@ describe(@"FPCoordinatorDao", ^{
                                                               remoteStoreBusyBlk:nil
                                                               tempRemoteErrorBlk:nil
                                                                   remoteErrorBlk:nil
+                                                                     conflictBlk:nil
                                                                  authRequiredBlk:nil
                                                                          allDone:^{ allDone = YES; }
                                                                            error:nil];

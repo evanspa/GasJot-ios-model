@@ -68,10 +68,12 @@ describe(@"FPCoordinatorDao", ^{
       [[[_coordDao localDao] mainUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()] shouldNotBeNil];
       __block BOOL saveSuccess = NO;
       [_coordDao markAsDoneEditingAndSyncUserImmediate:user
+                                   notFoundOnServerBlk:^{}
                                             successBlk:^{saveSuccess = YES;}
                                     remoteStoreBusyBlk:^(NSDate *retryAfter) {}
                                     tempRemoteErrorBlk:^{}
                                         remoteErrorBlk:^(NSInteger fpErrMask) {}
+                                           conflictBlk:^(FPUser *latestUser) {}
                                        authRequiredBlk:^{}
                                                  error:[_coordTestCtx newLocalSaveErrBlkMaker]()];      
       [[expectFutureValue(theValue(saveSuccess)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];

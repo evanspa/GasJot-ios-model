@@ -71,10 +71,12 @@ describe(@"FPCoordinatorDao", ^{
       _mocker(@"http-response.user.DELETE.204", 0, 0);
       __block BOOL saveSuccess = NO;
       [_coordDao deleteUser:user
+        notFoundOnServerBlk:nil
              addlSuccessBlk:^{ saveSuccess = YES; }
      addlRemoteStoreBusyBlk:nil
      addlTempRemoteErrorBlk:nil
          addlRemoteErrorBlk:nil
+            addlConflictBlk:nil
         addlAuthRequiredBlk:nil
                       error:nil];
       [[expectFutureValue(theValue(saveSuccess)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<http-response statusCode="200">
-  <annotation name="put success"
+<http-response statusCode="409">
+  <annotation name="put conflict"
               host="example.com"
               port="80"
               scheme="http"
@@ -14,9 +14,9 @@
   <cookies />
   <body>
     <![CDATA[
-      { "fpvehicle/name": "My Blue Bimmer",
+      { "fpvehicle/name": "Black Bimmer",
         "fpvehicle/created-at": 1409913262000,
-        "fpvehicle/updated-at": 1409913262008,
+        "fpvehicle/updated-at": 1409913262011,
         "_links": {}}
     ]]>
   </body>

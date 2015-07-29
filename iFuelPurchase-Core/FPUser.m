@@ -29,7 +29,7 @@ NSString * const FPEnvironmentLogsRelation = @"environment-logs";
                  globalIdentifier:(NSString *)globalIdentifier
                         mediaType:(HCMediaType *)mediaType
                         relations:(NSDictionary *)relations
-                      deletedDate:(NSDate *)deletedDate
+                      deletedAt:(NSDate *)deletedAt
                         updatedAt:(NSDate *)updatedAt
              dateCopiedFromMaster:(NSDate *)dateCopiedFromMaster
                    editInProgress:(BOOL)editInProgress
@@ -49,7 +49,7 @@ NSString * const FPEnvironmentLogsRelation = @"environment-logs";
                            globalIdentifier:globalIdentifier
                                   mediaType:mediaType
                                   relations:relations
-                                deletedDate:deletedDate
+                                deletedAt:deletedAt
                                   updatedAt:updatedAt
                        dateCopiedFromMaster:dateCopiedFromMaster
                              editInProgress:editInProgress
@@ -81,7 +81,7 @@ NSString * const FPEnvironmentLogsRelation = @"environment-logs";
                                             globalIdentifier:[self globalIdentifier]
                                                    mediaType:[self mediaType]
                                                    relations:[self relations]
-                                                 deletedDate:[self deletedDate]
+                                                 deletedAt:[self deletedAt]
                                                    updatedAt:[self updatedAt]
                                         dateCopiedFromMaster:[self dateCopiedFromMaster]
                                               editInProgress:[self editInProgress]
@@ -129,7 +129,7 @@ NSString * const FPEnvironmentLogsRelation = @"environment-logs";
                                     globalIdentifier:globalIdentifier
                                            mediaType:mediaType
                                            relations:relations
-                                         deletedDate:nil
+                                         deletedAt:nil
                                            updatedAt:updatedAt
                                 dateCopiedFromMaster:nil
                                       editInProgress:NO

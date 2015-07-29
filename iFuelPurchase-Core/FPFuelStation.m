@@ -19,7 +19,7 @@
                  globalIdentifier:(NSString *)globalIdentifier
                         mediaType:(HCMediaType *)mediaType
                         relations:(NSDictionary *)relations
-                      deletedDate:(NSDate *)deletedDate
+                      deletedAt:(NSDate *)deletedAt
                         updatedAt:(NSDate *)updatedAt
              dateCopiedFromMaster:(NSDate *)dateCopiedFromMaster
                    editInProgress:(BOOL)editInProgress
@@ -44,7 +44,7 @@
                           masterEntityTable:TBL_MASTER_FUEL_STATION
                                   mediaType:mediaType
                                   relations:relations
-                                deletedDate:deletedDate
+                                deletedAt:deletedAt
                                   updatedAt:updatedAt
                        dateCopiedFromMaster:dateCopiedFromMaster
                              editInProgress:editInProgress
@@ -75,7 +75,7 @@
                                                           globalIdentifier:[self globalIdentifier]
                                                                  mediaType:[self mediaType]
                                                                  relations:[self relations]
-                                                               deletedDate:[self deletedDate]
+                                                               deletedAt:[self deletedAt]
                                                                  updatedAt:[self updatedAt]
                                                       dateCopiedFromMaster:[self dateCopiedFromMaster]
                                                             editInProgress:[self editInProgress]
@@ -135,7 +135,7 @@
                                            globalIdentifier:globalIdentifier
                                                   mediaType:mediaType
                                                   relations:relations
-                                                deletedDate:nil
+                                                deletedAt:nil
                                                updatedAt:updatedAt
                                        dateCopiedFromMaster:nil
                                              editInProgress:NO
@@ -161,7 +161,7 @@
                                            globalIdentifier:nil
                                                   mediaType:nil
                                                   relations:nil
-                                                deletedDate:nil
+                                                deletedAt:nil
                                                updatedAt:nil
                                        dateCopiedFromMaster:nil
                                              editInProgress:NO
@@ -195,7 +195,8 @@
 }
 
 - (CLLocation *)location {
-  if (_latitude && _longitude) {
+  if ((_latitude && ![_latitude isEqual:[NSNull null]]) &&
+      (_longitude && ![_longitude isEqual:[NSNull null]])) {
     return [[CLLocation alloc] initWithLatitude:[_latitude doubleValue]
                                       longitude:[_longitude doubleValue]];
   }

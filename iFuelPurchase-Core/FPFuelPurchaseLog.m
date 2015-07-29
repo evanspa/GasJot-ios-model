@@ -19,7 +19,7 @@
                  globalIdentifier:(NSString *)globalIdentifier
                         mediaType:(HCMediaType *)mediaType
                         relations:(NSDictionary *)relations
-                      deletedDate:(NSDate *)deletedDate
+                      deletedAt:(NSDate *)deletedAt
                      updatedAt:(NSDate *)updatedAt
              dateCopiedFromMaster:(NSDate *)dateCopiedFromMaster
                    editInProgress:(BOOL)editInProgress
@@ -45,7 +45,7 @@
                           masterEntityTable:TBL_MASTER_FUELPURCHASE_LOG
                                   mediaType:mediaType
                                   relations:relations
-                                deletedDate:deletedDate
+                                deletedAt:deletedAt
                                   updatedAt:updatedAt
                        dateCopiedFromMaster:dateCopiedFromMaster
                              editInProgress:editInProgress
@@ -77,7 +77,7 @@
                                                                   globalIdentifier:[self globalIdentifier]
                                                                          mediaType:[self mediaType]
                                                                          relations:[self relations]
-                                                                       deletedDate:[self deletedDate]
+                                                                       deletedAt:[self deletedAt]
                                                                          updatedAt:[self updatedAt]
                                                               dateCopiedFromMaster:[self dateCopiedFromMaster]
                                                                     editInProgress:[self editInProgress]
@@ -135,7 +135,7 @@
                                                globalIdentifier:globalIdentifier
                                                       mediaType:mediaType
                                                       relations:relations
-                                                    deletedDate:nil
+                                                    deletedAt:nil
                                                       updatedAt:updatedAt
                                            dateCopiedFromMaster:nil
                                                  editInProgress:NO

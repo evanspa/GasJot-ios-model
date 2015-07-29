@@ -30,7 +30,6 @@
   NSString *_fuelStationResMtVersion;
   NSString *_fuelPurchaseLogResMtVersion;
   NSString *_environmentLogResMtVersion;
-  id<FPRemoteStoreSyncConflictDelegate> _conflictDelegate;
   id<FPAuthTokenDelegate> _authTokenDelegate;
 }
 
@@ -48,6 +47,9 @@
              errorMaskHeaderName:(NSString *)errorMaskHeaderName
       establishSessionHeaderName:(NSString *)establishHeaderSessionName
      authTokenResponseHeaderName:(NSString *)authTokenHeaderName
+     ifUnmodifiedSinceHeaderName:(NSString *)ifUnmodifiedSinceHeaderName
+     loginFailedReasonHeaderName:(NSString *)loginFailedReasonHeaderName
+   accountClosedReasonHeaderName:(NSString *)accountClosedReasonHeaderName
     bundleHoldingApiJsonResource:(NSBundle *)bundle
        nameOfApiJsonResourceFile:(NSString *)apiResourceFileName
                  apiResMtVersion:(NSString *)apiResMtVersion
@@ -56,7 +58,6 @@
          fuelStationResMtVersion:(NSString *)fuelStationResMtVersion
      fuelPurchaseLogResMtVersion:(NSString *)fuelPurchaseLogResMtVersion
       environmentLogResMtVersion:(NSString *)environmentLogResMtVersion
-      remoteSyncConflictDelegate:(id<FPRemoteStoreSyncConflictDelegate>)conflictDelegate
                authTokenDelegate:(id<FPAuthTokenDelegate>)authTokenDelegate
         allowInvalidCertificates:(BOOL)allowInvalidCertificates {
   self = [super init];
@@ -103,6 +104,9 @@
           errorMaskHeaderName:errorMaskHeaderName
    establishSessionHeaderName:establishHeaderSessionName
           authTokenHeaderName:authTokenHeaderName
+  ifUnmodifiedSinceHeaderName:ifUnmodifiedSinceHeaderName
+  loginFailedReasonHeaderName:loginFailedReasonHeaderName
+accountClosedReasonHeaderName:accountClosedReasonHeaderName
  bundleHoldingApiJsonResource:bundle
     nameOfApiJsonResourceFile:apiResourceFileName
               apiResMtVersion:apiResMtVersion
@@ -114,7 +118,6 @@
     fuelPurchaseLogSerializer:fuelPurchaseLogSerializer
      environmentLogSerializer:environmentLogSerializer
      allowInvalidCertificates:allowInvalidCertificates];
-    _conflictDelegate = conflictDelegate;
     _authTokenDelegate = authTokenDelegate;
   }
   return self;
@@ -234,16 +237,14 @@
 }
 
 - (void)flushUnsyncedChangesToUser:(FPUser *)user
-                    addlSuccessBlk:(void(^)(PELMMainSupport *))addlSuccessBlk
+               notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
+                    addlSuccessBlk:(void(^)(void))addlSuccessBlk
             addlRemoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)addlRemoteStoreBusyBlk
             addlTempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
                 addlRemoteErrorBlk:(void(^)(NSInteger))addlRemoteErrorBlk
+                   addlConflictBlk:(void(^)(FPUser *))addlConflictBlk
                addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
                              error:(PELMDaoErrorBlk)errorBlk {
-  void (^markAsConflictBlk)(id) = ^ (id latestResourceModel) {
-    [_localDao markAsInConflictForUser:user error:errorBlk];
-    [_conflictDelegate remoteStoreVersionOfUser:latestResourceModel isNewerThanLocalVersion:user];
-  };
   PELMRemoteMasterSaveBlk remoteMasterSaveExistingBlk =
   ^(PELMRemoteMasterBusyBlk remoteStoreBusyHandler,
     PELMRemoteMasterAuthReqdBlk authReqdHandler,
@@ -274,12 +275,15 @@
                                                       addlTempRemoteErrorBlk:addlTempRemoteErrorBlk
                                                           addlRemoteErrorBlk:addlRemoteErrorBlk];
                       }
-                        markAsConflictBlk:markAsConflictBlk
+                        entityNotFoundBlk:notFoundOnServerBlk
+                        markAsConflictBlk:^(FPUser *serverUser) {
+                          [_localDao markAsInConflictForUser:user error:errorBlk];
+                          if (addlConflictBlk) { addlConflictBlk(serverUser); }
+                        }
         markAsSyncCompleteForNewEntityBlk:nil // because new users are always immediately synced upon creation
-   markAsSyncCompleteForExistingEntityBlk:^(PELMMainSupport *unsyncedUser){
-     [_localDao markAsSyncCompleteForUser:(FPUser *)unsyncedUser
-                                    error:errorBlk];
-     if (addlSuccessBlk) { addlSuccessBlk((FPUser *)unsyncedUser); }
+   markAsSyncCompleteForExistingEntityBlk:^{
+     [_localDao markAsSyncCompleteForUser:user error:errorBlk];
+     if (addlSuccessBlk) { addlSuccessBlk(); }
    }
                       authRequiredHandler:^(HCAuthentication *auth) {
                         [self authReqdBlk](auth);
@@ -297,16 +301,14 @@
 }
 
 - (void)deleteUser:(FPUser *)user
+notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
     addlSuccessBlk:(void(^)(void))addlSuccessBlk
 addlRemoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)addlRemoteStoreBusyBlk
 addlTempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
 addlRemoteErrorBlk:(void(^)(NSInteger))addlRemoteErrorBlk
+   addlConflictBlk:(void(^)(FPUser *))addlConflictBlk
 addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
              error:(PELMDaoErrorBlk)errorBlk {
-  void (^markAsConflictBlk)(id) = ^ (id latestResourceModel) {
-    [_localDao markAsInConflictForUser:user error:errorBlk];
-    [_conflictDelegate remoteStoreVersionOfUser:latestResourceModel isNewerThanLocalVersion:user];
-  };
   PELMRemoteMasterDeletionBlk remoteMasterDeletionExistingBlk =
   ^(PELMRemoteMasterBusyBlk remoteStoreBusyHandler,
     PELMRemoteMasterAuthReqdBlk authReqdHandler,
@@ -325,7 +327,11 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
                                   addlTempRemoteErrorBlk:addlTempRemoteErrorBlk
                                       addlRemoteErrorBlk:addlRemoteErrorBlk];
   }
-        markAsConflictBlk:markAsConflictBlk
+        entityNotFoundBlk:notFoundOnServerBlk
+        markAsConflictBlk:^(FPUser *serverUser) {
+          [_localDao markAsInConflictForUser:user error:errorBlk];
+          if (addlConflictBlk) { addlConflictBlk(serverUser); }
+        }
         deleteCompleteBlk:^{
           [_localDao deleteUser:user error:errorBlk];
           if (addlSuccessBlk) { addlSuccessBlk(); }
@@ -341,16 +347,17 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
 
 - (void)flushUnsyncedChangesToVehicle:(FPVehicle *)vehicle
                               forUser:(FPUser *)user
-                       addlSuccessBlk:(void(^)(PELMMainSupport *))addlSuccessBlk
+                  notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
+                       addlSuccessBlk:(void(^)(void))addlSuccessBlk
                addlRemoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)addlRemoteStoreBusyBlk
                addlTempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
                    addlRemoteErrorBlk:(void(^)(NSInteger))addlRemoteErrorBlk
+                      addlConflictBlk:(void(^)(FPVehicle *))addlConflictBlk
                   addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
                                 error:(PELMDaoErrorBlk)errorBlk {
-  void (^markAsConflictBlk)(id) = ^ (id latestResourceModel) {
+  void (^markAsConflictBlk)(id) = ^ (FPVehicle *latestVehicle) {
     [_localDao markAsInConflictForVehicle:vehicle error:errorBlk];
-    [_conflictDelegate remoteStoreVersionOfVehicle:latestResourceModel
-                           isNewerThanLocalVersion:vehicle];
+    if (addlConflictBlk) { addlConflictBlk(latestVehicle); }
   };
   PELMRemoteMasterSaveBlk remoteMasterSaveExistingBlk =
   ^(PELMRemoteMasterBusyBlk remoteStoreBusyHandler,
@@ -393,17 +400,17 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
                                                       addlTempRemoteErrorBlk:addlTempRemoteErrorBlk
                                                           addlRemoteErrorBlk:addlRemoteErrorBlk];
                       }
+                        entityNotFoundBlk:notFoundOnServerBlk
                         markAsConflictBlk:markAsConflictBlk
-        markAsSyncCompleteForNewEntityBlk:^(PELMMainSupport *syncedVehicle) {
-          [_localDao markAsSyncCompleteForNewVehicle:(FPVehicle *)syncedVehicle
+        markAsSyncCompleteForNewEntityBlk:^{
+          [_localDao markAsSyncCompleteForNewVehicle:vehicle
                                              forUser:user
                                                error:errorBlk];
-          if (addlSuccessBlk) { addlSuccessBlk((FPVehicle *)syncedVehicle); }
+          if (addlSuccessBlk) { addlSuccessBlk(); }
         }
-   markAsSyncCompleteForExistingEntityBlk:^(PELMMainSupport *syncedVehicle) {
-     [_localDao markAsSyncCompleteForUpdatedVehicle:(FPVehicle *)syncedVehicle
-                                              error:errorBlk];
-     if (addlSuccessBlk) { addlSuccessBlk((FPVehicle *)syncedVehicle); }
+   markAsSyncCompleteForExistingEntityBlk:^{
+     [_localDao markAsSyncCompleteForUpdatedVehicle:vehicle error:errorBlk];
+     if (addlSuccessBlk) { addlSuccessBlk(); }
    }
                       authRequiredHandler:^(HCAuthentication *auth) {
                         [self authReqdBlk](auth);
@@ -422,15 +429,17 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
 
 - (void)deleteVehicle:(FPVehicle *)vehicle
               forUser:(FPUser *)user
+  notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
        addlSuccessBlk:(void(^)(void))addlSuccessBlk
 addlRemoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)addlRemoteStoreBusyBlk
 addlTempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
    addlRemoteErrorBlk:(void(^)(NSInteger))addlRemoteErrorBlk
+      addlConflictBlk:(void(^)(FPVehicle *))addlConflictBlk
   addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
                 error:(PELMDaoErrorBlk)errorBlk {
-  void (^markAsConflictBlk)(id) = ^ (id latestResourceModel) {
+  void (^markAsConflictBlk)(id) = ^ (FPVehicle *latestVehicle) {
     [_localDao markAsInConflictForVehicle:vehicle error:errorBlk];
-    [_conflictDelegate remoteStoreVersionOfVehicle:latestResourceModel isNewerThanLocalVersion:vehicle];
+    if (addlConflictBlk) { addlConflictBlk(latestVehicle); }
   };
   PELMRemoteMasterDeletionBlk remoteMasterDeletionExistingBlk =
   ^(PELMRemoteMasterBusyBlk remoteStoreBusyHandler,
@@ -450,6 +459,7 @@ addlTempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
                                       addlTempRemoteErrorBlk:addlTempRemoteErrorBlk
                                           addlRemoteErrorBlk:addlRemoteErrorBlk];
       }
+        entityNotFoundBlk:notFoundOnServerBlk
         markAsConflictBlk:markAsConflictBlk
         deleteCompleteBlk:^{
           [_localDao deleteVehicle:vehicle error:errorBlk];
@@ -466,16 +476,17 @@ addlTempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
 
 - (void)flushUnsyncedChangesToFuelStation:(FPFuelStation *)fuelStation
                                   forUser:(FPUser *)user
-                           addlSuccessBlk:(void(^)(PELMMainSupport *))addlSuccessBlk
+                      notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
+                           addlSuccessBlk:(void(^)(void))addlSuccessBlk
                    addlRemoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)addlRemoteStoreBusyBlk
                    addlTempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
                        addlRemoteErrorBlk:(void(^)(NSInteger))addlRemoteErrorBlk
+                          addlConflictBlk:(void(^)(FPFuelStation *))addlConflictBlk
                       addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
                                     error:(PELMDaoErrorBlk)errorBlk {
-  void (^markAsConflictBlk)(id) = ^ (id latestResourceModel) {
+  void (^markAsConflictBlk)(id) = ^ (FPFuelStation *latestFuelStation) {
     [_localDao markAsInConflictForFuelStation:fuelStation error:errorBlk];
-    [_conflictDelegate remoteStoreVersionOfFuelStation:latestResourceModel
-                               isNewerThanLocalVersion:fuelStation];
+    if (addlConflictBlk) { addlConflictBlk(latestFuelStation); }
   };
   PELMRemoteMasterSaveBlk remoteMasterSaveExistingBlk =
   ^(PELMRemoteMasterBusyBlk remoteStoreBusyHandler,
@@ -518,17 +529,15 @@ addlTempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
                                                       addlTempRemoteErrorBlk:addlTempRemoteErrorBlk
                                                           addlRemoteErrorBlk:addlRemoteErrorBlk];
                       }
+                        entityNotFoundBlk:notFoundOnServerBlk
                         markAsConflictBlk:markAsConflictBlk
-        markAsSyncCompleteForNewEntityBlk:^(PELMMainSupport *unsyncedFuelStation) {
-          [_localDao markAsSyncCompleteForNewFuelStation:(FPFuelStation *)unsyncedFuelStation
-                                                 forUser:user
-                                                   error:errorBlk];
-          if (addlSuccessBlk) { addlSuccessBlk((FPFuelStation *)unsyncedFuelStation); }
+        markAsSyncCompleteForNewEntityBlk:^{
+          [_localDao markAsSyncCompleteForNewFuelStation:fuelStation forUser:user error:errorBlk];
+          if (addlSuccessBlk) { addlSuccessBlk(); }
         }
-   markAsSyncCompleteForExistingEntityBlk:^(PELMMainSupport *unsyncedFuelStation) {
-     [_localDao markAsSyncCompleteForUpdatedFuelStation:(FPFuelStation *)unsyncedFuelStation
-                                                  error:errorBlk];
-     if (addlSuccessBlk) { addlSuccessBlk((FPFuelStation *)unsyncedFuelStation); }
+   markAsSyncCompleteForExistingEntityBlk:^{
+     [_localDao markAsSyncCompleteForUpdatedFuelStation:fuelStation error:errorBlk];
+     if (addlSuccessBlk) { addlSuccessBlk(); }
    }
                       authRequiredHandler:^(HCAuthentication *auth) {
                         [self authReqdBlk](auth);
@@ -547,16 +556,17 @@ addlTempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
 
 - (void)deleteFuelStation:(FPFuelStation *)fuelStation
                   forUser:(FPUser *)user
+      notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
            addlSuccessBlk:(void(^)(void))addlSuccessBlk
    addlRemoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)addlRemoteStoreBusyBlk
    addlTempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
        addlRemoteErrorBlk:(void(^)(NSInteger))addlRemoteErrorBlk
+          addlConflictBlk:(void(^)(FPFuelStation *))addlConflictBlk
       addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
                     error:(PELMDaoErrorBlk)errorBlk {
-  void (^markAsConflictBlk)(id) = ^ (id latestResourceModel) {
+  void (^markAsConflictBlk)(id) = ^ (FPFuelStation *latestFuelStation) {
     [_localDao markAsInConflictForFuelStation:fuelStation error:errorBlk];
-    [_conflictDelegate remoteStoreVersionOfFuelStation:latestResourceModel
-                               isNewerThanLocalVersion:fuelStation];
+    if (addlConflictBlk) { addlConflictBlk(latestFuelStation); }
   };
   PELMRemoteMasterDeletionBlk remoteMasterDeletionExistingBlk =
   ^(PELMRemoteMasterBusyBlk remoteStoreBusyHandler,
@@ -576,6 +586,7 @@ addlTempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
                                       addlTempRemoteErrorBlk:addlTempRemoteErrorBlk
                                           addlRemoteErrorBlk:addlRemoteErrorBlk];
       }
+        entityNotFoundBlk:notFoundOnServerBlk
         markAsConflictBlk:markAsConflictBlk
         deleteCompleteBlk:^{
           [_localDao deleteFuelstation:fuelStation error:errorBlk];
@@ -592,10 +603,12 @@ addlTempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
 
 - (void)flushUnsyncedChangesToFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
                                       forUser:(FPUser *)user
-                               addlSuccessBlk:(void(^)(PELMMainSupport *))addlSuccessBlk
+                          notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
+                               addlSuccessBlk:(void(^)(void))addlSuccessBlk
                        addlRemoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)addlRemoteStoreBusyBlk
                        addlTempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
                            addlRemoteErrorBlk:(void(^)(NSInteger))addlRemoteErrorBlk
+                              addlConflictBlk:(void(^)(FPFuelPurchaseLog *))addlConflictBlk
                           addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
                  skippedDueToVehicleNotSynced:(void(^)(void))skippedDueToVehicleNotSynced
              skippedDueToFuelStationNotSynced:(void(^)(void))skippedDueToFuelStationNotSynced
@@ -612,10 +625,9 @@ addlTempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
     skippedDueToFuelStationNotSynced();
     return;
   }
-  void (^markAsConflictBlk)(id) = ^ (id latestResourceModel) {
+  void (^markAsConflictBlk)(id) = ^ (FPFuelPurchaseLog *latestFplog) {
     [_localDao markAsInConflictForFuelPurchaseLog:fuelPurchaseLog error:errorBlk];
-    [_conflictDelegate remoteStoreVersionOfFuelPurchaseLog:latestResourceModel
-                                   isNewerThanLocalVersion:fuelPurchaseLog];
+    if (addlConflictBlk) { addlConflictBlk(latestFplog); }
   };
   PELMRemoteMasterSaveBlk remoteMasterSaveExistingBlk =
   ^(PELMRemoteMasterBusyBlk remoteStoreBusyHandler,
@@ -658,17 +670,15 @@ addlTempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
                                                       addlTempRemoteErrorBlk:addlTempRemoteErrorBlk
                                                           addlRemoteErrorBlk:addlRemoteErrorBlk];
                       }
+                        entityNotFoundBlk:notFoundOnServerBlk
                         markAsConflictBlk:markAsConflictBlk
-        markAsSyncCompleteForNewEntityBlk:^(PELMMainSupport *syncedFuelPurchaseLog) {
-          [_localDao markAsSyncCompleteForNewFuelPurchaseLog:(FPFuelPurchaseLog *)syncedFuelPurchaseLog
-                                                     forUser:user
-                                                       error:errorBlk];
-          if (addlSuccessBlk) { addlSuccessBlk((FPFuelPurchaseLog *)syncedFuelPurchaseLog); }
+        markAsSyncCompleteForNewEntityBlk:^{
+          [_localDao markAsSyncCompleteForNewFuelPurchaseLog:fuelPurchaseLog forUser:user error:errorBlk];
+          if (addlSuccessBlk) { addlSuccessBlk(); }
         }
-   markAsSyncCompleteForExistingEntityBlk:^(PELMMainSupport *syncedFuelPurchaseLog) {
-     [_localDao markAsSyncCompleteForUpdatedFuelPurchaseLog:(FPFuelPurchaseLog *)syncedFuelPurchaseLog
-                                                      error:errorBlk];
-     if (addlSuccessBlk) { addlSuccessBlk((FPFuelPurchaseLog *)syncedFuelPurchaseLog); }
+   markAsSyncCompleteForExistingEntityBlk:^{
+     [_localDao markAsSyncCompleteForUpdatedFuelPurchaseLog:fuelPurchaseLog error:errorBlk];
+     if (addlSuccessBlk) { addlSuccessBlk(); }
    }
                       authRequiredHandler:^(HCAuthentication *auth) {
                         [self authReqdBlk](auth);
@@ -687,16 +697,17 @@ addlTempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
 
 - (void)deleteFuelPurchaseLog:(FPFuelPurchaseLog *)fplog
                       forUser:(FPUser *)user
+          notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
                addlSuccessBlk:(void(^)(void))addlSuccessBlk
        addlRemoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)addlRemoteStoreBusyBlk
        addlTempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
            addlRemoteErrorBlk:(void(^)(NSInteger))addlRemoteErrorBlk
+              addlConflictBlk:(void(^)(FPFuelPurchaseLog *))addlConflictBlk
           addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
                         error:(PELMDaoErrorBlk)errorBlk {
-  void (^markAsConflictBlk)(id) = ^ (id latestResourceModel) {
+  void (^markAsConflictBlk)(id) = ^ (FPFuelPurchaseLog *latestFplog) {
     [_localDao markAsInConflictForFuelPurchaseLog:fplog error:errorBlk];
-    [_conflictDelegate remoteStoreVersionOfFuelPurchaseLog:latestResourceModel
-                                   isNewerThanLocalVersion:fplog];
+    if (addlConflictBlk) { addlConflictBlk(latestFplog); }
   };
   PELMRemoteMasterDeletionBlk remoteMasterDeletionExistingBlk =
   ^(PELMRemoteMasterBusyBlk remoteStoreBusyHandler,
@@ -716,6 +727,7 @@ addlTempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
                                       addlTempRemoteErrorBlk:addlTempRemoteErrorBlk
                                           addlRemoteErrorBlk:addlRemoteErrorBlk];
       }
+        entityNotFoundBlk:notFoundOnServerBlk
         markAsConflictBlk:markAsConflictBlk
         deleteCompleteBlk:^{
           [_localDao deleteFuelPurchaseLog:fplog error:errorBlk];
@@ -732,10 +744,12 @@ addlTempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
 
 - (void)flushUnsyncedChangesToEnvironmentLog:(FPEnvironmentLog *)environmentLog
                                      forUser:(FPUser *)user
-                              addlSuccessBlk:(void(^)(PELMMainSupport *))addlSuccessBlk
+                         notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
+                              addlSuccessBlk:(void(^)(void))addlSuccessBlk
                       addlRemoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)addlRemoteStoreBusyBlk
                       addlTempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
                           addlRemoteErrorBlk:(void(^)(NSInteger))addlRemoteErrorBlk
+                             addlConflictBlk:(void(^)(FPEnvironmentLog *))addlConflictBlk
                          addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
                 skippedDueToVehicleNotSynced:(void(^)(void))skippedDueToVehicleNotSynced
                                        error:(PELMDaoErrorBlk)errorBlk {
@@ -745,10 +759,9 @@ addlTempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
     skippedDueToVehicleNotSynced();
     return;
   }
-  void (^markAsConflictBlk)(id) = ^ (id latestResourceModel) {
+  void (^markAsConflictBlk)(id) = ^ (FPEnvironmentLog *latestEnvlog) {
     [_localDao markAsInConflictForEnvironmentLog:environmentLog error:errorBlk];
-    [_conflictDelegate remoteStoreVersionOfEnvironmentLog:latestResourceModel
-                                  isNewerThanLocalVersion:environmentLog];
+    if (addlConflictBlk) { addlConflictBlk(latestEnvlog); }
   };
   PELMRemoteMasterSaveBlk remoteMasterSaveExistingBlk =
   ^(PELMRemoteMasterBusyBlk remoteStoreBusyHandler,
@@ -791,17 +804,15 @@ addlTempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
                                                       addlTempRemoteErrorBlk:addlTempRemoteErrorBlk
                                                           addlRemoteErrorBlk:addlRemoteErrorBlk];
                       }
+                        entityNotFoundBlk:notFoundOnServerBlk
                         markAsConflictBlk:markAsConflictBlk
-        markAsSyncCompleteForNewEntityBlk:^(PELMMainSupport *syncedEnvironmentLog) {
-          [_localDao markAsSyncCompleteForNewEnvironmentLog:(FPEnvironmentLog *)syncedEnvironmentLog
-                                                    forUser:user
-                                                      error:errorBlk];
-          if (addlSuccessBlk) { addlSuccessBlk((FPEnvironmentLog *)syncedEnvironmentLog); }
+        markAsSyncCompleteForNewEntityBlk:^{
+          [_localDao markAsSyncCompleteForNewEnvironmentLog:environmentLog forUser:user error:errorBlk];
+          if (addlSuccessBlk) { addlSuccessBlk(); }
         }
-   markAsSyncCompleteForExistingEntityBlk:^(PELMMainSupport *syncedEnvironmentLog) {
-     [_localDao markAsSyncCompleteForUpdatedEnvironmentLog:(FPEnvironmentLog *)syncedEnvironmentLog
-                                                     error:errorBlk];
-     if (addlSuccessBlk) { addlSuccessBlk((FPEnvironmentLog *)syncedEnvironmentLog); }
+   markAsSyncCompleteForExistingEntityBlk:^{
+     [_localDao markAsSyncCompleteForUpdatedEnvironmentLog:environmentLog error:errorBlk];
+     if (addlSuccessBlk) { addlSuccessBlk(); }
    }
                       authRequiredHandler:^(HCAuthentication *auth) {
                         [self authReqdBlk](auth);
@@ -820,16 +831,17 @@ addlTempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
 
 - (void)deleteEnvironmentLog:(FPEnvironmentLog *)envlog
                      forUser:(FPUser *)user
+         notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
               addlSuccessBlk:(void(^)(void))addlSuccessBlk
       addlRemoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)addlRemoteStoreBusyBlk
       addlTempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
           addlRemoteErrorBlk:(void(^)(NSInteger))addlRemoteErrorBlk
+             addlConflictBlk:(void(^)(FPEnvironmentLog *))addlConflictBlk
          addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
                        error:(PELMDaoErrorBlk)errorBlk {
-  void (^markAsConflictBlk)(id) = ^ (id latestResourceModel) {
+  void (^markAsConflictBlk)(id) = ^ (FPEnvironmentLog *latestEnvlog) {
     [_localDao markAsInConflictForEnvironmentLog:envlog error:errorBlk];
-    [_conflictDelegate remoteStoreVersionOfEnvironmentLog:latestResourceModel
-                                  isNewerThanLocalVersion:envlog];
+    if (addlConflictBlk) { addlConflictBlk(latestEnvlog); }
   };
   PELMRemoteMasterDeletionBlk remoteMasterDeletionExistingBlk =
   ^(PELMRemoteMasterBusyBlk remoteStoreBusyHandler,
@@ -849,6 +861,7 @@ addlTempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
                                       addlTempRemoteErrorBlk:addlTempRemoteErrorBlk
                                           addlRemoteErrorBlk:addlRemoteErrorBlk];
       }
+        entityNotFoundBlk:notFoundOnServerBlk
         markAsConflictBlk:markAsConflictBlk
         deleteCompleteBlk:^{
           [_localDao deleteEnvironmentLog:envlog error:errorBlk];
@@ -873,10 +886,12 @@ addlTempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
 }
 
 - (NSInteger)flushAllUnsyncedEditsToRemoteForUser:(FPUser *)user
+                                entityNotFoundBlk:(void(^)(float))entityNotFoundBlk
                                        successBlk:(void(^)(float))successBlk
                                remoteStoreBusyBlk:(void(^)(float, NSDate *))remoteStoreBusyBlk
                                tempRemoteErrorBlk:(void(^)(float))tempRemoteErrorBlk
                                    remoteErrorBlk:(void(^)(float, NSInteger))remoteErrorBlk
+                                      conflictBlk:(void(^)(float, id))conflictBlk
                                   authRequiredBlk:(void(^)(float))authRequiredBlk
                                           allDone:(void(^)(void))allDoneBlk
                                             error:(PELMDaoErrorBlk)errorBlk {
@@ -897,7 +912,15 @@ addlTempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
       allDoneBlk();
     }
   };
-  void (^commonSuccessBlk)(id) = ^(id entity) {
+  void (^commonEntityNotFoundBlk)(void) = ^{
+    if (entityNotFoundBlk) entityNotFoundBlk([individualEntitySyncProgress floatValue]);
+    incrementSyncAttemptedAndCheckDoneness();
+  };
+  void (^commonConflictBlk)(id) = ^(id latestEntity) {
+    if (conflictBlk) conflictBlk([individualEntitySyncProgress floatValue], latestEntity);
+    incrementSyncAttemptedAndCheckDoneness();
+  };
+  void (^commonSuccessBlk)(void) = ^{
     if (successBlk) successBlk([individualEntitySyncProgress floatValue]);
     incrementSyncAttemptedAndCheckDoneness();
   };
@@ -924,10 +947,12 @@ addlTempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
     [self flushUnsyncedChangesToEntities:fpLogsToSync
                                   syncer:^(PELMMainSupport *entity){[self flushUnsyncedChangesToFuelPurchaseLog:(FPFuelPurchaseLog *)entity
                                                                                                         forUser:user
-                                                                                                 addlSuccessBlk:^(id e){ commonSuccessBlk(e); }
+                                                                                            notFoundOnServerBlk:^{ commonEntityNotFoundBlk(); }
+                                                                                                 addlSuccessBlk:^{ commonSuccessBlk(); }
                                                                                          addlRemoteStoreBusyBlk:^(NSDate *d) {commonRemoteStoreyBusyBlk(d); }
                                                                                          addlTempRemoteErrorBlk:^{ commonTempRemoteErrorBlk(); }
                                                                                              addlRemoteErrorBlk:^(NSInteger m) {commonRemoteErrorBlk(m);}
+                                                                                                addlConflictBlk:^(id e) { commonConflictBlk(e); }
                                                                                             addlAuthRequiredBlk:^{ commonAuthReqdBlk(); }
                                                                                    skippedDueToVehicleNotSynced:^{ commonSyncSkippedBlk(); }
                                                                                skippedDueToFuelStationNotSynced:^{ commonSyncSkippedBlk(); }
@@ -937,10 +962,12 @@ addlTempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
     [self flushUnsyncedChangesToEntities:envLogsToSync
                                   syncer:^(PELMMainSupport *entity){[self flushUnsyncedChangesToEnvironmentLog:(FPEnvironmentLog *)entity
                                                                                                        forUser:user
-                                                                                                addlSuccessBlk:^(id e){ commonSuccessBlk(e); }
+                                                                                           notFoundOnServerBlk:^{ commonEntityNotFoundBlk(); }
+                                                                                                addlSuccessBlk:^{ commonSuccessBlk(); }
                                                                                         addlRemoteStoreBusyBlk:^(NSDate *d) {commonRemoteStoreyBusyBlk(d); }
                                                                                         addlTempRemoteErrorBlk:^{ commonTempRemoteErrorBlk(); }
                                                                                             addlRemoteErrorBlk:^(NSInteger m) {commonRemoteErrorBlk(m);}
+                                                                                               addlConflictBlk:^(id e) { commonConflictBlk(e); }
                                                                                            addlAuthRequiredBlk:^{ commonAuthReqdBlk(); }
                                                                                   skippedDueToVehicleNotSynced:^{ commonSyncSkippedBlk(); }
                                                                                                          error:errorBlk];}];
@@ -975,10 +1002,12 @@ addlTempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
     [self flushUnsyncedChangesToEntities:vehiclesToSync
                                   syncer:^(PELMMainSupport *entity){[self flushUnsyncedChangesToVehicle:(FPVehicle *)entity
                                                                                                 forUser:user
-                                                                                         addlSuccessBlk:^(id e) { commonSuccessBlk(e); vehicleSyncAttempted(); }
+                                                                                    notFoundOnServerBlk:^{ commonEntityNotFoundBlk(); }
+                                                                                         addlSuccessBlk:^{ commonSuccessBlk(); vehicleSyncAttempted(); }
                                                                                  addlRemoteStoreBusyBlk:^(NSDate *d) { commonRemoteStoreyBusyBlk(d); vehicleSyncAttempted(); }
                                                                                  addlTempRemoteErrorBlk:^{ commonTempRemoteErrorBlk(); vehicleSyncAttempted(); }
                                                                                      addlRemoteErrorBlk:^(NSInteger mask) { commonRemoteErrorBlk(mask); vehicleSyncAttempted(); }
+                                                                                        addlConflictBlk:^(id e) { commonConflictBlk(e); }
                                                                                     addlAuthRequiredBlk:commonAuthReqdBlk
                                                                                                   error:errorBlk];}];
   } else {
@@ -1003,10 +1032,12 @@ addlTempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
     [self flushUnsyncedChangesToEntities:fuelStationsToSync
                                   syncer:^(PELMMainSupport *entity){[self flushUnsyncedChangesToFuelStation:(FPFuelStation *)entity
                                                                                                     forUser:user
-                                                                                             addlSuccessBlk:^(id e) { commonSuccessBlk(e); fuelStationSyncAttempted(); }
+                                                                                        notFoundOnServerBlk:^{ commonEntityNotFoundBlk(); }
+                                                                                             addlSuccessBlk:^{ commonSuccessBlk(); fuelStationSyncAttempted(); }
                                                                                      addlRemoteStoreBusyBlk:^(NSDate *d) { commonRemoteStoreyBusyBlk(d); fuelStationSyncAttempted(); }
                                                                                      addlTempRemoteErrorBlk:^{ commonTempRemoteErrorBlk(); fuelStationSyncAttempted(); }
                                                                                          addlRemoteErrorBlk:^(NSInteger mask) { commonRemoteErrorBlk(mask); fuelStationSyncAttempted(); }
+                                                                                            addlConflictBlk:^(id e) { commonConflictBlk(e); }
                                                                                         addlAuthRequiredBlk:commonAuthReqdBlk
                                                                                                       error:errorBlk];}];
   }
@@ -1201,18 +1232,22 @@ localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler {
 }
 
 - (void)markAsDoneEditingAndSyncUserImmediate:(FPUser *)user
+                          notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
                                    successBlk:(void(^)(void))successBlk
                            remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
                            tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk
                                remoteErrorBlk:(void(^)(NSInteger))remoteErrorBlk
+                                  conflictBlk:(void(^)(FPUser *))conflictBlk
                               authRequiredBlk:(void(^)(void))authRequiredBlk
                                         error:(PELMDaoErrorBlk)errorBlk {
   [_localDao markAsDoneEditingImmediateSyncUser:user error:errorBlk];
   [self flushUnsyncedChangesToUser:user
-                    addlSuccessBlk:^(PELMMainSupport *user) {successBlk();}
+               notFoundOnServerBlk:notFoundOnServerBlk
+                    addlSuccessBlk:successBlk
             addlRemoteStoreBusyBlk:remoteStoreBusyBlk
             addlTempRemoteErrorBlk:tempRemoteErrorBlk
                 addlRemoteErrorBlk:remoteErrorBlk
+                   addlConflictBlk:conflictBlk
                addlAuthRequiredBlk:authRequiredBlk
                              error:errorBlk];
 }
@@ -1273,19 +1308,23 @@ localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler {
 
 - (void)saveNewAndSyncImmediateVehicle:(FPVehicle *)vehicle
                                forUser:(FPUser *)user
+                   notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
                             successBlk:(void(^)(void))successBlk
                     remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
                     tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk
                         remoteErrorBlk:(void(^)(NSInteger))remoteErrorBlk
+                           conflictBlk:(void(^)(FPVehicle *))conflictBlk
                        authRequiredBlk:(void(^)(void))authRequiredBlk
                                  error:(PELMDaoErrorBlk)errorBlk {
   [_localDao saveNewAndSyncImmediateVehicle:vehicle forUser:user error:errorBlk];
   [self flushUnsyncedChangesToVehicle:vehicle
                               forUser:user
-                       addlSuccessBlk:^(PELMMainSupport *vehicle) {successBlk();}
+                  notFoundOnServerBlk:notFoundOnServerBlk
+                       addlSuccessBlk:successBlk
                addlRemoteStoreBusyBlk:remoteStoreBusyBlk
                addlTempRemoteErrorBlk:tempRemoteErrorBlk
                    addlRemoteErrorBlk:remoteErrorBlk
+                      addlConflictBlk:conflictBlk
                   addlAuthRequiredBlk:authRequiredBlk
                                 error:errorBlk];
 }
@@ -1316,20 +1355,24 @@ localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler {
 
 - (void)markAsDoneEditingAndSyncVehicleImmediate:(FPVehicle *)vehicle
                                          forUser:(FPUser *)user
+                             notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
                                       successBlk:(void(^)(void))successBlk
                               remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
                               tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk
                                   remoteErrorBlk:(void(^)(NSInteger))remoteErrorBlk
+                                     conflictBlk:(void(^)(FPVehicle *))conflictBlk
                                  authRequiredBlk:(void(^)(void))authRequiredBlk
                                            error:(PELMDaoErrorBlk)errorBlk {
   [_localDao markAsDoneEditingImmediateSyncVehicle:vehicle
                                              error:errorBlk];
   [self flushUnsyncedChangesToVehicle:vehicle
                               forUser:user
-                       addlSuccessBlk:^(PELMMainSupport *vehicle) {successBlk();}
+                  notFoundOnServerBlk:notFoundOnServerBlk
+                       addlSuccessBlk:successBlk
                addlRemoteStoreBusyBlk:remoteStoreBusyBlk
                addlTempRemoteErrorBlk:tempRemoteErrorBlk
                    addlRemoteErrorBlk:remoteErrorBlk
+                      addlConflictBlk:conflictBlk
                   addlAuthRequiredBlk:authRequiredBlk
                                 error:errorBlk];
 }
@@ -1393,19 +1436,23 @@ localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler {
 
 - (void)saveNewAndSyncImmediateFuelStation:(FPFuelStation *)fuelStation
                                    forUser:(FPUser *)user
+                       notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
                                 successBlk:(void(^)(void))successBlk
                         remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
                         tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk
                             remoteErrorBlk:(void(^)(NSInteger))remoteErrorBlk
+                               conflictBlk:(void(^)(FPFuelStation *))conflictBlk
                            authRequiredBlk:(void(^)(void))authRequiredBlk
                                      error:(PELMDaoErrorBlk)errorBlk {
   [_localDao saveNewAndSyncImmediateFuelStation:fuelStation forUser:user error:errorBlk];
   [self flushUnsyncedChangesToFuelStation:fuelStation
                                   forUser:user
-                           addlSuccessBlk:^(PELMMainSupport *vehicle) {successBlk();}
+                      notFoundOnServerBlk:notFoundOnServerBlk
+                           addlSuccessBlk:successBlk
                    addlRemoteStoreBusyBlk:remoteStoreBusyBlk
                    addlTempRemoteErrorBlk:tempRemoteErrorBlk
                        addlRemoteErrorBlk:remoteErrorBlk
+                          addlConflictBlk:conflictBlk
                       addlAuthRequiredBlk:authRequiredBlk
                                     error:errorBlk];
 }
@@ -1436,20 +1483,24 @@ localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler {
 
 - (void)markAsDoneEditingAndSyncFuelStationImmediate:(FPFuelStation *)fuelStation
                                              forUser:(FPUser *)user
+                                 notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
                                           successBlk:(void(^)(void))successBlk
                                   remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
                                   tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk
                                       remoteErrorBlk:(void(^)(NSInteger))remoteErrorBlk
+                                         conflictBlk:(void(^)(FPFuelStation *))conflictBlk
                                      authRequiredBlk:(void(^)(void))authRequiredBlk
                                                error:(PELMDaoErrorBlk)errorBlk {
   [_localDao markAsDoneEditingImmediateSyncFuelStation:fuelStation
                                                  error:errorBlk];
   [self flushUnsyncedChangesToFuelStation:fuelStation
                                   forUser:user
-                           addlSuccessBlk:^(PELMMainSupport *vehicle) {successBlk();}
+                      notFoundOnServerBlk:notFoundOnServerBlk
+                           addlSuccessBlk:successBlk
                    addlRemoteStoreBusyBlk:remoteStoreBusyBlk
                    addlTempRemoteErrorBlk:tempRemoteErrorBlk
                        addlRemoteErrorBlk:remoteErrorBlk
+                          addlConflictBlk:conflictBlk
                       addlAuthRequiredBlk:authRequiredBlk
                                     error:errorBlk];
 }
@@ -1622,10 +1673,12 @@ localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler {
                                        forUser:(FPUser *)user
                                        vehicle:(FPVehicle *)vehicle
                                    fuelStation:(FPFuelStation *)fuelStation
+                           notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
                                     successBlk:(void(^)(void))successBlk
                             remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
                             tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk
                                 remoteErrorBlk:(void(^)(NSInteger))remoteErrorBlk
+                                   conflictBlk:(void(^)(FPFuelPurchaseLog *))conflictBlk
                                authRequiredBlk:(void(^)(void))authRequiredBlk
                   skippedDueToVehicleNotSynced:(void(^)(void))skippedDueToVehicleNotSynced
               skippedDueToFuelStationNotSynced:(void(^)(void))skippedDueToFuelStationNotSynced
@@ -1640,10 +1693,12 @@ localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler {
                                                   error:errorBlk];
       [self flushUnsyncedChangesToFuelPurchaseLog:fuelPurchaseLog
                                           forUser:user
-                                   addlSuccessBlk:^(PELMMainSupport *fplog) {successBlk();}
+                              notFoundOnServerBlk:notFoundOnServerBlk
+                                   addlSuccessBlk:successBlk
                            addlRemoteStoreBusyBlk:remoteStoreBusyBlk
                            addlTempRemoteErrorBlk:tempRemoteErrorBlk
                                addlRemoteErrorBlk:remoteErrorBlk
+                                  addlConflictBlk:conflictBlk
                               addlAuthRequiredBlk:authRequiredBlk
                      skippedDueToVehicleNotSynced:skippedDueToVehicleNotSynced
                  skippedDueToFuelStationNotSynced:skippedDueToFuelStationNotSynced
@@ -1698,10 +1753,12 @@ localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler {
 
 - (void)markAsDoneEditingAndSyncFuelPurchaseLogImmediate:(FPFuelPurchaseLog *)fuelPurchaseLog
                                                  forUser:(FPUser *)user
+                                     notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
                                               successBlk:(void(^)(void))successBlk
                                       remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
                                       tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk
                                           remoteErrorBlk:(void(^)(NSInteger))remoteErrorBlk
+                                             conflictBlk:(void(^)(FPFuelPurchaseLog *))conflictBlk
                                          authRequiredBlk:(void(^)(void))authRequiredBlk
                             skippedDueToVehicleNotSynced:(void(^)(void))skippedDueToVehicleNotSynced
                         skippedDueToFuelStationNotSynced:(void(^)(void))skippedDueToFuelStationNotSynced
@@ -1711,10 +1768,12 @@ localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler {
       [_localDao markAsDoneEditingImmediateSyncFuelPurchaseLog:fuelPurchaseLog error:errorBlk];
       [self flushUnsyncedChangesToFuelPurchaseLog:fuelPurchaseLog
                                           forUser:user
-                                   addlSuccessBlk:^(PELMMainSupport *fplog) {successBlk();}
+                              notFoundOnServerBlk:notFoundOnServerBlk
+                                   addlSuccessBlk:successBlk
                            addlRemoteStoreBusyBlk:remoteStoreBusyBlk
                            addlTempRemoteErrorBlk:tempRemoteErrorBlk
                                addlRemoteErrorBlk:remoteErrorBlk
+                                  addlConflictBlk:conflictBlk
                               addlAuthRequiredBlk:authRequiredBlk
                      skippedDueToVehicleNotSynced:skippedDueToVehicleNotSynced
                  skippedDueToFuelStationNotSynced:skippedDueToFuelStationNotSynced
@@ -1849,10 +1908,12 @@ localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler {
 - (void)saveNewAndSyncImmediateEnvironmentLog:(FPEnvironmentLog *)envLog
                                       forUser:(FPUser *)user
                                       vehicle:(FPVehicle *)vehicle
+                          notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
                                    successBlk:(void(^)(void))successBlk
                            remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
                            tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk
                                remoteErrorBlk:(void(^)(NSInteger))remoteErrorBlk
+                                  conflictBlk:(void(^)(FPEnvironmentLog *))conflictBlk
                               authRequiredBlk:(void(^)(void))authRequiredBlk
                  skippedDueToVehicleNotSynced:(void(^)(void))skippedDueToVehicleNotSynced
                                         error:(PELMDaoErrorBlk)errorBlk {
@@ -1860,10 +1921,12 @@ localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler {
     [_localDao saveNewAndSyncImmediateEnvironmentLog:envLog forUser:user vehicle:vehicle error:errorBlk];
     [self flushUnsyncedChangesToEnvironmentLog:envLog
                                        forUser:user
-                                addlSuccessBlk:^(PELMMainSupport *fplog) {successBlk();}
+                           notFoundOnServerBlk:notFoundOnServerBlk
+                                addlSuccessBlk:successBlk
                         addlRemoteStoreBusyBlk:remoteStoreBusyBlk
                         addlTempRemoteErrorBlk:tempRemoteErrorBlk
                             addlRemoteErrorBlk:remoteErrorBlk
+                               addlConflictBlk:conflictBlk
                            addlAuthRequiredBlk:authRequiredBlk
                   skippedDueToVehicleNotSynced:skippedDueToVehicleNotSynced
                                          error:errorBlk];
@@ -1903,10 +1966,12 @@ localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler {
 
 - (void)markAsDoneEditingAndSyncEnvironmentLogImmediate:(FPEnvironmentLog *)envLog
                                                 forUser:(FPUser *)user
+                                    notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
                                              successBlk:(void(^)(void))successBlk
                                      remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
                                      tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk
                                          remoteErrorBlk:(void(^)(NSInteger))remoteErrorBlk
+                                            conflictBlk:(void(^)(FPEnvironmentLog *))conflictBlk
                                         authRequiredBlk:(void(^)(void))authRequiredBlk
                            skippedDueToVehicleNotSynced:(void(^)(void))skippedDueToVehicleNotSynced
                                                   error:(PELMDaoErrorBlk)errorBlk {
@@ -1914,10 +1979,12 @@ localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler {
     [_localDao markAsDoneEditingImmediateSyncEnvironmentLog:envLog error:errorBlk];
     [self flushUnsyncedChangesToEnvironmentLog:envLog
                                        forUser:user
-                                addlSuccessBlk:^(PELMMainSupport *fplog) {successBlk();}
+                           notFoundOnServerBlk:notFoundOnServerBlk
+                                addlSuccessBlk:successBlk
                         addlRemoteStoreBusyBlk:remoteStoreBusyBlk
                         addlTempRemoteErrorBlk:tempRemoteErrorBlk
                             addlRemoteErrorBlk:remoteErrorBlk
+                               addlConflictBlk:conflictBlk
                            addlAuthRequiredBlk:authRequiredBlk
                   skippedDueToVehicleNotSynced:skippedDueToVehicleNotSynced
                                          error:errorBlk];

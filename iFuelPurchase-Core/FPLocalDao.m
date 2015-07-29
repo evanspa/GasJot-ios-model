@@ -408,7 +408,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
     if (!user) {
       user = [self masterUserWithDatabase:db error:errorBlk];
       if (user) {
-        if ([user deletedDate]) {
+        if ([user deletedAt]) {
           user = nil;
         }
       }
@@ -2776,7 +2776,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                     globalIdentifier:[rs stringForColumn:COL_GLOBAL_ID]
                                            mediaType:[HCMediaType MediaTypeFromString:[rs stringForColumn:COL_MEDIA_TYPE]]
                                            relations:nil
-                                         deletedDate:nil // NA (this is a master store-only column)
+                                         deletedAt:nil // NA (this is a master store-only column)
                                            updatedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MAN_MASTER_UPDATED_AT]
                                 dateCopiedFromMaster:[PELMUtils dateFromResultSet:rs columnName:COL_MAN_DT_COPIED_DOWN_FROM_MASTER]
                                       editInProgress:[rs boolForColumn:COL_MAN_EDIT_IN_PROGRESS]
@@ -2799,7 +2799,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                     globalIdentifier:[rs stringForColumn:COL_GLOBAL_ID]
                                            mediaType:[HCMediaType MediaTypeFromString:[rs stringForColumn:COL_MEDIA_TYPE]]
                                            relations:nil
-                                         deletedDate:[PELMUtils dateFromResultSet:rs columnName:COL_MST_DELETED_DT]
+                                         deletedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MST_DELETED_DT]
                                            updatedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MST_UPDATED_AT]
                                 dateCopiedFromMaster:nil // NA (this is a main store-only column)
                                       editInProgress:NO  // NA (this is a main store-only column)
@@ -2822,7 +2822,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                        globalIdentifier:[rs stringForColumn:COL_GLOBAL_ID]
                                               mediaType:[HCMediaType MediaTypeFromString:[rs stringForColumn:COL_MEDIA_TYPE]]
                                               relations:nil
-                                            deletedDate:nil // NA (this is a master store-only column)
+                                            deletedAt:nil // NA (this is a master store-only column)
                                               updatedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MAN_MASTER_UPDATED_AT]
                                    dateCopiedFromMaster:[PELMUtils dateFromResultSet:rs columnName:COL_MAN_DT_COPIED_DOWN_FROM_MASTER]
                                          editInProgress:[rs boolForColumn:COL_MAN_EDIT_IN_PROGRESS]
@@ -2844,7 +2844,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                        globalIdentifier:[rs stringForColumn:COL_GLOBAL_ID]
                                               mediaType:[HCMediaType MediaTypeFromString:[rs stringForColumn:COL_MEDIA_TYPE]]
                                               relations:nil
-                                            deletedDate:[PELMUtils dateFromResultSet:rs columnName:COL_MST_DELETED_DT]
+                                            deletedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MST_DELETED_DT]
                                               updatedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MST_UPDATED_AT]
                                    dateCopiedFromMaster:nil // NA (this is a main store-only column)
                                          editInProgress:NO  // NA (this is a main store-only column)
@@ -2866,7 +2866,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                            globalIdentifier:[rs stringForColumn:COL_GLOBAL_ID]
                                                   mediaType:[HCMediaType MediaTypeFromString:[rs stringForColumn:COL_MEDIA_TYPE]]
                                                   relations:nil
-                                                deletedDate:nil // NA (this is a master store-only column)
+                                                deletedAt:nil // NA (this is a master store-only column)
                                                   updatedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MAN_MASTER_UPDATED_AT]
                                        dateCopiedFromMaster:[PELMUtils dateFromResultSet:rs columnName:COL_MAN_DT_COPIED_DOWN_FROM_MASTER]
                                              editInProgress:[rs boolForColumn:COL_MAN_EDIT_IN_PROGRESS]
@@ -2892,7 +2892,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                            globalIdentifier:[rs stringForColumn:COL_GLOBAL_ID]
                                                   mediaType:[HCMediaType MediaTypeFromString:[rs stringForColumn:COL_MEDIA_TYPE]]
                                                   relations:nil
-                                                deletedDate:[PELMUtils dateFromResultSet:rs columnName:COL_MST_DELETED_DT]
+                                                deletedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MST_DELETED_DT]
                                                   updatedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MST_UPDATED_AT]
                                        dateCopiedFromMaster:nil // NA (this is a main store-only column)
                                              editInProgress:NO  // NA (this is a main store-only column)
@@ -2918,7 +2918,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                                globalIdentifier:[rs stringForColumn:COL_GLOBAL_ID]
                                                       mediaType:[HCMediaType MediaTypeFromString:[rs stringForColumn:COL_MEDIA_TYPE]]
                                                       relations:nil
-                                                    deletedDate:nil // NA (this is a master store-only column)
+                                                    deletedAt:nil // NA (this is a master store-only column)
                                                    updatedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MAN_MASTER_UPDATED_AT]
                                            dateCopiedFromMaster:[PELMUtils dateFromResultSet:rs columnName:COL_MAN_DT_COPIED_DOWN_FROM_MASTER]
                                                  editInProgress:[rs boolForColumn:COL_MAN_EDIT_IN_PROGRESS]
@@ -2945,7 +2945,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                                globalIdentifier:[rs stringForColumn:COL_GLOBAL_ID]
                                                       mediaType:[HCMediaType MediaTypeFromString:[rs stringForColumn:COL_MEDIA_TYPE]]
                                                       relations:nil
-                                                    deletedDate:nil // NA (this is a master store-only column)
+                                                    deletedAt:nil // NA (this is a master store-only column)
                                                    updatedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MAN_MASTER_UPDATED_AT]
                                            dateCopiedFromMaster:[PELMUtils dateFromResultSet:rs columnName:COL_MAN_DT_COPIED_DOWN_FROM_MASTER]
                                                  editInProgress:[rs boolForColumn:COL_MAN_EDIT_IN_PROGRESS]
@@ -2972,7 +2972,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                                globalIdentifier:[rs stringForColumn:COL_GLOBAL_ID]
                                                       mediaType:[HCMediaType MediaTypeFromString:[rs stringForColumn:COL_MEDIA_TYPE]]
                                                       relations:nil
-                                                    deletedDate:[PELMUtils dateFromResultSet:rs columnName:COL_MST_DELETED_DT]
+                                                    deletedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MST_DELETED_DT]
                                                    updatedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MST_UPDATED_AT]
                                            dateCopiedFromMaster:nil // NA (this is a main store-only column)
                                                  editInProgress:NO  // NA (this is a main store-only column)
@@ -2999,7 +2999,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                               globalIdentifier:[rs stringForColumn:COL_GLOBAL_ID]
                                                      mediaType:[HCMediaType MediaTypeFromString:[rs stringForColumn:COL_MEDIA_TYPE]]
                                                      relations:nil
-                                                   deletedDate:nil // NA (this is a master store-only column)
+                                                   deletedAt:nil // NA (this is a master store-only column)
                                                      updatedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MAN_MASTER_UPDATED_AT]
                                           dateCopiedFromMaster:[PELMUtils dateFromResultSet:rs columnName:COL_MAN_DT_COPIED_DOWN_FROM_MASTER]
                                                 editInProgress:[rs boolForColumn:COL_MAN_EDIT_IN_PROGRESS]
@@ -3025,7 +3025,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                               globalIdentifier:[rs stringForColumn:COL_GLOBAL_ID]
                                                      mediaType:[HCMediaType MediaTypeFromString:[rs stringForColumn:COL_MEDIA_TYPE]]
                                                      relations:nil
-                                                   deletedDate:[PELMUtils dateFromResultSet:rs columnName:COL_MST_DELETED_DT]
+                                                   deletedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MST_DELETED_DT]
                                                   updatedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MST_UPDATED_AT]
                                           dateCopiedFromMaster:nil // NA (this is a main store-only column)
                                                 editInProgress:NO  // NA (this is a main store-only column)
@@ -3071,7 +3071,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                               orNil([fuelStation globalIdentifier]),
                               orNil([[fuelStation mediaType] description]),
                               orNil([PEUtils millisecondsFromDate:[fuelStation updatedAt]]),
-                              orNil([PEUtils millisecondsFromDate:[fuelStation deletedDate]]),
+                              orNil([PEUtils millisecondsFromDate:[fuelStation deletedAt]]),
                               orNil([fuelStation name]),
                               orNil([fuelStation street]),
                               orNil([fuelStation city]),
@@ -3171,7 +3171,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
   return @[orNil([fuelStation globalIdentifier]),
            orNil([[fuelStation mediaType] description]),
            orNil([PEUtils millisecondsFromDate:[fuelStation updatedAt]]),
-           orNil([PEUtils millisecondsFromDate:[fuelStation deletedDate]]),
+           orNil([PEUtils millisecondsFromDate:[fuelStation deletedAt]]),
            orNil([fuelStation name]),
            orNil([fuelStation street]),
            orNil([fuelStation city]),
@@ -3272,7 +3272,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                               orNil([vehicle globalIdentifier]),
                               orNil([[vehicle mediaType] description]),
                               orNil([PEUtils millisecondsFromDate:[vehicle updatedAt]]),
-                              orNil([PEUtils millisecondsFromDate:[vehicle deletedDate]]),
+                              orNil([PEUtils millisecondsFromDate:[vehicle deletedAt]]),
                               orNil([vehicle name]),
                               orNil([vehicle defaultOctane]),
                               orNil([vehicle fuelCapacity])]
@@ -3351,7 +3351,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
   return @[orNil([vehicle globalIdentifier]),
            orNil([[vehicle mediaType] description]),
            orNil([PEUtils millisecondsFromDate:[vehicle updatedAt]]),
-           orNil([PEUtils millisecondsFromDate:[vehicle deletedDate]]),
+           orNil([PEUtils millisecondsFromDate:[vehicle deletedAt]]),
            orNil([vehicle name]),
            orNil([vehicle defaultOctane]),
            orNil([vehicle fuelCapacity]),
@@ -3503,7 +3503,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
   return @[orNil([user globalIdentifier]),
            orNil([[user mediaType] description]),
            orNil([PEUtils millisecondsFromDate:[user updatedAt]]),
-           orNil([PEUtils millisecondsFromDate:[user deletedDate]]),
+           orNil([PEUtils millisecondsFromDate:[user deletedAt]]),
            orNil([user name]),
            orNil([user email]),
            orNil([user username]),
@@ -3635,7 +3635,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                   argsArray:@[orNil([user globalIdentifier]),
                               orNil([[user mediaType] description]),
                               orNil([PEUtils millisecondsFromDate:[user updatedAt]]),
-                              orNil([PEUtils millisecondsFromDate:[user deletedDate]]),
+                              orNil([PEUtils millisecondsFromDate:[user deletedAt]]),
                               orNil([user name]),
                               orNil([user email]),
                               orNil([user username]),
@@ -3711,7 +3711,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                               orNil([fuelPurchaseLog globalIdentifier]),
                               orNil([[fuelPurchaseLog mediaType] description]),
                               orNil([PEUtils millisecondsFromDate:[fuelPurchaseLog updatedAt]]),
-                              orNil([PEUtils millisecondsFromDate:[fuelPurchaseLog deletedDate]]),
+                              orNil([PEUtils millisecondsFromDate:[fuelPurchaseLog deletedAt]]),
                               orNil([fuelPurchaseLog numGallons]),
                               orNil([fuelPurchaseLog octane]),
                               orNil([fuelPurchaseLog gallonPrice]),
@@ -3857,7 +3857,7 @@ WHERE %@ = ?",
   @[orNil([fuelPurchaseLog globalIdentifier]),
     orNil([[fuelPurchaseLog mediaType] description]),
     orNil([PEUtils millisecondsFromDate:[fuelPurchaseLog updatedAt]]),
-    orNil([PEUtils millisecondsFromDate:[fuelPurchaseLog deletedDate]]),
+    orNil([PEUtils millisecondsFromDate:[fuelPurchaseLog deletedAt]]),
     orNil([fuelPurchaseLog numGallons]),
     orNil([fuelPurchaseLog octane]),
     orNil([fuelPurchaseLog gallonPrice]),
@@ -4044,7 +4044,7 @@ WHERE %@ = ?",
                               orNil([environmentLog globalIdentifier]),
                               orNil([[environmentLog mediaType] description]),
                               orNil([PEUtils millisecondsFromDate:[environmentLog updatedAt]]),
-                              orNil([PEUtils millisecondsFromDate:[environmentLog deletedDate]]),
+                              orNil([PEUtils millisecondsFromDate:[environmentLog deletedAt]]),
                               orNil([environmentLog odometer]),
                               orNil([environmentLog reportedAvgMpg]),
                               orNil([environmentLog reportedAvgMph]),
@@ -4181,7 +4181,7 @@ WHERE %@ = ?",
   @[orNil([environmentLog globalIdentifier]),
     orNil([[environmentLog mediaType] description]),
     orNil([PEUtils millisecondsFromDate:[environmentLog updatedAt]]),
-    orNil([PEUtils millisecondsFromDate:[environmentLog deletedDate]]),
+    orNil([PEUtils millisecondsFromDate:[environmentLog deletedAt]]),
     orNil([environmentLog odometer]),
     orNil([environmentLog reportedAvgMpg]),
     orNil([environmentLog reportedAvgMph]),

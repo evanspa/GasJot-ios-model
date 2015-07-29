@@ -70,12 +70,14 @@ describe(@"FPCoordinatorDao", ^{
       __block float overallFlushProgress = 0.0;
       __block BOOL allDone = NO;
       NSInteger totalNumToSync = [_coordDao flushAllUnsyncedEditsToRemoteForUser:user
+                                                               entityNotFoundBlk:nil
                                                                       successBlk:nil
                                                               remoteStoreBusyBlk:nil
                                                               tempRemoteErrorBlk:^(float progress) {
                                                                 overallFlushProgress += progress;
                                                               }
                                                                   remoteErrorBlk:nil
+                                                                     conflictBlk:nil
                                                                  authRequiredBlk:nil
                                                                          allDone:^{ allDone = YES; }
                                                                            error:nil];
@@ -104,12 +106,14 @@ describe(@"FPCoordinatorDao", ^{
       overallFlushProgress = 0.0;
       allDone = NO;
       totalNumToSync = [_coordDao flushAllUnsyncedEditsToRemoteForUser:user
+                                                     entityNotFoundBlk:nil
                                                             successBlk:nil
                                                     remoteStoreBusyBlk:nil
                                                     tempRemoteErrorBlk:nil
                                                         remoteErrorBlk:^(float progress, NSInteger errMask) {
                                                           overallFlushProgress += progress;
                                                         }
+                                                           conflictBlk:nil
                                                        authRequiredBlk:nil
                                                                allDone:^{ allDone = YES; }
                                                                  error:nil];
@@ -137,12 +141,14 @@ describe(@"FPCoordinatorDao", ^{
       overallFlushProgress = 0.0;
       allDone = NO;
       totalNumToSync = [_coordDao flushAllUnsyncedEditsToRemoteForUser:user
+                                                     entityNotFoundBlk:nil
                                                             successBlk:nil
                                                     remoteStoreBusyBlk:^(float progress, NSDate *retryAfter) {
                                                       overallFlushProgress += progress;
                                                     }
                                                     tempRemoteErrorBlk:nil
                                                         remoteErrorBlk:nil
+                                                           conflictBlk:nil
                                                        authRequiredBlk:nil
                                                                allDone:^{ allDone = YES; }
                                                                  error:nil];
@@ -169,10 +175,12 @@ describe(@"FPCoordinatorDao", ^{
       overallFlushProgress = 0.0;
       allDone = NO;
       totalNumToSync = [_coordDao flushAllUnsyncedEditsToRemoteForUser:user
+                                                     entityNotFoundBlk:nil
                                                             successBlk:nil
                                                     remoteStoreBusyBlk:nil
                                                     tempRemoteErrorBlk:nil
                                                         remoteErrorBlk:nil
+                                                           conflictBlk:nil
                                                        authRequiredBlk:^(float progress) {
                                                          overallFlushProgress += progress;
                                                        }

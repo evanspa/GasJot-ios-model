@@ -19,7 +19,7 @@
                 masterEntityTable:(NSString *)masterEntityTable
                         mediaType:(HCMediaType *)mediaType
                         relations:(NSDictionary *)relations
-                      deletedDate:(NSDate *)deletedDate
+                        deletedAt:(NSDate *)deletedAt
                         updatedAt:(NSDate *)updatedAt;
 
 #pragma mark - Methods
@@ -30,7 +30,7 @@
 
 @property (nonatomic) NSDate *updatedAt;
 
-@property (nonatomic) NSDate *deletedDate;
+@property (nonatomic) NSDate *deletedAt;
 
 #pragma mark - Equality
 

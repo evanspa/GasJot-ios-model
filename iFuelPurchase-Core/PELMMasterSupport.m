@@ -20,7 +20,7 @@
                 masterEntityTable:(NSString *)masterEntityTable
                         mediaType:(HCMediaType *)mediaType
                         relations:(NSDictionary *)relations
-                      deletedDate:(NSDate *)deletedDate
+                      deletedAt:(NSDate *)deletedAt
                         updatedAt:(NSDate *)updatedAt {
   self = [super initWithLocalMainIdentifier:localMainIdentifier
                       localMasterIdentifier:localMasterIdentifier
@@ -30,7 +30,7 @@
                                   mediaType:mediaType
                                   relations:relations];
   if (self) {
-    _deletedDate = deletedDate;
+    _deletedAt = deletedAt;
     _updatedAt = updatedAt;
   }
   return self;
@@ -41,7 +41,7 @@
 - (void)overwrite:(PELMMasterSupport *)entity {
   [super overwrite:entity];
   [self setUpdatedAt:[entity updatedAt]];
-  [self setDeletedDate:[entity deletedDate]];
+  [self setDeletedAt:[entity deletedAt]];
 }
 
 #pragma mark - Equality
@@ -50,8 +50,8 @@
   if (!masterSupport) { return NO; }
   if ([super isEqualToModelSupport:masterSupport]) {
     BOOL hasEqualDeletedDates =
-      [PEUtils isDate:[self deletedDate]
-   msprecisionEqualTo:[masterSupport deletedDate]];
+      [PEUtils isDate:[self deletedAt]
+   msprecisionEqualTo:[masterSupport deletedAt]];
     BOOL hasEqualLastUpdateDates =
       [PEUtils isDate:[self updatedAt]
    msprecisionEqualTo:[masterSupport updatedAt]];
@@ -70,14 +70,14 @@
 
 - (NSUInteger)hash {
   return [super hash] ^
-    [[self deletedDate] hash] ^
+    [[self deletedAt] hash] ^
     [[self updatedAt] hash];
 }
 
 - (NSString *)description {
   return [NSString stringWithFormat:@"%@, deleted date: [{%@}, {%f}], updated-at: [{%@}, {%f}]",
           [super description],
-          _deletedDate, [_deletedDate timeIntervalSince1970],
+          _deletedAt, [_deletedAt timeIntervalSince1970],
           _updatedAt, [_updatedAt timeIntervalSince1970]];
 }
 

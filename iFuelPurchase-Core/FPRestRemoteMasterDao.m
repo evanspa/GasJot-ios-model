@@ -24,6 +24,9 @@ NSString * const LAST_MODIFIED_HEADER = @"last-modified";
   NSString *_errorMaskHeaderName;
   NSString *_establishSessionHeaderName;
   NSString *_authTokenHeaderName;
+  NSString *_ifUnmodifiedSinceHeaderName;
+  NSString *_loginFailedReasonHeaderName;
+  NSString *_accountClosedReasonHeaderName;
   NSDictionary *_restApiRelations;
   FPUserSerializer *_userSerializer;
   FPLoginSerializer *_loginSerializer;
@@ -46,6 +49,9 @@ NSString * const LAST_MODIFIED_HEADER = @"last-modified";
         errorMaskHeaderName:(NSString *)errorMaskHeaderName
  establishSessionHeaderName:(NSString *)establishHeaderSessionName
         authTokenHeaderName:(NSString *)authTokenHeaderName
+ifUnmodifiedSinceHeaderName:(NSString *)ifUnmodifiedSinceHeaderName
+loginFailedReasonHeaderName:(NSString *)loginFailedReasonHeaderName
+accountClosedReasonHeaderName:(NSString *)accountClosedReasonHeaderName
 bundleHoldingApiJsonResource:(NSBundle *)bundle
   nameOfApiJsonResourceFile:(NSString *)apiResourceFileName
             apiResMtVersion:(NSString *)apiResMtVersion
@@ -70,6 +76,9 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
     _errorMaskHeaderName = errorMaskHeaderName;
     _establishSessionHeaderName = establishHeaderSessionName;
     _authTokenHeaderName = authTokenHeaderName;
+    _ifUnmodifiedSinceHeaderName = ifUnmodifiedSinceHeaderName;
+    _loginFailedReasonHeaderName = loginFailedReasonHeaderName;
+    _accountClosedReasonHeaderName = accountClosedReasonHeaderName;
     _restApiRelations =
       [HCUtils relsFromLocalHalJsonResource:bundle
                                    fileName:apiResourceFileName
@@ -179,7 +188,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
   return ^(NSURL *location, id resModel, NSDate *lastModified, NSDictionary *rels, NSHTTPURLResponse *resp) {
     NSString *authToken = [[resp allHeaderFields] objectForKey:_authTokenHeaderName];
     NSError *error = [NSError errorWithDomain:FPClientFaultedErrorDomain code:[resp statusCode] userInfo:nil];
-    complHandler(authToken, [location absoluteString], resModel, rels, lastModified, NO, NO, NO, NO, NO, error, resp);
+    complHandler(authToken, [location absoluteString], resModel, rels, lastModified, YES, NO, NO, NO, NO, error, resp);
   };
 }
 

@@ -100,6 +100,7 @@ describe(@"FPCoordinatorDao", ^{
       __block NSInteger totalSyncAttempts = 0;
       __block BOOL allDone = NO;
       NSInteger totalNumToSync = [_coordDao flushAllUnsyncedEditsToRemoteForUser:user
+                                                               entityNotFoundBlk:nil
                                                                       successBlk:^(float progress) {
                                                                         overallFlushProgress += progress;
                                                                         totalSynced++;
@@ -111,6 +112,7 @@ describe(@"FPCoordinatorDao", ^{
                                                                 totalSyncAttempts++;
                                                               }
                                                                   remoteErrorBlk:nil
+                                                                     conflictBlk:nil
                                                                  authRequiredBlk:nil
                                                                          allDone:^{ allDone = YES; }
                                                                            error:nil];

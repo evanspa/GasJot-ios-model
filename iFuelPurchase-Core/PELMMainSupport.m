@@ -20,7 +20,7 @@
                 masterEntityTable:(NSString *)masterEntityTable
                         mediaType:(HCMediaType *)mediaType
                         relations:(NSDictionary *)relations
-                      deletedDate:(NSDate *)deletedDate
+                      deletedAt:(NSDate *)deletedAt
                         updatedAt:(NSDate *)updatedAt
              dateCopiedFromMaster:(NSDate *)dateCopiedFromMaster
                    editInProgress:(BOOL)editInProgress
@@ -38,7 +38,7 @@
                           masterEntityTable:masterEntityTable
                                   mediaType:mediaType
                                   relations:relations
-                                deletedDate:deletedDate
+                                deletedAt:deletedAt
                                   updatedAt:updatedAt];
   if (self) {
     _dateCopiedFromMaster = dateCopiedFromMaster;

@@ -69,12 +69,14 @@ describe(@"FPCoordinatorDao", ^{
       _mocker(@"http-response.user.PUT.200", 0, 0);
       __block BOOL syncUserSuccess = NO;
       [_coordDao markAsDoneEditingAndSyncUserImmediate:user
+                                   notFoundOnServerBlk:^{}
                                             successBlk:^{
                                               syncUserSuccess = YES;
                                             }
                                     remoteStoreBusyBlk:nil
                                     tempRemoteErrorBlk:nil
                                         remoteErrorBlk:nil
+                                           conflictBlk:nil
                                        authRequiredBlk:nil
                                                  error:nil];
       [[expectFutureValue(theValue(syncUserSuccess)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];

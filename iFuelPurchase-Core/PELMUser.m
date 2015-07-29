@@ -24,7 +24,7 @@ NSString * const PELMLogoutRelation = @"logout";
                  globalIdentifier:(NSString *)globalIdentifier
                         mediaType:(HCMediaType *)mediaType
                         relations:(NSDictionary *)relations
-                      deletedDate:(NSDate *)deletedDate
+                      deletedAt:(NSDate *)deletedAt
                         updatedAt:(NSDate *)updatedAt
              dateCopiedFromMaster:(NSDate *)dateCopiedFromMaster
                    editInProgress:(BOOL)editInProgress
@@ -46,7 +46,7 @@ NSString * const PELMLogoutRelation = @"logout";
                           masterEntityTable:TBL_MASTER_USER
                                   mediaType:mediaType
                                   relations:relations
-                                deletedDate:deletedDate
+                                deletedAt:deletedAt
                                   updatedAt:updatedAt
                        dateCopiedFromMaster:dateCopiedFromMaster
                              editInProgress:editInProgress
@@ -74,7 +74,7 @@ NSString * const PELMLogoutRelation = @"logout";
                                                 globalIdentifier:[self globalIdentifier]
                                                        mediaType:[self mediaType]
                                                        relations:[self relations]
-                                                     deletedDate:[self deletedDate]
+                                                       deletedAt:[self deletedAt]
                                                        updatedAt:[self updatedAt]
                                             dateCopiedFromMaster:[self dateCopiedFromMaster]
                                                   editInProgress:[self editInProgress]
@@ -122,7 +122,7 @@ NSString * const PELMLogoutRelation = @"logout";
                                       globalIdentifier:globalIdentifier
                                              mediaType:mediaType
                                              relations:relations
-                                           deletedDate:nil
+                                           deletedAt:nil
                                              updatedAt:updatedAt
                                   dateCopiedFromMaster:nil
                                         editInProgress:NO

@@ -80,6 +80,7 @@ describe(@"FPCoordinatorDao", ^{
       __block NSInteger totalSynced = 0;
       __block BOOL allDone = NO;
       NSInteger totalNumToSync = [_coordDao flushAllUnsyncedEditsToRemoteForUser:user
+                                                               entityNotFoundBlk:nil
                                                                       successBlk:^(float progress) {
                                                                         overallFlushProgress += progress;
                                                                         totalSynced++;
@@ -87,6 +88,7 @@ describe(@"FPCoordinatorDao", ^{
                                                               remoteStoreBusyBlk:nil
                                                               tempRemoteErrorBlk:nil
                                                                   remoteErrorBlk:nil
+                                                                     conflictBlk:nil
                                                                  authRequiredBlk:nil
                                                                          allDone:^{ allDone = YES; }
                                                                            error:nil];
@@ -127,6 +129,7 @@ describe(@"FPCoordinatorDao", ^{
       totalSynced = 0;
       allDone = NO;
       totalNumToSync = [_coordDao flushAllUnsyncedEditsToRemoteForUser:user
+                                                     entityNotFoundBlk:nil
                                                             successBlk:^(float progress) {
                                                               overallFlushProgress += progress;
                                                               totalSynced++;
@@ -134,6 +137,7 @@ describe(@"FPCoordinatorDao", ^{
                                                      remoteStoreBusyBlk:nil
                                                      tempRemoteErrorBlk:nil
                                                          remoteErrorBlk:nil
+                                                            conflictBlk:nil
                                                         authRequiredBlk:nil
                                                                allDone:^{ allDone = YES; }
                                                                  error:nil];

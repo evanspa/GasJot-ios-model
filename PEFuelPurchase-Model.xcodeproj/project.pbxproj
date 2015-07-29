@@ -58,23 +58,9 @@
 		18F23AB519A1F4730059DA22 /* FPErrorDomains.m in Sources */ = {isa = PBXBuildFile; fileRef = 18F23AB419A1F4730059DA22 /* FPErrorDomains.m */; };
 		18F5FD23198D1DC100D6BB13 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 18F5FD21198D1D6A00D6BB13 /* libsqlite3.dylib */; };
 		3A1D39AC44C9AF498E050705 /* libPods-PEFuelPurchase-ModelTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 97D994DB608A1FC554052190 /* libPods-PEFuelPurchase-ModelTests.a */; };
-		CA7D5AAA1B39EF5000433581 /* FPCoordinatorDaoTests_1.m in Sources */ = {isa = PBXBuildFile; fileRef = 182267E11A5BA75200242806 /* FPCoordinatorDaoTests_1.m */; };
 		CA7D5AAE1B3B07B500433581 /* PELMLoginUser.m in Sources */ = {isa = PBXBuildFile; fileRef = CA7D5AAD1B3B07B500433581 /* PELMLoginUser.m */; };
-		CAAC570C1B3DD96600D60D62 /* FPCoordinatorDaoTests_2.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBC61A5CD98A00747936 /* FPCoordinatorDaoTests_2.m */; };
-		CAAC570D1B3DD96600D60D62 /* FPCoordinatorDaoTests_4.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBC91A5CD9D800747936 /* FPCoordinatorDaoTests_4.m */; };
-		CAAC570E1B3DD96600D60D62 /* FPCoordinatorDaoTests_5.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBCA1A5CD9D800747936 /* FPCoordinatorDaoTests_5.m */; };
-		CAAC570F1B3DD96600D60D62 /* FPCoordinatorDaoTests_7.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBCC1A5CD9D800747936 /* FPCoordinatorDaoTests_7.m */; };
-		CAAC57101B3DD96600D60D62 /* FPCoordinatorDaoTests_8.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBDA1A5CF12C00747936 /* FPCoordinatorDaoTests_8.m */; };
-		CAAC57111B3DD96600D60D62 /* FPCoordinatorDaoTests_8_1.m in Sources */ = {isa = PBXBuildFile; fileRef = CA848CE01B2F660500411A09 /* FPCoordinatorDaoTests_8_1.m */; };
-		CAAC57121B3DD96600D60D62 /* FPCoordinatorDaoTests_9.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBDB1A5CF12C00747936 /* FPCoordinatorDaoTests_9.m */; };
-		CAAC57131B3DD96600D60D62 /* FPCoordinatorDaoTests_10.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBDC1A5CF12C00747936 /* FPCoordinatorDaoTests_10.m */; };
-		CAAC57141B3DD96600D60D62 /* FPCoordinatorDaoTests_11.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBDD1A5CF12C00747936 /* FPCoordinatorDaoTests_11.m */; };
-		CAAC57151B3DD96600D60D62 /* FPCoordinatorDaoTests_11.1.m in Sources */ = {isa = PBXBuildFile; fileRef = CA73FB4B1B2CF37F00451D50 /* FPCoordinatorDaoTests_11.1.m */; };
-		CAAC57161B3DD96600D60D62 /* FPCoordinatorDaoTests_12.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBDE1A5CF12C00747936 /* FPCoordinatorDaoTests_12.m */; };
-		CAAC57171B3DD96600D60D62 /* FPCoordinatorDaoTests_13.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBDF1A5CF12C00747936 /* FPCoordinatorDaoTests_13.m */; };
-		CAAC57181B3DD96600D60D62 /* FPCoordinatorDaoTests_14.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBE01A5CF12C00747936 /* FPCoordinatorDaoTests_14.m */; };
-		CAAC57191B3DD96600D60D62 /* FPCoordinatorDaoTests_15.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBF21A5D045D00747936 /* FPCoordinatorDaoTests_15.m */; };
 		CADD42491B681756005E1DF8 /* FPLogoutSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = CADD42481B681756005E1DF8 /* FPLogoutSerializer.m */; };
+		CADD42591B693700005E1DF8 /* FPCoordinatorDaoTests_8_1.m in Sources */ = {isa = PBXBuildFile; fileRef = CA848CE01B2F660500411A09 /* FPCoordinatorDaoTests_8_1.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -187,7 +173,6 @@
 		18F113FF19C159420013A903 /* PELMChangeLogSerializer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PELMChangeLogSerializer.m; sourceTree = "<group>"; };
 		18F23A9D19A150330059DA22 /* FPCoordinatorDao.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FPCoordinatorDao.h; sourceTree = "<group>"; };
 		18F23A9E19A150330059DA22 /* FPCoordinatorDao.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FPCoordinatorDao.m; sourceTree = "<group>"; };
-		18F23AA119A151410059DA22 /* FPRemoteStoreSyncConflictDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FPRemoteStoreSyncConflictDelegate.h; sourceTree = "<group>"; };
 		18F23AA719A153460059DA22 /* FPRemoteDaoErrorDomains.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FPRemoteDaoErrorDomains.h; sourceTree = "<group>"; };
 		18F23AA819A153460059DA22 /* FPRemoteDaoErrorDomains.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FPRemoteDaoErrorDomains.m; sourceTree = "<group>"; };
 		18F23AAA19A1537F0059DA22 /* FPUserSerializer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FPUserSerializer.h; sourceTree = "<group>"; };
@@ -437,7 +422,6 @@
 		18156D2B1992D18E00C93FF4 /* Coordinator DAO */ = {
 			isa = PBXGroup;
 			children = (
-				18F23AA019A1512B0059DA22 /* Remote Store Sync Conflict Delegate */,
 				18F23A9D19A150330059DA22 /* FPCoordinatorDao.h */,
 				18F23A9E19A150330059DA22 /* FPCoordinatorDao.m */,
 			);
@@ -793,14 +777,6 @@
 			name = "Change Log Serializer";
 			sourceTree = "<group>";
 		};
-		18F23AA019A1512B0059DA22 /* Remote Store Sync Conflict Delegate */ = {
-			isa = PBXGroup;
-			children = (
-				18F23AA119A151410059DA22 /* FPRemoteStoreSyncConflictDelegate.h */,
-			);
-			name = "Remote Store Sync Conflict Delegate";
-			sourceTree = "<group>";
-		};
 		18F23AA219A152D40059DA22 /* Errors */ = {
 			isa = PBXGroup;
 			children = (
@@ -1069,27 +1045,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CAAC57181B3DD96600D60D62 /* FPCoordinatorDaoTests_14.m in Sources */,
 				18C1E9E51A728BAE002B4A08 /* FPUserSerializerTests.m in Sources */,
-				CAAC57191B3DD96600D60D62 /* FPCoordinatorDaoTests_15.m in Sources */,
+				CADD42591B693700005E1DF8 /* FPCoordinatorDaoTests_8_1.m in Sources */,
 				18CF89B01AAEB1E700AC42E6 /* FPLogging.m in Sources */,
-				CA7D5AAA1B39EF5000433581 /* FPCoordinatorDaoTests_1.m in Sources */,
-				CAAC57141B3DD96600D60D62 /* FPCoordinatorDaoTests_11.m in Sources */,
-				CAAC570F1B3DD96600D60D62 /* FPCoordinatorDaoTests_7.m in Sources */,
-				CAAC57111B3DD96600D60D62 /* FPCoordinatorDaoTests_8_1.m in Sources */,
 				181AAAB619AD6F1000F99F23 /* FPToggler.m in Sources */,
 				1800C9D019A8D80400ECD51A /* FPAuthTokenDelegateForTesting.m in Sources */,
-				CAAC570E1B3DD96600D60D62 /* FPCoordinatorDaoTests_5.m in Sources */,
 				182267E01A5B8E7400242806 /* FPCoordDaoTestContext.m in Sources */,
-				CAAC57101B3DD96600D60D62 /* FPCoordinatorDaoTests_8.m in Sources */,
-				CAAC57131B3DD96600D60D62 /* FPCoordinatorDaoTests_10.m in Sources */,
-				CAAC570C1B3DD96600D60D62 /* FPCoordinatorDaoTests_2.m in Sources */,
-				CAAC57171B3DD96600D60D62 /* FPCoordinatorDaoTests_13.m in Sources */,
-				CAAC570D1B3DD96600D60D62 /* FPCoordinatorDaoTests_4.m in Sources */,
 				18C1E9E21A728BAE002B4A08 /* FPModelSupportTests.m in Sources */,
-				CAAC57151B3DD96600D60D62 /* FPCoordinatorDaoTests_11.1.m in Sources */,
-				CAAC57161B3DD96600D60D62 /* FPCoordinatorDaoTests_12.m in Sources */,
-				CAAC57121B3DD96600D60D62 /* FPCoordinatorDaoTests_9.m in Sources */,
 				18C1E9E31A728BAE002B4A08 /* FPMasterSupportTests.m in Sources */,
 				1800C9DC19A8E21B00ECD51A /* FPCoordinatorDao+AdditionsForTesting.m in Sources */,
 			);

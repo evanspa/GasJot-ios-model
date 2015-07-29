@@ -86,9 +86,10 @@ void (^LogSyncLocal)(NSString *, NSInteger);
 + (void)flushUnsyncedChangesToEntity:(PELMMainSupport *)entity
                   remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
                  remoteStoreErrorBlk:(void(^)(PELMMainSupport *, NSError *, NSNumber *))remoteStoreErrorBlk
+                   entityNotFoundBlk:(void(^)(void))entityNotFoundBlk
                    markAsConflictBlk:(void(^)(id))markAsConflictBlk
-   markAsSyncCompleteForNewEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCompleteForNewEntityBlk
-markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCompleteForExistingEntityBlk
+   markAsSyncCompleteForNewEntityBlk:(void(^)(void))markAsSyncCompleteForNewEntityBlk
+markAsSyncCompleteForExistingEntityBlk:(void(^)(void))markAsSyncCompleteForExistingEntityBlk
                  authRequiredHandler:(PELMRemoteMasterAuthReqdBlk)authRequiredHandler
                      newAuthTokenBlk:(void(^)(NSString *))newAuthTokenBlk
               remoteMasterSaveNewBlk:(PELMRemoteMasterSaveBlk)remoteMasterSaveNewBlk
@@ -98,6 +99,7 @@ markAsSyncCompleteForExistingEntityBlk:(void(^)(PELMMainSupport *))markAsSyncCom
 + (void)deleteEntity:(PELMMainSupport *)entity
   remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
  remoteStoreErrorBlk:(void(^)(PELMMainSupport *, NSError *, NSNumber *))remoteStoreErrorBlk
+   entityNotFoundBlk:(void(^)(void))entityNotFoundBlk
    markAsConflictBlk:(void(^)(id))markAsConflictBlk
    deleteCompleteBlk:(void(^)(void))markAsSyncCompleteForNewEntityBlk
  authRequiredHandler:(PELMRemoteMasterAuthReqdBlk)authRequiredHandler

@@ -38,12 +38,12 @@ NSString * const FPVehicleUpdatedAtKey     = @"fpvehicle/updated-at";
                          location:(NSString *)location
                      lastModified:(NSDate *)lastModified {
     return [FPVehicle vehicleWithName:[resDict objectForKey:FPVehicleNameKey]
-                      defaultOctane:resDict[FPVehicleDefaultOctaneKey]
-                       fuelCapacity:resDict[FPVehicleFuelCapacityKey]
-                   globalIdentifier:location
-                          mediaType:mediaType
-                          relations:relations
-                          updatedAt:[resDict dateSince1970ForKey:FPVehicleUpdatedAtKey]];
+                        defaultOctane:resDict[FPVehicleDefaultOctaneKey]
+                         fuelCapacity:resDict[FPVehicleFuelCapacityKey]
+                     globalIdentifier:location
+                            mediaType:mediaType
+                            relations:relations
+                            updatedAt:[resDict dateSince1970ForKey:FPVehicleUpdatedAtKey]];
 }
 
 @end

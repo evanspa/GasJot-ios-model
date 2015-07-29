@@ -253,6 +253,9 @@
                                           errorMaskHeaderName:@"fp-error-mask"
                                    establishSessionHeaderName:@"fp-establish-session"
                                   authTokenResponseHeaderName:@"fp-auth-token"
+                                  ifUnmodifiedSinceHeaderName:@"fp-if-unmodified-since"
+                                  loginFailedReasonHeaderName:@"fp-login-failed-reason"
+                                accountClosedReasonHeaderName:@"fp-delete-reason"
                                  bundleHoldingApiJsonResource:_testBundle
                                     nameOfApiJsonResourceFile:@"fpapi-resource"
                                               apiResMtVersion:@"0.0.1"
@@ -261,7 +264,6 @@
                                       fuelStationResMtVersion:@"0.0.1"
                                   fuelPurchaseLogResMtVersion:@"0.0.1"
                                    environmentLogResMtVersion:@"0.0.1"                                        
-                                   remoteSyncConflictDelegate:nil
                                             authTokenDelegate:authTokenDelegate
                                      allowInvalidCertificates:NO];
   [coordDao initializeLocalDatabaseWithError:[self newLocalSaveErrBlkMaker]()];
