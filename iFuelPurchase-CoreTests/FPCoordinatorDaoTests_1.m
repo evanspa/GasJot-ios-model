@@ -46,7 +46,7 @@ describe(@"FPCoordinatorDao", ^{
   });
 
   context(@"Tests", ^{
-    it(@"Can create and edit an environment log by itself and have it sync", ^{
+    it(@"Can create, edit and delete an environment log", ^{
       FPUser *user = [_coordTestCtx newFreshJoeSmithMaker](_coordDao, ^{
           [[expectFutureValue(theValue([_coordTestCtx authTokenReceived])) shouldEventuallyBeforeTimingOutAfter(60)] beYes];
         });
@@ -105,6 +105,31 @@ describe(@"FPCoordinatorDao", ^{
       [[_numEntitiesBlk(TBL_MASTER_VEHICLE) should] equal:[NSNumber numberWithInt:1]];
       [[_numEntitiesBlk(TBL_MAIN_ENV_LOG) should] equal:[NSNumber numberWithInt:0]]; // still pruned
       [[_numEntitiesBlk(TBL_MASTER_ENV_LOG) should] equal:[NSNumber numberWithInt:1]];
+
+      // now let's test deleting the envlog
+      NSArray *vehicles = [_coordDao vehiclesForUser:user error:[_coordTestCtx newLocalFetchErrBlkMaker]()];
+      [[vehicles should] haveCountOf:1];
+      NSArray *envlogs = [_coordDao environmentLogsForVehicle:vehicles[0]
+                                                     pageSize:20
+                                             beforeDateLogged:nil
+                                                        error:[_coordTestCtx newLocalFetchErrBlkMaker]()];
+      [[envlogs should] haveCountOf:1];
+      _mocker(@"http-response.envlog.DELETE.204.1", 0, 0);
+      __block BOOL success = NO;
+      [_coordDao deleteEnvironmentLog:envlogs[0]
+                              forUser:user
+                       addlSuccessBlk:^{ success = YES; }
+               addlRemoteStoreBusyBlk:nil
+               addlTempRemoteErrorBlk:nil
+                   addlRemoteErrorBlk:nil
+                  addlAuthRequiredBlk:nil
+                                error:[_coordTestCtx newLocalFetchErrBlkMaker]()];
+      [[expectFutureValue(theValue(success)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
+      envlogs = [_coordDao environmentLogsForVehicle:vehicles[0]
+                                            pageSize:20
+                                    beforeDateLogged:nil
+                                               error:[_coordTestCtx newLocalFetchErrBlkMaker]()];
+      [[envlogs should] beEmpty];
     });
   });
 });

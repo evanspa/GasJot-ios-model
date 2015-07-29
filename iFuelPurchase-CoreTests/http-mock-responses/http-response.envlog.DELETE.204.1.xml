@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<http-response statusCode="204">
+  <annotation name="New Environment Log Remote Sync"
+    host="example.com"
+    port="80"
+    scheme="http"
+    uri-path="/fp/users/U8890209302/envlogs/ENVL001"
+    request-method="DELETE">Successful remote delete of environment log.</annotation>
+  <headers>
+    <header name="fp-auth-token" value="23409582345-093284590-2345LKJDFLSDFLK" />
+  </headers>
+  <body />
+</http-response>
