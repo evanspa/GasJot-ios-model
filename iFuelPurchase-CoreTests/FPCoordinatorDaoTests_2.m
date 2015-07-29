@@ -129,13 +129,9 @@ describe(@"FPCoordinatorDao", ^{
       BOOL prepareForEditSuccess =
         [_coordDao prepareFuelPurchaseLogForEdit:fplog
                                          forUser:user
-                               entityBeingSynced:[_coordTestCtx entityBeingSyncedBlk]
-                                entityInConflict:[_coordTestCtx entityInConflictBlk]
                                            error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[theValue(prepareForEditSuccess) should] beYes];
-      [[theValue([_coordTestCtx prepareForEditEntityBeingSynced]) should] beNo];
       [[theValue([_coordTestCtx prepareForEditEntityDeleted]) should] beNo];
-      [[theValue([_coordTestCtx prepareForEditEntityInConflict]) should] beNo];
       [[theValue([_coordTestCtx prepareForEditEntityBeingEditedByOtherActor]) should] beNo];
       [[_numEntitiesBlk(TBL_MAIN_VEHICLE) should] equal:[NSNumber numberWithInt:1]];
       [[_numEntitiesBlk(TBL_MAIN_USER) should] equal:[NSNumber numberWithInt:1]]; // not pruned

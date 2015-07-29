@@ -418,8 +418,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
 }
 
 - (BOOL)prepareUserForEdit:(FPUser *)user
-         entityBeingSynced:(void(^)(void))entityBeingSyncedBlk
-          entityInConflict:(void(^)(void))entityInConflictBlk
                         db:(FMDatabase *)db
                      error:(PELMDaoErrorBlk)errorBlk {
   return [PELMUtils prepareEntityForEdit:user
@@ -435,10 +433,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                                 db:db
                                              error:errorBlk];
                       }
-                 editPrepInvariantChecks:^(PELMMainSupport *fetchedEntity, PELMMainSupport *entity) {
-                   [self forEditPreparationFoundMainUser:(FPUser *)fetchedEntity
-                                           mustMatchUser:(FPUser *)user];
-                 }
                        mainEntityUpdater:^(PELMMainSupport *entity, FMDatabase *db, PELMDaoErrorBlk errorBlk) {
                          [PELMUtils doUpdate:[self updateStmtForMainUser]
                                    argsArray:[self updateArgsForMainUser:user]
@@ -455,22 +449,14 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                                  db:db
                                               error:errorBlk];
                        }
-                       entityBeingSynced:entityBeingSyncedBlk
-                        entityInConflict:entityInConflictBlk
                                    error:errorBlk];
 }
 
 - (BOOL)prepareUserForEdit:(FPUser *)user
-         entityBeingSynced:(void(^)(void))entityBeingSyncedBlk
-          entityInConflict:(void(^)(void))entityInConflictBlk
                      error:(PELMDaoErrorBlk)errorBlk {
   __block BOOL returnVal;
   [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
-    returnVal = [self prepareUserForEdit:user
-                       entityBeingSynced:entityBeingSyncedBlk
-                        entityInConflict:entityInConflictBlk
-                                      db:db
-                                   error:errorBlk];
+    returnVal = [self prepareUserForEdit:user db:db error:errorBlk];
   }];
   return returnVal;
 }
@@ -547,15 +533,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                          mainUpdateStmt:[self updateStmtForMainUser]
                       mainUpdateArgsBlk:^NSArray *(PELMMainSupport *entity){return [self updateArgsForMainUser:(FPUser *)entity];}
                                   error:errorBlk];
-}
-
-- (void)markAsInConflictForUser:(FPUser *)user
-                          error:(PELMDaoErrorBlk)errorBlk {
-  [user setInConflict:YES];
-  [user setSyncInProgress:NO];
-  [_localModelUtils doUpdateInTxn:[self updateStmtForMainUser]
-                        argsArray:[self updateArgsForMainUser:user]
-                            error:errorBlk];
 }
 
 - (void)markAsSyncCompleteForUser:(FPUser *)user
@@ -764,8 +741,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
 
 - (BOOL)prepareVehicleForEdit:(FPVehicle *)vehicle
                       forUser:(FPUser *)user
-            entityBeingSynced:(void(^)(void))entityBeingSyncedBlk
-             entityInConflict:(void(^)(void))entityInConflictBlk
                         error:(PELMDaoErrorBlk)errorBlk {
   __block BOOL returnVal;
   [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
@@ -780,15 +755,11 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                             entityFromResultSet:^(FMResultSet *rs){return [self mainVehicleFromResultSet:rs];}
                              mainEntityInserter:^(PELMMainSupport *entity, FMDatabase *db, PELMDaoErrorBlk errorBlk) {
                                [self insertIntoMainVehicle:vehicle forUser:user db:db error:errorBlk];}
-                        editPrepInvariantChecks:^(PELMMainSupport *fetchedEntity, PELMMainSupport *entity) {
-                          [self forEditPreparationFoundMainVehicle:(FPVehicle *)fetchedEntity mustMatchVehicle:(FPVehicle *)entity];}
                               mainEntityUpdater:^(PELMMainSupport *entity, FMDatabase *db, PELMDaoErrorBlk errorBlk) {
                                 [PELMUtils doUpdate:[self updateStmtForMainVehicle]
                                           argsArray:[self updateArgsForMainVehicle:vehicle]
                                                  db:db
                                               error:errorBlk];}
-                              entityBeingSynced:entityBeingSyncedBlk
-                               entityInConflict:entityInConflictBlk
                                           error:errorBlk];
   }];
   return returnVal;
@@ -858,15 +829,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                          mainUpdateStmt:[self updateStmtForMainVehicle]
                       mainUpdateArgsBlk:^NSArray *(PELMMainSupport *entity){return [self updateArgsForMainVehicle:(FPVehicle *)entity];}
                                   error:errorBlk];
-}
-
-- (void)markAsInConflictForVehicle:(FPVehicle *)vehicle
-                             error:(PELMDaoErrorBlk)errorBlk {
-  [vehicle setInConflict:YES];
-  [vehicle setSyncInProgress:NO];
-  [_localModelUtils doUpdateInTxn:[self updateStmtForMainVehicle]
-                        argsArray:[self updateArgsForMainVehicle:vehicle]
-                            error:errorBlk];
 }
 
 - (void)markAsSyncCompleteForNewVehicle:(FPVehicle *)vehicle
@@ -1090,8 +1052,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
 
 - (BOOL)prepareFuelStationForEdit:(FPFuelStation *)fuelStation
                           forUser:(FPUser *)user
-                entityBeingSynced:(void(^)(void))entityBeingSyncedBlk
-                 entityInConflict:(void(^)(void))entityInConflictBlk
                                db:(FMDatabase *)db
                             error:(PELMDaoErrorBlk)errorBlk {
   [PELMUtils copyMasterEntity:user
@@ -1105,29 +1065,21 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                      entityFromResultSet:^(FMResultSet *rs){return [self mainFuelStationFromResultSet:rs];}
                       mainEntityInserter:^(PELMMainSupport *entity, FMDatabase *db, PELMDaoErrorBlk errorBlk) {
                         [self insertIntoMainFuelStation:fuelStation forUser:user db:db error:errorBlk];}
-                 editPrepInvariantChecks:^(PELMMainSupport *fetchedEntity, PELMMainSupport *entity) {
-                   [self forEditPreparationFoundMainFuelStation:(FPFuelStation *)fetchedEntity mustMatchFuelStation:(FPFuelStation *)entity];}
                        mainEntityUpdater:^(PELMMainSupport *entity, FMDatabase *db, PELMDaoErrorBlk errorBlk) {
                          [PELMUtils doUpdate:[self updateStmtForMainFuelStation]
                                    argsArray:[self updateArgsForMainFuelStation:fuelStation]
                                           db:db
                                        error:errorBlk];}
-                       entityBeingSynced:entityBeingSyncedBlk
-                        entityInConflict:entityInConflictBlk
                                    error:errorBlk];
 }
 
 - (BOOL)prepareFuelStationForEdit:(FPFuelStation *)fuelStation
                           forUser:(FPUser *)user
-                entityBeingSynced:(void(^)(void))entityBeingSyncedBlk
-                 entityInConflict:(void(^)(void))entityInConflictBlk
                             error:(PELMDaoErrorBlk)errorBlk {
   __block BOOL returnVal;
   [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
     returnVal = [self prepareFuelStationForEdit:fuelStation
                                         forUser:user
-                              entityBeingSynced:entityBeingSyncedBlk
-                               entityInConflict:entityInConflictBlk
                                              db:db
                                           error:errorBlk];
   }];
@@ -1218,15 +1170,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                          mainUpdateStmt:[self updateStmtForMainFuelStation]
                       mainUpdateArgsBlk:^NSArray *(PELMMainSupport *entity){return [self updateArgsForMainFuelStation:(FPFuelStation *)entity];}
                                   error:errorBlk];
-}
-
-- (void)markAsInConflictForFuelStation:(FPFuelStation *)fuelStation
-                                 error:(PELMDaoErrorBlk)errorBlk {
-  [fuelStation setInConflict:YES];
-  [fuelStation setSyncInProgress:NO];
-  [_localModelUtils doUpdateInTxn:[self updateStmtForMainFuelStation]
-                        argsArray:[self updateArgsForMainFuelStation:fuelStation]
-                            error:errorBlk];
 }
 
 - (void)markAsSyncCompleteForNewFuelStation:(FPFuelStation *)fuelStation
@@ -1859,8 +1802,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
 
 - (BOOL)prepareFuelPurchaseLogForEdit:(FPFuelPurchaseLog *)fuelPurchaseLog
                               forUser:(FPUser *)user
-                    entityBeingSynced:(void(^)(void))entityBeingSyncedBlk
-                     entityInConflict:(void(^)(void))entityInConflictBlk
                                    db:(FMDatabase *)db
                                 error:(PELMDaoErrorBlk)errorBlk {
   FPVehicle *vehicle = [self vehicleForFuelPurchaseLog:fuelPurchaseLog db:db error:errorBlk];
@@ -1895,29 +1836,21 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                                 fuelStation:fuelStation
                                                          db:db
                                                       error:errorBlk];}
-                 editPrepInvariantChecks:^(PELMMainSupport *fetchedEntity, PELMMainSupport *entity) {
-                   [self forEditPreparationFoundMainFuelPurchaseLog:(FPFuelPurchaseLog *)fetchedEntity mustMatchFuelPurchaseLog:(FPFuelPurchaseLog *)entity];}
                        mainEntityUpdater:^(PELMMainSupport *entity, FMDatabase *db, PELMDaoErrorBlk errorBlk) {
                          [PELMUtils doUpdate:[self updateStmtForMainFuelPurchaseLogSansVehicleFuelStationFks]
                                    argsArray:[self updateArgsForMainFuelPurchaseLog:fuelPurchaseLog]
                                           db:db
                                        error:errorBlk];}
-                       entityBeingSynced:entityBeingSyncedBlk
-                        entityInConflict:entityInConflictBlk
                                    error:errorBlk];
 }
 
 - (BOOL)prepareFuelPurchaseLogForEdit:(FPFuelPurchaseLog *)fuelPurchaseLog
                               forUser:(FPUser *)user
-                    entityBeingSynced:(void(^)(void))entityBeingSyncedBlk
-                     entityInConflict:(void(^)(void))entityInConflictBlk
                                 error:(PELMDaoErrorBlk)errorBlk {
   __block BOOL returnVal;
   [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
     returnVal = [self prepareFuelPurchaseLogForEdit:fuelPurchaseLog
                                             forUser:user
-                                  entityBeingSynced:entityBeingSyncedBlk
-                                   entityInConflict:entityInConflictBlk
                                                  db:db
                                               error:errorBlk];
   }];
@@ -2009,15 +1942,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                          mainUpdateStmt:[self updateStmtForMainFuelPurchaseLogSansVehicleFuelStationFks]
                       mainUpdateArgsBlk:^NSArray *(PELMMainSupport *entity){return [self updateArgsForMainFuelPurchaseLog:(FPFuelPurchaseLog *)entity];}
                                   error:errorBlk];
-}
-
-- (void)markAsInConflictForFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
-                                     error:(PELMDaoErrorBlk)errorBlk {
-  [fuelPurchaseLog setInConflict:YES];
-  [fuelPurchaseLog setSyncInProgress:NO];
-  [_localModelUtils doUpdateInTxn:[self updateStmtForMainFuelPurchaseLogSansVehicleFuelStationFks]
-                        argsArray:[self updateArgsForMainFuelPurchaseLog:fuelPurchaseLog]
-                            error:errorBlk];
 }
 
 - (void)markAsSyncCompleteForNewFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
@@ -2485,8 +2409,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
 
 - (BOOL)prepareEnvironmentLogForEdit:(FPEnvironmentLog *)environmentLog
                              forUser:(FPUser *)user
-                   entityBeingSynced:(void(^)(void))entityBeingSyncedBlk
-                    entityInConflict:(void(^)(void))entityInConflictBlk
                                   db:(FMDatabase *)db
                                error:(PELMDaoErrorBlk)errorBlk {
   FPVehicle *vehicle = [self vehicleForEnvironmentLog:environmentLog db:db error:errorBlk];
@@ -2512,29 +2434,21 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                                    vehicle:vehicle
                                                         db:db
                                                      error:errorBlk];}
-                 editPrepInvariantChecks:^(PELMMainSupport *fetchedEntity, PELMMainSupport *entity) {
-                   [self forEditPreparationFoundMainEnvironmentLog:(FPEnvironmentLog *)fetchedEntity mustMatchEnvironmentLog:(FPEnvironmentLog *)entity];}
                        mainEntityUpdater:^(PELMMainSupport *entity, FMDatabase *db, PELMDaoErrorBlk errorBlk) {
                          [PELMUtils doUpdate:[self updateStmtForMainEnvironmentLogSansVehicleFks]
                                    argsArray:[self updateArgsForMainEnvironmentLog:environmentLog]
                                           db:db
                                        error:errorBlk];}
-                       entityBeingSynced:entityBeingSyncedBlk
-                        entityInConflict:entityInConflictBlk
                                    error:errorBlk];
 }
 
 - (BOOL)prepareEnvironmentLogForEdit:(FPEnvironmentLog *)environmentLog
                              forUser:(FPUser *)user
-                   entityBeingSynced:(void(^)(void))entityBeingSyncedBlk
-                    entityInConflict:(void(^)(void))entityInConflictBlk
                                error:(PELMDaoErrorBlk)errorBlk {
   __block BOOL returnVal;
   [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
     returnVal = [self prepareEnvironmentLogForEdit:environmentLog
                                            forUser:user
-                                 entityBeingSynced:entityBeingSyncedBlk
-                                  entityInConflict:entityInConflictBlk
                                                 db:db
                                              error:errorBlk];
   }];
@@ -2622,15 +2536,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                   error:errorBlk];
 }
 
-- (void)markAsInConflictForEnvironmentLog:(FPEnvironmentLog *)environmentLog
-                                    error:(PELMDaoErrorBlk)errorBlk {
-  [environmentLog setInConflict:YES];
-  [environmentLog setSyncInProgress:NO];
-  [_localModelUtils doUpdateInTxn:[self updateStmtForMainEnvironmentLogSansVehicleFks]
-                        argsArray:[self updateArgsForMainEnvironmentLog:environmentLog]
-                            error:errorBlk];
-}
-
 - (void)markAsSyncCompleteForNewEnvironmentLog:(FPEnvironmentLog *)environmentLog
                                        forUser:(FPUser *)user
                                          error:(PELMDaoErrorBlk)errorBlk {
@@ -2670,104 +2575,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
   }];
 }
 
-#pragma mark - Invariant-violation checkers (private)
-
-- (void)forEditPreparationFoundMainVehicle:(FPVehicle *)mainVehicle
-                          mustMatchVehicle:(FPVehicle *)vehicle {
-  [PELMUtils forEditPreparationFoundMainMainSupport:mainVehicle
-                           mustMatchMainMainSupport:vehicle];
-  cannotBe(![PEUtils isString:[mainVehicle name] equalTo:[vehicle name]],
-           @"Cannot prepare vehicle for edit if its 'name' propery differs \
-           from the vehicle instance found in main store");
-}
-
-- (void)forEditPreparationFoundMainFuelStation:(FPFuelStation *)mainFuelStation
-                          mustMatchFuelStation:(FPFuelStation *)fuelStation {
-  [PELMUtils forEditPreparationFoundMainMainSupport:mainFuelStation
-                           mustMatchMainMainSupport:fuelStation];
-  cannotBe(![PEUtils isString:[mainFuelStation name] equalTo:[fuelStation name]],
-           @"Cannot prepare fuel station for edit if its 'name' propery differs \
-           from the fuel station instance found in main store");
-  cannotBe(![PEUtils isString:[mainFuelStation city] equalTo:[fuelStation city]],
-           @"Cannot prepare fuel station for edit if its 'city' propery differs \
-           from the fuel station instance found in main store");
-  cannotBe(![PEUtils isString:[mainFuelStation state] equalTo:[fuelStation state]],
-           @"Cannot prepare fuel station for edit if its 'state' propery differs \
-           from the fuel station instance found in main store");
-  cannotBe(![PEUtils isString:[mainFuelStation zip] equalTo:[fuelStation zip]],
-           @"Cannot prepare fuel station for edit if its 'zip' propery differs \
-           from the fuel station instance found in main store");
-  cannotBe(![PEUtils isNumber:[mainFuelStation latitude] equalTo:[fuelStation latitude]],
-           @"Cannot prepare fuel station for edit if its 'latitude' propery differs \
-           from the fuel station instance found in main store");
-  cannotBe(![PEUtils isNumber:[mainFuelStation longitude] equalTo:[fuelStation longitude]],
-           @"Cannot prepare fuel station for edit if its 'longitude' propery differs \
-           from the fuel station instance found in main store");
-}
-
-- (void)forEditPreparationFoundMainUser:(FPUser *)mainUser
-                          mustMatchUser:(FPUser *)user {
-  [PELMUtils forEditPreparationFoundMainMainSupport:mainUser
-                           mustMatchMainMainSupport:user];
-  cannotBe(![PEUtils isString:[mainUser name] equalTo:[user name]],
-           @"Cannot prepare user for edit if its 'name' propery differs \
-           from the user instance found in main store");
-  cannotBe(![PEUtils isString:[mainUser email] equalTo:[user email]],
-           @"Cannot prepare user for edit if its 'email' propery differs \
-           from the user instance found in main store");
-  cannotBe(![PEUtils isString:[mainUser username] equalTo:[user username]],
-           @"Cannot prepare user for edit if its 'username' propery differs \
-           from the user instance found in main store");
-  cannotBe(![PEUtils isString:[mainUser password] equalTo:[user password]],
-           @"Cannot prepare user for edit if its 'passwordHash' propery differs \
-           from the user instance found in main store");
-}
-
-- (void)forEditPreparationFoundMainFuelPurchaseLog:(FPFuelPurchaseLog *)mainFuelPurchaseLog
-                          mustMatchFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog {
-  [PELMUtils forEditPreparationFoundMainMainSupport:mainFuelPurchaseLog
-                           mustMatchMainMainSupport:fuelPurchaseLog];
-  cannotBe(![PEUtils isNumber:[mainFuelPurchaseLog numGallons] equalTo:[fuelPurchaseLog numGallons]],
-           @"Cannot prepare fuel purchase log for edit if its 'numGallons' propery differs \
-           from the fuel purchase log instance found in main store");
-  cannotBe(![PEUtils isNumber:[mainFuelPurchaseLog octane] equalTo:[fuelPurchaseLog octane]],
-           [NSString stringWithFormat:@"Cannot prepare fuel purchase log for edit if its 'octane' propery differs \
-            from the fuel purchase log instance found in main store.  Main fplog: [%@], fplog: [%@]", mainFuelPurchaseLog, fuelPurchaseLog]);
-  //cannotBe(![PEUtils isNumber:[mainFuelPurchaseLog gallonPrice] equalTo:[fuelPurchaseLog gallonPrice]],
-  //         [NSString stringWithFormat:@"Cannot prepare fuel purchase log for edit if its 'gallon price' propery differs \
-  //          from the fuel purchase log instance found in main store.  Main fplog: [%@], fplog: [%@]", mainFuelPurchaseLog, fuelPurchaseLog]);
-  cannotBe(![PEUtils isNumber:[mainFuelPurchaseLog carWashPerGallonDiscount] equalTo:[fuelPurchaseLog carWashPerGallonDiscount]],
-           @"Cannot prepare fuel purchase log for edit if its 'car wash gallon discount' propery differs \
-           from the fuel purchase log instance found in main store");
-  cannotBe(!([mainFuelPurchaseLog gotCarWash] == [fuelPurchaseLog gotCarWash]),
-           @"Cannot prepare fuel purchase log for edit if its 'got wash' propery differs \
-           from the fuel purchase log instance found in main store");
-  cannotBe(![PEUtils isDate:[mainFuelPurchaseLog purchasedAt] equalTo:[fuelPurchaseLog purchasedAt]],
-           @"Cannot prepare fuel purchase log for edit if its 'log date' propery differs \
-           from the fuel purchase log instance found in main store");
-}
-
-- (void)forEditPreparationFoundMainEnvironmentLog:(FPEnvironmentLog *)mainEnvLog
-                          mustMatchEnvironmentLog:(FPEnvironmentLog *)envLog {
-  [PELMUtils forEditPreparationFoundMainMainSupport:mainEnvLog
-                           mustMatchMainMainSupport:envLog];
-  /*cannotBe(![PEUtils isNumber:[mainEnvLog odometer] equalTo:[envLog odometer]],
-   @"Cannot prepare environment log for edit if its 'odometer' propery differs \
-   from the environment log instance found in main store");
-   cannotBe(![PEUtils isNumber:[mainEnvLog reportedAvgMpg] equalTo:[envLog reportedAvgMpg]],
-   @"Cannot prepare environment log for edit if its 'reported avg mpg' propery differs \
-   from the environment log instance found in main store");
-   cannotBe(![PEUtils isNumber:[mainEnvLog reportedAvgMph] equalTo:[envLog reportedAvgMph]],
-   @"Cannot prepare environment log for edit if its 'reported avg mph' propery differs \
-   from the environment log instance found in main store");*/
-  cannotBe(![PEUtils isNumber:[mainEnvLog reportedOutsideTemp] equalTo:[envLog reportedOutsideTemp]],
-           @"Cannot prepare environment log for edit if its 'reported outside temp' propery differs \
-           from the environment log instance found in main store");
-  cannotBe(![PEUtils isDate:[mainEnvLog logDate] equalTo:[envLog logDate]],
-           @"Cannot prepare environment log for edit if its 'log date' propery differs \
-           from the environment log instance found in main store");
-}
-
 #pragma mark - Result set -> Model helpers (private)
 
 - (FPUser *)mainUserFromResultSet:(FMResultSet *)rs {
@@ -2782,7 +2589,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                       editInProgress:[rs boolForColumn:COL_MAN_EDIT_IN_PROGRESS]
                                       syncInProgress:[rs boolForColumn:COL_MAN_SYNC_IN_PROGRESS]
                                               synced:[rs boolForColumn:COL_MAN_SYNCED]
-                                          inConflict:[rs boolForColumn:COL_MAN_IN_CONFLICT]
                                            editCount:[rs intForColumn:COL_MAN_EDIT_COUNT]
                                     syncHttpRespCode:[PELMUtils numberFromResultSet:rs columnName:COL_MAN_SYNC_HTTP_RESP_CODE]
                                          syncErrMask:[PELMUtils numberFromResultSet:rs columnName:COL_MAN_SYNC_ERR_MASK]
@@ -2805,7 +2611,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                       editInProgress:NO  // NA (this is a main store-only column)
                                       syncInProgress:NO  // NA (this is a main store-only column)
                                               synced:NO  // NA (this is a main store-only column)
-                                          inConflict:NO  // NA (this is a main store-only column)
                                            editCount:0   // NA (this is a main store-only column)
                                     syncHttpRespCode:nil // NA (this is a main store-only column)
                                          syncErrMask:nil // NA (this is a main store-only column)
@@ -2828,7 +2633,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                          editInProgress:[rs boolForColumn:COL_MAN_EDIT_IN_PROGRESS]
                                          syncInProgress:[rs boolForColumn:COL_MAN_SYNC_IN_PROGRESS]
                                                  synced:[rs boolForColumn:COL_MAN_SYNCED]
-                                             inConflict:[rs boolForColumn:COL_MAN_IN_CONFLICT]
                                               editCount:[rs intForColumn:COL_MAN_EDIT_COUNT]
                                        syncHttpRespCode:[PELMUtils numberFromResultSet:rs columnName:COL_MAN_SYNC_HTTP_RESP_CODE]
                                             syncErrMask:[PELMUtils numberFromResultSet:rs columnName:COL_MAN_SYNC_ERR_MASK]
@@ -2850,7 +2654,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                          editInProgress:NO  // NA (this is a main store-only column)
                                          syncInProgress:NO  // NA (this is a main store-only column)
                                                  synced:NO  // NA (this is a main store-only column)
-                                             inConflict:NO  // NA (this is a main store-only column)
                                               editCount:0   // NA (this is a main store-only column)
                                        syncHttpRespCode:nil // NA (this is a main store-only column)
                                             syncErrMask:nil // NA (this is a main store-only column)
@@ -2872,7 +2675,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                              editInProgress:[rs boolForColumn:COL_MAN_EDIT_IN_PROGRESS]
                                              syncInProgress:[rs boolForColumn:COL_MAN_SYNC_IN_PROGRESS]
                                                      synced:[rs boolForColumn:COL_MAN_SYNCED]
-                                                 inConflict:[rs boolForColumn:COL_MAN_IN_CONFLICT]
                                                   editCount:[rs intForColumn:COL_MAN_EDIT_COUNT]
                                            syncHttpRespCode:[PELMUtils numberFromResultSet:rs columnName:COL_MAN_SYNC_HTTP_RESP_CODE]
                                                 syncErrMask:[PELMUtils numberFromResultSet:rs columnName:COL_MAN_SYNC_ERR_MASK]
@@ -2898,7 +2700,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                              editInProgress:NO  // NA (this is a main store-only column)
                                              syncInProgress:NO  // NA (this is a main store-only column)
                                                      synced:NO  // NA (this is a main store-only column)
-                                                 inConflict:NO  // NA (this is a main store-only column)
                                                   editCount:0   // NA (this is a main store-only column)
                                            syncHttpRespCode:nil // NA (this is a main store-only column)
                                                 syncErrMask:nil // NA (this is a main store-only column)
@@ -2924,7 +2725,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                                  editInProgress:[rs boolForColumn:COL_MAN_EDIT_IN_PROGRESS]
                                                  syncInProgress:[rs boolForColumn:COL_MAN_SYNC_IN_PROGRESS]
                                                          synced:[rs boolForColumn:COL_MAN_SYNCED]
-                                                     inConflict:[rs boolForColumn:COL_MAN_IN_CONFLICT]
                                                       editCount:[rs intForColumn:COL_MAN_EDIT_COUNT]
                                                syncHttpRespCode:[PELMUtils numberFromResultSet:rs columnName:COL_MAN_SYNC_HTTP_RESP_CODE]
                                                     syncErrMask:[PELMUtils numberFromResultSet:rs columnName:COL_MAN_SYNC_ERR_MASK]
@@ -2945,13 +2745,12 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                                globalIdentifier:[rs stringForColumn:COL_GLOBAL_ID]
                                                       mediaType:[HCMediaType MediaTypeFromString:[rs stringForColumn:COL_MEDIA_TYPE]]
                                                       relations:nil
-                                                    deletedAt:nil // NA (this is a master store-only column)
-                                                   updatedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MAN_MASTER_UPDATED_AT]
+                                                      deletedAt:nil // NA (this is a master store-only column)
+                                                      updatedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MAN_MASTER_UPDATED_AT]
                                            dateCopiedFromMaster:[PELMUtils dateFromResultSet:rs columnName:COL_MAN_DT_COPIED_DOWN_FROM_MASTER]
                                                  editInProgress:[rs boolForColumn:COL_MAN_EDIT_IN_PROGRESS]
                                                  syncInProgress:[rs boolForColumn:COL_MAN_SYNC_IN_PROGRESS]
                                                          synced:[rs boolForColumn:COL_MAN_SYNCED]
-                                                     inConflict:[rs boolForColumn:COL_MAN_IN_CONFLICT]
                                                       editCount:[rs intForColumn:COL_MAN_EDIT_COUNT]
                                                syncHttpRespCode:[PELMUtils numberFromResultSet:rs columnName:COL_MAN_SYNC_HTTP_RESP_CODE]
                                                     syncErrMask:[PELMUtils numberFromResultSet:rs columnName:COL_MAN_SYNC_ERR_MASK]
@@ -2972,13 +2771,12 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                                globalIdentifier:[rs stringForColumn:COL_GLOBAL_ID]
                                                       mediaType:[HCMediaType MediaTypeFromString:[rs stringForColumn:COL_MEDIA_TYPE]]
                                                       relations:nil
-                                                    deletedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MST_DELETED_DT]
-                                                   updatedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MST_UPDATED_AT]
+                                                      deletedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MST_DELETED_DT]
+                                                      updatedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MST_UPDATED_AT]
                                            dateCopiedFromMaster:nil // NA (this is a main store-only column)
                                                  editInProgress:NO  // NA (this is a main store-only column)
                                                  syncInProgress:NO  // NA (this is a main store-only column)
                                                          synced:NO  // NA (this is a main store-only column)
-                                                     inConflict:NO  // NA (this is a main store-only column)
                                                       editCount:0   // NA (this is a main store-only column)
                                                syncHttpRespCode:nil // NA (this is a main store-only column)
                                                     syncErrMask:nil // NA (this is a main store-only column)
@@ -2999,13 +2797,12 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                               globalIdentifier:[rs stringForColumn:COL_GLOBAL_ID]
                                                      mediaType:[HCMediaType MediaTypeFromString:[rs stringForColumn:COL_MEDIA_TYPE]]
                                                      relations:nil
-                                                   deletedAt:nil // NA (this is a master store-only column)
+                                                     deletedAt:nil // NA (this is a master store-only column)
                                                      updatedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MAN_MASTER_UPDATED_AT]
                                           dateCopiedFromMaster:[PELMUtils dateFromResultSet:rs columnName:COL_MAN_DT_COPIED_DOWN_FROM_MASTER]
                                                 editInProgress:[rs boolForColumn:COL_MAN_EDIT_IN_PROGRESS]
                                                 syncInProgress:[rs boolForColumn:COL_MAN_SYNC_IN_PROGRESS]
                                                         synced:[rs boolForColumn:COL_MAN_SYNCED]
-                                                    inConflict:[rs boolForColumn:COL_MAN_IN_CONFLICT]
                                                      editCount:[rs intForColumn:COL_MAN_EDIT_COUNT]
                                               syncHttpRespCode:[PELMUtils numberFromResultSet:rs columnName:COL_MAN_SYNC_HTTP_RESP_CODE]
                                                    syncErrMask:[PELMUtils numberFromResultSet:rs columnName:COL_MAN_SYNC_ERR_MASK]
@@ -3025,13 +2822,12 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                               globalIdentifier:[rs stringForColumn:COL_GLOBAL_ID]
                                                      mediaType:[HCMediaType MediaTypeFromString:[rs stringForColumn:COL_MEDIA_TYPE]]
                                                      relations:nil
-                                                   deletedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MST_DELETED_DT]
-                                                  updatedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MST_UPDATED_AT]
+                                                     deletedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MST_DELETED_DT]
+                                                     updatedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MST_UPDATED_AT]
                                           dateCopiedFromMaster:nil // NA (this is a main store-only column)
                                                 editInProgress:NO  // NA (this is a main store-only column)
                                                 syncInProgress:NO  // NA (this is a main store-only column)
                                                         synced:NO  // NA (this is a main store-only column)
-                                                    inConflict:NO  // NA (this is a main store-only column)
                                                      editCount:0   // NA (this is a main store-only column)
                                               syncHttpRespCode:nil // NA (this is a main store-only column)
                                                    syncErrMask:nil // NA (this is a main store-only column)
@@ -3089,8 +2885,8 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                db:(FMDatabase *)db
                             error:(PELMDaoErrorBlk)errorBlk {
   NSString *stmt = [NSString stringWithFormat:@"INSERT INTO %@ \
-                    (%@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@) VALUES \
-                    (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                    (%@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@) VALUES \
+                    (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                     TBL_MAIN_FUEL_STATION,
                     COL_MAIN_USER_ID,
                     COL_GLOBAL_ID,
@@ -3107,7 +2903,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                     COL_MAN_EDIT_IN_PROGRESS,
                     COL_MAN_SYNC_IN_PROGRESS,
                     COL_MAN_SYNCED,
-                    COL_MAN_IN_CONFLICT,
                     COL_MAN_EDIT_COUNT,
                     COL_MAN_SYNC_HTTP_RESP_CODE,
                     COL_MAN_SYNC_ERR_MASK,
@@ -3128,7 +2923,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                             [NSNumber numberWithBool:[fuelStation editInProgress]],
                             [NSNumber numberWithBool:[fuelStation syncInProgress]],
                             [NSNumber numberWithBool:[fuelStation synced]],
-                            [NSNumber numberWithBool:[fuelStation inConflict]],
                             [NSNumber numberWithInteger:[fuelStation editCount]],
                             orNil([fuelStation syncHttpRespCode]),
                             orNil([fuelStation syncErrMask]),
@@ -3201,7 +2995,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
           %@ = ?, \
           %@ = ?, \
           %@ = ?, \
-          %@ = ?, \
           %@ = ? \
           WHERE %@ = ?",
           TBL_MAIN_FUEL_STATION,                   // table
@@ -3219,7 +3012,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
           COL_MAN_EDIT_IN_PROGRESS,           // col7
           COL_MAN_SYNC_IN_PROGRESS,           // col8
           COL_MAN_SYNCED,                     // col9
-          COL_MAN_IN_CONFLICT,                // col10
           COL_MAN_EDIT_COUNT,                 // col12
           COL_MAN_SYNC_HTTP_RESP_CODE,
           COL_MAN_SYNC_ERR_MASK,
@@ -3242,7 +3034,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
            [NSNumber numberWithBool:[fuelStation editInProgress]],
            [NSNumber numberWithBool:[fuelStation syncInProgress]],
            [NSNumber numberWithBool:[fuelStation synced]],
-           [NSNumber numberWithBool:[fuelStation inConflict]],
            [NSNumber numberWithInteger:[fuelStation editCount]],
            orNil([fuelStation syncHttpRespCode]),
            orNil([fuelStation syncErrMask]),
@@ -3286,7 +3077,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                            db:(FMDatabase *)db
                         error:(PELMDaoErrorBlk)errorBlk {
   NSString *stmt = [NSString stringWithFormat:@"INSERT INTO %@ (%@, %@, %@, %@, %@, \
-                    %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                    %@, %@, %@, %@, %@, %@, %@, %@, %@, %@) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                     TBL_MAIN_VEHICLE,
                     COL_MAIN_USER_ID,
                     COL_GLOBAL_ID,
@@ -3299,7 +3090,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                     COL_MAN_EDIT_IN_PROGRESS,
                     COL_MAN_SYNC_IN_PROGRESS,
                     COL_MAN_SYNCED,
-                    COL_MAN_IN_CONFLICT,
                     COL_MAN_EDIT_COUNT,
                     COL_MAN_SYNC_HTTP_RESP_CODE,
                     COL_MAN_SYNC_ERR_MASK,
@@ -3316,7 +3106,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                             [NSNumber numberWithBool:[vehicle editInProgress]],
                             [NSNumber numberWithBool:[vehicle syncInProgress]],
                             [NSNumber numberWithBool:[vehicle synced]],
-                            [NSNumber numberWithBool:[vehicle inConflict]],
                             [NSNumber numberWithInteger:[vehicle editCount]],
                             orNil([vehicle syncHttpRespCode]),
                             orNil([vehicle syncErrMask]),
@@ -3373,7 +3162,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
           %@ = ?, \
           %@ = ?, \
           %@ = ?, \
-          %@ = ?, \
           %@ = ? \
           WHERE %@ = ?",
           TBL_MAIN_VEHICLE,                   // table
@@ -3387,7 +3175,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
           COL_MAN_EDIT_IN_PROGRESS,           // col7
           COL_MAN_SYNC_IN_PROGRESS,           // col8
           COL_MAN_SYNCED,                     // col9
-          COL_MAN_IN_CONFLICT,                // col10
           COL_MAN_EDIT_COUNT,                 // col12
           COL_MAN_SYNC_HTTP_RESP_CODE,
           COL_MAN_SYNC_ERR_MASK,
@@ -3406,7 +3193,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
            [NSNumber numberWithBool:[vehicle editInProgress]],
            [NSNumber numberWithBool:[vehicle syncInProgress]],
            [NSNumber numberWithBool:[vehicle synced]],
-           [NSNumber numberWithBool:[vehicle inConflict]],
            [NSNumber numberWithInteger:[vehicle editCount]],
            orNil([vehicle syncHttpRespCode]),
            orNil([vehicle syncErrMask]),
@@ -3527,7 +3313,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
           %@ = ?, \
           %@ = ?, \
           %@ = ?, \
-          %@ = ?, \
           %@ = ? \
           WHERE %@ = ?",
           TBL_MAIN_USER,                      // table
@@ -3542,7 +3327,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
           COL_MAN_EDIT_IN_PROGRESS,           // col10
           COL_MAN_SYNC_IN_PROGRESS,           // col11
           COL_MAN_SYNCED,                     // col12
-          COL_MAN_IN_CONFLICT,                // col13
           COL_MAN_EDIT_COUNT,                 // col15
           COL_MAN_SYNC_HTTP_RESP_CODE,
           COL_MAN_SYNC_ERR_MASK,
@@ -3562,7 +3346,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
            [NSNumber numberWithBool:[user editInProgress]],
            [NSNumber numberWithBool:[user syncInProgress]],
            [NSNumber numberWithBool:[user synced]],
-           [NSNumber numberWithBool:[user inConflict]],
            [NSNumber numberWithInteger:[user editCount]],
            orNil([user syncHttpRespCode]),
            orNil([user syncErrMask]),
@@ -3574,7 +3357,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                         db:(FMDatabase *)db
                      error:(PELMDaoErrorBlk)errorBlk {
   NSString *stmt = [NSString stringWithFormat:@"INSERT INTO %@ (%@, %@, %@, %@, %@, %@, \
-%@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, \
+%@, %@, %@, %@, %@, %@, %@, %@, %@, %@) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, \
 ?, ?, ?, ?, ?, ?, ?)",
                     TBL_MAIN_USER,
                     COL_LOCAL_ID,
@@ -3589,7 +3372,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                     COL_MAN_EDIT_IN_PROGRESS,
                     COL_MAN_SYNC_IN_PROGRESS,
                     COL_MAN_SYNCED,
-                    COL_MAN_IN_CONFLICT,
                     COL_MAN_EDIT_COUNT,
                     COL_MAN_SYNC_HTTP_RESP_CODE,
                     COL_MAN_SYNC_ERR_MASK,
@@ -3607,7 +3389,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                             [NSNumber numberWithBool:[user editInProgress]],
                             [NSNumber numberWithBool:[user syncInProgress]],
                             [NSNumber numberWithBool:[user synced]],
-                            [NSNumber numberWithBool:[user inConflict]],
                             [NSNumber numberWithInteger:[user editCount]],
                             orNil([user syncHttpRespCode]),
                             orNil([user syncErrMask]),
@@ -3730,8 +3511,8 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                    db:(FMDatabase *)db
                                 error:(PELMDaoErrorBlk)errorBlk {
   NSString *stmt = [NSString stringWithFormat:@"INSERT INTO %@ \
-(%@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@) VALUES \
-(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+(%@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@) VALUES \
+(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                     TBL_MAIN_FUELPURCHASE_LOG,
                     COL_MAIN_USER_ID,
                     COL_MAIN_VEHICLE_ID,
@@ -3749,7 +3530,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                     COL_MAN_EDIT_IN_PROGRESS,
                     COL_MAN_SYNC_IN_PROGRESS,
                     COL_MAN_SYNCED,
-                    COL_MAN_IN_CONFLICT,
                     COL_MAN_EDIT_COUNT,
                     COL_MAN_SYNC_HTTP_RESP_CODE,
                     COL_MAN_SYNC_ERR_MASK,
@@ -3771,7 +3551,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                             [NSNumber numberWithBool:[fuelPurchaseLog editInProgress]],
                             [NSNumber numberWithBool:[fuelPurchaseLog syncInProgress]],
                             [NSNumber numberWithBool:[fuelPurchaseLog synced]],
-                            [NSNumber numberWithBool:[fuelPurchaseLog inConflict]],
                             [NSNumber numberWithInteger:[fuelPurchaseLog editCount]],
                             orNil([fuelPurchaseLog syncHttpRespCode]),
                             orNil([fuelPurchaseLog syncErrMask]),
@@ -3889,7 +3668,6 @@ WHERE %@ = ?",
           %@ = ?, \
           %@ = ?, \
           %@ = ?, \
-          %@ = ?, \
           %@ = ? \
           WHERE %@ = ?",
           TBL_MAIN_FUELPURCHASE_LOG,                   // table
@@ -3908,7 +3686,6 @@ WHERE %@ = ?",
           COL_MAN_EDIT_IN_PROGRESS,           // col7
           COL_MAN_SYNC_IN_PROGRESS,           // col8
           COL_MAN_SYNCED,                     // col9
-          COL_MAN_IN_CONFLICT,                // col10
           COL_MAN_EDIT_COUNT,                 // col12
           COL_MAN_SYNC_HTTP_RESP_CODE,
           COL_MAN_SYNC_ERR_MASK,
@@ -3934,7 +3711,6 @@ WHERE %@ = ?",
           %@ = ?, \
           %@ = ?, \
           %@ = ?, \
-          %@ = ?, \
           %@ = ? \
           WHERE %@ = ?",
           TBL_MAIN_FUELPURCHASE_LOG,                   // table
@@ -3951,7 +3727,6 @@ WHERE %@ = ?",
           COL_MAN_EDIT_IN_PROGRESS,           // col7
           COL_MAN_SYNC_IN_PROGRESS,           // col8
           COL_MAN_SYNCED,                     // col9
-          COL_MAN_IN_CONFLICT,                // col10
           COL_MAN_EDIT_COUNT,                 // col12
           COL_MAN_SYNC_HTTP_RESP_CODE,
           COL_MAN_SYNC_ERR_MASK,
@@ -3989,7 +3764,6 @@ WHERE %@ = ?",
     [NSNumber numberWithBool:[fuelPurchaseLog editInProgress]],
     [NSNumber numberWithBool:[fuelPurchaseLog syncInProgress]],
     [NSNumber numberWithBool:[fuelPurchaseLog synced]],
-    [NSNumber numberWithBool:[fuelPurchaseLog inConflict]],
     [NSNumber numberWithInteger:[fuelPurchaseLog editCount]],
     orNil([fuelPurchaseLog syncHttpRespCode]),
     orNil([fuelPurchaseLog syncErrMask]),
@@ -4062,8 +3836,8 @@ WHERE %@ = ?",
                                   db:(FMDatabase *)db
                                error:(PELMDaoErrorBlk)errorBlk {
   NSString *stmt = [NSString stringWithFormat:@"INSERT INTO %@ \
-                    (%@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@) VALUES \
-                    (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                    (%@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@) VALUES \
+                    (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                     TBL_MAIN_ENV_LOG,
                     COL_MAIN_USER_ID,
                     COL_MAIN_VEHICLE_ID,
@@ -4080,7 +3854,6 @@ WHERE %@ = ?",
                     COL_MAN_EDIT_IN_PROGRESS,
                     COL_MAN_SYNC_IN_PROGRESS,
                     COL_MAN_SYNCED,
-                    COL_MAN_IN_CONFLICT,
                     COL_MAN_EDIT_COUNT,
                     COL_MAN_SYNC_HTTP_RESP_CODE,
                     COL_MAN_SYNC_ERR_MASK,
@@ -4101,7 +3874,6 @@ WHERE %@ = ?",
                             [NSNumber numberWithBool:[environmentLog editInProgress]],
                             [NSNumber numberWithBool:[environmentLog syncInProgress]],
                             [NSNumber numberWithBool:[environmentLog synced]],
-                            [NSNumber numberWithBool:[environmentLog inConflict]],
                             [NSNumber numberWithInteger:[environmentLog editCount]],
                             orNil([environmentLog syncHttpRespCode]),
                             orNil([environmentLog syncErrMask]),
@@ -4212,7 +3984,6 @@ WHERE %@ = ?",
           %@ = ?, \
           %@ = ?, \
           %@ = ?, \
-          %@ = ?, \
           %@ = ? \
           WHERE %@ = ?",
           TBL_MAIN_ENV_LOG,                   // table
@@ -4230,7 +4001,6 @@ WHERE %@ = ?",
           COL_MAN_EDIT_IN_PROGRESS,           // col7
           COL_MAN_SYNC_IN_PROGRESS,           // col8
           COL_MAN_SYNCED,                     // col9
-          COL_MAN_IN_CONFLICT,                // col10
           COL_MAN_EDIT_COUNT,                 // col12
           COL_MAN_SYNC_HTTP_RESP_CODE,
           COL_MAN_SYNC_ERR_MASK,
@@ -4240,7 +4010,6 @@ WHERE %@ = ?",
 
 - (NSString *)updateStmtForMainEnvironmentLogSansVehicleFks {
   return [NSString stringWithFormat:@"UPDATE %@ SET \
-          %@ = ?, \
           %@ = ?, \
           %@ = ?, \
           %@ = ?, \
@@ -4273,7 +4042,6 @@ WHERE %@ = ?",
           COL_MAN_EDIT_IN_PROGRESS,           // col7
           COL_MAN_SYNC_IN_PROGRESS,           // col8
           COL_MAN_SYNCED,                     // col9
-          COL_MAN_IN_CONFLICT,                // col10
           COL_MAN_EDIT_COUNT,                 // col12
           COL_MAN_SYNC_HTTP_RESP_CODE,
           COL_MAN_SYNC_ERR_MASK,
@@ -4306,7 +4074,6 @@ WHERE %@ = ?",
     [NSNumber numberWithBool:[environmentLog editInProgress]],
     [NSNumber numberWithBool:[environmentLog syncInProgress]],
     [NSNumber numberWithBool:[environmentLog synced]],
-    [NSNumber numberWithBool:[environmentLog inConflict]],
     [NSNumber numberWithInteger:[environmentLog editCount]],
     orNil([environmentLog syncHttpRespCode]),
     orNil([environmentLog syncErrMask]),

@@ -1,23 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<http-response statusCode="409">
-  <annotation name="put conflict"
+<http-response statusCode="404">
+  <annotation name="put not found"
               host="example.com"
               port="80"
               scheme="http"
               uri-path="/fp/users/U8890209302/vehicles/V0191"
               request-method="PUT">This is the description for this mock response.</annotation>
   <headers>
-    <header name="Content-Type" value="application/vnd.fp.vehicle-v0.0.1+json" />
-    <header name="Content-Language" value="en-US" />
     <header name="fp-auth-token" value="1092348123049OLSDFJLIE001235" />
   </headers>
   <cookies />
-  <body>
-    <![CDATA[
-      { "fpvehicle/name": "Black Bimmer",
-        "fpvehicle/created-at": 1409913262000,
-        "fpvehicle/updated-at": 1409913262011,
-        "_links": {}}
-    ]]>
-  </body>
+  <body />
 </http-response>

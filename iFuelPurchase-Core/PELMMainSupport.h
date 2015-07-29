@@ -25,7 +25,6 @@
                    editInProgress:(BOOL)editInProgress
                    syncInProgress:(BOOL)syncInProgress
                            synced:(BOOL)synced
-                       inConflict:(BOOL)inConflict
                         editCount:(NSUInteger)editCount
                  syncHttpRespCode:(NSNumber *)syncHttpRespCode
                       syncErrMask:(NSNumber *)syncErrMask
@@ -44,8 +43,6 @@
 @property (nonatomic) BOOL syncInProgress;
 
 @property (nonatomic) BOOL synced;
-
-@property (nonatomic) BOOL inConflict;
 
 @property (nonatomic) NSUInteger editCount;
 

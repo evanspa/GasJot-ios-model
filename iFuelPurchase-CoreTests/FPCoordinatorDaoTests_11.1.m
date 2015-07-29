@@ -52,14 +52,9 @@ describe(@"FPCoordinatorDao", ^{
       [[theValue([user editInProgress]) should] beNo];
       [[user globalIdentifier] shouldNotBeNil];
       BOOL prepareForEditSuccess =
-        [_coordDao prepareUserForEdit:user
-                    entityBeingSynced:[_coordTestCtx entityBeingSyncedBlk]
-                     entityInConflict:[_coordTestCtx entityInConflictBlk]
-                                error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+        [_coordDao prepareUserForEdit:user error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[theValue(prepareForEditSuccess) should] beYes];
-      [[theValue([_coordTestCtx prepareForEditEntityBeingSynced]) should] beNo];
       [[theValue([_coordTestCtx prepareForEditEntityDeleted]) should] beNo];
-      [[theValue([_coordTestCtx prepareForEditEntityInConflict]) should] beNo];
       [[theValue([_coordTestCtx prepareForEditEntityBeingEditedByOtherActor]) should] beNo];
       [[theValue([user editInProgress]) should] beYes];
       [user setName:@"Paul Evans"];

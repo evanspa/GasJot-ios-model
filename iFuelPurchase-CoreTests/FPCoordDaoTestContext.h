@@ -60,9 +60,6 @@ typedef void (^FPCoordTestingMocker)(NSString *, NSInteger, NSInteger);
 - (FPCoordTestingNew1ErrArgComplHandlerBlkMaker)new1ErrArgComplHandlerBlkMaker;
 - (FPCoordTestingNew0ErrArgComplHandlerBlkMaker)new0ErrArgComplHandlerBlkMaker;
 
-- (void(^)(void))entityBeingSyncedBlk;
-- (void(^)(void))entityInConflictBlk;
-
 - (FPCoordTestingNumValueFetcher)newNumValueFetcher;
 - (FPCoordTestingFreshUserMaker)newFreshUserMaker;
 - (FPCoordTestingFreshJoeSmithMaker)newFreshJoeSmithMaker;

@@ -50,14 +50,9 @@ describe(@"FPCoordinatorDao", ^{
         [[expectFutureValue(theValue([_coordTestCtx authTokenReceived])) shouldEventuallyBeforeTimingOutAfter(60)] beYes];
       });
       BOOL prepareForEditSuccess =
-        [_coordDao prepareUserForEdit:user
-                    entityBeingSynced:[_coordTestCtx entityBeingSyncedBlk]
-                     entityInConflict:[_coordTestCtx entityInConflictBlk]
-                                error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+        [_coordDao prepareUserForEdit:user error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[theValue(prepareForEditSuccess) should] beYes];
-      [[theValue([_coordTestCtx prepareForEditEntityBeingSynced]) should] beNo];
       [[theValue([_coordTestCtx prepareForEditEntityDeleted]) should] beNo];
-      [[theValue([_coordTestCtx prepareForEditEntityInConflict]) should] beNo];
       [[theValue([_coordTestCtx prepareForEditEntityBeingEditedByOtherActor]) should] beNo];
       [user setName:@"Paul Evans"];
       [user setEmail:@"paul.evans@example.com"];
@@ -81,13 +76,9 @@ describe(@"FPCoordinatorDao", ^{
       prepareForEditSuccess =
         [_coordDao prepareVehicleForEdit:vehicle
                                  forUser:user
-                       entityBeingSynced:[_coordTestCtx entityBeingSyncedBlk]
-                        entityInConflict:[_coordTestCtx entityInConflictBlk]
                                    error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[theValue(prepareForEditSuccess) should] beYes];
-      [[theValue([_coordTestCtx prepareForEditEntityBeingSynced]) should] beNo];
       [[theValue([_coordTestCtx prepareForEditEntityDeleted]) should] beNo];
-      [[theValue([_coordTestCtx prepareForEditEntityInConflict]) should] beNo];
       [[theValue([_coordTestCtx prepareForEditEntityBeingEditedByOtherActor]) should] beNo];
       user = [[_coordDao localDao] mainUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
       [user shouldNotBeNil]; // user not pruned from main because vehicle (child) is in main_vehicle

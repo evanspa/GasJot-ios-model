@@ -54,13 +54,9 @@ describe(@"FPCoordinatorDao", ^{
       [[user globalIdentifier] shouldNotBeNil];
       BOOL prepareForEditSuccess =
         [_coordDao prepareUserForEdit:user
-                    entityBeingSynced:[_coordTestCtx entityBeingSyncedBlk]
-                     entityInConflict:[_coordTestCtx entityInConflictBlk]
                                 error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[theValue(prepareForEditSuccess) should] beYes];
-      [[theValue([_coordTestCtx prepareForEditEntityBeingSynced]) should] beNo];
       [[theValue([_coordTestCtx prepareForEditEntityDeleted]) should] beNo];
-      [[theValue([_coordTestCtx prepareForEditEntityInConflict]) should] beNo];
       [[theValue([_coordTestCtx prepareForEditEntityBeingEditedByOtherActor]) should] beNo];
       [[theValue([user editInProgress]) should] beYes];
       [user setName:@"Paul Evans"];
@@ -89,10 +85,7 @@ describe(@"FPCoordinatorDao", ^{
       [[[_coordDao localDao] mainUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()] shouldBeNil]; // it should have been pruned
       
       // ok - now lets try with a connection error
-      [_coordDao prepareUserForEdit:user
-                  entityBeingSynced:[_coordTestCtx entityBeingSyncedBlk]
-                   entityInConflict:[_coordTestCtx entityInConflictBlk]
-                              error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+      [_coordDao prepareUserForEdit:user error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [PEHttpResponseSimulator simulateCannotConnectToHostForRequestUrl:[NSURL URLWithString:@"http://example.com/fp/users/U8890209302"]
                                                    andRequestHttpMethod:@"PUT"];
       __block BOOL saveFailed = NO;
@@ -115,10 +108,7 @@ describe(@"FPCoordinatorDao", ^{
       [[[user syncErrMask] should] equal:[NSNumber numberWithInteger:-1004]];
       
       // ok - now lets try with a temporary server error
-      [_coordDao prepareUserForEdit:user
-                  entityBeingSynced:[_coordTestCtx entityBeingSyncedBlk]
-                   entityInConflict:[_coordTestCtx entityInConflictBlk]
-                              error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+      [_coordDao prepareUserForEdit:user error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       _mocker(@"http-response.user.PUT.500", 0, 0);
       saveFailed = NO;
       [_coordDao markAsDoneEditingAndSyncUserImmediate:user
@@ -140,10 +130,7 @@ describe(@"FPCoordinatorDao", ^{
       [[[user syncErrMask] should] equal:[NSNumber numberWithInteger:0]];
       
       // ok - now lets try with a non-temporary server error
-      [_coordDao prepareUserForEdit:user
-                  entityBeingSynced:[_coordTestCtx entityBeingSyncedBlk]
-                   entityInConflict:[_coordTestCtx entityInConflictBlk]
-                              error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+      [_coordDao prepareUserForEdit:user error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       _mocker(@"http-response.user.PUT.422", 0, 0);
       saveFailed = NO;
       __block NSInteger errMask = 0;
@@ -167,10 +154,7 @@ describe(@"FPCoordinatorDao", ^{
       [[[user syncErrMask] should] equal:[NSNumber numberWithInteger:errMask]];
       
       // ok - now lets try with a temporary 503 server error
-      [_coordDao prepareUserForEdit:user
-                  entityBeingSynced:[_coordTestCtx entityBeingSyncedBlk]
-                   entityInConflict:[_coordTestCtx entityInConflictBlk]
-                              error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+      [_coordDao prepareUserForEdit:user error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       _mocker(@"http-response.user.PUT.503", 0, 0);
       saveFailed = NO;
       __block NSDate *retryAfterVal = nil;
@@ -195,10 +179,7 @@ describe(@"FPCoordinatorDao", ^{
       [[user syncErrMask] shouldBeNil];
       
       // ok - now lets try with an authentication failure
-      [_coordDao prepareUserForEdit:user
-                  entityBeingSynced:[_coordTestCtx entityBeingSyncedBlk]
-                   entityInConflict:[_coordTestCtx entityInConflictBlk]
-                              error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+      [_coordDao prepareUserForEdit:user error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       _mocker(@"http-response.user.PUT.401", 0, 0);
       saveFailed = NO;
       [_coordDao markAsDoneEditingAndSyncUserImmediate:user

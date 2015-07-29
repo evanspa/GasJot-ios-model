@@ -32,9 +32,7 @@
   __block BOOL _generalComplError;
   __block BOOL _localFetchError;
   __block NSTimer *_timerForAsyncWork;
-  __block BOOL _prepareForEditEntityBeingSynced;
   __block BOOL _prepareForEditEntityDeleted;
-  __block BOOL _prepareForEditEntityInConflict;
   __block BOOL _prepareForEditEntityBeingEditedByOtherActor;
   __block NSNumber *_prepareForEditEntityBeingEditedByOtherActorId;
   NSBundle *_testBundle;
@@ -141,18 +139,6 @@
         _success = YES;
       }
     });
-  };
-}
-
-- (void(^)(void))entityBeingSyncedBlk {
-  return ^{
-    _prepareForEditEntityBeingSynced = YES;
-  };
-}
-
-- (void(^)(void))entityInConflictBlk {
-  return ^{
-    _prepareForEditEntityInConflict = YES;
   };
 }
 

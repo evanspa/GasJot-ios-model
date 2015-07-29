@@ -25,7 +25,6 @@
                    editInProgress:(BOOL)editInProgress
                    syncInProgress:(BOOL)syncInProgress
                            synced:(BOOL)synced
-                       inConflict:(BOOL)inConflict
                         editCount:(NSUInteger)editCount
                  syncHttpRespCode:(NSNumber *)syncHttpRespCode
                       syncErrMask:(NSNumber *)syncErrMask
@@ -50,7 +49,6 @@
                              editInProgress:editInProgress
                              syncInProgress:syncInProgress
                                      synced:synced
-                                 inConflict:inConflict
                                   editCount:editCount
                            syncHttpRespCode:syncHttpRespCode
                                 syncErrMask:syncErrMask
@@ -81,7 +79,6 @@
                                                                   editInProgress:[self editInProgress]
                                                                   syncInProgress:[self syncInProgress]
                                                                           synced:[self synced]
-                                                                      inConflict:[self inConflict]
                                                                        editCount:[self editCount]
                                                                 syncHttpRespCode:[self syncHttpRespCode]
                                                                      syncErrMask:[self syncErrMask]
@@ -138,7 +135,6 @@
                                                 editInProgress:NO
                                                 syncInProgress:NO
                                                         synced:NO
-                                                    inConflict:NO
                                                      editCount:0
                                               syncHttpRespCode:nil
                                                    syncErrMask:nil

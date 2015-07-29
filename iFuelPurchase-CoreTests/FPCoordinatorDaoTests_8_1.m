@@ -104,13 +104,9 @@ describe(@"FPCoordinatorDao", ^{
       BOOL prepareForEditSuccess =
         [_coordDao prepareVehicleForEdit:vehicle
                                  forUser:user
-                       entityBeingSynced:[_coordTestCtx entityBeingSyncedBlk]
-                        entityInConflict:[_coordTestCtx entityInConflictBlk]
                                    error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[theValue(prepareForEditSuccess) should] beYes];
-      [[theValue([_coordTestCtx prepareForEditEntityBeingSynced]) should] beNo];
       [[theValue([_coordTestCtx prepareForEditEntityDeleted]) should] beNo];
-      [[theValue([_coordTestCtx prepareForEditEntityInConflict]) should] beNo];
       [[theValue([_coordTestCtx prepareForEditEntityBeingEditedByOtherActor]) should] beNo];
       [[_numEntitiesBlk(TBL_MAIN_VEHICLE) should] equal:[NSNumber numberWithInt:1]];
       [[_numEntitiesBlk(TBL_MASTER_VEHICLE) should] equal:[NSNumber numberWithInt:1]];
@@ -144,13 +140,9 @@ describe(@"FPCoordinatorDao", ^{
       prepareForEditSuccess =
       [_coordDao prepareVehicleForEdit:vehicle
                                forUser:user
-                     entityBeingSynced:[_coordTestCtx entityBeingSyncedBlk]
-                      entityInConflict:[_coordTestCtx entityInConflictBlk]
                                  error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[theValue(prepareForEditSuccess) should] beYes];
-      [[theValue([_coordTestCtx prepareForEditEntityBeingSynced]) should] beNo];
       [[theValue([_coordTestCtx prepareForEditEntityDeleted]) should] beNo];
-      [[theValue([_coordTestCtx prepareForEditEntityInConflict]) should] beNo];
       [[theValue([_coordTestCtx prepareForEditEntityBeingEditedByOtherActor]) should] beNo];
       [[_numEntitiesBlk(TBL_MAIN_VEHICLE) should] equal:[NSNumber numberWithInt:1]];
       [[_numEntitiesBlk(TBL_MASTER_VEHICLE) should] equal:[NSNumber numberWithInt:1]];
@@ -161,7 +153,6 @@ describe(@"FPCoordinatorDao", ^{
       [_coordDao saveVehicle:vehicle error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       __block BOOL conflict = NO;
       __block FPVehicle *serverVehicle = nil;
-      [[theValue([vehicle inConflict]) should] beNo];
       [_coordDao markAsDoneEditingAndSyncVehicleImmediate:vehicle
                                                   forUser:user
                                       notFoundOnServerBlk:^{}
@@ -173,16 +164,13 @@ describe(@"FPCoordinatorDao", ^{
                                           authRequiredBlk:^{}
                                                     error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[expectFutureValue(theValue(conflict)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
-      [[theValue([vehicle inConflict]) should] beYes];
       [serverVehicle shouldNotBeNil];
       [[[serverVehicle name] should] equal:@"Black Bimmer"];
       
       // now lets try another update, but this time we'll get a 'not found' response
-      /*prepareForEditSuccess =
+      prepareForEditSuccess =
       [_coordDao prepareVehicleForEdit:vehicle
                                forUser:user
-                     entityBeingSynced:[_coordTestCtx entityBeingSyncedBlk]
-                      entityInConflict:[_coordTestCtx entityInConflictBlk]
                                  error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[theValue(prepareForEditSuccess) should] beYes];
       [vehicle setName:@"Red Bimmer"];
@@ -199,7 +187,7 @@ describe(@"FPCoordinatorDao", ^{
                                               conflictBlk:^(FPVehicle *latestVehicle) {}
                                           authRequiredBlk:^{}
                                                     error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
-      [[expectFutureValue(theValue(notFound)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];*/
+      [[expectFutureValue(theValue(notFound)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
     });
   });
 });

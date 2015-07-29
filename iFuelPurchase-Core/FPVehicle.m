@@ -25,7 +25,6 @@
                    editInProgress:(BOOL)editInProgress
                    syncInProgress:(BOOL)syncInProgress
                            synced:(BOOL)synced
-                       inConflict:(BOOL)inConflict
                         editCount:(NSUInteger)editCount
                  syncHttpRespCode:(NSNumber *)syncHttpRespCode
                       syncErrMask:(NSNumber *)syncErrMask
@@ -40,13 +39,12 @@
                           masterEntityTable:TBL_MASTER_VEHICLE
                                   mediaType:mediaType
                                   relations:relations
-                                deletedAt:deletedAt
+                                  deletedAt:deletedAt
                                   updatedAt:updatedAt
                        dateCopiedFromMaster:dateCopiedFromMaster
                              editInProgress:editInProgress
                              syncInProgress:syncInProgress
                                      synced:synced
-                                 inConflict:inConflict
                                   editCount:editCount
                            syncHttpRespCode:syncHttpRespCode
                                 syncErrMask:syncErrMask
@@ -67,13 +65,12 @@
                                                   globalIdentifier:[self globalIdentifier]
                                                          mediaType:[self mediaType]
                                                          relations:[self relations]
-                                                       deletedAt:[self deletedAt]
+                                                         deletedAt:[self deletedAt]
                                                          updatedAt:[self updatedAt]
                                               dateCopiedFromMaster:[self dateCopiedFromMaster]
                                                     editInProgress:[self editInProgress]
                                                     syncInProgress:[self syncInProgress]
                                                             synced:[self synced]
-                                                        inConflict:[self inConflict]
                                                          editCount:[self editCount]
                                                   syncHttpRespCode:[self syncHttpRespCode]
                                                        syncErrMask:[self syncErrMask]
@@ -111,13 +108,12 @@
                                        globalIdentifier:globalIdentifier
                                               mediaType:mediaType
                                               relations:relations
-                                            deletedAt:nil
+                                              deletedAt:nil
                                               updatedAt:updatedAt
                                    dateCopiedFromMaster:nil
                                          editInProgress:NO
                                          syncInProgress:NO
                                                  synced:NO
-                                             inConflict:NO
                                               editCount:0
                                        syncHttpRespCode:nil
                                             syncErrMask:nil
@@ -133,13 +129,12 @@
                                        globalIdentifier:nil
                                               mediaType:nil
                                               relations:nil
-                                            deletedAt:nil
+                                              deletedAt:nil
                                               updatedAt:nil
                                    dateCopiedFromMaster:nil
                                          editInProgress:NO
                                          syncInProgress:NO
                                                  synced:NO
-                                             inConflict:NO
                                               editCount:0
                                        syncHttpRespCode:nil
                                             syncErrMask:nil

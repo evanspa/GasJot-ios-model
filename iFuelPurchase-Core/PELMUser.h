@@ -29,7 +29,6 @@ FOUNDATION_EXPORT NSString * const PELMLogoutRelation;
                    editInProgress:(BOOL)editInProgress
                    syncInProgress:(BOOL)syncInProgress
                            synced:(BOOL)synced
-                       inConflict:(BOOL)inConflict
                         editCount:(NSUInteger)editCount
                  syncHttpRespCode:(NSNumber *)syncHttpRespCode
                       syncErrMask:(NSNumber *)syncErrMask

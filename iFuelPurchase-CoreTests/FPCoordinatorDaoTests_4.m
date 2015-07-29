@@ -70,13 +70,9 @@ describe(@"FPCoordinatorDao", ^{
       BOOL prepareForEditSuccess =
         [_coordDao prepareVehicleForEdit:vehicle
                                  forUser:user
-                       entityBeingSynced:[_coordTestCtx entityBeingSyncedBlk]
-                        entityInConflict:[_coordTestCtx entityInConflictBlk]
                                    error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[theValue(prepareForEditSuccess) should] beYes];
-      [[theValue([_coordTestCtx prepareForEditEntityBeingSynced]) should] beNo];
       [[theValue([_coordTestCtx prepareForEditEntityDeleted]) should] beNo];
-      [[theValue([_coordTestCtx prepareForEditEntityInConflict]) should] beNo];
       [[theValue([_coordTestCtx prepareForEditEntityBeingEditedByOtherActor]) should] beNo];
       [[_numEntitiesBlk(TBL_MAIN_VEHICLE) should] equal:[NSNumber numberWithInt:1]];
       [[_numEntitiesBlk(TBL_MASTER_VEHICLE) should] equal:[NSNumber numberWithInt:2]];
@@ -91,13 +87,9 @@ describe(@"FPCoordinatorDao", ^{
       prepareForEditSuccess =
         [_coordDao prepareVehicleForEdit:vehicle
                                  forUser:user
-                       entityBeingSynced:[_coordTestCtx entityBeingSyncedBlk]
-                        entityInConflict:[_coordTestCtx entityInConflictBlk]
                                    error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[theValue(prepareForEditSuccess) should] beYes];
-      [[theValue([_coordTestCtx prepareForEditEntityBeingSynced]) should] beNo];
       [[theValue([_coordTestCtx prepareForEditEntityDeleted]) should] beNo];
-      [[theValue([_coordTestCtx prepareForEditEntityInConflict]) should] beNo];
       [[theValue([_coordTestCtx prepareForEditEntityBeingEditedByOtherActor]) should] beNo];
       [vehicle setName:@"300ZX Edit 1"];
       [[theValue([vehicle editCount]) should] equal:theValue(1)];
@@ -111,14 +103,10 @@ describe(@"FPCoordinatorDao", ^{
       prepareForEditSuccess =
         [_coordDao prepareVehicleForEdit:vehicle
                                  forUser:user
-                       entityBeingSynced:[_coordTestCtx entityBeingSyncedBlk]
-                        entityInConflict:[_coordTestCtx entityInConflictBlk]
                                    error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[theValue(prepareForEditSuccess) should] beYes];
       [[theValue([vehicle editCount]) should] equal:theValue(2)];
-      [[theValue([_coordTestCtx prepareForEditEntityBeingSynced]) should] beNo];
       [[theValue([_coordTestCtx prepareForEditEntityDeleted]) should] beNo];
-      [[theValue([_coordTestCtx prepareForEditEntityInConflict]) should] beNo];
       [[theValue([_coordTestCtx prepareForEditEntityBeingEditedByOtherActor]) should] beNo];
       [[_numEntitiesBlk(TBL_MAIN_VEHICLE) should] equal:[NSNumber numberWithInt:1]];
       [[_numEntitiesBlk(TBL_MASTER_VEHICLE) should] equal:[NSNumber numberWithInt:2]];
@@ -139,42 +127,30 @@ describe(@"FPCoordinatorDao", ^{
       prepareForEditSuccess =
         [_coordDao prepareVehicleForEdit:vehicle
                                  forUser:user
-                       entityBeingSynced:[_coordTestCtx entityBeingSyncedBlk]
-                        entityInConflict:[_coordTestCtx entityInConflictBlk]
                                    error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[theValue(prepareForEditSuccess) should] beYes];
       [[theValue([vehicle editCount]) should] equal:theValue(2)]; // edit count is now back to 2 again
-      [[theValue([_coordTestCtx prepareForEditEntityBeingSynced]) should] beNo];
       [[theValue([_coordTestCtx prepareForEditEntityDeleted]) should] beNo];
-      [[theValue([_coordTestCtx prepareForEditEntityInConflict]) should] beNo];
       [[theValue([_coordTestCtx prepareForEditEntityBeingEditedByOtherActor]) should] beNo];
       [_coordDao markAsDoneEditingVehicle:vehicle
                                     error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       prepareForEditSuccess =
         [_coordDao prepareVehicleForEdit:vehicle
                                  forUser:user
-                       entityBeingSynced:[_coordTestCtx entityBeingSyncedBlk]
-                        entityInConflict:[_coordTestCtx entityInConflictBlk]
                                    error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[theValue(prepareForEditSuccess) should] beYes];
       [[theValue([vehicle editCount]) should] equal:theValue(3)];
-      [[theValue([_coordTestCtx prepareForEditEntityBeingSynced]) should] beNo];
       [[theValue([_coordTestCtx prepareForEditEntityDeleted]) should] beNo];
-      [[theValue([_coordTestCtx prepareForEditEntityInConflict]) should] beNo];
       [[theValue([_coordTestCtx prepareForEditEntityBeingEditedByOtherActor]) should] beNo];
       [_coordDao markAsDoneEditingVehicle:vehicle
                                     error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       prepareForEditSuccess =
         [_coordDao prepareVehicleForEdit:vehicle
                                  forUser:user
-                       entityBeingSynced:[_coordTestCtx entityBeingSyncedBlk]
-                        entityInConflict:[_coordTestCtx entityInConflictBlk]
                                    error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[theValue(prepareForEditSuccess) should] beYes];
       [[theValue([vehicle editCount]) should] equal:theValue(4)];
-      [[theValue([_coordTestCtx prepareForEditEntityBeingSynced]) should] beNo];
       [[theValue([_coordTestCtx prepareForEditEntityDeleted]) should] beNo];
-      [[theValue([_coordTestCtx prepareForEditEntityInConflict]) should] beNo];
       [[theValue([_coordTestCtx prepareForEditEntityBeingEditedByOtherActor]) should] beNo];
       [_coordDao markAsDoneEditingVehicle:vehicle
                                     error:[_coordTestCtx newLocalSaveErrBlkMaker]()];

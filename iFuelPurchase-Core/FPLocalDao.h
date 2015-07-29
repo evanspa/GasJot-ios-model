@@ -71,8 +71,6 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
 - (FPUser *)userWithError:(PELMDaoErrorBlk)errorBlk;
 
 - (BOOL)prepareUserForEdit:(FPUser *)user
-         entityBeingSynced:(void(^)(void))entityBeingSyncedBlk
-          entityInConflict:(void(^)(void))entityInConflictBlk
                      error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)saveUser:(FPUser *)user
@@ -97,9 +95,6 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                 errorMask:(NSNumber *)errorMask
                   retryAt:(NSDate *)retryAt
                     error:(PELMDaoErrorBlk)errorBlk;
-
-- (void)markAsInConflictForUser:(FPUser *)user
-                          error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)markAsSyncCompleteForUser:(FPUser *)user
                             error:(PELMDaoErrorBlk)errorBlk;
@@ -138,8 +133,6 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
 
 - (BOOL)prepareVehicleForEdit:(FPVehicle *)vehicle
                       forUser:(FPUser *)user
-            entityBeingSynced:(void(^)(void))entityBeingSyncedBlk
-             entityInConflict:(void(^)(void))entityInConflictBlk
                         error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)saveVehicle:(FPVehicle *)vehicle
@@ -165,9 +158,6 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                    errorMask:(NSNumber *)errorMask
                      retryAt:(NSDate *)retryAt
                        error:(PELMDaoErrorBlk)errorBlk;
-
-- (void)markAsInConflictForVehicle:(FPVehicle *)vehicle
-                             error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)markAsSyncCompleteForNewVehicle:(FPVehicle *)vehicle
                                 forUser:(FPUser *)user
@@ -207,8 +197,6 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
 
 - (BOOL)prepareFuelStationForEdit:(FPFuelStation *)fuelStation
                           forUser:(FPUser *)user
-                entityBeingSynced:(void(^)(void))entityBeingSyncedBlk
-                 entityInConflict:(void(^)(void))entityInConflictBlk
                             error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)saveFuelStation:(FPFuelStation *)fuelStation
@@ -234,9 +222,6 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                        errorMask:(NSNumber *)errorMask
                          retryAt:(NSDate *)retryAt
                            error:(PELMDaoErrorBlk)errorBlk;
-
-- (void)markAsInConflictForFuelStation:(FPFuelStation *)fuelStation
-                                 error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)markAsSyncCompleteForNewFuelStation:(FPFuelStation *)fuelStation
                                     forUser:(FPUser *)user
@@ -332,8 +317,6 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
 
 - (BOOL)prepareFuelPurchaseLogForEdit:(FPFuelPurchaseLog *)fuelPurchaseLog
                               forUser:(FPUser *)user
-                    entityBeingSynced:(void(^)(void))entityBeingSyncedBlk
-                     entityInConflict:(void(^)(void))entityInConflictBlk
                                 error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)saveFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
@@ -362,9 +345,6 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                            errorMask:(NSNumber *)errorMask
                              retryAt:(NSDate *)retryAt
                                error:(PELMDaoErrorBlk)errorBlk;
-
-- (void)markAsInConflictForFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
-                                     error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)markAsSyncCompleteForNewFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
                                         forUser:(FPUser *)user
@@ -435,8 +415,6 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
 
 - (BOOL)prepareEnvironmentLogForEdit:(FPEnvironmentLog *)environmentLog
                              forUser:(FPUser *)user
-                   entityBeingSynced:(void(^)(void))entityBeingSyncedBlk
-                    entityInConflict:(void(^)(void))entityInConflictBlk
                                error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)saveEnvironmentLog:(FPEnvironmentLog *)environmentLog
@@ -464,9 +442,6 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                           errorMask:(NSNumber *)errorMask
                             retryAt:(NSDate *)retryAt
                               error:(PELMDaoErrorBlk)errorBlk;
-
-- (void)markAsInConflictForEnvironmentLog:(FPEnvironmentLog *)environmentLog
-                                    error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)markAsSyncCompleteForNewEnvironmentLog:(FPEnvironmentLog *)environmentLog
                                        forUser:(FPUser *)user

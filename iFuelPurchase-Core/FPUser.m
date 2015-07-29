@@ -29,13 +29,12 @@ NSString * const FPEnvironmentLogsRelation = @"environment-logs";
                  globalIdentifier:(NSString *)globalIdentifier
                         mediaType:(HCMediaType *)mediaType
                         relations:(NSDictionary *)relations
-                      deletedAt:(NSDate *)deletedAt
+                        deletedAt:(NSDate *)deletedAt
                         updatedAt:(NSDate *)updatedAt
              dateCopiedFromMaster:(NSDate *)dateCopiedFromMaster
                    editInProgress:(BOOL)editInProgress
                    syncInProgress:(BOOL)syncInProgress
                            synced:(BOOL)synced
-                       inConflict:(BOOL)inConflict
                         editCount:(NSUInteger)editCount
                  syncHttpRespCode:(NSNumber *)syncHttpRespCode
                       syncErrMask:(NSNumber *)syncErrMask
@@ -49,13 +48,12 @@ NSString * const FPEnvironmentLogsRelation = @"environment-logs";
                            globalIdentifier:globalIdentifier
                                   mediaType:mediaType
                                   relations:relations
-                                deletedAt:deletedAt
+                                  deletedAt:deletedAt
                                   updatedAt:updatedAt
                        dateCopiedFromMaster:dateCopiedFromMaster
                              editInProgress:editInProgress
                              syncInProgress:syncInProgress
                                      synced:synced
-                                 inConflict:inConflict
                                   editCount:editCount
                            syncHttpRespCode:syncHttpRespCode
                                 syncErrMask:syncErrMask
@@ -87,7 +85,6 @@ NSString * const FPEnvironmentLogsRelation = @"environment-logs";
                                               editInProgress:[self editInProgress]
                                               syncInProgress:[self syncInProgress]
                                                       synced:[self synced]
-                                                  inConflict:[self inConflict]
                                                    editCount:[self editCount]
                                             syncHttpRespCode:[self syncHttpRespCode]
                                                  syncErrMask:[self syncErrMask]
@@ -135,7 +132,6 @@ NSString * const FPEnvironmentLogsRelation = @"environment-logs";
                                       editInProgress:NO
                                       syncInProgress:NO
                                               synced:NO
-                                          inConflict:NO
                                            editCount:0
                                     syncHttpRespCode:nil
                                          syncErrMask:nil

@@ -131,8 +131,6 @@ describe(@"FPCoordinatorDao", ^{
       // we need to clear-out the err-mask field of the vehicle so that a new sync is re-attempted
       [_coordDao prepareVehicleForEdit:newVehicle
                                forUser:user
-                     entityBeingSynced:nil
-                      entityInConflict:nil
                                  error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [newVehicle setSyncErrMask:nil];
       [_coordDao saveVehicle:newVehicle error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
@@ -165,8 +163,6 @@ describe(@"FPCoordinatorDao", ^{
       
       [_coordDao prepareVehicleForEdit:newVehicle
                                forUser:user
-                       entityBeingSynced:nil
-                        entityInConflict:nil
                                    error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [newVehicle setSyncRetryAt:nil];
       [_coordDao saveVehicle:newVehicle error:[_coordTestCtx newLocalSaveErrBlkMaker]()];

@@ -44,7 +44,6 @@ PELMMainSupport * (^toMainSupport)(FMResultSet *, NSString *, NSDictionary *) = 
                                                editInProgress:[rs boolForColumn:COL_MAN_EDIT_IN_PROGRESS]
                                                syncInProgress:[rs boolForColumn:COL_MAN_SYNC_IN_PROGRESS]
                                                        synced:[rs boolForColumn:COL_MAN_SYNCED]
-                                                   inConflict:[rs boolForColumn:COL_MAN_IN_CONFLICT]
                                                     editCount:[rs intForColumn:COL_MAN_EDIT_COUNT]
                                              syncHttpRespCode:[rs objectForColumnName:COL_MAN_SYNC_HTTP_RESP_CODE]
                                                   syncErrMask:[rs objectForColumnName:COL_MAN_SYNC_ERR_MASK]
@@ -67,7 +66,7 @@ PELMMainSupport * (^toMainSupport)(FMResultSet *, NSString *, NSDictionary *) = 
 
 + (void)flushUnsyncedChangesToEntity:(PELMMainSupport *)entity
                   remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
-                 remoteStoreErrorBlk:(void(^)(PELMMainSupport *, NSError *, NSNumber *))remoteStoreErrorBlk
+                 remoteStoreErrorBlk:(void(^)(NSError *, NSNumber *))remoteStoreErrorBlk
                    entityNotFoundBlk:(void(^)(void))entityNotFoundBlk
                    markAsConflictBlk:(void(^)(id))markAsConflictBlk
    markAsSyncCompleteForNewEntityBlk:(void(^)(void))markAsSyncCompleteForNewEntityBlk
@@ -105,7 +104,7 @@ markAsSyncCompleteForExistingEntityBlk:(void(^)(void))markAsSyncCompleteForExist
       }
     };
     void (^notifyUnsuccessfulSync)(NSError *, NSNumber *) = ^(NSError *error, NSNumber *httpStatusCode) {
-      remoteStoreErrorBlk(entity, error, httpStatusCode);
+      remoteStoreErrorBlk(error, httpStatusCode);
     };
     if ([entity globalIdentifier]) { // PUT
       PELMRemoteMasterCompletionHandler remoteStoreComplHandler =
@@ -169,7 +168,7 @@ markAsSyncCompleteForExistingEntityBlk:(void(^)(void))markAsSyncCompleteForExist
 
 + (void)deleteEntity:(PELMMainSupport *)entity
   remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
- remoteStoreErrorBlk:(void(^)(PELMMainSupport *, NSError *, NSNumber *))remoteStoreErrorBlk
+ remoteStoreErrorBlk:(void(^)(NSError *, NSNumber *))remoteStoreErrorBlk
    entityNotFoundBlk:(void(^)(void))entityNotFoundBlk
    markAsConflictBlk:(void(^)(id))markAsConflictBlk
    deleteCompleteBlk:(void(^)(void))deleteCompleteBlk
@@ -181,7 +180,7 @@ localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrHandler {
     remoteStoreBusyBlk(retryAfter);
   };
   void (^notifyUnsuccessfulDelete)(NSError *, NSNumber *) = ^(NSError *error, NSNumber *httpStatusCode) {
-    remoteStoreErrorBlk(entity, error, httpStatusCode);
+    remoteStoreErrorBlk(error, httpStatusCode);
   };
   PELMRemoteMasterCompletionHandler remoteStoreComplHandler =
   ^(NSString *newAuthTkn, NSString *globalId, id resourceModel, NSDictionary *rels,
@@ -702,7 +701,6 @@ version of entity not found!  It's global ID is: [%@]", [entity globalIdentifier
                    mstr.%@ NOT IN (SELECT man.%@ \
                                    FROM %@ man \
                                    WHERE man.%@ = ? AND \
-                                         man.%@ = 0 AND \
                                          man.%@ IS NOT NULL) AND \
                    mstr.%@ IS NULL",
              entityMasterTable,
@@ -711,7 +709,6 @@ version of entity not found!  It's global ID is: [%@]", [entity globalIdentifier
              COL_GLOBAL_ID,
              entityMainTable,
              parentEntityMainIdColumn,
-             COL_MAN_IN_CONFLICT,
              COL_GLOBAL_ID,
              COL_MST_DELETED_DT];
       argsArray = @[[parentEntity localMasterIdentifier], [parentEntity localMainIdentifier]];
@@ -769,10 +766,8 @@ version of entity not found!  It's global ID is: [%@]", [entity globalIdentifier
     NSString *qry = [NSString stringWithFormat:@"\
                      SELECT * \
                      FROM %@ \
-                     WHERE %@ = ? AND \
-                           %@ = 0", entityMainTable,
-                     parentEntityMainIdColumn,
-                     COL_MAN_IN_CONFLICT];
+                     WHERE %@ = ?", entityMainTable,
+                     parentEntityMainIdColumn];
     NSArray *argsArray = @[[parentEntity localMainIdentifier]];
     qry = mainQueryTransformer(qry);
     argsArray = mainArgsArrayTransformer(argsArray);
@@ -974,7 +969,6 @@ version of entity not found!  It's global ID is: [%@]", [entity globalIdentifier
            mstr.%@ NOT IN (SELECT innerman.%@ \
                            FROM %@ innerman \
                            WHERE innerman.%@ = ? AND \
-                                 innerman.%@ = 0 AND \
                                  innerman.%@ IS NOT NULL) AND \
            mstr.%@ IS NULL",
      entityMasterTable,
@@ -983,7 +977,6 @@ version of entity not found!  It's global ID is: [%@]", [entity globalIdentifier
      COL_GLOBAL_ID,
      entityMainTable,
      parentEntityMainIdColumn,
-     COL_MAN_IN_CONFLICT,
      COL_GLOBAL_ID,
      COL_MST_DELETED_DT];
     mainMasterQrySansSelectClause = masterQueryTransformer(mainMasterQrySansSelectClause);
@@ -1011,12 +1004,10 @@ version of entity not found!  It's global ID is: [%@]", [entity globalIdentifier
     NSString *qry = [NSString stringWithFormat:@"\
                      SELECT count(%@) \
                      FROM %@ \
-                     WHERE %@ = ? AND \
-                           %@ = 0",
+                     WHERE %@ = ?",
                      COL_LOCAL_ID,
                      entityMainTable,
-                     parentEntityMainIdColumn,
-                     COL_MAN_IN_CONFLICT];
+                     parentEntityMainIdColumn];
     qry = mainQueryTransformer(qry);
     NSArray *argsArray = @[[parentEntity localMainIdentifier]];
     argsArray = mainArgsArrayTransformer(argsArray);
@@ -1351,12 +1342,12 @@ Entity: %@", entity]
     for (PELMMainSupport *entity in resultEntities) {
       if (![entity editInProgress] &&
           ![entity syncInProgress] &&
-          ![entity inConflict] &&
           ![entity synced] &&
           (([entity syncErrMask] == nil) ||
            ([entity syncErrMask].integerValue <= 0)) && // less than zero means it represents a system connectivity-related issue (thus temporary); zero occurs if no explicit err-mask header was in response
           (([entity syncHttpRespCode] == nil) ||
            ([entity syncHttpRespCode].integerValue == 401) ||
+           ([entity syncHttpRespCode].integerValue == 409) ||
            ([entity syncHttpRespCode].integerValue == 503) ||
            ([entity syncHttpRespCode].integerValue == 502) ||
            ([entity syncHttpRespCode].integerValue == 504) ||
@@ -1397,10 +1388,7 @@ Entity: %@", entity]
                    mainTable:(NSString *)mainTable
          entityFromResultSet:(entityFromResultSetBlk)entityFromResultSet
           mainEntityInserter:(mainEntityInserterBlk)mainEntityInserter
-     editPrepInvariantChecks:(editPrepInvariantChecksBlk)editPrepInvariantChecks
            mainEntityUpdater:(mainEntityUpdaterBlk)mainEntityUpdater
-           entityBeingSynced:(void(^)(void))entityBeingSyncedBlk
-            entityInConflict:(void(^)(void))entityInConflictBlk
                        error:(PELMDaoErrorBlk)errorBlk {
   void (^actionIfEntityNotInMain)(void) = ^{
     [entity setEditInProgress:YES];
@@ -1446,14 +1434,6 @@ Entity: %@", entity]
   } else {
     [entity setLocalMainIdentifier:[fetchedEntity localMainIdentifier]];
     [entity overwrite:fetchedEntity];
-    if ([fetchedEntity syncInProgress]) {
-      entityBeingSyncedBlk();
-      return NO;
-    }
-    if ([fetchedEntity inConflict]) {
-      entityInConflictBlk();
-      return NO;
-    }
     actionIfEntityAlreadyInMain();
   }
   return YES;
@@ -1463,10 +1443,7 @@ Entity: %@", entity]
                         mainTable:(NSString *)mainTable
               entityFromResultSet:(entityFromResultSetBlk)entityFromResultSet
                mainEntityInserter:(mainEntityInserterBlk)mainEntityInserter
-          editPrepInvariantChecks:(editPrepInvariantChecksBlk)editPrepInvariantChecks
                 mainEntityUpdater:(mainEntityUpdaterBlk)mainEntityUpdater
-                entityBeingSynced:(void(^)(void))entityBeingSyncedBlk
-                 entityInConflict:(void(^)(void))entityInConflictBlk
                             error:(PELMDaoErrorBlk)errorBlk {
   NSAssert([entity localMainIdentifier], @"Entity does not have a localMainIdentifier.");
   __block BOOL returnVal;
@@ -1476,10 +1453,7 @@ Entity: %@", entity]
                                       mainTable:mainTable
                             entityFromResultSet:entityFromResultSet
                              mainEntityInserter:mainEntityInserter
-                        editPrepInvariantChecks:editPrepInvariantChecks
                               mainEntityUpdater:mainEntityUpdater
-                              entityBeingSynced:entityBeingSyncedBlk
-                               entityInConflict:entityInConflictBlk
                                           error:errorBlk];
   }];
   return returnVal;
@@ -2070,37 +2044,11 @@ Entity: %@", entity]
   NSAssert(![mainEntity syncInProgress], @"Entity is currently marked as 'sync-in-progress.'");
 }
 
-/*+ (void)prepareEntityForEditInvariantChecks:(PELMMainSupport *)mainEntity {
-  NSAssert(![mainEntity syncInProgress], @"Entity sync is in progress.");
-  NSAssert(![mainEntity deleted], @"Entity is marked as deleted.");
-  NSAssert(![mainEntity inConflict], @"Entity is marked as in-conflict.");
-}*/
-
 + (void)newEntityInsertionInvariantChecks:(PELMMainSupport *)mainEntity {
   NSAssert(![mainEntity editInProgress], @"editInProgress is YES");
   NSAssert(![mainEntity synced], @"synced is YES");
   NSAssert([mainEntity localMainIdentifier] == nil, @"localMainIdentifier is not nil");
   NSAssert(![mainEntity syncInProgress], @"syncInProgress is YES");
-}
-
-+ (void)forEditPreparationFoundMainModelSupport:(PELMModelSupport *)mainModelSupport
-                          mustMatchModelSupport:(PELMModelSupport *)modelSupport {
-  /*  cannotBe(![PEUtils isNumber:[mainModelSupport localIdentifier]
-   equalTo:[modelSupport localIdentifier]],
-   @"Cannot prepare instance for edit if its 'localIdentifier' propery differs \
-   from the instance found in main store");
-   cannotBe(![PEUtils isString:[mainModelSupport globalIdentifier]
-   equalTo:[modelSupport globalIdentifier]],
-   @"Cannot prepare instance for edit if its 'globalIdentifier' propery differs \
-   from the instance found in main store");*/
-}
-
-+ (void)forEditPreparationFoundMainMainSupport:(PELMMainSupport *)mainMainSupport
-                      mustMatchMainMainSupport:(PELMMainSupport *)mainSupport {
-  [self forEditPreparationFoundMainModelSupport:mainMainSupport
-                          mustMatchModelSupport:mainSupport];
-  cannotBe([mainMainSupport syncInProgress], @"Cannot prepare user for edit if sync is in progress.");
-  cannotBe([mainMainSupport inConflict], @"Cannot prepare user for edit if marked as in-conflict.");
 }
 
 @end

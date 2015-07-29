@@ -85,7 +85,7 @@ void (^LogSyncLocal)(NSString *, NSInteger);
 
 + (void)flushUnsyncedChangesToEntity:(PELMMainSupport *)entity
                   remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
-                 remoteStoreErrorBlk:(void(^)(PELMMainSupport *, NSError *, NSNumber *))remoteStoreErrorBlk
+                 remoteStoreErrorBlk:(void(^)(NSError *, NSNumber *))remoteStoreErrorBlk
                    entityNotFoundBlk:(void(^)(void))entityNotFoundBlk
                    markAsConflictBlk:(void(^)(id))markAsConflictBlk
    markAsSyncCompleteForNewEntityBlk:(void(^)(void))markAsSyncCompleteForNewEntityBlk
@@ -98,7 +98,7 @@ markAsSyncCompleteForExistingEntityBlk:(void(^)(void))markAsSyncCompleteForExist
 
 + (void)deleteEntity:(PELMMainSupport *)entity
   remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
- remoteStoreErrorBlk:(void(^)(PELMMainSupport *, NSError *, NSNumber *))remoteStoreErrorBlk
+ remoteStoreErrorBlk:(void(^)(NSError *, NSNumber *))remoteStoreErrorBlk
    entityNotFoundBlk:(void(^)(void))entityNotFoundBlk
    markAsConflictBlk:(void(^)(id))markAsConflictBlk
    deleteCompleteBlk:(void(^)(void))markAsSyncCompleteForNewEntityBlk
@@ -351,20 +351,14 @@ localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrHandler;
                    mainTable:(NSString *)mainTable
          entityFromResultSet:(entityFromResultSetBlk)entityFromResultSet
           mainEntityInserter:(mainEntityInserterBlk)mainEntityInserter
-     editPrepInvariantChecks:(editPrepInvariantChecksBlk)editPrepInvariantChecks
            mainEntityUpdater:(mainEntityUpdaterBlk)mainEntityUpdater
-           entityBeingSynced:(void(^)(void))entityBeingSynced
-            entityInConflict:(void(^)(void))entityInConflict
                        error:(PELMDaoErrorBlk)errorBlk;
 
 - (BOOL)prepareEntityForEditInTxn:(PELMMainSupport *)entity
                         mainTable:(NSString *)mainTable
               entityFromResultSet:(entityFromResultSetBlk)entityFromResultSet
                mainEntityInserter:(mainEntityInserterBlk)mainEntityInserter
-          editPrepInvariantChecks:(editPrepInvariantChecksBlk)editPrepInvariantChecks
                 mainEntityUpdater:(mainEntityUpdaterBlk)mainEntityUpdater
-                entityBeingSynced:(void(^)(void))entityBeingSyncedBlk
-                 entityInConflict:(void(^)(void))entityInConflictBlk
                             error:(PELMDaoErrorBlk)errorBlk;
 
 + (void)invokeError:(PELMDaoErrorBlk)errorBlk db:(FMDatabase *)db;
@@ -529,14 +523,6 @@ localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrHandler;
 
 + (void)saveEntityInvariantChecks:(PELMMainSupport *)mainEntity;
 
-//+ (void)prepareEntityForEditInvariantChecks:(PELMMainSupport *)mainEntity;
-
 + (void)newEntityInsertionInvariantChecks:(PELMMainSupport *)mainEntity;
-
-+ (void)forEditPreparationFoundMainModelSupport:(PELMModelSupport *)mainModelSupport
-                          mustMatchModelSupport:(PELMModelSupport *)modelSupport;
-
-+ (void)forEditPreparationFoundMainMainSupport:(PELMMainSupport *)mainMainSupport
-                      mustMatchMainMainSupport:(PELMMainSupport *)mainSupport;
 
 @end
