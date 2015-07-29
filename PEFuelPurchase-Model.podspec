@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "PEFuelPurchase-Model"
-  s.version      = "1.0.53"
+  s.version      = "1.0.54"
   s.license      = "MIT"
   s.summary      = "An iOS static library representing the core logic of the PEFuelPurchase-App application."
   s.author       = { "Paul Evans" => "evansp2@gmail.com" }

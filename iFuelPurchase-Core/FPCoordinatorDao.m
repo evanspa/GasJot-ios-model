@@ -766,7 +766,7 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
                     remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
                     tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk
                         remoteErrorBlk:(void(^)(NSInteger))remoteErrorBlk
-                           conflictBlk:(void(^)(FPVehicle *))conflictBlk
+                           conflictBlk:(void(^)(id))conflictBlk
                        authRequiredBlk:(void(^)(void))authRequiredBlk
                                  error:(PELMDaoErrorBlk)errorBlk {
   [_localDao saveNewAndSyncImmediateVehicle:vehicle forUser:user error:errorBlk];
@@ -1008,7 +1008,7 @@ addlTempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
                         remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
                         tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk
                             remoteErrorBlk:(void(^)(NSInteger))remoteErrorBlk
-                               conflictBlk:(void(^)(FPFuelStation *))conflictBlk
+                               conflictBlk:(void(^)(id))conflictBlk
                            authRequiredBlk:(void(^)(void))authRequiredBlk
                                      error:(PELMDaoErrorBlk)errorBlk {
   [_localDao saveNewAndSyncImmediateFuelStation:fuelStation forUser:user error:errorBlk];
@@ -1353,7 +1353,7 @@ addlTempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
                             remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
                             tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk
                                 remoteErrorBlk:(void(^)(NSInteger))remoteErrorBlk
-                                   conflictBlk:(void(^)(FPFuelPurchaseLog *))conflictBlk
+                                   conflictBlk:(void(^)(id))conflictBlk
                                authRequiredBlk:(void(^)(void))authRequiredBlk
                   skippedDueToVehicleNotSynced:(void(^)(void))skippedDueToVehicleNotSynced
               skippedDueToFuelStationNotSynced:(void(^)(void))skippedDueToFuelStationNotSynced
@@ -1714,7 +1714,7 @@ addlTempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
                            remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
                            tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk
                                remoteErrorBlk:(void(^)(NSInteger))remoteErrorBlk
-                                  conflictBlk:(void(^)(FPEnvironmentLog *))conflictBlk
+                                  conflictBlk:(void(^)(id))conflictBlk
                               authRequiredBlk:(void(^)(void))authRequiredBlk
                  skippedDueToVehicleNotSynced:(void(^)(void))skippedDueToVehicleNotSynced
                                         error:(PELMDaoErrorBlk)errorBlk {
