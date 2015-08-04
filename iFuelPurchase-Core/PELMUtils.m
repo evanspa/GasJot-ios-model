@@ -278,6 +278,7 @@ localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrHandler {
                            error:^ (NSError *err, int code, NSString *msg) {
                              errorBlk(err, code, msg);
                              pruneSuccess = NO;
+                             *rollback = YES;
                            }];
       if (pruneSuccess) {
         [entity setLocalMainIdentifier:nil];

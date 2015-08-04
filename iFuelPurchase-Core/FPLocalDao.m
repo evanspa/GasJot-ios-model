@@ -426,12 +426,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                      entityFromResultSet:^(FMResultSet *rs){return [self mainUserFromResultSet:rs];}
                       mainEntityInserter:^(PELMMainSupport *entity, FMDatabase *db, PELMDaoErrorBlk errorBlk) {
                         [self insertIntoMainUser:(FPUser *)entity db:db error:errorBlk];
-                        [PELMUtils insertRelations:[user relations]
-                                         forEntity:user
-                                       entityTable:TBL_MAIN_USER
-                                   localIdentifier:[user localMainIdentifier]
-                                                db:db
-                                             error:errorBlk];
                       }
                        mainEntityUpdater:^(PELMMainSupport *entity, FMDatabase *db, PELMDaoErrorBlk errorBlk) {
                          [PELMUtils doUpdate:[self updateStmtForMainUser]
