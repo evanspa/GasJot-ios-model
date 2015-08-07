@@ -295,6 +295,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
     completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
   [_relationExecutor
     doDeleteOfTargetResource:[FPRestRemoteMasterDao resourceFromModel:vehicle]
+     wouldBeTargetSerializer:_vehicleSerializer
                 asynchronous:YES
              completionQueue:_serialQueue
                authorization:[self authorization]
@@ -358,6 +359,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
         completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
   [_relationExecutor
     doDeleteOfTargetResource:[FPRestRemoteMasterDao resourceFromModel:fuelStation]
+     wouldBeTargetSerializer:_fuelStationSerializer
                 asynchronous:YES
              completionQueue:_serialQueue
                authorization:[self authorization]
@@ -419,6 +421,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
                  authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
             completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
   [_relationExecutor doDeleteOfTargetResource:[FPRestRemoteMasterDao resourceFromModel:fuelPurchaseLog]
+                      wouldBeTargetSerializer:_fuelPurchaseLogSerializer
                                  asynchronous:YES
                               completionQueue:_serialQueue
                                 authorization:[self authorization]
@@ -480,6 +483,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
                 authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
            completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
   [_relationExecutor doDeleteOfTargetResource:[FPRestRemoteMasterDao resourceFromModel:environmentLog]
+                      wouldBeTargetSerializer:_environmentLogSerializer
                                  asynchronous:YES
                               completionQueue:_serialQueue
                                 authorization:[self authorization]
@@ -609,6 +613,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
  completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
   [_relationExecutor
     doDeleteOfTargetResource:[FPRestRemoteMasterDao resourceFromModel:user]
+     wouldBeTargetSerializer:_userSerializer
                 asynchronous:YES
              completionQueue:_serialQueue
                authorization:[self authorization]
