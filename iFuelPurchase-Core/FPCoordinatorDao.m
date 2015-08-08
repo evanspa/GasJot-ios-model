@@ -1439,10 +1439,12 @@ addlTempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
   [fuelPurchaseLog setVehicleGlobalIdentifier:[vehicleForFpLog globalIdentifier]];
   [fuelPurchaseLog setFuelStationGlobalIdentifier:[fuelStationForFpLog globalIdentifier]];
   if ([vehicleForFpLog globalIdentifier] == nil) {
+    [_localDao cancelSyncForFuelPurchaseLog:fuelPurchaseLog httpRespCode:nil errorMask:nil retryAt:nil error:errorBlk];
     skippedDueToVehicleNotSynced();
     return;
   }
   if ([fuelStationForFpLog globalIdentifier] == nil) {
+    [_localDao cancelSyncForFuelPurchaseLog:fuelPurchaseLog httpRespCode:nil errorMask:nil retryAt:nil error:errorBlk];
     skippedDueToFuelStationNotSynced();
     return;
   }
@@ -1765,6 +1767,7 @@ addlTempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
   FPVehicle *vehicleForEnvLog = [_localDao vehicleForEnvironmentLog:environmentLog error:errorBlk];
   [environmentLog setVehicleGlobalIdentifier:[vehicleForEnvLog globalIdentifier]];
   if ([vehicleForEnvLog globalIdentifier] == nil) {
+    [_localDao cancelSyncForEnvironmentLog:environmentLog httpRespCode:nil errorMask:nil retryAt:nil error:errorBlk];
     skippedDueToVehicleNotSynced();
     return;
   }
