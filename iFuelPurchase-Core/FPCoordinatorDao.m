@@ -1520,29 +1520,19 @@ addlTempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
                             skippedDueToVehicleNotSynced:(void(^)(void))skippedDueToVehicleNotSynced
                         skippedDueToFuelStationNotSynced:(void(^)(void))skippedDueToFuelStationNotSynced
                                                    error:(PELMDaoErrorBlk)errorBlk {
-  if ([fuelPurchaseLog vehicleGlobalIdentifier]) {
-    if ([fuelPurchaseLog fuelStationGlobalIdentifier]) {
-      [_localDao markAsDoneEditingImmediateSyncFuelPurchaseLog:fuelPurchaseLog error:errorBlk];
-      [self flushUnsyncedChangesToFuelPurchaseLog:fuelPurchaseLog
-                                          forUser:user
-                              notFoundOnServerBlk:notFoundOnServerBlk
-                                   addlSuccessBlk:successBlk
-                           addlRemoteStoreBusyBlk:remoteStoreBusyBlk
-                           addlTempRemoteErrorBlk:tempRemoteErrorBlk
-                               addlRemoteErrorBlk:remoteErrorBlk
-                                  addlConflictBlk:conflictBlk
-                              addlAuthRequiredBlk:authRequiredBlk
-                     skippedDueToVehicleNotSynced:skippedDueToVehicleNotSynced
-                 skippedDueToFuelStationNotSynced:skippedDueToFuelStationNotSynced
-                                            error:errorBlk];
-    } else {
-      [self markAsDoneEditingFuelPurchaseLog:fuelPurchaseLog error:errorBlk];
-      skippedDueToFuelStationNotSynced();
-    }
-  } else {
-    [self markAsDoneEditingFuelPurchaseLog:fuelPurchaseLog error:errorBlk];
-    skippedDueToVehicleNotSynced();
-  }
+  [_localDao markAsDoneEditingImmediateSyncFuelPurchaseLog:fuelPurchaseLog error:errorBlk];
+  [self flushUnsyncedChangesToFuelPurchaseLog:fuelPurchaseLog
+                                      forUser:user
+                          notFoundOnServerBlk:notFoundOnServerBlk
+                               addlSuccessBlk:successBlk
+                       addlRemoteStoreBusyBlk:remoteStoreBusyBlk
+                       addlTempRemoteErrorBlk:tempRemoteErrorBlk
+                           addlRemoteErrorBlk:remoteErrorBlk
+                              addlConflictBlk:conflictBlk
+                          addlAuthRequiredBlk:authRequiredBlk
+                 skippedDueToVehicleNotSynced:skippedDueToVehicleNotSynced
+             skippedDueToFuelStationNotSynced:skippedDueToFuelStationNotSynced
+                                        error:errorBlk];
 }
 
 - (void)deleteFuelPurchaseLog:(FPFuelPurchaseLog *)fplog
@@ -1847,23 +1837,18 @@ addlTempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
                                         authRequiredBlk:(void(^)(void))authRequiredBlk
                            skippedDueToVehicleNotSynced:(void(^)(void))skippedDueToVehicleNotSynced
                                                   error:(PELMDaoErrorBlk)errorBlk {
-  if ([envLog vehicleGlobalIdentifier]) {
-    [_localDao markAsDoneEditingImmediateSyncEnvironmentLog:envLog error:errorBlk];
-    [self flushUnsyncedChangesToEnvironmentLog:envLog
-                                       forUser:user
-                           notFoundOnServerBlk:notFoundOnServerBlk
-                                addlSuccessBlk:successBlk
-                        addlRemoteStoreBusyBlk:remoteStoreBusyBlk
-                        addlTempRemoteErrorBlk:tempRemoteErrorBlk
-                            addlRemoteErrorBlk:remoteErrorBlk
-                               addlConflictBlk:conflictBlk
-                           addlAuthRequiredBlk:authRequiredBlk
-                  skippedDueToVehicleNotSynced:skippedDueToVehicleNotSynced
-                                         error:errorBlk];
-  } else {
-    [self markAsDoneEditingEnvironmentLog:envLog error:errorBlk];
-    skippedDueToVehicleNotSynced();
-  }
+  [_localDao markAsDoneEditingImmediateSyncEnvironmentLog:envLog error:errorBlk];
+  [self flushUnsyncedChangesToEnvironmentLog:envLog
+                                     forUser:user
+                         notFoundOnServerBlk:notFoundOnServerBlk
+                              addlSuccessBlk:successBlk
+                      addlRemoteStoreBusyBlk:remoteStoreBusyBlk
+                      addlTempRemoteErrorBlk:tempRemoteErrorBlk
+                          addlRemoteErrorBlk:remoteErrorBlk
+                             addlConflictBlk:conflictBlk
+                         addlAuthRequiredBlk:authRequiredBlk
+                skippedDueToVehicleNotSynced:skippedDueToVehicleNotSynced
+                                       error:errorBlk];
 }
 
 - (void)deleteEnvironmentLog:(FPEnvironmentLog *)envlog
