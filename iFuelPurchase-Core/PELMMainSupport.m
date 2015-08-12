@@ -89,7 +89,6 @@
     return hasEqualCopyFromMasterDates &&
       ([self editInProgress] == [mainSupport editInProgress]) &&
       ([self syncInProgress] == [mainSupport syncInProgress]) &&
-      ([self synced] == [mainSupport synced]) &&
       [PEUtils isNumber:[self syncHttpRespCode] equalTo:[mainSupport syncHttpRespCode]] &&
       [PEUtils isNumber:[self syncErrMask] equalTo:[mainSupport syncErrMask]] &&
       hasEqualSyncRetryAtDates;
