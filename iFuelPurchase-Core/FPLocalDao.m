@@ -235,16 +235,17 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   if ([user localMainIdentifier]) {
     [_databaseQueue inDatabase:^(FMDatabase *db) {
       NSString *qry = [NSString stringWithFormat:@"select count(*) from %@ where \
-                       %@ = ? and \
-                       %@ = 0 and \
-                       %@ = 0 and \
-                       %@ = 0 and \
-                       %@ is null",
+%@ = ? and \
+%@ = 0 and \
+%@ = 0 and \
+%@ = 0 and \
+(%@ is null or %@ < 0)",
                        entityTable,
                        COL_MAIN_USER_ID,
                        COL_MAN_SYNCED,
                        COL_MAN_EDIT_IN_PROGRESS,
                        COL_MAN_SYNC_IN_PROGRESS,
+                       COL_MAN_SYNC_ERR_MASK,
                        COL_MAN_SYNC_ERR_MASK];
       FMResultSet *rs = [db executeQuery:qry
                     withArgumentsInArray:@[[user localMainIdentifier]]];
