@@ -110,6 +110,16 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
 
 - (NSInteger)totalNumUnsyncedEntitiesForUser:(FPUser *)user;
 
+- (NSInteger)numSyncNeededVehiclesForUser:(FPUser *)user;
+
+- (NSInteger)numSyncNeededFuelStationsForUser:(FPUser *)user;
+
+- (NSInteger)numSyncNeededFuelPurchaseLogsForUser:(FPUser *)user;
+
+- (NSInteger)numSyncNeededEnvironmentLogsForUser:(FPUser *)user;
+
+- (NSInteger)totalNumSyncNeededEntitiesForUser:(FPUser *)user;
+
 - (BOOL)doesUserHaveAnyUnsyncedEntities:(FPUser *)user;
 
 - (void)resetAsLocalUser:(FPUser *)user error:(PELMDaoErrorBlk)error;

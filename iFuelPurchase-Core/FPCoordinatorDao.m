@@ -434,6 +434,26 @@ accountClosedReasonHeaderName:accountClosedReasonHeaderName
   return [_localDao totalNumUnsyncedEntitiesForUser:user];
 }
 
+- (NSInteger)numSyncNeededVehiclesForUser:(FPUser *)user {
+  return [_localDao numSyncNeededVehiclesForUser:user];
+}
+
+- (NSInteger)numSyncNeededFuelStationsForUser:(FPUser *)user {
+  return [_localDao numSyncNeededFuelStationsForUser:user];
+}
+
+- (NSInteger)numSyncNeededFuelPurchaseLogsForUser:(FPUser *)user {
+  return [_localDao numSyncNeededFuelPurchaseLogsForUser:user];
+}
+
+- (NSInteger)numSyncNeededEnvironmentLogsForUser:(FPUser *)user {
+  return [_localDao numSyncNeededEnvironmentLogsForUser:user];
+}
+
+- (NSInteger)totalNumSyncNeededEntitiesForUser:(FPUser *)user {
+  return [_localDao totalNumSyncNeededEntitiesForUser:user];
+}
+
 - (BOOL)doesUserHaveAnyUnsyncedEntities:(FPUser *)user {
   return ([self totalNumUnsyncedEntitiesForUser:user] > 0);
 }

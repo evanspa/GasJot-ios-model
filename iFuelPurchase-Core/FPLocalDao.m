@@ -229,6 +229,33 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   return numEntities;
 }
 
+- (NSInteger)numSyncNeededEntitiesForUser:(FPUser *)user
+                          mainEntityTable:(NSString *)entityTable {
+  __block NSInteger numEntities = 0;
+  if ([user localMainIdentifier]) {
+    [_databaseQueue inDatabase:^(FMDatabase *db) {
+      NSString *qry = [NSString stringWithFormat:@"select count(*) from %@ where \
+                       %@ = ? and \
+                       %@ = 0 and \
+                       %@ = 0 and \
+                       %@ = 0 and \
+                       %@ is null",
+                       entityTable,
+                       COL_MAIN_USER_ID,
+                       COL_MAN_SYNCED,
+                       COL_MAN_EDIT_IN_PROGRESS,
+                       COL_MAN_SYNC_IN_PROGRESS,
+                       COL_MAN_SYNC_ERR_MASK];
+      FMResultSet *rs = [db executeQuery:qry
+                    withArgumentsInArray:@[[user localMainIdentifier]]];
+      [rs next];
+      numEntities = [rs intForColumnIndex:0];
+      [rs next]; // to not have 'open result set' warning
+    }];
+  }
+  return numEntities;
+}
+
 - (NSInteger)numUnsyncedVehiclesForUser:(FPUser *)user {
   return [self numUnsyncedEntitiesForUser:user mainEntityTable:TBL_MAIN_VEHICLE];
 }
@@ -250,6 +277,29 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
     [self numUnsyncedFuelStationsForUser:user] +
     [self numUnsyncedFuelPurchaseLogsForUser:user] +
     [self numUnsyncedEnvironmentLogsForUser:user];
+}
+
+- (NSInteger)numSyncNeededVehiclesForUser:(FPUser *)user {
+  return [self numSyncNeededEntitiesForUser:user mainEntityTable:TBL_MAIN_VEHICLE];
+}
+
+- (NSInteger)numSyncNeededFuelStationsForUser:(FPUser *)user {
+  return [self numSyncNeededEntitiesForUser:user mainEntityTable:TBL_MAIN_FUEL_STATION];
+}
+
+- (NSInteger)numSyncNeededFuelPurchaseLogsForUser:(FPUser *)user {
+  return [self numSyncNeededEntitiesForUser:user mainEntityTable:TBL_MAIN_FUELPURCHASE_LOG];
+}
+
+- (NSInteger)numSyncNeededEnvironmentLogsForUser:(FPUser *)user {
+  return [self numSyncNeededEntitiesForUser:user mainEntityTable:TBL_MAIN_ENV_LOG];
+}
+
+- (NSInteger)totalNumSyncNeededEntitiesForUser:(FPUser *)user {
+  return [self numSyncNeededVehiclesForUser:user] +
+    [self numSyncNeededFuelStationsForUser:user] +
+    [self numSyncNeededFuelPurchaseLogsForUser:user] +
+    [self numSyncNeededEnvironmentLogsForUser:user];
 }
 
 - (void)saveNewLocalUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk {

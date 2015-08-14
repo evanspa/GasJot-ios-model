@@ -56,6 +56,16 @@
 
 - (NSInteger)totalNumUnsyncedEntitiesForUser:(FPUser *)user;
 
+- (NSInteger)numSyncNeededVehiclesForUser:(FPUser *)user;
+
+- (NSInteger)numSyncNeededFuelStationsForUser:(FPUser *)user;
+
+- (NSInteger)numSyncNeededFuelPurchaseLogsForUser:(FPUser *)user;
+
+- (NSInteger)numSyncNeededEnvironmentLogsForUser:(FPUser *)user;
+
+- (NSInteger)totalNumSyncNeededEntitiesForUser:(FPUser *)user;
+
 - (void)saveNewLocalUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)saveNewRemoteUser:(FPUser *)remoteUser
