@@ -1227,6 +1227,8 @@ Entity: %@", entity]
                                    userInfo:nil];
     }
     copyToMainAction();
+  } else {
+    [entity setLocalMainIdentifier:foundLocalMainId];
   }
 }
 
