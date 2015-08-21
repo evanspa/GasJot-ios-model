@@ -58,6 +58,12 @@
                                            relations:(NSDictionary *)relations
                                            updatedAt:(NSDate *)updatedAt;
 
+#pragma mark - Merging
+
++ (BOOL)mergeRemoteFplog:(FPFuelPurchaseLog *)remoteFplog
+          withLocalFplog:(FPFuelPurchaseLog *)localFplog
+        localMasterFplog:(FPFuelPurchaseLog *)localMasterFplog;
+
 #pragma mark - Methods
 
 - (void)overwrite:(FPFuelPurchaseLog *)fuelPurchaseLog;

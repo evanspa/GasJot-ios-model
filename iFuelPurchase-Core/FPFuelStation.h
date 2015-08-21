@@ -61,6 +61,12 @@
 
 + (FPFuelStation *)fuelStationWithLocalMasterIdentifier:(NSNumber *)localMasterIdentifier;
 
+#pragma mark - Merging
+
++ (BOOL)mergeRemoteFuelstation:(FPFuelStation *)remoteFuelstation
+          withLocalFuelstation:(FPFuelStation *)localFuelstation
+        localMasterFuelstation:(FPFuelStation *)localMasterFuelstation;
+
 #pragma mark - Methods
 
 - (void)overwrite:(FPFuelStation *)fuelStation;

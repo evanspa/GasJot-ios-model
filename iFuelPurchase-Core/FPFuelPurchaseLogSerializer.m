@@ -30,20 +30,20 @@ NSString * const FPFuelPurchaseLogUpdatedAtKey                = @"fplog/updated-
 - (NSDictionary *)dictionaryWithResourceModel:(id)resourceModel {
   FPFuelPurchaseLog *fuelPurchaseLog = (FPFuelPurchaseLog *)resourceModel;
   NSMutableDictionary *fuelPurchaseLogDict = [NSMutableDictionary dictionary];
-  [fuelPurchaseLogDict setObjectIfNotNull:[fuelPurchaseLog vehicleGlobalIdentifier]
-                                   forKey:FPFuelPurchaseLogVehicleGlobalIdKey];
-  [fuelPurchaseLogDict setObjectIfNotNull:[fuelPurchaseLog fuelStationGlobalIdentifier]
-                                   forKey:FPFuelPurchaseLogFuelStationGlobalIdKey];
-  [fuelPurchaseLogDict setObjectIfNotNull:[fuelPurchaseLog numGallons]
-                                   forKey:FPFuelPurchaseLogNumGallonsKey];
-  [fuelPurchaseLogDict setObjectIfNotNull:[fuelPurchaseLog octane]
-                                   forKey:FPFuelPurchaseLogOctaneKey];
-  [fuelPurchaseLogDict setObjectIfNotNull:[fuelPurchaseLog gallonPrice]
-                                   forKey:FPFuelPurchaseLogGallonPriceKey];
-  [fuelPurchaseLogDict setObjectIfNotNull:[NSNumber numberWithBool:[fuelPurchaseLog gotCarWash]]
-                                   forKey:FPFuelPurchaseLogGotCarWashKey];
-  [fuelPurchaseLogDict setObjectIfNotNull:[fuelPurchaseLog carWashPerGallonDiscount]
-                                   forKey:FPFuelPurchaseLogCarWashPerGallonDiscountKey];
+  [fuelPurchaseLogDict nullSafeSetObject:[fuelPurchaseLog vehicleGlobalIdentifier]
+                                  forKey:FPFuelPurchaseLogVehicleGlobalIdKey];
+  [fuelPurchaseLogDict nullSafeSetObject:[fuelPurchaseLog fuelStationGlobalIdentifier]
+                                  forKey:FPFuelPurchaseLogFuelStationGlobalIdKey];
+  [fuelPurchaseLogDict nullSafeSetObject:[fuelPurchaseLog numGallons]
+                                  forKey:FPFuelPurchaseLogNumGallonsKey];
+  [fuelPurchaseLogDict nullSafeSetObject:[fuelPurchaseLog octane]
+                                  forKey:FPFuelPurchaseLogOctaneKey];
+  [fuelPurchaseLogDict nullSafeSetObject:[fuelPurchaseLog gallonPrice]
+                                  forKey:FPFuelPurchaseLogGallonPriceKey];
+  [fuelPurchaseLogDict nullSafeSetObject:[NSNumber numberWithBool:[fuelPurchaseLog gotCarWash]]
+                                  forKey:FPFuelPurchaseLogGotCarWashKey];
+  [fuelPurchaseLogDict nullSafeSetObject:[fuelPurchaseLog carWashPerGallonDiscount]
+                                  forKey:FPFuelPurchaseLogCarWashPerGallonDiscountKey];
   [fuelPurchaseLogDict setMillisecondsSince1970FromDate:[fuelPurchaseLog purchasedAt]
                                                  forKey:FPFuelPurchaseLogPurchasedAtKey];
   return fuelPurchaseLogDict;

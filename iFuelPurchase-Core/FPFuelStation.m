@@ -176,6 +176,51 @@
                                                   longitude:nil];
 }
 
+#pragma mark - Merging
+
++ (BOOL)mergeRemoteFuelstation:(FPFuelStation *)remoteFuelstation
+          withLocalFuelstation:(FPFuelStation *)localFuelstation
+        localMasterFuelstation:(FPFuelStation *)localMasterFuelstation {
+  return [PEUtils mergeRemoteObject:remoteFuelstation
+                    withLocalObject:localFuelstation
+                previousLocalObject:localMasterFuelstation
+            getterSetterComparators:@[@[[NSValue valueWithPointer:@selector(name)],
+                                        [NSValue valueWithPointer:@selector(setName:)],
+                                        ^(SEL getter, id obj1, id obj2) {return [PEUtils isStringProperty:getter equalFor:obj1 and:obj2];},
+                                        ^(FPFuelStation * localObject, FPFuelStation * remoteObject) {[localObject setName:[remoteObject name]];},
+                                        ^(id localObject, id remoteObject) {}],
+                                      @[[NSValue valueWithPointer:@selector(street)],
+                                        [NSValue valueWithPointer:@selector(setStreet:)],
+                                        ^(SEL getter, id obj1, id obj2) {return [PEUtils isStringProperty:getter equalFor:obj1 and:obj2];},
+                                        ^(FPFuelStation * localObject, FPFuelStation * remoteObject) {[localObject setStreet:[remoteObject street]];},
+                                        ^(id localObject, id remoteObject) {}],
+                                      @[[NSValue valueWithPointer:@selector(city)],
+                                        [NSValue valueWithPointer:@selector(setCity:)],
+                                        ^(SEL getter, id obj1, id obj2) {return [PEUtils isStringProperty:getter equalFor:obj1 and:obj2];},
+                                        ^(FPFuelStation * localObject, FPFuelStation * remoteObject) {[localObject setCity:[remoteObject city]];},
+                                        ^(id localObject, id remoteObject) {}],
+                                      @[[NSValue valueWithPointer:@selector(state)],
+                                        [NSValue valueWithPointer:@selector(setState:)],
+                                        ^(SEL getter, id obj1, id obj2) {return [PEUtils isStringProperty:getter equalFor:obj1 and:obj2];},
+                                        ^(FPFuelStation * localObject, FPFuelStation * remoteObject) {[localObject setState:[remoteObject state]];},
+                                        ^(id localObject, id remoteObject) {}],
+                                      @[[NSValue valueWithPointer:@selector(zip)],
+                                        [NSValue valueWithPointer:@selector(setZip:)],
+                                        ^(SEL getter, id obj1, id obj2) {return [PEUtils isStringProperty:getter equalFor:obj1 and:obj2];},
+                                        ^(FPFuelStation * localObject, FPFuelStation * remoteObject) {[localObject setZip:[remoteObject zip]];},
+                                        ^(id localObject, id remoteObject) {}],
+                                      @[[NSValue valueWithPointer:@selector(latitude)],
+                                        [NSValue valueWithPointer:@selector(setLatitude:)],
+                                        ^(SEL getter, id obj1, id obj2) {return [PEUtils isNumProperty:getter equalFor:obj1 and:obj2];},
+                                        ^(FPFuelStation * localObject, FPFuelStation * remoteObject) {[localObject setLatitude:[remoteObject latitude]];},
+                                        ^(FPFuelStation * localObject, FPFuelStation * remoteObject) {}],
+                                      @[[NSValue valueWithPointer:@selector(longitude)],
+                                        [NSValue valueWithPointer:@selector(setLongitude:)],
+                                        ^(SEL getter, id obj1, id obj2) {return [PEUtils isNumProperty:getter equalFor:obj1 and:obj2];},
+                                        ^(FPFuelStation * localObject, FPFuelStation * remoteObject) { [localObject setLongitude:[remoteObject longitude]];},
+                                        ^(id localObject, id remoteObject) {}]]];
+}
+
 #pragma mark - Methods
 
 - (void)overwrite:(FPFuelStation *)fuelStation {

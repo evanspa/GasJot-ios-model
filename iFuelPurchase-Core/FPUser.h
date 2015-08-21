@@ -58,6 +58,12 @@ FOUNDATION_EXPORT NSString * const FPEnvironmentLogsRelation;
                relations:(NSDictionary *)relations
                updatedAt:(NSDate *)updatedAt;
 
+#pragma mark - Merging
+
++ (BOOL)mergeRemoteUser:(FPUser *)remoteUser
+          withLocalUser:(FPUser *)localUser
+        localMasterUser:(FPUser *)localMasterUser;
+
 #pragma mark - Methods
 
 - (void)addVehicle:(FPVehicle *)vehicle;

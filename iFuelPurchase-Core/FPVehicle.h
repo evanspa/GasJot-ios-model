@@ -49,7 +49,15 @@
 
 + (FPVehicle *)vehicleWithLocalMasterIdentifier:(NSNumber *)localMasterIdentifier;
 
-#pragma mark - Methods
+#pragma mark - Merging
+
++ (BOOL)mergeRemoteVehicle:(FPVehicle *)remoteVehicle
+          withLocalVehicle:(FPVehicle *)localVehicle
+        localMasterVehicle:(FPVehicle *)localMasterVehicle;
+
+#pragma mark - Overwriting
+
+- (void)overwriteDomainProperties:(FPVehicle *)vehicle;
 
 - (void)overwrite:(FPVehicle *)vehicle;
 

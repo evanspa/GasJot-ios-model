@@ -57,6 +57,12 @@
                                relations:(NSDictionary *)relations
                                updatedAt:(NSDate *)updatedAt;
 
+#pragma mark - Merging
+
++ (BOOL)mergeRemoteEnvlog:(FPEnvironmentLog *)remoteEnvlog
+          withLocalEnvlog:(FPEnvironmentLog *)localEnvlog
+        localMasterEnvlog:(FPEnvironmentLog *)localMasterEnvlog;
+
 #pragma mark - Methods
 
 - (void)overwrite:(FPEnvironmentLog *)envLog;

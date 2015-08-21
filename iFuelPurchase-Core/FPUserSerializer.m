@@ -26,10 +26,10 @@ NSString * const FPUserUpdatedAtKey    = @"user/updated-at";
 - (NSDictionary *)dictionaryWithResourceModel:(id)resourceModel {
   FPUser *user = (FPUser *)resourceModel;
   NSMutableDictionary *userDict = [NSMutableDictionary dictionary];
-  [userDict setObjectIfNotNull:[user name] forKey:FPUserFullnameKey];
-  [userDict setObjectIfNotNull:[user email] forKey:FPUserEmailKey];
-  [userDict setObjectIfNotNull:[user username] forKey:FPUserUsernameKey];
-  [userDict setObjectIfNotNull:[user password] forKey:FPUserPasswordKey];
+  [userDict nullSafeSetObject:[user name] forKey:FPUserFullnameKey];
+  [userDict nullSafeSetObject:[user email] forKey:FPUserEmailKey];
+  [userDict nullSafeSetObject:[user username] forKey:FPUserUsernameKey];
+  [userDict nullSafeSetObject:[user password] forKey:FPUserPasswordKey];
   return userDict;
 }
 

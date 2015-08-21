@@ -24,9 +24,9 @@ NSString * const FPVehicleUpdatedAtKey     = @"fpvehicle/updated-at";
 - (NSDictionary *)dictionaryWithResourceModel:(id)resourceModel {
   FPVehicle *vehicle = (FPVehicle *)resourceModel;
   NSMutableDictionary *vehicleDict = [NSMutableDictionary dictionary];
-  [vehicleDict setObjectIfNotNull:[vehicle name] forKey:FPVehicleNameKey];
-  [vehicleDict setObjectIfNotNull:[vehicle defaultOctane] forKey:FPVehicleDefaultOctaneKey];
-  [vehicleDict setObjectIfNotNull:[vehicle fuelCapacity] forKey:FPVehicleFuelCapacityKey];
+  [vehicleDict nullSafeSetObject:[vehicle name] forKey:FPVehicleNameKey];
+  [vehicleDict nullSafeSetObject:[vehicle defaultOctane] forKey:FPVehicleDefaultOctaneKey];
+  [vehicleDict nullSafeSetObject:[vehicle fuelCapacity] forKey:FPVehicleFuelCapacityKey];
   return vehicleDict;
 }
 

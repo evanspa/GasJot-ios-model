@@ -23,7 +23,6 @@
                         mediaType:(HCMediaType *)mediaType
                          location:(NSString *)location
                      lastModified:(NSDate *)lastModified {
-  // need to return SOMETHING
   return [[NSObject alloc] init];
 }
 

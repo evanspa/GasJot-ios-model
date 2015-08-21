@@ -28,13 +28,13 @@ NSString * const FPFuelStationUpdatedAtKey = @"fpfuelstation/updated-at";
 - (NSDictionary *)dictionaryWithResourceModel:(id)resourceModel {
   FPFuelStation *fuelStation = (FPFuelStation *)resourceModel;
   NSMutableDictionary *fuelStationDict = [NSMutableDictionary dictionary];
-  [fuelStationDict setObjectIfNotNull:[fuelStation name] forKey:FPFuelStationNameKey];
-  [fuelStationDict setObjectIfNotNull:[fuelStation street] forKey:FPFuelStationStreetKey];
-  [fuelStationDict setObjectIfNotNull:[fuelStation city] forKey:FPFuelStationCityKey];
-  [fuelStationDict setObjectIfNotNull:[fuelStation state] forKey:FPFuelStationStateKey];
-  [fuelStationDict setObjectIfNotNull:[fuelStation zip] forKey:FPFuelStationZipKey];
-  [fuelStationDict setObjectIfNotNull:[fuelStation latitude] forKey:FPFuelStationLatitudeKey];
-  [fuelStationDict setObjectIfNotNull:[fuelStation longitude] forKey:FPFuelStationLongitudeKey];
+  [fuelStationDict nullSafeSetObject:[fuelStation name] forKey:FPFuelStationNameKey];
+  [fuelStationDict nullSafeSetObject:[fuelStation street] forKey:FPFuelStationStreetKey];
+  [fuelStationDict nullSafeSetObject:[fuelStation city] forKey:FPFuelStationCityKey];
+  [fuelStationDict nullSafeSetObject:[fuelStation state] forKey:FPFuelStationStateKey];
+  [fuelStationDict nullSafeSetObject:[fuelStation zip] forKey:FPFuelStationZipKey];
+  [fuelStationDict nullSafeSetObject:[fuelStation latitude] forKey:FPFuelStationLatitudeKey];
+  [fuelStationDict nullSafeSetObject:[fuelStation longitude] forKey:FPFuelStationLongitudeKey];
   return fuelStationDict;
 }
 

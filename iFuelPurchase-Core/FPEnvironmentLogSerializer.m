@@ -29,12 +29,12 @@ NSString * const FPEnvironmentLogUpdatedAtKey           = @"envlog/updated-at";
 - (NSDictionary *)dictionaryWithResourceModel:(id)resourceModel {
   FPEnvironmentLog *environmentLog = (FPEnvironmentLog *)resourceModel;
   NSMutableDictionary *environmentLogDict = [NSMutableDictionary dictionary];
-  [environmentLogDict setObjectIfNotNull:[environmentLog vehicleGlobalIdentifier] forKey:FPEnvironmentLogVehicleGlobalIdKey];
-  [environmentLogDict setObjectIfNotNull:[environmentLog odometer] forKey:FPEnvironmentLogOdometerKey];
-  [environmentLogDict setObjectIfNotNull:[environmentLog reportedDte] forKey:FPEnvironmentLogReportedDteKey];
-  [environmentLogDict setObjectIfNotNull:[environmentLog reportedAvgMpg] forKey:FPEnvironmentLogReportedAvgMpgKey];
-  [environmentLogDict setObjectIfNotNull:[environmentLog reportedAvgMph] forKey:FPEnvironmentLogReportedAvgMphKey];
-  [environmentLogDict setObjectIfNotNull:[environmentLog reportedOutsideTemp] forKey:FPEnvironmentLogReportedOutsideTempKey];
+  [environmentLogDict nullSafeSetObject:[environmentLog vehicleGlobalIdentifier] forKey:FPEnvironmentLogVehicleGlobalIdKey];
+  [environmentLogDict nullSafeSetObject:[environmentLog odometer] forKey:FPEnvironmentLogOdometerKey];
+  [environmentLogDict nullSafeSetObject:[environmentLog reportedDte] forKey:FPEnvironmentLogReportedDteKey];
+  [environmentLogDict nullSafeSetObject:[environmentLog reportedAvgMpg] forKey:FPEnvironmentLogReportedAvgMpgKey];
+  [environmentLogDict nullSafeSetObject:[environmentLog reportedAvgMph] forKey:FPEnvironmentLogReportedAvgMphKey];
+  [environmentLogDict nullSafeSetObject:[environmentLog reportedOutsideTemp] forKey:FPEnvironmentLogReportedOutsideTempKey];
   [environmentLogDict setMillisecondsSince1970FromDate:[environmentLog logDate]
                                                 forKey:FPEnvironmentLogLogDateKey];
   return environmentLogDict;

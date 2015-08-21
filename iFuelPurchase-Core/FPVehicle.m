@@ -144,13 +144,42 @@
                                            fuelCapacity:nil];
 }
 
-#pragma mark - Methods
+#pragma mark - Merging
 
-- (void)overwrite:(FPVehicle *)vehicle {
-  [super overwrite:vehicle];
++ (BOOL)mergeRemoteVehicle:(FPVehicle *)remoteVehicle
+          withLocalVehicle:(FPVehicle *)localVehicle
+        localMasterVehicle:(FPVehicle *)localMasterVehicle {
+  return [PEUtils mergeRemoteObject:remoteVehicle
+                    withLocalObject:localVehicle
+                previousLocalObject:localMasterVehicle
+            getterSetterComparators:@[@[[NSValue valueWithPointer:@selector(name)],
+                                        [NSValue valueWithPointer:@selector(setName:)],
+                                        ^(SEL getter, id obj1, id obj2) {return [PEUtils isStringProperty:getter equalFor:obj1 and:obj2];},
+                                        ^(FPVehicle * localObject, FPVehicle * remoteObject) {[localObject setName:[remoteObject name]];},
+                                        ^(id localObject, id remoteObject) {}],
+                                      @[[NSValue valueWithPointer:@selector(defaultOctane)],
+                                        [NSValue valueWithPointer:@selector(setDefaultOctane:)],
+                                        ^(SEL getter, id obj1, id obj2) {return [PEUtils isNumProperty:getter equalFor:obj1 and:obj2];},
+                                        ^(FPVehicle * localObject, FPVehicle * remoteObject) {[localObject setDefaultOctane:[remoteObject defaultOctane]];},
+                                        ^(FPVehicle * localObject, FPVehicle * remoteObject) {}],
+                                      @[[NSValue valueWithPointer:@selector(fuelCapacity)],
+                                        [NSValue valueWithPointer:@selector(setFuelCapacity:)],
+                                        ^(SEL getter, id obj1, id obj2) {return [PEUtils isNumProperty:getter equalFor:obj1 and:obj2];},
+                                        ^(FPVehicle * localObject, FPVehicle * remoteObject) { [localObject setFuelCapacity:[remoteObject fuelCapacity]];},
+                                        ^(id localObject, id remoteObject) {}]]];
+}
+
+#pragma mark - Overwriting
+
+- (void)overwriteDomainProperties:(FPVehicle *)vehicle {
   [self setName:[vehicle name]];
   [self setDefaultOctane:[vehicle defaultOctane]];
   [self setFuelCapacity:[vehicle fuelCapacity]];
+}
+
+- (void)overwrite:(FPVehicle *)vehicle {
+  [super overwrite:vehicle];
+  [self overwriteDomainProperties:vehicle];
 }
 
 #pragma mark - Equality
