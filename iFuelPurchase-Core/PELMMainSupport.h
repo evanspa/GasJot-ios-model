@@ -30,7 +30,9 @@
                       syncErrMask:(NSNumber *)syncErrMask
                       syncRetryAt:(NSDate *)syncRetryAt;
 
-#pragma mark - Methods
+#pragma mark - Overwriting
+
+- (void)overwriteDomainProperties:(PELMMainSupport *)entity;
 
 - (void)overwrite:(PELMMainSupport *)entity;
 

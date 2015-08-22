@@ -64,9 +64,11 @@
           withLocalFplog:(FPFuelPurchaseLog *)localFplog
         localMasterFplog:(FPFuelPurchaseLog *)localMasterFplog;
 
-#pragma mark - Methods
+#pragma mark - Overwriting
 
-- (void)overwrite:(FPFuelPurchaseLog *)fuelPurchaseLog;
+- (void)overwriteDomainProperties:(FPFuelPurchaseLog *)fplog;
+
+- (void)overwrite:(FPFuelPurchaseLog *)fplog;
 
 #pragma mark - Properties
 

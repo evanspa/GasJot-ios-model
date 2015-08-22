@@ -192,16 +192,21 @@
                                         ^(FPFuelPurchaseLog * localObject, FPFuelPurchaseLog * remoteObject) {}]]];
 }
 
-#pragma mark - Methods
+#pragma mark - Overwriting
 
-- (void)overwrite:(FPFuelPurchaseLog *)fuelPurchaseLog {
-  [super overwrite:fuelPurchaseLog];
-  [self setNumGallons:[fuelPurchaseLog numGallons]];
-  [self setOctane:[fuelPurchaseLog octane]];
-  [self setGallonPrice:[fuelPurchaseLog gallonPrice]];
-  [self setGotCarWash:[fuelPurchaseLog gotCarWash]];
-  [self setCarWashPerGallonDiscount:[fuelPurchaseLog carWashPerGallonDiscount]];
-  [self setPurchasedAt:[fuelPurchaseLog purchasedAt]];
+- (void)overwriteDomainProperties:(FPFuelPurchaseLog *)fplog {
+  [super overwriteDomainProperties:fplog];
+  [self setNumGallons:[fplog numGallons]];
+  [self setOctane:[fplog octane]];
+  [self setGallonPrice:[fplog gallonPrice]];
+  [self setGotCarWash:[fplog gotCarWash]];
+  [self setCarWashPerGallonDiscount:[fplog carWashPerGallonDiscount]];
+  [self setPurchasedAt:[fplog purchasedAt]];
+}
+
+- (void)overwrite:(FPFuelPurchaseLog *)fplog {
+  [super overwrite:fplog];
+  [self overwriteDomainProperties:fplog];
 }
 
 #pragma mark - Equality

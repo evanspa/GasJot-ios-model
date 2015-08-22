@@ -188,16 +188,21 @@
                                         ^(id localObject, id remoteObject) {}]]];
 }
 
-#pragma mark - Methods
+#pragma mark - Overwriting
 
-- (void)overwrite:(FPEnvironmentLog *)envLog {
-  [super overwrite:envLog];
-  [self setOdometer:[envLog odometer]];
-  [self setReportedAvgMpg:[envLog reportedAvgMpg]];
-  [self setReportedAvgMph:[envLog reportedAvgMph]];
-  [self setReportedOutsideTemp:[envLog reportedOutsideTemp]];
-  [self setLogDate:[envLog logDate]];
-  [self setReportedDte:[envLog reportedDte]];
+- (void)overwriteDomainProperties:(FPEnvironmentLog *)envlog {
+  [super overwriteDomainProperties:envlog];
+  [self setOdometer:[envlog odometer]];
+  [self setReportedAvgMpg:[envlog reportedAvgMpg]];
+  [self setReportedAvgMph:[envlog reportedAvgMph]];
+  [self setReportedOutsideTemp:[envlog reportedOutsideTemp]];
+  [self setLogDate:[envlog logDate]];
+  [self setReportedDte:[envlog reportedDte]];
+}
+
+- (void)overwrite:(FPEnvironmentLog *)envlog {
+  [super overwrite:envlog];
+  [self overwriteDomainProperties:envlog];
 }
 
 #pragma mark - Equality

@@ -63,7 +63,9 @@
           withLocalEnvlog:(FPEnvironmentLog *)localEnvlog
         localMasterEnvlog:(FPEnvironmentLog *)localMasterEnvlog;
 
-#pragma mark - Methods
+#pragma mark - Overwriting
+
+- (void)overwriteDomainProperties:(FPEnvironmentLog *)envlog;
 
 - (void)overwrite:(FPEnvironmentLog *)envLog;
 

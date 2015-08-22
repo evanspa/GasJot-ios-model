@@ -67,9 +67,13 @@
           withLocalFuelstation:(FPFuelStation *)localFuelstation
         localMasterFuelstation:(FPFuelStation *)localMasterFuelstation;
 
-#pragma mark - Methods
+#pragma mark - Overwriting
 
-- (void)overwrite:(FPFuelStation *)fuelStation;
+- (void)overwriteDomainProperties:(FPFuelStation *)fuelstation;
+
+- (void)overwrite:(FPFuelStation *)fuelstation;
+
+#pragma mark - Methods
 
 - (CLLocation *)location;
 

@@ -221,18 +221,25 @@
                                         ^(id localObject, id remoteObject) {}]]];
 }
 
-#pragma mark - Methods
+#pragma mark - Overwriting
 
-- (void)overwrite:(FPFuelStation *)fuelStation {
-  [super overwrite:fuelStation];
-  [self setName:[fuelStation name]];
-  [self setStreet:[fuelStation street]];
-  [self setCity:[fuelStation city]];
-  [self setState:[fuelStation state]];
-  [self setZip:[fuelStation zip]];
-  [self setLatitude:[fuelStation latitude]];
-  [self setLongitude:[fuelStation longitude]];
+- (void)overwriteDomainProperties:(FPFuelStation *)fuelstation {
+  [super overwriteDomainProperties:fuelstation];
+  [self setName:[fuelstation name]];
+  [self setStreet:[fuelstation street]];
+  [self setCity:[fuelstation city]];
+  [self setState:[fuelstation state]];
+  [self setZip:[fuelstation zip]];
+  [self setLatitude:[fuelstation latitude]];
+  [self setLongitude:[fuelstation longitude]];
 }
+
+- (void)overwrite:(FPFuelStation *)fuelstation {
+  [super overwrite:fuelstation];
+  [self overwriteDomainProperties:fuelstation];
+}
+
+#pragma mark - Methods
 
 - (CLLocation *)location {
   if ((_latitude && ![_latitude isEqual:[NSNull null]]) &&

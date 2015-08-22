@@ -172,6 +172,7 @@
 #pragma mark - Overwriting
 
 - (void)overwriteDomainProperties:(FPVehicle *)vehicle {
+  [super overwriteDomainProperties:vehicle];
   [self setName:[vehicle name]];
   [self setDefaultOctane:[vehicle defaultOctane]];
   [self setFuelCapacity:[vehicle fuelCapacity]];

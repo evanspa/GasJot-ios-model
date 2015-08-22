@@ -52,7 +52,9 @@
   return self;
 }
 
-#pragma mark - Methods
+#pragma mark - Overwriting
+
+- (void)overwriteDomainProperties:(PELMMainSupport *)entity { }
 
 - (void)overwrite:(PELMMainSupport *)entity {
   [super overwrite:entity];
@@ -65,6 +67,8 @@
   [self setSyncErrMask:[entity syncErrMask]];
   [self setSyncRetryAt:[entity syncRetryAt]];
 }
+
+#pragma mark - Methods
 
 - (NSUInteger)incrementEditCount {
   _editCount++;

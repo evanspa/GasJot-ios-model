@@ -64,6 +64,12 @@ FOUNDATION_EXPORT NSString * const FPEnvironmentLogsRelation;
           withLocalUser:(FPUser *)localUser
         localMasterUser:(FPUser *)localMasterUser;
 
+#pragma mark - Overwriting
+
+- (void)overwriteDomainProperties:(FPUser *)user;
+
+- (void)overwrite:(FPUser *)user;
+
 #pragma mark - Methods
 
 - (void)addVehicle:(FPVehicle *)vehicle;

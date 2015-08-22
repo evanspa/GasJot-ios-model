@@ -167,6 +167,20 @@ NSString * const FPEnvironmentLogsRelation = @"environment-logs";
                                         ^(id localObject, id remoteObject) {}]]];
 }
 
+#pragma mark - Overwriting
+
+- (void)overwriteDomainProperties:(FPUser *)user {
+  [super overwriteDomainProperties:user];
+  [self setEmail:[user email]];
+  [self setUsername:[user username]];
+  [self setName:[user name]];
+}
+
+- (void)overwrite:(FPUser *)user {
+  [super overwrite:user];
+  [self overwriteDomainProperties:user];
+}
+
 #pragma mark - Methods
 
 - (void)addVehicle:(FPVehicle *)vehicle {
