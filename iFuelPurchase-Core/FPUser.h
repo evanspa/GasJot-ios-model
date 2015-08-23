@@ -64,9 +64,9 @@ FOUNDATION_EXPORT NSString * const FPUserUsernameField;
 
 #pragma mark - Merging
 
-+ (NSDictionary *)mergeRemoteEntity:(FPUser *)remoteUser
-                    withLocalEntity:(FPUser *)localUser
-                  localMasterEntity:(FPUser *)localMasterUser;
++ (NSDictionary *)mergeRemoteUser:(FPUser *)remoteUser
+                    withLocalUser:(FPUser *)localUser
+                  localMasterUser:(FPUser *)localMasterUser;
 
 #pragma mark - Overwriting
 

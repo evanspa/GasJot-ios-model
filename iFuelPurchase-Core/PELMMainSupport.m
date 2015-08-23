@@ -52,14 +52,6 @@
   return self;
 }
 
-#pragma mark - Merging
-
-+ (NSDictionary *)mergeRemoteEntity:(PELMMainSupport *)remoteEntity
-                    withLocalEntity:(PELMMainSupport *)localEntity
-                  localMasterEntity:(PELMMainSupport *)localMasterEntity {
-  return @{};
-}
-
 #pragma mark - Overwriting
 
 - (void)overwriteDomainProperties:(PELMMainSupport *)entity { }

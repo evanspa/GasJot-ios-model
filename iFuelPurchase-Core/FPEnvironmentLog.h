@@ -66,9 +66,9 @@ FOUNDATION_EXPORT NSString * const FPEnvlogReportedDteField;
 
 #pragma mark - Merging
 
-+ (NSDictionary *)mergeRemoteEntity:(FPEnvironmentLog *)remoteEnvlog
-                    withLocalEntity:(FPEnvironmentLog *)localEnvlog
-                  localMasterEntity:(FPEnvironmentLog *)localMasterEnvlog;
++ (NSDictionary *)mergeRemoteEnvlog:(FPEnvironmentLog *)remoteEnvlog
+                    withLocalEnvlog:(FPEnvironmentLog *)localEnvlog
+                  localMasterEnvlog:(FPEnvironmentLog *)localMasterEnvlog;
 
 #pragma mark - Overwriting
 

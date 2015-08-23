@@ -157,50 +157,42 @@ NSString * const FPEnvlogReportedDteField = @"FPEnvlogReportedDteField";
 
 #pragma mark - Merging
 
-+ (NSDictionary *)mergeRemoteEntity:(FPEnvironmentLog *)remoteEnvlog
-                    withLocalEntity:(FPEnvironmentLog *)localEnvlog
-                  localMasterEntity:(FPEnvironmentLog *)localMasterEnvlog {
-  NSMutableDictionary *allMergeConflicts = [NSMutableDictionary dictionary];
-  NSDictionary *superMergeConflicts = [super mergeRemoteEntity:remoteEnvlog
-                                               withLocalEntity:localEnvlog
-                                             localMasterEntity:localMasterEnvlog];
-  NSDictionary *mergeConflicts;
-  mergeConflicts = [PEUtils mergeRemoteObject:remoteEnvlog
-                              withLocalObject:localEnvlog
-                          previousLocalObject:localMasterEnvlog
-                  getterSetterKeysComparators:@[@[[NSValue valueWithPointer:@selector(odometer)],
-                                                  [NSValue valueWithPointer:@selector(setOdometer:)],
-                                                  ^(SEL getter, id obj1, id obj2) {return [PEUtils isNumProperty:getter equalFor:obj1 and:obj2];},
-                                                  ^(FPEnvironmentLog * localObject, FPEnvironmentLog * remoteObject) {[localObject setOdometer:[remoteObject odometer]];},
-                                                  FPEnvlogOdometerField],
-                                                @[[NSValue valueWithPointer:@selector(reportedAvgMpg)],
-                                                  [NSValue valueWithPointer:@selector(setReportedAvgMpg:)],
-                                                  ^(SEL getter, id obj1, id obj2) {return [PEUtils isNumProperty:getter equalFor:obj1 and:obj2];},
-                                                  ^(FPEnvironmentLog * localObject, FPEnvironmentLog * remoteObject) {[localObject setReportedAvgMpg:[remoteObject reportedAvgMpg]];},
-                                                  FPEnvlogReportedAvgMpgField],
-                                                @[[NSValue valueWithPointer:@selector(reportedAvgMph)],
-                                                  [NSValue valueWithPointer:@selector(setReportedAvgMph:)],
-                                                  ^(SEL getter, id obj1, id obj2) {return [PEUtils isNumProperty:getter equalFor:obj1 and:obj2];},
-                                                  ^(FPEnvironmentLog * localObject, FPEnvironmentLog * remoteObject) { [localObject setReportedAvgMph:[remoteObject reportedAvgMph]];},
-                                                  FPEnvlogReportedAvgMphField],
-                                                @[[NSValue valueWithPointer:@selector(logDate)],
-                                                  [NSValue valueWithPointer:@selector(setLogDate:)],
-                                                  ^(SEL getter, id obj1, id obj2) {return [PEUtils isDateProperty:getter equalFor:obj1 and:obj2];},
-                                                  ^(FPEnvironmentLog * localObject, FPEnvironmentLog * remoteObject) { [localObject setLogDate:[remoteObject logDate]];},
-                                                  FPEnvlogLogDateField],
-                                                @[[NSValue valueWithPointer:@selector(reportedOutsideTemp)],
-                                                  [NSValue valueWithPointer:@selector(setReportedOutsideTemp:)],
-                                                  ^(SEL getter, id obj1, id obj2) {return [PEUtils isNumProperty:getter equalFor:obj1 and:obj2];},
-                                                  ^(FPEnvironmentLog * localObject, FPEnvironmentLog * remoteObject) { [localObject setReportedOutsideTemp:[remoteObject reportedOutsideTemp]];},
-                                                  FPEnvlogReportedOutsideTempField],
-                                                @[[NSValue valueWithPointer:@selector(reportedDte)],
-                                                  [NSValue valueWithPointer:@selector(setReportedDte:)],
-                                                  ^(SEL getter, id obj1, id obj2) {return [PEUtils isNumProperty:getter equalFor:obj1 and:obj2];},
-                                                  ^(FPEnvironmentLog * localObject, FPEnvironmentLog * remoteObject) { [localObject setReportedDte:[remoteObject reportedDte]];},
-                                                  FPEnvlogReportedDteField]]];
-  [allMergeConflicts addEntriesFromDictionary:superMergeConflicts];
-  [allMergeConflicts addEntriesFromDictionary:mergeConflicts];
-  return allMergeConflicts;
++ (NSDictionary *)mergeRemoteEnvlog:(FPEnvironmentLog *)remoteEnvlog
+                    withLocalEnvlog:(FPEnvironmentLog *)localEnvlog
+                  localMasterEnvlog:(FPEnvironmentLog *)localMasterEnvlog {
+  return [PEUtils mergeRemoteObject:remoteEnvlog
+                    withLocalObject:localEnvlog
+                previousLocalObject:localMasterEnvlog
+        getterSetterKeysComparators:@[@[[NSValue valueWithPointer:@selector(odometer)],
+                                        [NSValue valueWithPointer:@selector(setOdometer:)],
+                                        ^(SEL getter, id obj1, id obj2) {return [PEUtils isNumProperty:getter equalFor:obj1 and:obj2];},
+                                        ^(FPEnvironmentLog * localObject, FPEnvironmentLog * remoteObject) {[localObject setOdometer:[remoteObject odometer]];},
+                                        FPEnvlogOdometerField],
+                                      @[[NSValue valueWithPointer:@selector(reportedAvgMpg)],
+                                        [NSValue valueWithPointer:@selector(setReportedAvgMpg:)],
+                                        ^(SEL getter, id obj1, id obj2) {return [PEUtils isNumProperty:getter equalFor:obj1 and:obj2];},
+                                        ^(FPEnvironmentLog * localObject, FPEnvironmentLog * remoteObject) {[localObject setReportedAvgMpg:[remoteObject reportedAvgMpg]];},
+                                        FPEnvlogReportedAvgMpgField],
+                                      @[[NSValue valueWithPointer:@selector(reportedAvgMph)],
+                                        [NSValue valueWithPointer:@selector(setReportedAvgMph:)],
+                                        ^(SEL getter, id obj1, id obj2) {return [PEUtils isNumProperty:getter equalFor:obj1 and:obj2];},
+                                        ^(FPEnvironmentLog * localObject, FPEnvironmentLog * remoteObject) { [localObject setReportedAvgMph:[remoteObject reportedAvgMph]];},
+                                        FPEnvlogReportedAvgMphField],
+                                      @[[NSValue valueWithPointer:@selector(logDate)],
+                                        [NSValue valueWithPointer:@selector(setLogDate:)],
+                                        ^(SEL getter, id obj1, id obj2) {return [PEUtils isDateProperty:getter equalFor:obj1 and:obj2];},
+                                        ^(FPEnvironmentLog * localObject, FPEnvironmentLog * remoteObject) { [localObject setLogDate:[remoteObject logDate]];},
+                                        FPEnvlogLogDateField],
+                                      @[[NSValue valueWithPointer:@selector(reportedOutsideTemp)],
+                                        [NSValue valueWithPointer:@selector(setReportedOutsideTemp:)],
+                                        ^(SEL getter, id obj1, id obj2) {return [PEUtils isNumProperty:getter equalFor:obj1 and:obj2];},
+                                        ^(FPEnvironmentLog * localObject, FPEnvironmentLog * remoteObject) { [localObject setReportedOutsideTemp:[remoteObject reportedOutsideTemp]];},
+                                        FPEnvlogReportedOutsideTempField],
+                                      @[[NSValue valueWithPointer:@selector(reportedDte)],
+                                        [NSValue valueWithPointer:@selector(setReportedDte:)],
+                                        ^(SEL getter, id obj1, id obj2) {return [PEUtils isNumProperty:getter equalFor:obj1 and:obj2];},
+                                        ^(FPEnvironmentLog * localObject, FPEnvironmentLog * remoteObject) { [localObject setReportedDte:[remoteObject reportedDte]];},
+                                        FPEnvlogReportedDteField]]];
 }
 
 #pragma mark - Overwriting

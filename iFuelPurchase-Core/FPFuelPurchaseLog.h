@@ -67,9 +67,9 @@ FOUNDATION_EXPORT NSString * const FPFplogPurchasedAtField;
 
 #pragma mark - Merging
 
-+ (NSDictionary *)mergeRemoteEntity:(FPFuelPurchaseLog *)remoteFplog
-                    withLocalEntity:(FPFuelPurchaseLog *)localFplog
-                  localMasterEntity:(FPFuelPurchaseLog *)localMasterFplog;
++ (NSDictionary *)mergeRemoteFplog:(FPFuelPurchaseLog *)remoteFplog
+                    withLocalFplog:(FPFuelPurchaseLog *)localFplog
+                  localMasterFplog:(FPFuelPurchaseLog *)localMasterFplog;
 
 #pragma mark - Overwriting
 

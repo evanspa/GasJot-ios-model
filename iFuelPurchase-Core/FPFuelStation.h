@@ -71,9 +71,9 @@ FOUNDATION_EXPORT NSString * const FPFuelstationLongitudeField;
 
 #pragma mark - Merging
 
-+ (NSDictionary *)mergeRemoteEntity:(FPFuelStation *)remoteFuelstation
-                    withLocalEntity:(FPFuelStation *)localFuelstation
-                  localMasterEntity:(FPFuelStation *)localMasterFuelstation;
++ (NSDictionary *)mergeRemoteFuelstation:(FPFuelStation *)remoteFuelstation
+                    withLocalFuelstation:(FPFuelStation *)localFuelstation
+                  localMasterFuelstation:(FPFuelStation *)localMasterFuelstation;
 
 #pragma mark - Overwriting
 

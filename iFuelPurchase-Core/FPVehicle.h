@@ -55,9 +55,9 @@ FOUNDATION_EXPORT NSString * const FPVehicleFuelCapacityField;
 
 #pragma mark - Merging
 
-+ (NSDictionary *)mergeRemoteEntity:(FPVehicle *)remoteVehicle
-                    withLocalEntity:(FPVehicle *)localVehicle
-                  localMasterEntity:(FPVehicle *)localMasterVehicle;
++ (NSDictionary *)mergeRemoteVehicle:(FPVehicle *)remoteVehicle
+                    withLocalVehicle:(FPVehicle *)localVehicle
+                  localMasterVehicle:(FPVehicle *)localMasterVehicle;
 
 #pragma mark - Overwriting
 
