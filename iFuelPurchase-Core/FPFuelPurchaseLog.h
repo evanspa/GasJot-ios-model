@@ -9,6 +9,13 @@
 #import <Foundation/Foundation.h>
 #import "PELMMainSupport.h"
 
+FOUNDATION_EXPORT NSString * const FPFplogNumGallonsField;
+FOUNDATION_EXPORT NSString * const FPFplogOctaneField;
+FOUNDATION_EXPORT NSString * const FPFplogGallonPriceField;
+FOUNDATION_EXPORT NSString * const FPFplogGotCarWashField;
+FOUNDATION_EXPORT NSString * const FPFplogCarWashPerGallonDiscountField;
+FOUNDATION_EXPORT NSString * const FPFplogPurchasedAtField;
+
 @interface FPFuelPurchaseLog : PELMMainSupport <NSCopying>
 
 #pragma mark - Initializers
@@ -60,9 +67,9 @@
 
 #pragma mark - Merging
 
-+ (BOOL)mergeRemoteFplog:(FPFuelPurchaseLog *)remoteFplog
-          withLocalFplog:(FPFuelPurchaseLog *)localFplog
-        localMasterFplog:(FPFuelPurchaseLog *)localMasterFplog;
++ (NSDictionary *)mergeRemoteEntity:(FPFuelPurchaseLog *)remoteFplog
+                    withLocalEntity:(FPFuelPurchaseLog *)localFplog
+                  localMasterEntity:(FPFuelPurchaseLog *)localMasterFplog;
 
 #pragma mark - Overwriting
 

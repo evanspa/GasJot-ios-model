@@ -9,6 +9,13 @@
 #import <Foundation/Foundation.h>
 #import "PELMMainSupport.h"
 
+FOUNDATION_EXPORT NSString * const FPEnvlogOdometerField;
+FOUNDATION_EXPORT NSString * const FPEnvlogReportedAvgMpgField;
+FOUNDATION_EXPORT NSString * const FPEnvlogReportedAvgMphField;
+FOUNDATION_EXPORT NSString * const FPEnvlogReportedOutsideTempField;
+FOUNDATION_EXPORT NSString * const FPEnvlogLogDateField;
+FOUNDATION_EXPORT NSString * const FPEnvlogReportedDteField;
+
 @interface FPEnvironmentLog : PELMMainSupport <NSCopying>
 
 #pragma mark - Initializers
@@ -59,9 +66,9 @@
 
 #pragma mark - Merging
 
-+ (BOOL)mergeRemoteEnvlog:(FPEnvironmentLog *)remoteEnvlog
-          withLocalEnvlog:(FPEnvironmentLog *)localEnvlog
-        localMasterEnvlog:(FPEnvironmentLog *)localMasterEnvlog;
++ (NSDictionary *)mergeRemoteEntity:(FPEnvironmentLog *)remoteEnvlog
+                    withLocalEntity:(FPEnvironmentLog *)localEnvlog
+                  localMasterEntity:(FPEnvironmentLog *)localMasterEnvlog;
 
 #pragma mark - Overwriting
 

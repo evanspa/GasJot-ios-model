@@ -17,6 +17,10 @@ FOUNDATION_EXPORT NSString * const FPFuelStationsRelation;
 FOUNDATION_EXPORT NSString * const FPFuelPurchaseLogsRelation;
 FOUNDATION_EXPORT NSString * const FPEnvironmentLogsRelation;
 
+FOUNDATION_EXPORT NSString * const FPUserNameField;
+FOUNDATION_EXPORT NSString * const FPUserEmailField;
+FOUNDATION_EXPORT NSString * const FPUserUsernameField;
+
 @interface FPUser : PELMUser <NSCopying>
 
 #pragma mark - Initializers
@@ -60,9 +64,9 @@ FOUNDATION_EXPORT NSString * const FPEnvironmentLogsRelation;
 
 #pragma mark - Merging
 
-+ (BOOL)mergeRemoteUser:(FPUser *)remoteUser
-          withLocalUser:(FPUser *)localUser
-        localMasterUser:(FPUser *)localMasterUser;
++ (NSDictionary *)mergeRemoteEntity:(FPUser *)remoteUser
+                    withLocalEntity:(FPUser *)localUser
+                  localMasterEntity:(FPUser *)localMasterUser;
 
 #pragma mark - Overwriting
 

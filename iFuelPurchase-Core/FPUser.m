@@ -15,6 +15,10 @@ NSString * const FPFuelStationsRelation = @"fuelstations";
 NSString * const FPFuelPurchaseLogsRelation = @"fuelpurchase-logs";
 NSString * const FPEnvironmentLogsRelation = @"environment-logs";
 
+NSString * const FPUserNameField = @"FPUserNameField";
+NSString * const FPUserEmailField = @"FPUserEmailField";
+NSString * const FPUserUsernameField = @"FPUserUsernameField";
+
 @implementation FPUser {
   NSMutableArray *_vehicles;
   NSMutableArray *_fuelStations;
@@ -144,27 +148,27 @@ NSString * const FPEnvironmentLogsRelation = @"environment-logs";
 
 #pragma mark - Merging
 
-+ (BOOL)mergeRemoteUser:(FPUser *)remoteUser
-          withLocalUser:(FPUser *)localUser
-        localMasterUser:(FPUser *)localMasterUser {
++ (NSDictionary *)mergeRemoteEntity:(FPUser *)remoteUser
+                    withLocalEntity:(FPUser *)localUser
+                  localMasterEntity:(FPUser *)localMasterUser {
   return [PEUtils mergeRemoteObject:remoteUser
                     withLocalObject:localUser
                 previousLocalObject:localMasterUser
-            getterSetterComparators:@[@[[NSValue valueWithPointer:@selector(name)],
+        getterSetterKeysComparators:@[@[[NSValue valueWithPointer:@selector(name)],
                                         [NSValue valueWithPointer:@selector(setName:)],
                                         ^(SEL getter, id obj1, id obj2) {return [PEUtils isStringProperty:getter equalFor:obj1 and:obj2];},
                                         ^(FPUser * localObject, FPUser * remoteObject) {[localObject setName:[remoteObject name]];},
-                                        ^(id localObject, id remoteObject) {}],
+                                        FPUserNameField],
                                       @[[NSValue valueWithPointer:@selector(email)],
                                         [NSValue valueWithPointer:@selector(setEmail:)],
                                         ^(SEL getter, id obj1, id obj2) {return [PEUtils isStringProperty:getter equalFor:obj1 and:obj2];},
                                         ^(FPUser * localObject, FPUser * remoteObject) {[localObject setEmail:[remoteObject email]];},
-                                        ^(FPUser * localObject, FPUser * remoteObject) {}],
+                                        FPUserEmailField],
                                       @[[NSValue valueWithPointer:@selector(username)],
                                         [NSValue valueWithPointer:@selector(setUsername:)],
                                         ^(SEL getter, id obj1, id obj2) {return [PEUtils isStringProperty:getter equalFor:obj1 and:obj2];},
                                         ^(FPUser * localObject, FPUser * remoteObject) { [localObject setUsername:[remoteObject username]];},
-                                        ^(id localObject, id remoteObject) {}]]];
+                                        FPUserUsernameField]]];
 }
 
 #pragma mark - Overwriting

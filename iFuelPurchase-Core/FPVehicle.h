@@ -9,6 +9,10 @@
 #import "PELMMainSupport.h"
 #import "FPFuelPurchaseLog.h"
 
+FOUNDATION_EXPORT NSString * const FPVehicleNameField;
+FOUNDATION_EXPORT NSString * const FPVehicleDefaultOctaneField;
+FOUNDATION_EXPORT NSString * const FPVehicleFuelCapacityField;
+
 @interface FPVehicle : PELMMainSupport <NSCopying>
 
 #pragma mark - Initializers
@@ -51,9 +55,9 @@
 
 #pragma mark - Merging
 
-+ (BOOL)mergeRemoteVehicle:(FPVehicle *)remoteVehicle
-          withLocalVehicle:(FPVehicle *)localVehicle
-        localMasterVehicle:(FPVehicle *)localMasterVehicle;
++ (NSDictionary *)mergeRemoteEntity:(FPVehicle *)remoteVehicle
+                    withLocalEntity:(FPVehicle *)localVehicle
+                  localMasterEntity:(FPVehicle *)localMasterVehicle;
 
 #pragma mark - Overwriting
 

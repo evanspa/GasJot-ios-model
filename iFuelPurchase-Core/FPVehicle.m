@@ -10,6 +10,10 @@
 #import <PEObjc-Commons/PEUtils.h>
 #import "FPDDLUtils.h"
 
+NSString * const FPVehicleNameField = @"FPVehicleNameField";
+NSString * const FPVehicleDefaultOctaneField = @"FPVehicleDefaultOctaneField";
+NSString * const FPVehicleFuelCapacityField = @"FPVehicleFuelCapacityField";
+
 @implementation FPVehicle
 
 #pragma mark - Initializers
@@ -146,27 +150,27 @@
 
 #pragma mark - Merging
 
-+ (BOOL)mergeRemoteVehicle:(FPVehicle *)remoteVehicle
-          withLocalVehicle:(FPVehicle *)localVehicle
-        localMasterVehicle:(FPVehicle *)localMasterVehicle {
++ (NSDictionary *)mergeRemoteEntity:(FPVehicle *)remoteVehicle
+                    withLocalEntity:(FPVehicle *)localVehicle
+                  localMasterEntity:(FPVehicle *)localMasterVehicle {
   return [PEUtils mergeRemoteObject:remoteVehicle
                     withLocalObject:localVehicle
                 previousLocalObject:localMasterVehicle
-            getterSetterComparators:@[@[[NSValue valueWithPointer:@selector(name)],
+        getterSetterKeysComparators:@[@[[NSValue valueWithPointer:@selector(name)],
                                         [NSValue valueWithPointer:@selector(setName:)],
                                         ^(SEL getter, id obj1, id obj2) {return [PEUtils isStringProperty:getter equalFor:obj1 and:obj2];},
                                         ^(FPVehicle * localObject, FPVehicle * remoteObject) {[localObject setName:[remoteObject name]];},
-                                        ^(id localObject, id remoteObject) {}],
+                                        FPVehicleNameField],
                                       @[[NSValue valueWithPointer:@selector(defaultOctane)],
                                         [NSValue valueWithPointer:@selector(setDefaultOctane:)],
                                         ^(SEL getter, id obj1, id obj2) {return [PEUtils isNumProperty:getter equalFor:obj1 and:obj2];},
                                         ^(FPVehicle * localObject, FPVehicle * remoteObject) {[localObject setDefaultOctane:[remoteObject defaultOctane]];},
-                                        ^(FPVehicle * localObject, FPVehicle * remoteObject) {}],
+                                        FPVehicleDefaultOctaneField],
                                       @[[NSValue valueWithPointer:@selector(fuelCapacity)],
                                         [NSValue valueWithPointer:@selector(setFuelCapacity:)],
                                         ^(SEL getter, id obj1, id obj2) {return [PEUtils isNumProperty:getter equalFor:obj1 and:obj2];},
                                         ^(FPVehicle * localObject, FPVehicle * remoteObject) { [localObject setFuelCapacity:[remoteObject fuelCapacity]];},
-                                        ^(id localObject, id remoteObject) {}]]];
+                                        FPVehicleFuelCapacityField]]];
 }
 
 #pragma mark - Overwriting

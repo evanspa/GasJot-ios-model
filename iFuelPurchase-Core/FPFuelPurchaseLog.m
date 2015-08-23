@@ -10,6 +10,13 @@
 #import "FPFuelPurchaseLog.h"
 #import "FPDDLUtils.h"
 
+NSString * const FPFplogNumGallonsField = @"FPFplogNumGallonsField";
+NSString * const FPFplogOctaneField = @"FPFplogOctaneField";
+NSString * const FPFplogGallonPriceField = @"FPFplogGallonPriceField";
+NSString * const FPFplogGotCarWashField = @"FPFplogGotCarWashField";
+NSString * const FPFplogCarWashPerGallonDiscountField = @"FPFplogCarWashPerGallonDiscountField";
+NSString * const FPFplogPurchasedAtField = @"FPFplogPurchasedAtField";
+
 @implementation FPFuelPurchaseLog
 
 #pragma mark - Initializers
@@ -154,42 +161,42 @@
 
 #pragma mark - Merging
 
-+ (BOOL)mergeRemoteFplog:(FPFuelPurchaseLog *)remoteFplog
-          withLocalFplog:(FPFuelPurchaseLog *)localFplog
-        localMasterFplog:(FPFuelPurchaseLog *)localMasterFplog {
++ (NSDictionary *)mergeRemoteEntity:(FPFuelPurchaseLog *)remoteFplog
+                    withLocalEntity:(FPFuelPurchaseLog *)localFplog
+                  localMasterEntity:(FPFuelPurchaseLog *)localMasterFplog {
   return [PEUtils mergeRemoteObject:remoteFplog
                     withLocalObject:localFplog
                 previousLocalObject:localMasterFplog
-            getterSetterComparators:@[@[[NSValue valueWithPointer:@selector(numGallons)],
+        getterSetterKeysComparators:@[@[[NSValue valueWithPointer:@selector(numGallons)],
                                         [NSValue valueWithPointer:@selector(setNumGallons:)],
                                         ^(SEL getter, id obj1, id obj2) {return [PEUtils isNumProperty:getter equalFor:obj1 and:obj2];},
                                         ^(FPFuelPurchaseLog * localObject, FPFuelPurchaseLog * remoteObject) {[localObject setNumGallons:[remoteObject numGallons]];},
-                                        ^(id localObject, id remoteObject) {}],
+                                        FPFplogNumGallonsField],
                                       @[[NSValue valueWithPointer:@selector(octane)],
                                         [NSValue valueWithPointer:@selector(setOctane:)],
                                         ^(SEL getter, id obj1, id obj2) {return [PEUtils isNumProperty:getter equalFor:obj1 and:obj2];},
                                         ^(FPFuelPurchaseLog * localObject, FPFuelPurchaseLog * remoteObject) {[localObject setOctane:[remoteObject octane]];},
-                                        ^(FPFuelPurchaseLog * localObject, FPFuelPurchaseLog * remoteObject) {}],
+                                        FPFplogOctaneField],
                                       @[[NSValue valueWithPointer:@selector(gallonPrice)],
                                         [NSValue valueWithPointer:@selector(setGallonPrice:)],
                                         ^(SEL getter, id obj1, id obj2) {return [PEUtils isNumProperty:getter equalFor:obj1 and:obj2];},
                                         ^(FPFuelPurchaseLog * localObject, FPFuelPurchaseLog * remoteObject) { [localObject setGallonPrice:[remoteObject gallonPrice]];},
-                                        ^(id localObject, id remoteObject) {}],
+                                        FPFplogGallonPriceField],
                                       @[[NSValue valueWithPointer:@selector(gotCarWash)],
                                         [NSValue valueWithPointer:@selector(setGotCarWash:)],
                                         ^(SEL getter, id obj1, id obj2) {return [PEUtils isBoolProperty:getter equalFor:obj1 and:obj2];},
                                         ^(FPFuelPurchaseLog * localObject, FPFuelPurchaseLog * remoteObject) {[localObject setGotCarWash:[remoteObject gotCarWash]];},
-                                        ^(FPFuelPurchaseLog * localObject, FPFuelPurchaseLog * remoteObject) {}],
+                                        FPFplogGotCarWashField],
                                       @[[NSValue valueWithPointer:@selector(carWashPerGallonDiscount)],
                                         [NSValue valueWithPointer:@selector(setCarWashPerGallonDiscount:)],
                                         ^(SEL getter, id obj1, id obj2) {return [PEUtils isNumProperty:getter equalFor:obj1 and:obj2];},
                                         ^(FPFuelPurchaseLog * localObject, FPFuelPurchaseLog * remoteObject) {[localObject setCarWashPerGallonDiscount:[remoteObject carWashPerGallonDiscount]];},
-                                        ^(FPFuelPurchaseLog * localObject, FPFuelPurchaseLog * remoteObject) {}],
+                                        FPFplogCarWashPerGallonDiscountField],
                                       @[[NSValue valueWithPointer:@selector(purchasedAt)],
                                         [NSValue valueWithPointer:@selector(setPurchasedAt:)],
                                         ^(SEL getter, id obj1, id obj2) {return [PEUtils isDateProperty:getter equalFor:obj1 and:obj2];},
                                         ^(FPFuelPurchaseLog * localObject, FPFuelPurchaseLog * remoteObject) {[localObject setPurchasedAt:[remoteObject purchasedAt]];},
-                                        ^(FPFuelPurchaseLog * localObject, FPFuelPurchaseLog * remoteObject) {}]]];
+                                        FPFplogPurchasedAtField]]];
 }
 
 #pragma mark - Overwriting

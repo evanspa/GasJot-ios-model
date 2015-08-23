@@ -9,6 +9,14 @@
 #import "PELMMainSupport.h"
 #import <CoreLocation/CoreLocation.h>
 
+FOUNDATION_EXPORT NSString * const FPFuelstationNameField;
+FOUNDATION_EXPORT NSString * const FPFuelstationStreetField;
+FOUNDATION_EXPORT NSString * const FPFuelstationCityField;
+FOUNDATION_EXPORT NSString * const FPFuelstationStateField;
+FOUNDATION_EXPORT NSString * const FPFuelstationZipField;
+FOUNDATION_EXPORT NSString * const FPFuelstationLatitudeField;
+FOUNDATION_EXPORT NSString * const FPFuelstationLongitudeField;
+
 @interface FPFuelStation : PELMMainSupport <NSCopying>
 
 #pragma mark - Initializers
@@ -63,9 +71,9 @@
 
 #pragma mark - Merging
 
-+ (BOOL)mergeRemoteFuelstation:(FPFuelStation *)remoteFuelstation
-          withLocalFuelstation:(FPFuelStation *)localFuelstation
-        localMasterFuelstation:(FPFuelStation *)localMasterFuelstation;
++ (NSDictionary *)mergeRemoteEntity:(FPFuelStation *)remoteFuelstation
+                    withLocalEntity:(FPFuelStation *)localFuelstation
+                  localMasterEntity:(FPFuelStation *)localMasterFuelstation;
 
 #pragma mark - Overwriting
 
