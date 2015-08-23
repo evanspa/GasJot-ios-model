@@ -153,24 +153,32 @@ NSString * const FPVehicleFuelCapacityField = @"FPVehicleFuelCapacityField";
 + (NSDictionary *)mergeRemoteEntity:(FPVehicle *)remoteVehicle
                     withLocalEntity:(FPVehicle *)localVehicle
                   localMasterEntity:(FPVehicle *)localMasterVehicle {
-  return [PEUtils mergeRemoteObject:remoteVehicle
-                    withLocalObject:localVehicle
-                previousLocalObject:localMasterVehicle
-        getterSetterKeysComparators:@[@[[NSValue valueWithPointer:@selector(name)],
-                                        [NSValue valueWithPointer:@selector(setName:)],
-                                        ^(SEL getter, id obj1, id obj2) {return [PEUtils isStringProperty:getter equalFor:obj1 and:obj2];},
-                                        ^(FPVehicle * localObject, FPVehicle * remoteObject) {[localObject setName:[remoteObject name]];},
-                                        FPVehicleNameField],
-                                      @[[NSValue valueWithPointer:@selector(defaultOctane)],
-                                        [NSValue valueWithPointer:@selector(setDefaultOctane:)],
-                                        ^(SEL getter, id obj1, id obj2) {return [PEUtils isNumProperty:getter equalFor:obj1 and:obj2];},
-                                        ^(FPVehicle * localObject, FPVehicle * remoteObject) {[localObject setDefaultOctane:[remoteObject defaultOctane]];},
-                                        FPVehicleDefaultOctaneField],
-                                      @[[NSValue valueWithPointer:@selector(fuelCapacity)],
-                                        [NSValue valueWithPointer:@selector(setFuelCapacity:)],
-                                        ^(SEL getter, id obj1, id obj2) {return [PEUtils isNumProperty:getter equalFor:obj1 and:obj2];},
-                                        ^(FPVehicle * localObject, FPVehicle * remoteObject) { [localObject setFuelCapacity:[remoteObject fuelCapacity]];},
-                                        FPVehicleFuelCapacityField]]];
+  NSMutableDictionary *allMergeConflicts = [NSMutableDictionary dictionary];
+  NSDictionary *superMergeConflicts = [super mergeRemoteEntity:remoteVehicle
+                                               withLocalEntity:localVehicle
+                                             localMasterEntity:localMasterVehicle];
+  NSDictionary *mergeConflicts;
+  mergeConflicts = [PEUtils mergeRemoteObject:remoteVehicle
+                              withLocalObject:localVehicle
+                          previousLocalObject:localMasterVehicle
+                  getterSetterKeysComparators:@[@[[NSValue valueWithPointer:@selector(name)],
+                                                  [NSValue valueWithPointer:@selector(setName:)],
+                                                  ^(SEL getter, id obj1, id obj2) {return [PEUtils isStringProperty:getter equalFor:obj1 and:obj2];},
+                                                  ^(FPVehicle * localObject, FPVehicle * remoteObject) {[localObject setName:[remoteObject name]];},
+                                                  FPVehicleNameField],
+                                                @[[NSValue valueWithPointer:@selector(defaultOctane)],
+                                                  [NSValue valueWithPointer:@selector(setDefaultOctane:)],
+                                                  ^(SEL getter, id obj1, id obj2) {return [PEUtils isNumProperty:getter equalFor:obj1 and:obj2];},
+                                                  ^(FPVehicle * localObject, FPVehicle * remoteObject) {[localObject setDefaultOctane:[remoteObject defaultOctane]];},
+                                                  FPVehicleDefaultOctaneField],
+                                                @[[NSValue valueWithPointer:@selector(fuelCapacity)],
+                                                  [NSValue valueWithPointer:@selector(setFuelCapacity:)],
+                                                  ^(SEL getter, id obj1, id obj2) {return [PEUtils isNumProperty:getter equalFor:obj1 and:obj2];},
+                                                  ^(FPVehicle * localObject, FPVehicle * remoteObject) { [localObject setFuelCapacity:[remoteObject fuelCapacity]];},
+                                                  FPVehicleFuelCapacityField]]];
+  [allMergeConflicts addEntriesFromDictionary:superMergeConflicts];
+  [allMergeConflicts addEntriesFromDictionary:mergeConflicts];
+  return allMergeConflicts;
 }
 
 #pragma mark - Overwriting

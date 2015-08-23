@@ -151,24 +151,32 @@ NSString * const FPUserUsernameField = @"FPUserUsernameField";
 + (NSDictionary *)mergeRemoteEntity:(FPUser *)remoteUser
                     withLocalEntity:(FPUser *)localUser
                   localMasterEntity:(FPUser *)localMasterUser {
-  return [PEUtils mergeRemoteObject:remoteUser
-                    withLocalObject:localUser
-                previousLocalObject:localMasterUser
-        getterSetterKeysComparators:@[@[[NSValue valueWithPointer:@selector(name)],
-                                        [NSValue valueWithPointer:@selector(setName:)],
-                                        ^(SEL getter, id obj1, id obj2) {return [PEUtils isStringProperty:getter equalFor:obj1 and:obj2];},
-                                        ^(FPUser * localObject, FPUser * remoteObject) {[localObject setName:[remoteObject name]];},
-                                        FPUserNameField],
-                                      @[[NSValue valueWithPointer:@selector(email)],
-                                        [NSValue valueWithPointer:@selector(setEmail:)],
-                                        ^(SEL getter, id obj1, id obj2) {return [PEUtils isStringProperty:getter equalFor:obj1 and:obj2];},
-                                        ^(FPUser * localObject, FPUser * remoteObject) {[localObject setEmail:[remoteObject email]];},
-                                        FPUserEmailField],
-                                      @[[NSValue valueWithPointer:@selector(username)],
-                                        [NSValue valueWithPointer:@selector(setUsername:)],
-                                        ^(SEL getter, id obj1, id obj2) {return [PEUtils isStringProperty:getter equalFor:obj1 and:obj2];},
-                                        ^(FPUser * localObject, FPUser * remoteObject) { [localObject setUsername:[remoteObject username]];},
-                                        FPUserUsernameField]]];
+  NSMutableDictionary *allMergeConflicts = [NSMutableDictionary dictionary];
+  NSDictionary *superMergeConflicts = [super mergeRemoteEntity:remoteUser
+                                               withLocalEntity:localUser
+                                             localMasterEntity:localMasterUser];
+  NSDictionary *mergeConflicts;
+  mergeConflicts = [PEUtils mergeRemoteObject:remoteUser
+                              withLocalObject:localUser
+                          previousLocalObject:localMasterUser
+                  getterSetterKeysComparators:@[@[[NSValue valueWithPointer:@selector(name)],
+                                                  [NSValue valueWithPointer:@selector(setName:)],
+                                                  ^(SEL getter, id obj1, id obj2) {return [PEUtils isStringProperty:getter equalFor:obj1 and:obj2];},
+                                                  ^(FPUser * localObject, FPUser * remoteObject) {[localObject setName:[remoteObject name]];},
+                                                  FPUserNameField],
+                                                @[[NSValue valueWithPointer:@selector(email)],
+                                                  [NSValue valueWithPointer:@selector(setEmail:)],
+                                                  ^(SEL getter, id obj1, id obj2) {return [PEUtils isStringProperty:getter equalFor:obj1 and:obj2];},
+                                                  ^(FPUser * localObject, FPUser * remoteObject) {[localObject setEmail:[remoteObject email]];},
+                                                  FPUserEmailField],
+                                                @[[NSValue valueWithPointer:@selector(username)],
+                                                  [NSValue valueWithPointer:@selector(setUsername:)],
+                                                  ^(SEL getter, id obj1, id obj2) {return [PEUtils isStringProperty:getter equalFor:obj1 and:obj2];},
+                                                  ^(FPUser * localObject, FPUser * remoteObject) { [localObject setUsername:[remoteObject username]];},
+                                                  FPUserUsernameField]]];
+  [allMergeConflicts addEntriesFromDictionary:superMergeConflicts];
+  [allMergeConflicts addEntriesFromDictionary:mergeConflicts];
+  return allMergeConflicts;
 }
 
 #pragma mark - Overwriting

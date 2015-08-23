@@ -164,39 +164,47 @@ NSString * const FPFplogPurchasedAtField = @"FPFplogPurchasedAtField";
 + (NSDictionary *)mergeRemoteEntity:(FPFuelPurchaseLog *)remoteFplog
                     withLocalEntity:(FPFuelPurchaseLog *)localFplog
                   localMasterEntity:(FPFuelPurchaseLog *)localMasterFplog {
-  return [PEUtils mergeRemoteObject:remoteFplog
-                    withLocalObject:localFplog
-                previousLocalObject:localMasterFplog
-        getterSetterKeysComparators:@[@[[NSValue valueWithPointer:@selector(numGallons)],
-                                        [NSValue valueWithPointer:@selector(setNumGallons:)],
-                                        ^(SEL getter, id obj1, id obj2) {return [PEUtils isNumProperty:getter equalFor:obj1 and:obj2];},
-                                        ^(FPFuelPurchaseLog * localObject, FPFuelPurchaseLog * remoteObject) {[localObject setNumGallons:[remoteObject numGallons]];},
-                                        FPFplogNumGallonsField],
-                                      @[[NSValue valueWithPointer:@selector(octane)],
-                                        [NSValue valueWithPointer:@selector(setOctane:)],
-                                        ^(SEL getter, id obj1, id obj2) {return [PEUtils isNumProperty:getter equalFor:obj1 and:obj2];},
-                                        ^(FPFuelPurchaseLog * localObject, FPFuelPurchaseLog * remoteObject) {[localObject setOctane:[remoteObject octane]];},
-                                        FPFplogOctaneField],
-                                      @[[NSValue valueWithPointer:@selector(gallonPrice)],
-                                        [NSValue valueWithPointer:@selector(setGallonPrice:)],
-                                        ^(SEL getter, id obj1, id obj2) {return [PEUtils isNumProperty:getter equalFor:obj1 and:obj2];},
-                                        ^(FPFuelPurchaseLog * localObject, FPFuelPurchaseLog * remoteObject) { [localObject setGallonPrice:[remoteObject gallonPrice]];},
-                                        FPFplogGallonPriceField],
-                                      @[[NSValue valueWithPointer:@selector(gotCarWash)],
-                                        [NSValue valueWithPointer:@selector(setGotCarWash:)],
-                                        ^(SEL getter, id obj1, id obj2) {return [PEUtils isBoolProperty:getter equalFor:obj1 and:obj2];},
-                                        ^(FPFuelPurchaseLog * localObject, FPFuelPurchaseLog * remoteObject) {[localObject setGotCarWash:[remoteObject gotCarWash]];},
-                                        FPFplogGotCarWashField],
-                                      @[[NSValue valueWithPointer:@selector(carWashPerGallonDiscount)],
-                                        [NSValue valueWithPointer:@selector(setCarWashPerGallonDiscount:)],
-                                        ^(SEL getter, id obj1, id obj2) {return [PEUtils isNumProperty:getter equalFor:obj1 and:obj2];},
-                                        ^(FPFuelPurchaseLog * localObject, FPFuelPurchaseLog * remoteObject) {[localObject setCarWashPerGallonDiscount:[remoteObject carWashPerGallonDiscount]];},
-                                        FPFplogCarWashPerGallonDiscountField],
-                                      @[[NSValue valueWithPointer:@selector(purchasedAt)],
-                                        [NSValue valueWithPointer:@selector(setPurchasedAt:)],
-                                        ^(SEL getter, id obj1, id obj2) {return [PEUtils isDateProperty:getter equalFor:obj1 and:obj2];},
-                                        ^(FPFuelPurchaseLog * localObject, FPFuelPurchaseLog * remoteObject) {[localObject setPurchasedAt:[remoteObject purchasedAt]];},
-                                        FPFplogPurchasedAtField]]];
+  NSMutableDictionary *allMergeConflicts = [NSMutableDictionary dictionary];
+  NSDictionary *superMergeConflicts = [super mergeRemoteEntity:remoteFplog
+                                               withLocalEntity:localFplog
+                                             localMasterEntity:localMasterFplog];
+  NSDictionary *mergeConflicts;
+  mergeConflicts = [PEUtils mergeRemoteObject:remoteFplog
+                              withLocalObject:localFplog
+                          previousLocalObject:localMasterFplog
+                  getterSetterKeysComparators:@[@[[NSValue valueWithPointer:@selector(numGallons)],
+                                                  [NSValue valueWithPointer:@selector(setNumGallons:)],
+                                                  ^(SEL getter, id obj1, id obj2) {return [PEUtils isNumProperty:getter equalFor:obj1 and:obj2];},
+                                                  ^(FPFuelPurchaseLog * localObject, FPFuelPurchaseLog * remoteObject) {[localObject setNumGallons:[remoteObject numGallons]];},
+                                                  FPFplogNumGallonsField],
+                                                @[[NSValue valueWithPointer:@selector(octane)],
+                                                  [NSValue valueWithPointer:@selector(setOctane:)],
+                                                  ^(SEL getter, id obj1, id obj2) {return [PEUtils isNumProperty:getter equalFor:obj1 and:obj2];},
+                                                  ^(FPFuelPurchaseLog * localObject, FPFuelPurchaseLog * remoteObject) {[localObject setOctane:[remoteObject octane]];},
+                                                  FPFplogOctaneField],
+                                                @[[NSValue valueWithPointer:@selector(gallonPrice)],
+                                                  [NSValue valueWithPointer:@selector(setGallonPrice:)],
+                                                  ^(SEL getter, id obj1, id obj2) {return [PEUtils isNumProperty:getter equalFor:obj1 and:obj2];},
+                                                  ^(FPFuelPurchaseLog * localObject, FPFuelPurchaseLog * remoteObject) { [localObject setGallonPrice:[remoteObject gallonPrice]];},
+                                                  FPFplogGallonPriceField],
+                                                @[[NSValue valueWithPointer:@selector(gotCarWash)],
+                                                  [NSValue valueWithPointer:@selector(setGotCarWash:)],
+                                                  ^(SEL getter, id obj1, id obj2) {return [PEUtils isBoolProperty:getter equalFor:obj1 and:obj2];},
+                                                  ^(FPFuelPurchaseLog * localObject, FPFuelPurchaseLog * remoteObject) {[localObject setGotCarWash:[remoteObject gotCarWash]];},
+                                                  FPFplogGotCarWashField],
+                                                @[[NSValue valueWithPointer:@selector(carWashPerGallonDiscount)],
+                                                  [NSValue valueWithPointer:@selector(setCarWashPerGallonDiscount:)],
+                                                  ^(SEL getter, id obj1, id obj2) {return [PEUtils isNumProperty:getter equalFor:obj1 and:obj2];},
+                                                  ^(FPFuelPurchaseLog * localObject, FPFuelPurchaseLog * remoteObject) {[localObject setCarWashPerGallonDiscount:[remoteObject carWashPerGallonDiscount]];},
+                                                  FPFplogCarWashPerGallonDiscountField],
+                                                @[[NSValue valueWithPointer:@selector(purchasedAt)],
+                                                  [NSValue valueWithPointer:@selector(setPurchasedAt:)],
+                                                  ^(SEL getter, id obj1, id obj2) {return [PEUtils isDateProperty:getter equalFor:obj1 and:obj2];},
+                                                  ^(FPFuelPurchaseLog * localObject, FPFuelPurchaseLog * remoteObject) {[localObject setPurchasedAt:[remoteObject purchasedAt]];},
+                                                  FPFplogPurchasedAtField]]];
+  [allMergeConflicts addEntriesFromDictionary:superMergeConflicts];
+  [allMergeConflicts addEntriesFromDictionary:mergeConflicts];
+  return allMergeConflicts;
 }
 
 #pragma mark - Overwriting

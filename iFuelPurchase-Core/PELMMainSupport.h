@@ -30,6 +30,12 @@
                       syncErrMask:(NSNumber *)syncErrMask
                       syncRetryAt:(NSDate *)syncRetryAt;
 
+#pragma mark - Merging
+
++ (NSDictionary *)mergeRemoteEntity:(PELMMainSupport *)remoteEntity
+                    withLocalEntity:(PELMMainSupport *)localEntity
+                  localMasterEntity:(PELMMainSupport *)localMasterEntity;
+
 #pragma mark - Overwriting
 
 - (void)overwriteDomainProperties:(PELMMainSupport *)entity;
