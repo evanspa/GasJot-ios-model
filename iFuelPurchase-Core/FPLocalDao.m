@@ -594,6 +594,22 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
 
 #pragma mark - Vehicle
 
+- (FPVehicle *)masterVehicleWithId:(NSNumber *)vehicleId
+                             error:(PELMDaoErrorBlk)errorBlk {
+  NSString *vehicleTable = TBL_MASTER_VEHICLE;
+  __block FPVehicle *vehicle = nil;
+  [_databaseQueue inDatabase:^(FMDatabase *db) {
+    vehicle = [PELMUtils entityFromQuery:[NSString stringWithFormat:@"SELECT * FROM %@", vehicleTable]
+                             entityTable:vehicleTable
+                           localIdGetter:^NSNumber *(PELMModelSupport *entity) { return [entity localMasterIdentifier]; }
+                               argsArray:@[vehicleId]
+                             rsConverter:^(FMResultSet *rs) { return [self masterVehicleFromResultSet:rs]; }
+                                      db:db
+                                   error:errorBlk];
+  }];
+  return vehicle;
+}
+
 - (void)deleteVehicle:(FPVehicle *)vehicle error:(PELMDaoErrorBlk)errorBlk {
   [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
     [self deleteVehicle:vehicle db:db error:errorBlk];
@@ -3276,36 +3292,16 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
 
 - (FPUser *)masterUserWithDatabase:(FMDatabase *)db error:(PELMDaoErrorBlk)errorBlk {
   NSString *userTable = TBL_MASTER_USER;
-  return [PELMUtils
-          entityFromQuery:[NSString stringWithFormat:@"SELECT * FROM %@", userTable]
-          entityTable:userTable
-          localIdGetter:^NSNumber *(PELMModelSupport *entity) { return [entity localMasterIdentifier]; }
-          argsArray:@[]
-          rsConverter:^(FMResultSet *rs){return [self masterUserFromResultSet:rs];}
-          db:db
-          error:errorBlk];
+  return [PELMUtils entityFromQuery:[NSString stringWithFormat:@"SELECT * FROM %@", userTable]
+                        entityTable:userTable
+                      localIdGetter:^NSNumber *(PELMModelSupport *entity) { return [entity localMasterIdentifier]; }
+                          argsArray:@[]
+                        rsConverter:^(FMResultSet *rs){return [self masterUserFromResultSet:rs];}
+                                 db:db
+                              error:errorBlk];
 }
 
 #pragma mark - User data access helpers (private)
-
-/*- (FPUser *)userReadyForSyncWithDb:(FMDatabase *)db
-                             error:(PELMDaoErrorBlk)errorBlk {
-  NSString *query = [NSString stringWithFormat:@"SELECT * FROM %@ WHERE \
-                     %@ = 0 AND \
-                     %@ = 0 AND \
-                     %@ = 0 AND \
-                     %@ = 0", TBL_MAIN_USER,
-                     COL_MAN_SYNCED,
-                     COL_MAN_EDIT_IN_PROGRESS,
-                     COL_MAN_SYNC_IN_PROGRESS,
-                     COL_MAN_IN_CONFLICT];
-  return [PELMUtils entityFromQuery:query
-                        entityTable:TBL_MAIN_USER
-                      localIdGetter:^NSNumber *(PELMModelSupport *entity) { return [entity localMainIdentifier]; }
-                        rsConverter:^(FMResultSet *rs){return [self mainUserFromResultSet:rs];}
-                                 db:db
-                              error:errorBlk];
-}*/
 
 - (NSString *)updateStmtForMasterUser {
   return [NSString stringWithFormat:@"UPDATE %@ SET \

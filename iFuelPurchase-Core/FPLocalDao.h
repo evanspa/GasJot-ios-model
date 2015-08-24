@@ -111,6 +111,9 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
 
 #pragma mark - Vehicle
 
+- (FPVehicle *)masterVehicleWithId:(NSNumber *)vehicleId
+                             error:(PELMDaoErrorBlk)errorBlk;
+
 - (void)deleteVehicle:(FPVehicle *)vehicle
                 error:(PELMDaoErrorBlk)errorBlk;
 
