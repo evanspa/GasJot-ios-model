@@ -173,6 +173,38 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
 
 #pragma mark - User
 
+- (FPUser *)masterUserWithId:(NSNumber *)userId
+                       error:(PELMDaoErrorBlk)errorBlk {
+  NSString *userTable = TBL_MASTER_USER;
+  __block FPUser *user = nil;
+  [_databaseQueue inDatabase:^(FMDatabase *db) {
+    user = [PELMUtils entityFromQuery:[NSString stringWithFormat:@"SELECT * FROM %@ WHERE %@ = ?", userTable, COL_LOCAL_ID]
+                          entityTable:userTable
+                        localIdGetter:^NSNumber *(PELMModelSupport *entity) { return [entity localMasterIdentifier]; }
+                            argsArray:@[userId]
+                          rsConverter:^(FMResultSet *rs) { return [self masterUserFromResultSet:rs]; }
+                                   db:db
+                                error:errorBlk];
+  }];
+  return user;
+}
+
+- (FPUser *)masterUserWithGlobalId:(NSString *)globalId
+                             error:(PELMDaoErrorBlk)errorBlk {
+  NSString *userTable = TBL_MASTER_USER;
+  __block FPUser *user = nil;
+  [_databaseQueue inDatabase:^(FMDatabase *db) {
+    user = [PELMUtils entityFromQuery:[NSString stringWithFormat:@"SELECT * FROM %@ WHERE %@ = ?", userTable, COL_GLOBAL_ID]
+                          entityTable:userTable
+                        localIdGetter:^NSNumber *(PELMModelSupport *entity) { return [entity localMasterIdentifier]; }
+                            argsArray:@[globalId]
+                          rsConverter:^(FMResultSet *rs) { return [self masterUserFromResultSet:rs]; }
+                                   db:db
+                                error:errorBlk];
+  }];
+  return user;
+}
+
 - (void)deleteUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk {
   [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
     [self deleteUser:user db:db error:errorBlk];
@@ -599,10 +631,26 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
   NSString *vehicleTable = TBL_MASTER_VEHICLE;
   __block FPVehicle *vehicle = nil;
   [_databaseQueue inDatabase:^(FMDatabase *db) {
-    vehicle = [PELMUtils entityFromQuery:[NSString stringWithFormat:@"SELECT * FROM %@", vehicleTable]
+    vehicle = [PELMUtils entityFromQuery:[NSString stringWithFormat:@"SELECT * FROM %@ WHERE %@ = ?", vehicleTable, COL_LOCAL_ID]
                              entityTable:vehicleTable
                            localIdGetter:^NSNumber *(PELMModelSupport *entity) { return [entity localMasterIdentifier]; }
                                argsArray:@[vehicleId]
+                             rsConverter:^(FMResultSet *rs) { return [self masterVehicleFromResultSet:rs]; }
+                                      db:db
+                                   error:errorBlk];
+  }];
+  return vehicle;
+}
+
+- (FPVehicle *)masterVehicleWithGlobalId:(NSString *)globalId
+                                   error:(PELMDaoErrorBlk)errorBlk {
+  NSString *vehicleTable = TBL_MASTER_VEHICLE;
+  __block FPVehicle *vehicle = nil;
+  [_databaseQueue inDatabase:^(FMDatabase *db) {
+    vehicle = [PELMUtils entityFromQuery:[NSString stringWithFormat:@"SELECT * FROM %@ WHERE %@ = ?", vehicleTable, COL_GLOBAL_ID]
+                             entityTable:vehicleTable
+                           localIdGetter:^NSNumber *(PELMModelSupport *entity) { return [entity localMasterIdentifier]; }
+                               argsArray:@[globalId]
                              rsConverter:^(FMResultSet *rs) { return [self masterVehicleFromResultSet:rs]; }
                                       db:db
                                    error:errorBlk];

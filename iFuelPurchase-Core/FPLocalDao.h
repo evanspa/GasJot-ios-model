@@ -39,6 +39,12 @@
 
 #pragma mark - User
 
+- (FPUser *)masterUserWithId:(NSNumber *)userId
+                       error:(PELMDaoErrorBlk)errorBlk;
+
+- (FPUser *)masterUserWithGlobalId:(NSString *)globalId
+                             error:(PELMDaoErrorBlk)errorBlk;
+
 - (void)deleteUser:(FPUser *)user
              error:(PELMDaoErrorBlk)errorBlk;
 
@@ -113,6 +119,9 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
 
 - (FPVehicle *)masterVehicleWithId:(NSNumber *)vehicleId
                              error:(PELMDaoErrorBlk)errorBlk;
+
+- (FPVehicle *)masterVehicleWithGlobalId:(NSString *)globalId
+                                   error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)deleteVehicle:(FPVehicle *)vehicle
                 error:(PELMDaoErrorBlk)errorBlk;
