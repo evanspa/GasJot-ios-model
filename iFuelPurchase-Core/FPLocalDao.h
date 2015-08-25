@@ -190,6 +190,12 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
 
 #pragma mark - Fuel Station
 
+- (FPFuelStation *)masterFuelstationWithId:(NSNumber *)fuelstationId
+                                     error:(PELMDaoErrorBlk)errorBlk;
+
+- (FPFuelStation *)masterFuelstationWithGlobalId:(NSString *)globalId
+                                           error:(PELMDaoErrorBlk)errorBlk;
+
 - (void)deleteFuelstation:(FPFuelStation *)fuelstation
                     error:(PELMDaoErrorBlk)errorBlk;
 

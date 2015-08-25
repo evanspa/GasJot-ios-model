@@ -966,6 +966,38 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
 
 #pragma mark - Fuel Station
 
+- (FPFuelStation *)masterFuelstationWithId:(NSNumber *)fuelstationId
+                                     error:(PELMDaoErrorBlk)errorBlk {
+  NSString *fuelstationTable = TBL_MASTER_FUEL_STATION;
+  __block FPFuelStation *fuelstation = nil;
+  [_databaseQueue inDatabase:^(FMDatabase *db) {
+    fuelstation = [PELMUtils entityFromQuery:[NSString stringWithFormat:@"SELECT * FROM %@ WHERE %@ = ?", fuelstationTable, COL_LOCAL_ID]
+                                 entityTable:fuelstationTable
+                               localIdGetter:^NSNumber *(PELMModelSupport *entity) { return [entity localMasterIdentifier]; }
+                                   argsArray:@[fuelstationId]
+                                 rsConverter:^(FMResultSet *rs) { return [self masterFuelStationFromResultSet:rs]; }
+                                          db:db
+                                       error:errorBlk];
+  }];
+  return fuelstation;
+}
+
+- (FPFuelStation *)masterFuelstationWithGlobalId:(NSString *)globalId
+                                           error:(PELMDaoErrorBlk)errorBlk {
+  NSString *fuelstationTable = TBL_MASTER_FUEL_STATION;
+  __block FPFuelStation *fuelstation = nil;
+  [_databaseQueue inDatabase:^(FMDatabase *db) {
+    fuelstation = [PELMUtils entityFromQuery:[NSString stringWithFormat:@"SELECT * FROM %@ WHERE %@ = ?", fuelstationTable, COL_GLOBAL_ID]
+                                 entityTable:fuelstationTable
+                               localIdGetter:^NSNumber *(PELMModelSupport *entity) { return [entity localMasterIdentifier]; }
+                                   argsArray:@[globalId]
+                                 rsConverter:^(FMResultSet *rs) { return [self masterFuelStationFromResultSet:rs]; }
+                                          db:db
+                                       error:errorBlk];
+  }];
+  return fuelstation;
+}
+
 - (void)deleteFuelstation:(FPFuelStation *)fuelstation error:(PELMDaoErrorBlk)errorBlk {
   [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
     [self deleteFuelstation:fuelstation db:db error:errorBlk];
