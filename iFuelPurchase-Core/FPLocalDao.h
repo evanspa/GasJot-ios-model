@@ -383,6 +383,12 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
 
 #pragma mark - Environment Log
 
+- (FPEnvironmentLog *)masterEnvlogWithId:(NSNumber *)envlogId
+                                   error:(PELMDaoErrorBlk)errorBlk;
+
+- (FPEnvironmentLog *)masterEnvlogWithGlobalId:(NSString *)globalId
+                                         error:(PELMDaoErrorBlk)errorBlk;
+
 - (void)deleteEnvironmentLog:(FPEnvironmentLog *)envlog
                        error:(PELMDaoErrorBlk)errorBlk;
 

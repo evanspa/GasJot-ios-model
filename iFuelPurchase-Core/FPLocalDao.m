@@ -2135,6 +2135,38 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
 
 #pragma mark - Environment Log
 
+- (FPEnvironmentLog *)masterEnvlogWithId:(NSNumber *)envlogId
+                                   error:(PELMDaoErrorBlk)errorBlk {
+  NSString *envlogTable = TBL_MASTER_ENV_LOG;
+  __block FPEnvironmentLog *envlog = nil;
+  [_databaseQueue inDatabase:^(FMDatabase *db) {
+    envlog = [PELMUtils entityFromQuery:[NSString stringWithFormat:@"SELECT * FROM %@ WHERE %@ = ?", envlogTable, COL_LOCAL_ID]
+                            entityTable:envlogTable
+                          localIdGetter:^NSNumber *(PELMModelSupport *entity) { return [entity localMasterIdentifier]; }
+                              argsArray:@[envlogId]
+                            rsConverter:^(FMResultSet *rs) { return [self masterEnvironmentLogFromResultSet:rs]; }
+                                     db:db
+                                  error:errorBlk];
+  }];
+  return envlog;
+}
+
+- (FPEnvironmentLog *)masterEnvlogWithGlobalId:(NSString *)globalId
+                                         error:(PELMDaoErrorBlk)errorBlk {
+  NSString *envlogTable = TBL_MASTER_ENV_LOG;
+  __block FPEnvironmentLog *envlog = nil;
+  [_databaseQueue inDatabase:^(FMDatabase *db) {
+    envlog = [PELMUtils entityFromQuery:[NSString stringWithFormat:@"SELECT * FROM %@ WHERE %@ = ?", envlogTable, COL_GLOBAL_ID]
+                            entityTable:envlogTable
+                          localIdGetter:^NSNumber *(PELMModelSupport *entity) { return [entity localMasterIdentifier]; }
+                              argsArray:@[globalId]
+                            rsConverter:^(FMResultSet *rs) { return [self masterEnvironmentLogFromResultSet:rs]; }
+                                     db:db
+                                  error:errorBlk];
+  }];
+  return envlog;
+}
+
 - (void)deleteEnvironmentLog:(FPEnvironmentLog *)envlog
                        error:(PELMDaoErrorBlk)errorBlk {
   [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
