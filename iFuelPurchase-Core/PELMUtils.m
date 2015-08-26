@@ -1107,6 +1107,36 @@ WHERE masparent.%@ IN (SELECT child.%@ \
   }
 }
 
++ (PELMMainSupport *)masterParentForMasterChildEntity:(PELMMainSupport *)childEntity
+                              parentEntityMasterTable:(NSString *)parentEntityMasterTable
+                           parentEntityMasterFkColumn:(NSString *)parentEntityMasterFkColumn
+                        parentEntityMasterRsConverter:(entityFromResultSetBlk)parentEntityMasterRsConverter
+                               childEntityMasterTable:(NSString *)childEntityMasterTable
+                                                   db:(FMDatabase *)db
+                                                error:(PELMDaoErrorBlk)errorBlk {
+  if ([childEntity localMasterIdentifier]) {
+    NSString *qry = [NSString stringWithFormat:@"\
+SELECT masparent.* \
+FROM %@ masparent \
+WHERE masparent.%@ IN (SELECT child.%@ \
+                       FROM %@ child \
+                       WHERE child.%@ = ?)",
+                     parentEntityMasterTable,
+                     COL_LOCAL_ID,
+                     parentEntityMasterFkColumn,
+                     childEntityMasterTable,
+                     COL_LOCAL_ID];
+    return [PELMUtils entityFromQuery:qry
+                          entityTable:parentEntityMasterTable
+                        localIdGetter:^NSNumber *(PELMModelSupport *entity){return [entity localMasterIdentifier];}
+                            argsArray:@[[childEntity localMasterIdentifier]]
+                          rsConverter:parentEntityMasterRsConverter
+                                   db:db
+                                error:errorBlk];
+  }
+  return nil;
+}
+
 + (NSNumber *)localMainIdentifierForEntity:(PELMModelSupport *)entity
                                  mainTable:(NSString *)mainTable
                                         db:(FMDatabase *)db

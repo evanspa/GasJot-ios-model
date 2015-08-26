@@ -286,6 +286,14 @@ localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrHandler;
                                        db:(FMDatabase *)db
                                     error:(PELMDaoErrorBlk)errorBlk;
 
++ (PELMMainSupport *)masterParentForMasterChildEntity:(PELMMainSupport *)childEntity
+                              parentEntityMasterTable:(NSString *)parentEntityMasterTable
+                           parentEntityMasterFkColumn:(NSString *)parentEntityMasterFkColumn
+                        parentEntityMasterRsConverter:(entityFromResultSetBlk)parentEntityMasterRsConverter
+                               childEntityMasterTable:(NSString *)childEntityMasterTable
+                                                   db:(FMDatabase *)db
+                                                error:(PELMDaoErrorBlk)errorBlk;
+
 + (NSNumber *)localMainIdentifierForEntity:(PELMModelSupport *)entity
                                  mainTable:(NSString *)mainTable
                                         db:(FMDatabase *)db

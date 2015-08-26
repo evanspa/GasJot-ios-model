@@ -16,6 +16,7 @@ NSString * const FPEnvlogReportedAvgMphField = @"FPEnvlogReportedAvgMphField";
 NSString * const FPEnvlogReportedOutsideTempField = @"FPEnvlogReportedOutsideTempField";
 NSString * const FPEnvlogLogDateField = @"FPEnvlogLogDateField";
 NSString * const FPEnvlogReportedDteField = @"FPEnvlogReportedDteField";
+NSString * const FPEnvlogVehicleGlobalIdField = @"FPEnvlogVehicleGlobalIdField";
 
 @implementation FPEnvironmentLog
 
@@ -192,7 +193,12 @@ NSString * const FPEnvlogReportedDteField = @"FPEnvlogReportedDteField";
                                         [NSValue valueWithPointer:@selector(setReportedDte:)],
                                         ^(SEL getter, id obj1, id obj2) {return [PEUtils isNumProperty:getter equalFor:obj1 and:obj2];},
                                         ^(FPEnvironmentLog * localObject, FPEnvironmentLog * remoteObject) { [localObject setReportedDte:[remoteObject reportedDte]];},
-                                        FPEnvlogReportedDteField]]];
+                                        FPEnvlogReportedDteField],
+                                      @[[NSValue valueWithPointer:@selector(vehicleGlobalIdentifier)],
+                                        [NSValue valueWithPointer:@selector(setVehicleGlobalIdentifier:)],
+                                        ^(SEL getter, id obj1, id obj2) {return [PEUtils isStringProperty:getter equalFor:obj1 and:obj2];},
+                                        ^(FPEnvironmentLog * localObject, FPEnvironmentLog * remoteObject) { [localObject setVehicleGlobalIdentifier:[remoteObject vehicleGlobalIdentifier]];},
+                                        FPEnvlogVehicleGlobalIdField]]];
 }
 
 #pragma mark - Overwriting

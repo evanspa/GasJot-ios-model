@@ -2367,6 +2367,27 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
   return nil;
 }
 
+- (FPVehicle *)masterVehicleForMasterEnvLog:(FPEnvironmentLog *)envlog
+                                      error:(PELMDaoErrorBlk)errorBlk {
+  __block FPVehicle *vehicle = nil;
+  [_databaseQueue inDatabase:^(FMDatabase *db) {
+    vehicle = [self masterVehicleForMasterEnvLog:envlog db:db error:errorBlk];
+  }];
+  return vehicle;
+}
+
+- (FPVehicle *)masterVehicleForMasterEnvLog:(FPEnvironmentLog *)envlog
+                                         db:(FMDatabase *)db
+                                      error:(PELMDaoErrorBlk)errorBlk {
+  return (FPVehicle *) [PELMUtils masterParentForMasterChildEntity:envlog
+                                           parentEntityMasterTable:TBL_MASTER_VEHICLE
+                                        parentEntityMasterFkColumn:COL_MASTER_VEHICLE_ID
+                                     parentEntityMasterRsConverter:^(FMResultSet *rs){return [self masterVehicleFromResultSet:rs];}
+                                            childEntityMasterTable:TBL_MASTER_ENV_LOG
+                                                                db:db
+                                                             error:errorBlk];
+}
+
 - (FPVehicle *)vehicleForEnvironmentLog:(FPEnvironmentLog *)envLog
                                   error:(PELMDaoErrorBlk)errorBlk {
   __block FPVehicle *vehicle = nil;

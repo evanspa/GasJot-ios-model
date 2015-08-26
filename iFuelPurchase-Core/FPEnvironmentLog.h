@@ -15,6 +15,7 @@ FOUNDATION_EXPORT NSString * const FPEnvlogReportedAvgMphField;
 FOUNDATION_EXPORT NSString * const FPEnvlogReportedOutsideTempField;
 FOUNDATION_EXPORT NSString * const FPEnvlogLogDateField;
 FOUNDATION_EXPORT NSString * const FPEnvlogReportedDteField;
+FOUNDATION_EXPORT NSString * const FPEnvlogVehicleGlobalIdField;
 
 @interface FPEnvironmentLog : PELMMainSupport <NSCopying>
 

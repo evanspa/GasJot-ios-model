@@ -427,7 +427,10 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                       beforeDateLogged:(NSDate *)beforeDateLogged
                                  error:(PELMDaoErrorBlk)errorBlk;
 
-- (FPVehicle *)vehicleForEnvironmentLog:(FPEnvironmentLog *)fpLog
+- (FPVehicle *)masterVehicleForMasterEnvLog:(FPEnvironmentLog *)envlog
+                                      error:(PELMDaoErrorBlk)errorBlk;
+
+- (FPVehicle *)vehicleForEnvironmentLog:(FPEnvironmentLog *)envlog
                                   error:(PELMDaoErrorBlk)errorBlk;
 
 - (FPVehicle *)defaultVehicleForNewEnvironmentLogForUser:(FPUser *)user
