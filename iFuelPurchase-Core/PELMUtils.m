@@ -62,126 +62,98 @@ PELMMainSupport * (^toMainSupport)(FMResultSet *, NSString *, NSDictionary *) = 
   return self;
 }
 
-#pragma mark - Syncing
+#pragma mark - Completion Handler Makers
 
-+ (void)flushUnsyncedChangesToEntity:(PELMMainSupport *)entity
-                  remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
-                 remoteStoreErrorBlk:(void(^)(NSError *, NSNumber *))remoteStoreErrorBlk
-                   entityNotFoundBlk:(void(^)(void))entityNotFoundBlk
-                   markAsConflictBlk:(void(^)(id))markAsConflictBlk
-   markAsSyncCompleteForNewEntityBlk:(void(^)(void))markAsSyncCompleteForNewEntityBlk
-markAsSyncCompleteForExistingEntityBlk:(void(^)(void))markAsSyncCompleteForExistingEntityBlk
-                 authRequiredHandler:(PELMRemoteMasterAuthReqdBlk)authRequiredHandler
-                     newAuthTokenBlk:(void(^)(NSString *))newAuthTokenBlk
-              remoteMasterSaveNewBlk:(PELMRemoteMasterSaveBlk)remoteMasterSaveNewBlk
-         remoteMasterSaveExistingBlk:(PELMRemoteMasterSaveBlk)remoteMasterSaveExistingBlk
-               localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrHandler {
-  if (entity) { // when would 'unsyncedEntity' ever be nil?  Oh well...worry about this later...
-    if ([entity synced]) {
-      return;
-    }
-    PELMRemoteMasterBusyBlk remoteStoreBusyHandler = ^(NSDate *retryAfter) {
-      remoteStoreBusyBlk(retryAfter);
-    };
-    void (^successfulSync)(PELMMainSupport *, BOOL) = ^(PELMMainSupport *respEntity, BOOL wasPut) {
-      if (respEntity) {
-        NSString *unsyncedEntityGlobalId = [entity globalIdentifier];
-        [entity overwrite:respEntity];
-        if (wasPut) {
-          // we do this because, in an HTTP PUT, the typical response is 200,
-          // and, with 200, the "location" header is usually absent; this means
-          // that the entity parsed from the response will have its 'globalIdentifier'
-          // property empty.  Well, we want to keep our existing global identity
-          // property, so, we have to re-set it onto unsyncedEntity after doing
-          // the "overwrite" step above
-          [entity setGlobalIdentifier:unsyncedEntityGlobalId];
-        }
-      }
++ (PELMRemoteMasterCompletionHandler)complHandlerToFlushUnsyncedChangesToEntity:(PELMMainSupport *)entity
+                                                            remoteStoreErrorBlk:(void(^)(NSError *, NSNumber *))remoteStoreErrorBlk
+                                                              entityNotFoundBlk:(void(^)(void))entityNotFoundBlk
+                                                              markAsConflictBlk:(void(^)(id))markAsConflictBlk
+                                              markAsSyncCompleteForNewEntityBlk:(void(^)(void))markAsSyncCompleteForNewEntityBlk
+                                         markAsSyncCompleteForExistingEntityBlk:(void(^)(void))markAsSyncCompleteForExistingEntityBlk
+                                                                newAuthTokenBlk:(void(^)(NSString *))newAuthTokenBlk {
+  void (^successfulSync)(PELMMainSupport *, BOOL) = ^(PELMMainSupport *respEntity, BOOL wasPut) {
+    if (respEntity) {
+      NSString *unsyncedEntityGlobalId = [entity globalIdentifier];
+      [entity overwrite:respEntity];
       if (wasPut) {
-        markAsSyncCompleteForExistingEntityBlk();
-      } else {
-        markAsSyncCompleteForNewEntityBlk();
-      }
-    };
-    void (^notifyUnsuccessfulSync)(NSError *, NSNumber *) = ^(NSError *error, NSNumber *httpStatusCode) {
-      remoteStoreErrorBlk(error, httpStatusCode);
-    };
-    if ([entity globalIdentifier]) { // PUT
-      PELMRemoteMasterCompletionHandler remoteStoreComplHandler =
-      ^(NSString *newAuthTkn, NSString *globalId, id resourceModel, NSDictionary *rels,
-        NSDate *lastModified, BOOL isConflict, BOOL gone, BOOL notFound, BOOL movedPermanently,
-        BOOL notModified, NSError *err, NSHTTPURLResponse *httpResp) {
-        newAuthTokenBlk(newAuthTkn);
-        if (movedPermanently) { // this block will get executed again
-          [entity setGlobalIdentifier:globalId];
-        } else if (isConflict) {
-          markAsConflictBlk(resourceModel);
-        } else if (gone) {
-          entityNotFoundBlk();
-        } else if (notFound) {
-          entityNotFoundBlk();
-        } else if (notModified) {
-          // this is only relevant on a GET
-        } else if (err) {
-          if (httpResp) { // will deduce that error is from server
-            notifyUnsuccessfulSync(err, [NSNumber numberWithInteger:[httpResp statusCode]]);
-          } else {  // will deduce that error is connecton-related
-            notifyUnsuccessfulSync(err, nil);
-          }
-        } else {
-          successfulSync(resourceModel, YES);
-        }
-      };
-      remoteMasterSaveExistingBlk(remoteStoreBusyHandler, authRequiredHandler, remoteStoreComplHandler);
-    } else { // POST
-      PELMRemoteMasterCompletionHandler remoteStoreComplHandler =
-      ^(NSString *newAuthTkn, NSString *globalId, id resourceModel, NSDictionary *rels,
-        NSDate *lastModified, BOOL isConflict, BOOL gone, BOOL notFound, BOOL movedPermanently,
-        BOOL notModified, NSError *err, NSHTTPURLResponse *httpResp) {
-        newAuthTokenBlk(newAuthTkn);
-        if (movedPermanently) { // this block will get executed again
-          [entity setGlobalIdentifier:globalId];
-        } else if (isConflict) {
-          markAsConflictBlk(resourceModel); // weird - this should not happen on a POST
-        } else if (gone) {
-          entityNotFoundBlk(); // weird - this should not happen on a POST
-        } else if (notFound) {
-          entityNotFoundBlk(); // weird - this should not happen on a POST
-        } else if (notModified) {
-          // this is only relevant on a GET
-        } else if (err) {
-          if (httpResp) { // will deduce that error is from server
-            notifyUnsuccessfulSync(err, [NSNumber numberWithInteger:[httpResp statusCode]]);
-          } else {  // will deduce that error is connecton-related
-            notifyUnsuccessfulSync(err, nil);
-          }
-        } else {
-          successfulSync(resourceModel, NO);
-        }
-      };
-      if (remoteMasterSaveNewBlk) {
-        remoteMasterSaveNewBlk(remoteStoreBusyHandler, authRequiredHandler, remoteStoreComplHandler);
+        // we do this because, in an HTTP PUT, the typical response is 200,
+        // and, with 200, the "location" header is usually absent; this means
+        // that the entity parsed from the response will have its 'globalIdentifier'
+        // property empty.  Well, we want to keep our existing global identity
+        // property, so, we have to re-set it onto unsyncedEntity after doing
+        // the "overwrite" step above
+        [entity setGlobalIdentifier:unsyncedEntityGlobalId];
       }
     }
+    if (wasPut) {
+      markAsSyncCompleteForExistingEntityBlk();
+    } else {
+      markAsSyncCompleteForNewEntityBlk();
+    }
+  };
+  PELMRemoteMasterCompletionHandler remoteStoreComplHandler;
+  if ([entity globalIdentifier]) { // PUT
+    remoteStoreComplHandler =
+    ^(NSString *newAuthTkn, NSString *globalId, id resourceModel, NSDictionary *rels,
+      NSDate *lastModified, BOOL isConflict, BOOL gone, BOOL notFound, BOOL movedPermanently,
+      BOOL notModified, NSError *err, NSHTTPURLResponse *httpResp) {
+      newAuthTokenBlk(newAuthTkn);
+      if (movedPermanently) { // this block will get executed again
+        [entity setGlobalIdentifier:globalId];
+      } else if (isConflict) {
+        markAsConflictBlk(resourceModel);
+      } else if (gone) {
+        entityNotFoundBlk();
+      } else if (notFound) {
+        entityNotFoundBlk();
+      } else if (notModified) {
+        // this is only relevant on a GET
+      } else if (err) {
+        if (httpResp) { // will deduce that error is from server
+          remoteStoreErrorBlk(err, [NSNumber numberWithInteger:[httpResp statusCode]]);
+        } else {  // will deduce that error is connecton-related
+          remoteStoreErrorBlk(err, nil);
+        }
+      } else {
+        successfulSync(resourceModel, YES);
+      }
+    };
+  } else { // POST
+    remoteStoreComplHandler =
+    ^(NSString *newAuthTkn, NSString *globalId, id resourceModel, NSDictionary *rels,
+      NSDate *lastModified, BOOL isConflict, BOOL gone, BOOL notFound, BOOL movedPermanently,
+      BOOL notModified, NSError *err, NSHTTPURLResponse *httpResp) {
+      newAuthTokenBlk(newAuthTkn);
+      if (movedPermanently) { // this block will get executed again
+        [entity setGlobalIdentifier:globalId];
+      } else if (isConflict) {
+        markAsConflictBlk(resourceModel); // weird - this should not happen on a POST
+      } else if (gone) {
+        entityNotFoundBlk(); // weird - this should not happen on a POST
+      } else if (notFound) {
+        entityNotFoundBlk(); // weird - this should not happen on a POST
+      } else if (notModified) {
+        // this is only relevant on a GET
+      } else if (err) {
+        if (httpResp) { // will deduce that error is from server
+          remoteStoreErrorBlk(err, [NSNumber numberWithInteger:[httpResp statusCode]]);
+        } else {  // will deduce that error is connecton-related
+          remoteStoreErrorBlk(err, nil);
+        }
+      } else {
+        successfulSync(resourceModel, NO);
+      }
+    };
   }
+  return remoteStoreComplHandler;
 }
 
-+ (void)deleteEntity:(PELMMainSupport *)entity
-  remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
- remoteStoreErrorBlk:(void(^)(NSError *, NSNumber *))remoteStoreErrorBlk
-   entityNotFoundBlk:(void(^)(void))entityNotFoundBlk
-   markAsConflictBlk:(void(^)(id))markAsConflictBlk
-   deleteCompleteBlk:(void(^)(void))deleteCompleteBlk
- authRequiredHandler:(PELMRemoteMasterAuthReqdBlk)authRequiredHandler
-     newAuthTokenBlk:(void(^)(NSString *))newAuthTokenBlk
-remoteMasterDeleteBlk:(PELMRemoteMasterDeletionBlk)remoteMasterDeleteBlk
-localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrHandler {
-  PELMRemoteMasterBusyBlk remoteStoreBusyHandler = ^(NSDate *retryAfter) {
-    remoteStoreBusyBlk(retryAfter);
-  };
-  void (^notifyUnsuccessfulDelete)(NSError *, NSNumber *) = ^(NSError *error, NSNumber *httpStatusCode) {
-    remoteStoreErrorBlk(error, httpStatusCode);
-  };
++ (PELMRemoteMasterCompletionHandler)complHandlerToDeleteEntity:(PELMMainSupport *)entity
+                                            remoteStoreErrorBlk:(void(^)(NSError *, NSNumber *))remoteStoreErrorBlk
+                                              entityNotFoundBlk:(void(^)(void))entityNotFoundBlk
+                                              markAsConflictBlk:(void(^)(id))markAsConflictBlk
+                                               deleteSuccessBlk:(void(^)(void))deleteSuccessBlk
+                                                newAuthTokenBlk:(void(^)(NSString *))newAuthTokenBlk {
   PELMRemoteMasterCompletionHandler remoteStoreComplHandler =
   ^(NSString *newAuthTkn, NSString *globalId, id resourceModel, NSDictionary *rels,
     NSDate *lastModified, BOOL isConflict, BOOL gone, BOOL notFound, BOOL movedPermanently,
@@ -199,15 +171,44 @@ localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrHandler {
       // should not happen since we're doing a DELETE
     } else if (err) {
       if (httpResp) { // will deduce that error is from server
-        notifyUnsuccessfulDelete(err, [NSNumber numberWithInteger:[httpResp statusCode]]);
+        remoteStoreErrorBlk(err, [NSNumber numberWithInteger:[httpResp statusCode]]);
       } else {  // will deduce that error is connecton-related
-        notifyUnsuccessfulDelete(err, nil);
+        remoteStoreErrorBlk(err, nil);
       }
     } else {
-      deleteCompleteBlk();
+      deleteSuccessBlk();
     }
   };
-  remoteMasterDeleteBlk(remoteStoreBusyHandler, authRequiredHandler, remoteStoreComplHandler);
+  return remoteStoreComplHandler;
+}
+
++ (PELMRemoteMasterCompletionHandler)complHandlerToFetchEntityWithGlobalId:(NSString *)globalId
+                                                       remoteStoreErrorBlk:(void(^)(NSError *, NSNumber *))remoteStoreErrorBlk
+                                                         entityNotFoundBlk:(void(^)(void))entityNotFoundBlk
+                                                          fetchCompleteBlk:(void(^)(id))fetchCompleteBlk
+                                                           newAuthTokenBlk:(void(^)(NSString *))newAuthTokenBlk {
+  PELMRemoteMasterCompletionHandler remoteStoreComplHandler =
+    ^(NSString *newAuthTkn, NSString *globalId, id resourceModel, NSDictionary *rels,
+      NSDate *lastModified, BOOL isConflict, BOOL gone, BOOL notFound, BOOL movedPermanently,
+      BOOL notModified, NSError *err, NSHTTPURLResponse *httpResp) {
+    newAuthTokenBlk(newAuthTkn);
+    if (movedPermanently) { // this block will get executed again
+      // ?
+    } else if (gone) {
+      entityNotFoundBlk();
+    } else if (notFound) {
+      entityNotFoundBlk();
+    } else if (err) {
+      if (httpResp) { // will deduce that error is from server
+        remoteStoreErrorBlk(err, [NSNumber numberWithInteger:[httpResp statusCode]]);
+      } else {  // will deduce that error is connecton-related
+        remoteStoreErrorBlk(err, nil);
+      }
+    } else {
+      fetchCompleteBlk(resourceModel);
+    }
+  };
+  return remoteStoreComplHandler;
 }
 
 + (void)cancelSyncInProgressForEntityTable:(NSString *)mainEntityTable
@@ -358,6 +359,21 @@ version of entity not found!  It's global ID is: [%@]", [entity globalIdentifier
               argsArray:mainUpdateArgsBlk(entity)
                      db:db
                   error:errorBlk];
+  }];
+}
+
+- (void)saveNewMasterEntity:(PELMMainSupport *)entity
+                masterTable:(NSString *)masterTable
+            masterInsertBlk:(void (^)(id, FMDatabase *))masterInsertBlk
+                      error:(PELMDaoErrorBlk)errorBlk {
+  [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
+    masterInsertBlk(entity, db);
+    [PELMUtils insertRelations:[entity relations]
+                     forEntity:entity
+                   entityTable:masterTable
+               localIdentifier:[entity localMasterIdentifier]
+                            db:db
+                         error:errorBlk];
   }];
 }
 

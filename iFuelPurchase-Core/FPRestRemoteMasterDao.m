@@ -311,6 +311,13 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
                 otherHeaders:[self addFpIfUnmodifiedSinceHeaderToHeader:@{} entity:vehicle]];
 }
 
+- (void)fetchVehicleWithGlobalId:(NSString *)globalId
+                         timeout:(NSInteger)timeout
+                 remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
+                    authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
+               completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
+}
+
 #pragma mark - FuelStation Operations
 
 - (void)saveNewFuelStation:(FPFuelStation *)fuelStation

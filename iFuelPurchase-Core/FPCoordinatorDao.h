@@ -274,11 +274,18 @@ addlTempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
   addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
                 error:(PELMDaoErrorBlk)errorBlk;
 
-- (void)reloadVehicle:(FPVehicle *)vehicle
-                error:(PELMDaoErrorBlk)errorBlk;
+- (void)fetchAndSaveNewVehicleWithGlobalId:(NSString *)globalIdentifier
+                                   forUser:(FPUser *)user
+                       notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
+                            addlSuccessBlk:(void(^)(FPVehicle *))addlSuccessBlk
+                    addlRemoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)addlRemoteStoreBusyBlk
+                    addlTempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
+                       addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
+                                     error:(PELMDaoErrorBlk)errorBlk;
 
-- (void)cancelEditOfVehicle:(FPVehicle *)vehicle
-                      error:(PELMDaoErrorBlk)errorBlk;
+- (void)reloadVehicle:(FPVehicle *)vehicle error:(PELMDaoErrorBlk)errorBlk;
+
+- (void)cancelEditOfVehicle:(FPVehicle *)vehicle error:(PELMDaoErrorBlk)errorBlk;
 
 #pragma mark - Fuel Station
 

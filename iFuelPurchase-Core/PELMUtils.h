@@ -29,29 +29,21 @@
  Param 11 (NSHTTPURLResponse *): The raw HTTP response.
  */
 typedef void (^PELMRemoteMasterCompletionHandler)(NSString *, // auth token
-                                                NSString *, // global URI (location) (in case of moved-permenantly, will be new location of resource)
-                                                id,         // resource returned in response (in case of 409, will be master's copy of subject-resource)
-                                                NSDictionary *, // resource relations
-                                                NSDate *,   // last modified date
-                                                BOOL,       // is conflict (if YES, then id param will be latest version of result)
-                                                BOOL,       // gone
-                                                BOOL,       // not found
-                                                BOOL,       // moved permanently
-                                                BOOL,       // not modified
-                                                NSError *,  // error
-                                                NSHTTPURLResponse *); // raw HTTP response
+                                                  NSString *, // global URI (location) (in case of moved-permenantly, will be new location of resource)
+                                                  id,         // resource returned in response (in case of 409, will be master's copy of subject-resource)
+                                                  NSDictionary *, // resource relations
+                                                  NSDate *,   // last modified date
+                                                  BOOL,       // is conflict (if YES, then id param will be latest version of result)
+                                                  BOOL,       // gone
+                                                  BOOL,       // not found
+                                                  BOOL,       // moved permanently
+                                                  BOOL,       // not modified
+                                                  NSError *,  // error
+                                                  NSHTTPURLResponse *); // raw HTTP response
 
 typedef void (^PELMRemoteMasterBusyBlk)(NSDate *);
 
 typedef void (^PELMRemoteMasterAuthReqdBlk)(HCAuthentication *);
-
-typedef void (^PELMRemoteMasterDeletionBlk)(PELMRemoteMasterBusyBlk,
-                                            PELMRemoteMasterAuthReqdBlk,
-                                            PELMRemoteMasterCompletionHandler);
-
-typedef void (^PELMRemoteMasterSaveBlk)(PELMRemoteMasterBusyBlk,
-                                        PELMRemoteMasterAuthReqdBlk,
-                                        PELMRemoteMasterCompletionHandler);
 
 typedef void (^PELMDaoErrorBlk)(NSError *, int, NSString *);
 
@@ -81,31 +73,28 @@ void (^LogSyncLocal)(NSString *, NSInteger);
 
 - (id)initWithDatabaseQueue:(FMDatabaseQueue *)databaseQueue;
 
-#pragma mark - Syncing and Deleting
+#pragma mark - Completion Handler Makers
 
-+ (void)flushUnsyncedChangesToEntity:(PELMMainSupport *)entity
-                  remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
-                 remoteStoreErrorBlk:(void(^)(NSError *, NSNumber *))remoteStoreErrorBlk
-                   entityNotFoundBlk:(void(^)(void))entityNotFoundBlk
-                   markAsConflictBlk:(void(^)(id))markAsConflictBlk
-   markAsSyncCompleteForNewEntityBlk:(void(^)(void))markAsSyncCompleteForNewEntityBlk
-markAsSyncCompleteForExistingEntityBlk:(void(^)(void))markAsSyncCompleteForExistingEntityBlk
-                 authRequiredHandler:(PELMRemoteMasterAuthReqdBlk)authRequiredHandler
-                     newAuthTokenBlk:(void(^)(NSString *))newAuthTokenBlk
-              remoteMasterSaveNewBlk:(PELMRemoteMasterSaveBlk)remoteMasterSaveNewBlk
-         remoteMasterSaveExistingBlk:(PELMRemoteMasterSaveBlk)remoteMasterSaveExistingBlk
-               localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrHandler;
++ (PELMRemoteMasterCompletionHandler)complHandlerToFlushUnsyncedChangesToEntity:(PELMMainSupport *)entity
+                                                            remoteStoreErrorBlk:(void(^)(NSError *, NSNumber *))remoteStoreErrorBlk
+                                                              entityNotFoundBlk:(void(^)(void))entityNotFoundBlk
+                                                              markAsConflictBlk:(void(^)(id))markAsConflictBlk
+                                              markAsSyncCompleteForNewEntityBlk:(void(^)(void))markAsSyncCompleteForNewEntityBlk
+                                         markAsSyncCompleteForExistingEntityBlk:(void(^)(void))markAsSyncCompleteForExistingEntityBlk
+                                                                newAuthTokenBlk:(void(^)(NSString *))newAuthTokenBlk;
 
-+ (void)deleteEntity:(PELMMainSupport *)entity
-  remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
- remoteStoreErrorBlk:(void(^)(NSError *, NSNumber *))remoteStoreErrorBlk
-   entityNotFoundBlk:(void(^)(void))entityNotFoundBlk
-   markAsConflictBlk:(void(^)(id))markAsConflictBlk
-   deleteCompleteBlk:(void(^)(void))markAsSyncCompleteForNewEntityBlk
- authRequiredHandler:(PELMRemoteMasterAuthReqdBlk)authRequiredHandler
-     newAuthTokenBlk:(void(^)(NSString *))newAuthTokenBlk
-remoteMasterDeleteBlk:(PELMRemoteMasterDeletionBlk)remoteMasterDeleteBlk
-localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrHandler;
++ (PELMRemoteMasterCompletionHandler)complHandlerToDeleteEntity:(PELMMainSupport *)entity
+                                            remoteStoreErrorBlk:(void(^)(NSError *, NSNumber *))remoteStoreErrorBlk
+                                              entityNotFoundBlk:(void(^)(void))entityNotFoundBlk
+                                              markAsConflictBlk:(void(^)(id))markAsConflictBlk
+                                               deleteSuccessBlk:(void(^)(void))deleteSuccessBlk
+                                                newAuthTokenBlk:(void(^)(NSString *))newAuthTokenBlk;
+
++ (PELMRemoteMasterCompletionHandler)complHandlerToFetchEntityWithGlobalId:(NSString *)globalId
+                                                       remoteStoreErrorBlk:(void(^)(NSError *, NSNumber *))remoteStoreErrorBlk
+                                                         entityNotFoundBlk:(void(^)(void))entityNotFoundBlk
+                                                          fetchCompleteBlk:(void(^)(id))fetchCompleteBlk
+                                                           newAuthTokenBlk:(void(^)(NSString *))newAuthTokenBlk;
 
 + (void)cancelSyncInProgressForEntityTable:(NSString *)mainEntityTable
                                         db:(FMDatabase *)db
@@ -159,6 +148,11 @@ localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrHandler;
                               mainUpdateStmt:(NSString *)mainUpdateStmt
                            mainUpdateArgsBlk:(NSArray *(^)(id))mainUpdateArgsBlk
                                        error:(PELMDaoErrorBlk)errorBlk;
+
+- (void)saveNewMasterEntity:(PELMMainSupport *)entity
+                masterTable:(NSString *)masterTable
+            masterInsertBlk:(void (^)(id, FMDatabase *))masterInsertBlk
+                      error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)markAsSyncCompleteForNewEntity:(PELMMainSupport *)entity
                              mainTable:(NSString *)mainTable

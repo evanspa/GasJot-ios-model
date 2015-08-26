@@ -181,6 +181,10 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                      retryAt:(NSDate *)retryAt
                        error:(PELMDaoErrorBlk)errorBlk;
 
+- (void)saveNewMasterVehicle:(FPVehicle *)vehicle
+                     forUser:(FPUser *)user
+                       error:(PELMDaoErrorBlk)errorBlk;
+
 - (void)markAsSyncCompleteForNewVehicle:(FPVehicle *)vehicle
                                 forUser:(FPUser *)user
                                   error:(PELMDaoErrorBlk)errorBlk;

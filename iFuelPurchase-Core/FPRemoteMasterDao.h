@@ -42,6 +42,12 @@
          authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
     completionHandler:(PELMRemoteMasterCompletionHandler)complHandler;
 
+- (void)fetchVehicleWithGlobalId:(NSString *)globalId
+                         timeout:(NSInteger)timeout
+                 remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
+                    authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
+               completionHandler:(PELMRemoteMasterCompletionHandler)complHandler;
+
 #pragma mark - Fuel Station Operations
 
 - (void)saveNewFuelStation:(FPFuelStation *)fuelStation

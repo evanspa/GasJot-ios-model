@@ -940,6 +940,15 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                   error:errorBlk];
 }
 
+- (void)saveNewMasterVehicle:(FPVehicle *)vehicle
+                     forUser:(FPUser *)user
+                       error:(PELMDaoErrorBlk)errorBlk {
+  [_localModelUtils saveNewMasterEntity:vehicle
+                            masterTable:TBL_MASTER_VEHICLE
+                        masterInsertBlk:^(id entity, FMDatabase *db){[self insertIntoMasterVehicle:(FPVehicle *)entity forUser:user db:db error:errorBlk];}
+                                  error:errorBlk];
+}
+
 - (void)markAsSyncCompleteForNewVehicle:(FPVehicle *)vehicle
                                 forUser:(FPUser *)user
                                   error:(PELMDaoErrorBlk)errorBlk {
