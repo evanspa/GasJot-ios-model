@@ -316,6 +316,21 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
                  remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                     authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
                completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
+  [_relationExecutor doGetForURLString:globalId
+                       ifModifiedSince:nil
+                      targetSerializer:_vehicleSerializer
+                          asynchronous:YES
+                       completionQueue:_serialQueue
+                         authorization:[self authorization]
+                               success:[self newGetSuccessBlk:complHandler]
+                           redirection:[self newRedirectionBlk:complHandler]
+                           clientError:[self newClientErrBlk:complHandler]
+                authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired]
+                           serverError:[self newServerErrBlk:complHandler]
+                      unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
+                     connectionFailure:[self newConnFailureBlk:complHandler]
+                               timeout:timeout
+                          otherHeaders:nil];
 }
 
 #pragma mark - FuelStation Operations
