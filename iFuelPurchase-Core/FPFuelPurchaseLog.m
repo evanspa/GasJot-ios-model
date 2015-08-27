@@ -198,7 +198,17 @@ NSString * const FPFplogFuelstationGlobalIdField = @"FPFplogFuelstationGlobalIdF
                                         [NSValue valueWithPointer:@selector(setPurchasedAt:)],
                                         ^(SEL getter, id obj1, id obj2) {return [PEUtils isDateProperty:getter equalFor:obj1 and:obj2];},
                                         ^(FPFuelPurchaseLog * localObject, FPFuelPurchaseLog * remoteObject) {[localObject setPurchasedAt:[remoteObject purchasedAt]];},
-                                        FPFplogPurchasedAtField]]];
+                                        FPFplogPurchasedAtField],
+                                      @[[NSValue valueWithPointer:@selector(vehicleGlobalIdentifier)],
+                                        [NSValue valueWithPointer:@selector(setVehicleGlobalIdentifier:)],
+                                        ^(SEL getter, id obj1, id obj2) {return [PEUtils isStringProperty:getter equalFor:obj1 and:obj2];},
+                                        ^(FPFuelPurchaseLog * localObject, FPFuelPurchaseLog * remoteObject) { [localObject setVehicleGlobalIdentifier:[remoteObject vehicleGlobalIdentifier]];},
+                                        FPFplogVehicleGlobalIdField],
+                                      @[[NSValue valueWithPointer:@selector(fuelStationGlobalIdentifier)],
+                                        [NSValue valueWithPointer:@selector(setFuelStationGlobalIdentifier:)],
+                                        ^(SEL getter, id obj1, id obj2) {return [PEUtils isStringProperty:getter equalFor:obj1 and:obj2];},
+                                        ^(FPFuelPurchaseLog * localObject, FPFuelPurchaseLog * remoteObject) { [localObject setFuelStationGlobalIdentifier:[remoteObject fuelStationGlobalIdentifier]];},
+                                        FPFplogFuelstationGlobalIdField]]];
 }
 
 #pragma mark - Overwriting
