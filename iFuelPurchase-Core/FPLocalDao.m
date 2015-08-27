@@ -1357,6 +1357,36 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
 
 #pragma mark - Fuel Purchase Log
 
+- (FPFuelPurchaseLog *)masterFplogWithId:(NSNumber *)fplogId error:(PELMDaoErrorBlk)errorBlk {
+  NSString *fplogTable = TBL_MASTER_FUELPURCHASE_LOG;
+  __block FPFuelPurchaseLog *fplog = nil;
+  [_databaseQueue inDatabase:^(FMDatabase *db) {
+    fplog = [PELMUtils entityFromQuery:[NSString stringWithFormat:@"SELECT * FROM %@ WHERE %@ = ?", fplogTable, COL_LOCAL_ID]
+                           entityTable:fplogTable
+                         localIdGetter:^NSNumber *(PELMModelSupport *entity) { return [entity localMasterIdentifier]; }
+                             argsArray:@[fplogId]
+                           rsConverter:^(FMResultSet *rs) { return [self masterFuelPurchaseLogFromResultSet:rs]; }
+                                    db:db
+                                 error:errorBlk];
+  }];
+  return fplog;
+}
+
+- (FPFuelPurchaseLog *)masterFplogWithGlobalId:(NSString *)globalId error:(PELMDaoErrorBlk)errorBlk {
+  NSString *fplogTable = TBL_MASTER_FUELPURCHASE_LOG;
+  __block FPFuelPurchaseLog *fplog = nil;
+  [_databaseQueue inDatabase:^(FMDatabase *db) {
+    fplog = [PELMUtils entityFromQuery:[NSString stringWithFormat:@"SELECT * FROM %@ WHERE %@ = ?", fplogTable, COL_GLOBAL_ID]
+                           entityTable:fplogTable
+                         localIdGetter:^NSNumber *(PELMModelSupport *entity) { return [entity localMasterIdentifier]; }
+                             argsArray:@[globalId]
+                           rsConverter:^(FMResultSet *rs) { return [self masterFuelPurchaseLogFromResultSet:rs]; }
+                                    db:db
+                                 error:errorBlk];
+  }];
+  return fplog;
+}
+
 - (void)deleteFuelPurchaseLog:(FPFuelPurchaseLog *)fplog
                         error:(PELMDaoErrorBlk)errorBlk {
   [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
@@ -2153,8 +2183,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
 
 #pragma mark - Environment Log
 
-- (FPEnvironmentLog *)masterEnvlogWithId:(NSNumber *)envlogId
-                                   error:(PELMDaoErrorBlk)errorBlk {
+- (FPEnvironmentLog *)masterEnvlogWithId:(NSNumber *)envlogId error:(PELMDaoErrorBlk)errorBlk {
   NSString *envlogTable = TBL_MASTER_ENV_LOG;
   __block FPEnvironmentLog *envlog = nil;
   [_databaseQueue inDatabase:^(FMDatabase *db) {
@@ -2169,8 +2198,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
   return envlog;
 }
 
-- (FPEnvironmentLog *)masterEnvlogWithGlobalId:(NSString *)globalId
-                                         error:(PELMDaoErrorBlk)errorBlk {
+- (FPEnvironmentLog *)masterEnvlogWithGlobalId:(NSString *)globalId error:(PELMDaoErrorBlk)errorBlk {
   NSString *envlogTable = TBL_MASTER_ENV_LOG;
   __block FPEnvironmentLog *envlog = nil;
   [_databaseQueue inDatabase:^(FMDatabase *db) {

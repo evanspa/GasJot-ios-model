@@ -268,6 +268,12 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
 
 #pragma mark - Fuel Purchase Log
 
+- (FPFuelPurchaseLog *)masterFplogWithId:(NSNumber *)fplogId
+                                   error:(PELMDaoErrorBlk)errorBlk;
+
+- (FPFuelPurchaseLog *)masterFplogWithGlobalId:(NSString *)globalId
+                                         error:(PELMDaoErrorBlk)errorBlk;
+
 - (void)deleteFuelPurchaseLog:(FPFuelPurchaseLog *)fplog
                         error:(PELMDaoErrorBlk)errorBlk;
 

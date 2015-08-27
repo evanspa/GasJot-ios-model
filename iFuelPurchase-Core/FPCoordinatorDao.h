@@ -367,6 +367,15 @@ addlTempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
       addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
                     error:(PELMDaoErrorBlk)errorBlk;
 
+- (void)fetchAndSaveNewFuelstationWithGlobalId:(NSString *)globalIdentifier
+                                       forUser:(FPUser *)user
+                           notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
+                                addlSuccessBlk:(void(^)(FPFuelStation *))addlSuccessBlk
+                        addlRemoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)addlRemoteStoreBusyBlk
+                        addlTempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
+                           addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
+                                         error:(PELMDaoErrorBlk)errorBlk;
+
 - (void)reloadFuelStation:(FPFuelStation *)fuelStation
                     error:(PELMDaoErrorBlk)errorBlk;
 
