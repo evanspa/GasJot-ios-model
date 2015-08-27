@@ -16,6 +16,8 @@ NSString * const FPFplogGallonPriceField = @"FPFplogGallonPriceField";
 NSString * const FPFplogGotCarWashField = @"FPFplogGotCarWashField";
 NSString * const FPFplogCarWashPerGallonDiscountField = @"FPFplogCarWashPerGallonDiscountField";
 NSString * const FPFplogPurchasedAtField = @"FPFplogPurchasedAtField";
+NSString * const FPFplogVehicleGlobalIdField = @"FPFplogVehicleGlobalIdField";
+NSString * const FPFplogFuelstationGlobalIdField = @"FPFplogFuelstationGlobalIdField";
 
 @implementation FPFuelPurchaseLog
 

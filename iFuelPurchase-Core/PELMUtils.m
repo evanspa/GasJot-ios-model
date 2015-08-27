@@ -205,6 +205,7 @@ PELMMainSupport * (^toMainSupport)(FMResultSet *, NSString *, NSDictionary *) = 
         remoteStoreErrorBlk(err, nil);
       }
     } else {
+      [resourceModel setGlobalIdentifier:globalId];
       fetchCompleteBlk(resourceModel);
     }
   };

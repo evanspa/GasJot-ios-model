@@ -69,6 +69,12 @@
              authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
         completionHandler:(PELMRemoteMasterCompletionHandler)complHandler;
 
+- (void)fetchFuelstationWithGlobalId:(NSString *)globalId
+                             timeout:(NSInteger)timeout
+                     remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
+                        authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
+                   completionHandler:(PELMRemoteMasterCompletionHandler)complHandler;
+
 #pragma mark - Fuel Purchase Log Operations
 
 - (void)saveNewFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog

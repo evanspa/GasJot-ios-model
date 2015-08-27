@@ -1163,6 +1163,33 @@ addlTempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
                     completionHandler:remoteStoreComplHandler];
 }
 
+- (void)fetchAndSaveNewFuelstationWithGlobalId:(NSString *)globalIdentifier
+                                       forUser:(FPUser *)user
+                           notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
+                                addlSuccessBlk:(void(^)(FPFuelStation *))addlSuccessBlk
+                        addlRemoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)addlRemoteStoreBusyBlk
+                        addlTempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
+                           addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
+                                         error:(PELMDaoErrorBlk)errorBlk {
+  PELMRemoteMasterCompletionHandler remoteStoreComplHandler =
+  [PELMUtils complHandlerToFetchEntityWithGlobalId:globalIdentifier
+                               remoteStoreErrorBlk:^(NSError *err, NSNumber *httpStatusCode) { if (addlTempRemoteErrorBlk) { addlTempRemoteErrorBlk(); } }
+                                 entityNotFoundBlk:^{ if (notFoundOnServerBlk) { notFoundOnServerBlk(); } }
+                                  fetchCompleteBlk:^(FPFuelStation *fetchedFuelstation) {
+                                    [_localDao saveNewMasterFuelstation:fetchedFuelstation forUser:user error:errorBlk];
+                                    if (addlSuccessBlk) { addlSuccessBlk(fetchedFuelstation); }
+                                  }
+                                   newAuthTokenBlk:^(NSString *newAuthTkn){[self processNewAuthToken:newAuthTkn forUser:user];}];
+  [_remoteMasterDao fetchFuelstationWithGlobalId:globalIdentifier
+                                         timeout:_timeout
+                                 remoteStoreBusy:^(NSDate *retryAfter) { if (addlRemoteStoreBusyBlk) { addlRemoteStoreBusyBlk(retryAfter); } }
+                                    authRequired:^(HCAuthentication *auth) {
+                                      [self authReqdBlk](auth);
+                                      if (addlAuthRequiredBlk) { addlAuthRequiredBlk(); }
+                                    }
+                               completionHandler:remoteStoreComplHandler];
+}
+
 - (void)reloadFuelStation:(FPFuelStation *)fuelStation
                     error:(PELMDaoErrorBlk)errorBlk {
   [_localDao reloadFuelStation:fuelStation error:errorBlk];

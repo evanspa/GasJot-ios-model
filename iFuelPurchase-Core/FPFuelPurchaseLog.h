@@ -15,6 +15,8 @@ FOUNDATION_EXPORT NSString * const FPFplogGallonPriceField;
 FOUNDATION_EXPORT NSString * const FPFplogGotCarWashField;
 FOUNDATION_EXPORT NSString * const FPFplogCarWashPerGallonDiscountField;
 FOUNDATION_EXPORT NSString * const FPFplogPurchasedAtField;
+FOUNDATION_EXPORT NSString * const FPFplogVehicleGlobalIdField;
+FOUNDATION_EXPORT NSString * const FPFplogFuelstationGlobalIdField;
 
 @interface FPFuelPurchaseLog : PELMMainSupport <NSCopying>
 

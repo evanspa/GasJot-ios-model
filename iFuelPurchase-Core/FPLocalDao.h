@@ -255,6 +255,10 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                          retryAt:(NSDate *)retryAt
                            error:(PELMDaoErrorBlk)errorBlk;
 
+- (void)saveNewMasterFuelstation:(FPFuelStation *)fuelstation
+                         forUser:(FPUser *)user
+                           error:(PELMDaoErrorBlk)errorBlk;
+
 - (void)markAsSyncCompleteForNewFuelStation:(FPFuelStation *)fuelStation
                                     forUser:(FPUser *)user
                                       error:(PELMDaoErrorBlk)errorBlk;

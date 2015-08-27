@@ -1322,6 +1322,15 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                   error:errorBlk];
 }
 
+- (void)saveNewMasterFuelstation:(FPFuelStation *)fuelstation
+                         forUser:(FPUser *)user
+                           error:(PELMDaoErrorBlk)errorBlk {
+  [_localModelUtils saveNewMasterEntity:fuelstation
+                            masterTable:TBL_MASTER_FUEL_STATION
+                        masterInsertBlk:^(id entity, FMDatabase *db){[self insertIntoMasterFuelStation:(FPFuelStation *)entity forUser:user db:db error:errorBlk];}
+                                  error:errorBlk];
+}
+
 - (void)markAsSyncCompleteForNewFuelStation:(FPFuelStation *)fuelStation
                                     forUser:(FPUser *)user
                                       error:(PELMDaoErrorBlk)errorBlk {

@@ -397,6 +397,28 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
                 otherHeaders:[self addFpIfUnmodifiedSinceHeaderToHeader:@{} entity:fuelStation]];
 }
 
+- (void)fetchFuelstationWithGlobalId:(NSString *)globalId
+                             timeout:(NSInteger)timeout
+                     remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
+                        authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
+                   completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
+  [_relationExecutor doGetForURLString:globalId
+                       ifModifiedSince:nil
+                      targetSerializer:_fuelStationSerializer
+                          asynchronous:YES
+                       completionQueue:_serialQueue
+                         authorization:[self authorization]
+                               success:[self newGetSuccessBlk:complHandler]
+                           redirection:[self newRedirectionBlk:complHandler]
+                           clientError:[self newClientErrBlk:complHandler]
+                authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired]
+                           serverError:[self newServerErrBlk:complHandler]
+                      unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
+                     connectionFailure:[self newConnFailureBlk:complHandler]
+                               timeout:timeout
+                          otherHeaders:nil];
+}
+
 #pragma mark - Fuel Purchase Log Operations
 
 - (void)saveNewFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
