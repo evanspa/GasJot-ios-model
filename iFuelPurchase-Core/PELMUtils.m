@@ -188,7 +188,7 @@ PELMMainSupport * (^toMainSupport)(FMResultSet *, NSString *, NSDictionary *) = 
                                                           fetchCompleteBlk:(void(^)(id))fetchCompleteBlk
                                                            newAuthTokenBlk:(void(^)(NSString *))newAuthTokenBlk {
   PELMRemoteMasterCompletionHandler remoteStoreComplHandler =
-    ^(NSString *newAuthTkn, NSString *globalId, id resourceModel, NSDictionary *rels,
+    ^(NSString *newAuthTkn, NSString *relativeGlobalId, id resourceModel, NSDictionary *rels,
       NSDate *lastModified, BOOL isConflict, BOOL gone, BOOL notFound, BOOL movedPermanently,
       BOOL notModified, NSError *err, NSHTTPURLResponse *httpResp) {
     newAuthTokenBlk(newAuthTkn);
