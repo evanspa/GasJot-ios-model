@@ -57,7 +57,7 @@ PODS:
     - AFNetworking (~> 2.5.4)
     - CocoaLumberjack (~> 1.9)
     - PEObjc-Commons (~> 1.0.43)
-  - PEObjc-Commons (1.0.43):
+  - PEObjc-Commons (1.0.44):
     - BlocksKit (~> 2.2.5)
     - JGActionSheet (~> 1.0.4)
   - PEWire-Control (1.0.2):
@@ -77,7 +77,7 @@ DEPENDENCIES:
   - Kiwi (~> 2.3.1)
   - PEFuelPurchase-Common (~> 1.0.8)
   - PEHateoas-Client (~> 1.0.5)
-  - PEObjc-Commons (~> 1.0.43)
+  - PEObjc-Commons (~> 1.0.44)
   - PEWire-Control (~> 1.0.2)
   - UICKeyChainStore (~> 2.0.4)
 
@@ -92,7 +92,7 @@ SPEC CHECKSUMS:
   OHHTTPStubs: 8cf0cfe6f34f13fc88fdf5b2a1b2c2536e8c0261
   PEFuelPurchase-Common: 315cd43955e69e5be94373405f1b55b6723d30b6
   PEHateoas-Client: 818ef534933ee133d57b50284037bb9fb1c513fe
-  PEObjc-Commons: 246370535717c388e62d875f52de40eddcff9608
+  PEObjc-Commons: 3848fda3d554beb62dedece03f6540c656fcee3c
   PEWire-Control: 2aeefa4014575adbc52cfbf3206395d9a7c07b22
   PEXML-Utils: f7e0759b8e4e2ec3a39c781b362d7fb233fc8421
   UICKeyChainStore: c5719c814e8bd69e74e4a0fc09daf8f4d6257a59

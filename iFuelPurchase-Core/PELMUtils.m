@@ -24,10 +24,7 @@ void (^cannotBe)(BOOL, NSString *) = ^(BOOL invariantViolation, NSString *msg) {
 };
 
 id (^orNil)(id) = ^ id (id someObj) {
-  if (!someObj) {
-    return [NSNull null];
-  }
-  return someObj;
+  return [PEUtils orNil:someObj];
 };
 
 PELMMainSupport * (^toMainSupport)(FMResultSet *, NSString *, NSDictionary *) = ^PELMMainSupport *(FMResultSet *rs, NSString *mainTable, NSDictionary *relations) {
