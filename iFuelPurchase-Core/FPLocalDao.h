@@ -334,6 +334,13 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
 - (FPFuelStation *)fuelStationForFuelPurchaseLog:(FPFuelPurchaseLog *)fpLog
                                            error:(PELMDaoErrorBlk)errorBlk;
 
+
+- (FPVehicle *)masterVehicleForMasterFpLog:(FPFuelPurchaseLog *)fplog
+                                     error:(PELMDaoErrorBlk)errorBlk;
+
+- (FPFuelStation *)masterFuelstationForMasterFpLog:(FPFuelPurchaseLog *)fplog
+                                             error:(PELMDaoErrorBlk)errorBlk;
+
 - (FPVehicle *)defaultVehicleForNewFuelPurchaseLogForUser:(FPUser *)user
                                                     error:(PELMDaoErrorBlk)errorBlk;
 

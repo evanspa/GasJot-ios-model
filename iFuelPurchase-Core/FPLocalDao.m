@@ -1763,6 +1763,48 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
   return nil;
 }
 
+- (FPVehicle *)masterVehicleForMasterFpLog:(FPFuelPurchaseLog *)fplog
+                                     error:(PELMDaoErrorBlk)errorBlk {
+  __block FPVehicle *vehicle = nil;
+  [_databaseQueue inDatabase:^(FMDatabase *db) {
+    vehicle = [self masterVehicleForMasterFpLog:fplog db:db error:errorBlk];
+  }];
+  return vehicle;
+}
+
+- (FPVehicle *)masterVehicleForMasterFpLog:(FPFuelPurchaseLog *)fplog
+                                        db:(FMDatabase *)db
+                                     error:(PELMDaoErrorBlk)errorBlk {
+  return (FPVehicle *) [PELMUtils masterParentForMasterChildEntity:fplog
+                                           parentEntityMasterTable:TBL_MASTER_VEHICLE
+                                        parentEntityMasterFkColumn:COL_MASTER_VEHICLE_ID
+                                     parentEntityMasterRsConverter:^(FMResultSet *rs){return [self masterVehicleFromResultSet:rs];}
+                                            childEntityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
+                                                                db:db
+                                                             error:errorBlk];
+}
+
+- (FPFuelStation *)masterFuelstationForMasterFpLog:(FPFuelPurchaseLog *)fplog
+                                             error:(PELMDaoErrorBlk)errorBlk {
+  __block FPFuelStation *fuelstation = nil;
+  [_databaseQueue inDatabase:^(FMDatabase *db) {
+    fuelstation = [self masterFuelstationForMasterFpLog:fplog db:db error:errorBlk];
+  }];
+  return fuelstation;
+}
+
+- (FPFuelStation *)masterFuelstationForMasterFpLog:(FPFuelPurchaseLog *)fplog
+                                                db:(FMDatabase *)db
+                                             error:(PELMDaoErrorBlk)errorBlk {
+  return (FPFuelStation *)[PELMUtils masterParentForMasterChildEntity:fplog
+                                              parentEntityMasterTable:TBL_MASTER_FUEL_STATION
+                                           parentEntityMasterFkColumn:COL_MASTER_FUELSTATION_ID
+                                        parentEntityMasterRsConverter:^(FMResultSet *rs){return [self masterFuelStationFromResultSet:rs];}
+                                               childEntityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
+                                                                   db:db
+                                                                error:errorBlk];
+}
+
 - (FPVehicle *)defaultVehicleForNewFuelPurchaseLogForUser:(FPUser *)user
                                                     error:(PELMDaoErrorBlk)errorBlk {
   __block FPVehicle *vehicle = nil;
