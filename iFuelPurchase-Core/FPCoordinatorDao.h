@@ -375,6 +375,14 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
       addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
                     error:(PELMDaoErrorBlk)errorBlk;
 
+- (void)fetchFuelstationWithGlobalId:(NSString *)globalIdentifier
+                             forUser:(FPUser *)user
+                 notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
+                          successBlk:(void(^)(FPFuelStation *))successBlk
+                  remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
+                  tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk
+                 addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk;
+
 - (void)fetchAndSaveNewFuelstationWithGlobalId:(NSString *)globalIdentifier
                                        forUser:(FPUser *)user
                            notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
@@ -534,6 +542,14 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
           addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
                         error:(PELMDaoErrorBlk)errorBlk;
 
+- (void)fetchFuelPurchaseLogWithGlobalId:(NSString *)globalIdentifier
+                                 forUser:(FPUser *)user
+                     notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
+                              successBlk:(void(^)(FPFuelPurchaseLog *))successBlk
+                      remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
+                      tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk
+                     addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk;
+
 - (void)reloadFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
                         error:(PELMDaoErrorBlk)errorBlk;
 
@@ -654,6 +670,14 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
                  conflictBlk:(void(^)(FPEnvironmentLog *))conflictBlk
          addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
                        error:(PELMDaoErrorBlk)errorBlk;
+
+- (void)fetchEnvironmentLogWithGlobalId:(NSString *)globalIdentifier
+                                forUser:(FPUser *)user
+                    notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
+                             successBlk:(void(^)(FPEnvironmentLog *))successBlk
+                     remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
+                     tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk
+                    addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk;
 
 - (void)reloadEnvironmentLog:(FPEnvironmentLog *)environmentLog
                        error:(PELMDaoErrorBlk)errorBlk;

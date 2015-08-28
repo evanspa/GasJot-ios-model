@@ -96,6 +96,12 @@
                  authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
             completionHandler:(PELMRemoteMasterCompletionHandler)complHandler;
 
+- (void)fetchFuelPurchaseLogWithGlobalId:(NSString *)globalId
+                                 timeout:(NSInteger)timeout
+                         remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
+                            authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
+                       completionHandler:(PELMRemoteMasterCompletionHandler)complHandler;
+
 #pragma mark - Environment Log Operations
 
 - (void)saveNewEnvironmentLog:(FPEnvironmentLog *)fuelPurchaseLog
@@ -116,6 +122,12 @@
              remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                 authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
            completionHandler:(PELMRemoteMasterCompletionHandler)complHandler;
+
+- (void)fetchEnvironmentLogWithGlobalId:(NSString *)globalId
+                                timeout:(NSInteger)timeout
+                        remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
+                           authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
+                      completionHandler:(PELMRemoteMasterCompletionHandler)complHandler;
 
 #pragma mark - User Operations
 

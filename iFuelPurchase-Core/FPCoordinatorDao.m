@@ -958,6 +958,7 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
              notFoundOnServerBlk:notFoundOnServerBlk
                       successBlk:^(FPVehicle *fetchedVehicle) {
                         [_localDao saveNewMasterVehicle:fetchedVehicle forUser:user error:errorBlk];
+                        if (addlSuccessBlk) { addlSuccessBlk(fetchedVehicle); }
                       }
               remoteStoreBusyBlk:remoteStoreBusyBlk
               tempRemoteErrorBlk:tempRemoteErrorBlk
@@ -1179,31 +1180,49 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
                     completionHandler:remoteStoreComplHandler];
 }
 
-- (void)fetchAndSaveNewFuelstationWithGlobalId:(NSString *)globalIdentifier
-                                       forUser:(FPUser *)user
-                           notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
-                                addlSuccessBlk:(void(^)(FPFuelStation *))addlSuccessBlk
-                        remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)addlRemoteStoreBusyBlk
-                        tempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
-                           addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
-                                         error:(PELMDaoErrorBlk)errorBlk {
+- (void)fetchFuelstationWithGlobalId:(NSString *)globalIdentifier
+                             forUser:(FPUser *)user
+                 notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
+                          successBlk:(void(^)(FPFuelStation *))successBlk
+                  remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
+                  tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk
+                 addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk {
   PELMRemoteMasterCompletionHandler remoteStoreComplHandler =
   [PELMUtils complHandlerToFetchEntityWithGlobalId:globalIdentifier
-                               remoteStoreErrorBlk:^(NSError *err, NSNumber *httpStatusCode) { if (addlTempRemoteErrorBlk) { addlTempRemoteErrorBlk(); } }
+                               remoteStoreErrorBlk:^(NSError *err, NSNumber *httpStatusCode) { if (tempRemoteErrorBlk) { tempRemoteErrorBlk(); } }
                                  entityNotFoundBlk:^{ if (notFoundOnServerBlk) { notFoundOnServerBlk(); } }
                                   fetchCompleteBlk:^(FPFuelStation *fetchedFuelstation) {
-                                    [_localDao saveNewMasterFuelstation:fetchedFuelstation forUser:user error:errorBlk];
-                                    if (addlSuccessBlk) { addlSuccessBlk(fetchedFuelstation); }
+                                    if (successBlk) { successBlk(fetchedFuelstation); }
                                   }
                                    newAuthTokenBlk:^(NSString *newAuthTkn){[self processNewAuthToken:newAuthTkn forUser:user];}];
   [_remoteMasterDao fetchFuelstationWithGlobalId:globalIdentifier
                                          timeout:_timeout
-                                 remoteStoreBusy:^(NSDate *retryAfter) { if (addlRemoteStoreBusyBlk) { addlRemoteStoreBusyBlk(retryAfter); } }
+                                 remoteStoreBusy:^(NSDate *retryAfter) { if (remoteStoreBusyBlk) { remoteStoreBusyBlk(retryAfter); } }
                                     authRequired:^(HCAuthentication *auth) {
                                       [self authReqdBlk](auth);
                                       if (addlAuthRequiredBlk) { addlAuthRequiredBlk(); }
                                     }
                                completionHandler:remoteStoreComplHandler];
+}
+
+- (void)fetchAndSaveNewFuelstationWithGlobalId:(NSString *)globalIdentifier
+                                       forUser:(FPUser *)user
+                           notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
+                                addlSuccessBlk:(void(^)(FPFuelStation *))addlSuccessBlk
+                            remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
+                            tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk
+                           addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
+                                         error:(PELMDaoErrorBlk)errorBlk {
+  [self fetchFuelstationWithGlobalId:globalIdentifier
+                             forUser:user
+                 notFoundOnServerBlk:notFoundOnServerBlk
+                          successBlk:^(FPFuelStation *fetchedFuelstation) {
+                            [_localDao saveNewMasterFuelstation:fetchedFuelstation forUser:user error:errorBlk];
+                            if (addlSuccessBlk) addlSuccessBlk(fetchedFuelstation);
+                          }
+                  remoteStoreBusyBlk:remoteStoreBusyBlk
+                  tempRemoteErrorBlk:tempRemoteErrorBlk
+                 addlAuthRequiredBlk:addlAuthRequiredBlk];  
 }
 
 - (void)reloadFuelStation:(FPFuelStation *)fuelStation
@@ -1587,6 +1606,31 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
                         completionHandler:remoteStoreComplHandler];
 }
 
+- (void)fetchFuelPurchaseLogWithGlobalId:(NSString *)globalIdentifier
+                                 forUser:(FPUser *)user
+                     notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
+                              successBlk:(void(^)(FPFuelPurchaseLog *))successBlk
+                      remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
+                      tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk
+                     addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk {
+  PELMRemoteMasterCompletionHandler remoteStoreComplHandler =
+  [PELMUtils complHandlerToFetchEntityWithGlobalId:globalIdentifier
+                               remoteStoreErrorBlk:^(NSError *err, NSNumber *httpStatusCode) { if (tempRemoteErrorBlk) { tempRemoteErrorBlk(); } }
+                                 entityNotFoundBlk:^{ if (notFoundOnServerBlk) { notFoundOnServerBlk(); } }
+                                  fetchCompleteBlk:^(FPFuelPurchaseLog *fetchedFplog) {
+                                    if (successBlk) { successBlk(fetchedFplog); }
+                                  }
+                                   newAuthTokenBlk:^(NSString *newAuthTkn){[self processNewAuthToken:newAuthTkn forUser:user];}];
+  [_remoteMasterDao fetchFuelPurchaseLogWithGlobalId:globalIdentifier
+                                             timeout:_timeout
+                                     remoteStoreBusy:^(NSDate *retryAfter) { if (remoteStoreBusyBlk) { remoteStoreBusyBlk(retryAfter); } }
+                                        authRequired:^(HCAuthentication *auth) {
+                                          [self authReqdBlk](auth);
+                                          if (addlAuthRequiredBlk) { addlAuthRequiredBlk(); }
+                                        }
+                                   completionHandler:remoteStoreComplHandler];
+}
+
 - (void)reloadFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
                         error:(PELMDaoErrorBlk)errorBlk {
   [_localDao reloadFuelPurchaseLog:fuelPurchaseLog error:errorBlk];
@@ -1886,6 +1930,31 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
                               if (addlAuthRequiredBlk) { addlAuthRequiredBlk(); }
                             }
                        completionHandler:remoteStoreComplHandler];
+}
+
+- (void)fetchEnvironmentLogWithGlobalId:(NSString *)globalIdentifier
+                                forUser:(FPUser *)user
+                    notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
+                             successBlk:(void(^)(FPEnvironmentLog *))successBlk
+                     remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
+                     tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk
+                    addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk {
+  PELMRemoteMasterCompletionHandler remoteStoreComplHandler =
+  [PELMUtils complHandlerToFetchEntityWithGlobalId:globalIdentifier
+                               remoteStoreErrorBlk:^(NSError *err, NSNumber *httpStatusCode) { if (tempRemoteErrorBlk) { tempRemoteErrorBlk(); } }
+                                 entityNotFoundBlk:^{ if (notFoundOnServerBlk) { notFoundOnServerBlk(); } }
+                                  fetchCompleteBlk:^(FPEnvironmentLog *fetchedEnvlog) {
+                                    if (successBlk) { successBlk(fetchedEnvlog); }
+                                  }
+                                   newAuthTokenBlk:^(NSString *newAuthTkn){[self processNewAuthToken:newAuthTkn forUser:user];}];
+  [_remoteMasterDao fetchEnvironmentLogWithGlobalId:globalIdentifier
+                                            timeout:_timeout
+                                    remoteStoreBusy:^(NSDate *retryAfter) { if (remoteStoreBusyBlk) { remoteStoreBusyBlk(retryAfter); } }
+                                       authRequired:^(HCAuthentication *auth) {
+                                          [self authReqdBlk](auth);
+                                          if (addlAuthRequiredBlk) { addlAuthRequiredBlk(); }
+                                        }
+                                  completionHandler:remoteStoreComplHandler];
 }
 
 - (void)reloadEnvironmentLog:(FPEnvironmentLog *)environmentLog

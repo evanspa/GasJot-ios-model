@@ -481,6 +481,28 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
                                  otherHeaders:[self addFpIfUnmodifiedSinceHeaderToHeader:@{} entity:fuelPurchaseLog]];
 }
 
+- (void)fetchFuelPurchaseLogWithGlobalId:(NSString *)globalId
+                                 timeout:(NSInteger)timeout
+                         remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
+                            authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
+                       completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
+  [_relationExecutor doGetForURLString:globalId
+                       ifModifiedSince:nil
+                      targetSerializer:_fuelPurchaseLogSerializer
+                          asynchronous:YES
+                       completionQueue:_serialQueue
+                         authorization:[self authorization]
+                               success:[self newGetSuccessBlk:complHandler]
+                           redirection:[self newRedirectionBlk:complHandler]
+                           clientError:[self newClientErrBlk:complHandler]
+                authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired]
+                           serverError:[self newServerErrBlk:complHandler]
+                      unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
+                     connectionFailure:[self newConnFailureBlk:complHandler]
+                               timeout:timeout
+                          otherHeaders:nil];
+}
+
 #pragma mark - Environment Log Operations
 
 - (void)saveNewEnvironmentLog:(FPEnvironmentLog *)environmentLog
@@ -543,6 +565,27 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
                                  otherHeaders:[self addFpIfUnmodifiedSinceHeaderToHeader:@{} entity:environmentLog]];
 }
 
+- (void)fetchEnvironmentLogWithGlobalId:(NSString *)globalId
+                                timeout:(NSInteger)timeout
+                        remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
+                           authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
+                      completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
+  [_relationExecutor doGetForURLString:globalId
+                       ifModifiedSince:nil
+                      targetSerializer:_environmentLogSerializer
+                          asynchronous:YES
+                       completionQueue:_serialQueue
+                         authorization:[self authorization]
+                               success:[self newGetSuccessBlk:complHandler]
+                           redirection:[self newRedirectionBlk:complHandler]
+                           clientError:[self newClientErrBlk:complHandler]
+                authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired]
+                           serverError:[self newServerErrBlk:complHandler]
+                      unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
+                     connectionFailure:[self newConnFailureBlk:complHandler]
+                               timeout:timeout
+                          otherHeaders:nil];
+}
 
 #pragma mark - User Operations
 
