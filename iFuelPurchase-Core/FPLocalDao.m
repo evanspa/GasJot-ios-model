@@ -1345,6 +1345,20 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                   error:errorBlk];
 }
 
+- (void)saveMasterFuelstation:(FPFuelStation *)fuelstation
+                      forUser:(FPUser *)user
+                        error:(PELMDaoErrorBlk)errorBlk {
+  [_localModelUtils saveMasterEntity:fuelstation
+                         masterTable:TBL_MASTER_FUEL_STATION
+                    masterUpdateStmt:[self updateStmtForMasterFuelStation]
+                 masterUpdateArgsBlk:^ NSArray * (FPFuelStation *theFuelstation) { return [self updateArgsForMasterFuelStation:theFuelstation]; }
+                           mainTable:TBL_MAIN_FUEL_STATION
+             mainEntityFromResultSet:^ FPFuelStation * (FMResultSet *rs) { return [self mainFuelStationFromResultSet:rs]; }
+                      mainUpdateStmt:[self updateStmtForMainFuelStation]
+                   mainUpdateArgsBlk:^ NSArray * (FPFuelStation *theFuelstation) { return [self updateArgsForMainFuelStation:theFuelstation]; }
+                               error:errorBlk];
+}
+
 - (void)markAsSyncCompleteForNewFuelStation:(FPFuelStation *)fuelStation
                                     forUser:(FPUser *)user
                                       error:(PELMDaoErrorBlk)errorBlk {
@@ -2188,6 +2202,20 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                   error:errorBlk];
 }
 
+- (void)saveMasterFuelPurchaseLog:(FPFuelPurchaseLog *)fplog
+                          forUser:(FPUser *)user
+                            error:(PELMDaoErrorBlk)errorBlk {
+  [_localModelUtils saveMasterEntity:fplog
+                         masterTable:TBL_MASTER_FUELPURCHASE_LOG
+                    masterUpdateStmt:[self updateStmtForMasterFuelPurchaseLog]
+                 masterUpdateArgsBlk:^ NSArray * (FPFuelPurchaseLog *theFplog) { return [self updateArgsForMasterFuelPurchaseLog:theFplog]; }
+                           mainTable:TBL_MAIN_FUELPURCHASE_LOG
+             mainEntityFromResultSet:^ FPFuelPurchaseLog * (FMResultSet *rs) { return [self mainFuelPurchaseLogFromResultSet:rs]; }
+                      mainUpdateStmt:[self updateStmtForMainFuelPurchaseLog]
+                   mainUpdateArgsBlk:^ NSArray * (FPFuelPurchaseLog *theFplog) { return [self updateArgsForMainFuelPurchaseLog:theFplog]; }
+                               error:errorBlk];
+}
+
 - (void)markAsSyncCompleteForNewFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
                                         forUser:(FPUser *)user
                                           error:(PELMDaoErrorBlk)errorBlk {
@@ -2828,6 +2856,20 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                          mainUpdateStmt:[self updateStmtForMainEnvironmentLogSansVehicleFks]
                       mainUpdateArgsBlk:^NSArray *(PELMMainSupport *entity){return [self updateArgsForMainEnvironmentLog:(FPEnvironmentLog *)entity];}
                                   error:errorBlk];
+}
+
+- (void)saveMasterEnvironmentLog:(FPEnvironmentLog *)envlog
+                         forUser:(FPUser *)user
+                           error:(PELMDaoErrorBlk)errorBlk {
+  [_localModelUtils saveMasterEntity:envlog
+                         masterTable:TBL_MASTER_ENV_LOG
+                    masterUpdateStmt:[self updateStmtForMasterEnvironmentLog]
+                 masterUpdateArgsBlk:^ NSArray * (FPEnvironmentLog *theEnvlog) { return [self updateArgsForMasterEnvironmentLog:theEnvlog]; }
+                           mainTable:TBL_MAIN_ENV_LOG
+             mainEntityFromResultSet:^ FPEnvironmentLog * (FMResultSet *rs) { return [self mainEnvironmentLogFromResultSet:rs]; }
+                      mainUpdateStmt:[self updateStmtForMainEnvironmentLog]
+                   mainUpdateArgsBlk:^ NSArray * (FPEnvironmentLog *theEnvlog) { return [self updateArgsForMainEnvironmentLog:theEnvlog]; }
+                               error:errorBlk];
 }
 
 - (void)markAsSyncCompleteForNewEnvironmentLog:(FPEnvironmentLog *)environmentLog

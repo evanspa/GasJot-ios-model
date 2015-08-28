@@ -263,6 +263,10 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                          forUser:(FPUser *)user
                            error:(PELMDaoErrorBlk)errorBlk;
 
+- (void)saveMasterFuelstation:(FPFuelStation *)fuelstation
+                      forUser:(FPUser *)user
+                        error:(PELMDaoErrorBlk)errorBlk;
+
 - (void)markAsSyncCompleteForNewFuelStation:(FPFuelStation *)fuelStation
                                     forUser:(FPUser *)user
                                       error:(PELMDaoErrorBlk)errorBlk;
@@ -399,6 +403,10 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                              retryAt:(NSDate *)retryAt
                                error:(PELMDaoErrorBlk)errorBlk;
 
+- (void)saveMasterFuelPurchaseLog:(FPFuelPurchaseLog *)fplog
+                          forUser:(FPUser *)user
+                            error:(PELMDaoErrorBlk)errorBlk;
+
 - (void)markAsSyncCompleteForNewFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
                                         forUser:(FPUser *)user
                                           error:(PELMDaoErrorBlk)errorBlk;
@@ -504,6 +512,10 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                           errorMask:(NSNumber *)errorMask
                             retryAt:(NSDate *)retryAt
                               error:(PELMDaoErrorBlk)errorBlk;
+
+- (void)saveMasterEnvironmentLog:(FPEnvironmentLog *)envlog
+                         forUser:(FPUser *)user
+                           error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)markAsSyncCompleteForNewEnvironmentLog:(FPEnvironmentLog *)environmentLog
                                        forUser:(FPUser *)user

@@ -263,14 +263,16 @@ PELMMainSupport * (^toMainSupport)(FMResultSet *, NSString *, NSDictionary *) = 
                masterTable:(NSString *)masterTable
                rsConverter:(entityFromResultSetBlk)rsConverter
                      error:(PELMDaoErrorBlk)errorBlk {
+  [entity setEditInProgress:NO];
+  NSInteger newEditCount = [entity decrementEditCount];
+  BOOL shouldPrune = (newEditCount == 0);
+  __block BOOL pruneSuccess = YES;
   [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
-    [entity setEditInProgress:NO];
-    if ([entity decrementEditCount] == 0) {
+    if (shouldPrune) {
       [PELMUtils deleteRelationsFromEntityTable:mainTable
                                 localIdentifier:[entity localMainIdentifier]
                                              db:db
                                           error:errorBlk];
-      __block BOOL pruneSuccess = YES;
       [PELMUtils deleteFromTable:mainTable
                     whereColumns:@[COL_LOCAL_ID]
                      whereValues:@[[entity localMainIdentifier]]
@@ -282,43 +284,24 @@ PELMMainSupport * (^toMainSupport)(FMResultSet *, NSString *, NSDictionary *) = 
                            }];
       if (pruneSuccess) {
         [entity setLocalMainIdentifier:nil];
-      } else {
-        // Okay, so we couldn't prune.  Maybe because a child entity of it is sitting
-        // in a main table, so entity HAS to exist in its main table.  That is not a
-        // surprising situation.  However, we should mark it as "synced" and save it.
-        [entity setSynced:YES];
-        [PELMUtils doUpdate:mainUpdateStmt
-                  argsArray:mainUpdateArgsBlk(entity)
-                         db:db
-                      error:errorBlk];
       }
-      /*if ([entity globalIdentifier]) {
-        DDLogDebug(@"In PELMUtils/cancelEditOfEntity..., canceled edit of entity resulted in it being pruned \
-from its main table.  However its global ID is not nil.  Proceeding to load the entity \
-from its master table and overwrite in-memory entity with it.  In-memory entity before master-load: %@", entity);
-        PELMMainSupport *fetchedMasterEntity = (PELMMainSupport *)
-          [PELMUtils entityFromQuery:[NSString stringWithFormat:@"SELECT * FROM %@ WHERE %@ = ?", masterTable, COL_GLOBAL_ID]
-                         entityTable:masterTable
-                       localIdGetter:^NSNumber *(PELMModelSupport *entity) {return [entity localMasterIdentifier];}
-                           argsArray:@[[entity globalIdentifier]]
-                         rsConverter:rsConverter
-                                  db:db
-                               error:errorBlk];
-        if (fetchedMasterEntity) {
-          [entity setLocalMasterIdentifier:[fetchedMasterEntity localMasterIdentifier]];
-          [entity overwrite:fetchedMasterEntity];
-          DDLogDebug(@"In PELMUtils/cancelEditOfEntity..., entity after \
-overwrite with master-copy: %@", entity);
-        } else {
-          DDLogDebug(@"In PELMUtils/cancelEditOfEntity..., ouch!  Master \
-version of entity not found!  It's global ID is: [%@]", [entity globalIdentifier]);
-        }
-      }*/
     } else {
       [db executeUpdate:[NSString stringWithFormat:@"UPDATE %@ SET %@ = 0, %@ = ? WHERE %@ = ?", mainTable, COL_MAN_EDIT_IN_PROGRESS, COL_MAN_EDIT_COUNT, COL_LOCAL_ID]
    withArgumentsInArray:@[@([entity editCount]), [entity localMainIdentifier]]];
     }
   }];
+  if (shouldPrune && !pruneSuccess) {
+    // Okay, so we couldn't prune.  Maybe because a child entity of it is sitting
+    // in a main table, so entity HAS to exist in its main table.  That is not a
+    // surprising situation.  However, we should mark it as "synced" and save it.
+    [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
+      [entity setSynced:YES];
+      [PELMUtils doUpdate:mainUpdateStmt
+                argsArray:mainUpdateArgsBlk(entity)
+                       db:db
+                    error:errorBlk];
+    }];
+  }
 }
 
 - (void)saveEntity:(PELMMainSupport *)entity
