@@ -65,14 +65,14 @@ describe(@"FPCoordinatorDao", ^{
       __block BOOL syncUserSuccess = NO;
       [_coordDao markAsDoneEditingAndSyncUserImmediate:user
                                    notFoundOnServerBlk:^{}
-                                            successBlk:^{
+                                            addlSuccessBlk:^{
                                               syncUserSuccess = YES;
                                             }
-                                    remoteStoreBusyBlk:nil
-                                    tempRemoteErrorBlk:nil
-                                        remoteErrorBlk:nil
-                                           conflictBlk:nil
-                                       authRequiredBlk:nil
+                                    addlRemoteStoreBusyBlk:nil
+                                    addlTempRemoteErrorBlk:nil
+                                        addlRemoteErrorBlk:nil
+                                           addlConflictBlk:nil
+                                       addlAuthRequiredBlk:nil
                                                  error:nil];
       [[expectFutureValue(theValue(syncUserSuccess)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
       [[[_coordDao localDao] mainUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()] shouldNotBeNil];

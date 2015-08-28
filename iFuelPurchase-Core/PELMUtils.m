@@ -261,7 +261,6 @@ PELMMainSupport * (^toMainSupport)(FMResultSet *, NSString *, NSDictionary *) = 
                masterTable:(NSString *)masterTable
                rsConverter:(entityFromResultSetBlk)rsConverter
                      error:(PELMDaoErrorBlk)errorBlk {
-  [PELMUtils saveEntityInvariantChecks:entity];
   [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
     [entity setEditInProgress:NO];
     if ([entity decrementEditCount] == 0) {
@@ -316,7 +315,6 @@ version of entity not found!  It's global ID is: [%@]", [entity globalIdentifier
     mainUpdateStmt:(NSString *)mainUpdateStmt
  mainUpdateArgsBlk:(NSArray *(^)(id))mainUpdateArgsBlk
              error:(PELMDaoErrorBlk)errorBlk {
-  [PELMUtils saveEntityInvariantChecks:entity];
   [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
     [PELMUtils doUpdate:mainUpdateStmt
               argsArray:mainUpdateArgsBlk(entity)
@@ -330,7 +328,6 @@ version of entity not found!  It's global ID is: [%@]", [entity globalIdentifier
                  mainUpdateStmt:(NSString *)mainUpdateStmt
               mainUpdateArgsBlk:(NSArray *(^)(id))mainUpdateArgsBlk
                           error:(PELMDaoErrorBlk)errorBlk {
-  [PELMUtils saveEntityInvariantChecks:entity];
   [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
     [entity setSyncHttpRespCode:nil];
     [entity setSyncErrMask:nil];
@@ -347,7 +344,6 @@ version of entity not found!  It's global ID is: [%@]", [entity globalIdentifier
                               mainUpdateStmt:(NSString *)mainUpdateStmt
                            mainUpdateArgsBlk:(NSArray *(^)(id))mainUpdateArgsBlk
                                        error:(PELMDaoErrorBlk)errorBlk {
-  [PELMUtils saveEntityInvariantChecks:entity];
   [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
     [entity setSyncHttpRespCode:nil];
     [entity setSyncErrMask:nil];
@@ -372,6 +368,55 @@ version of entity not found!  It's global ID is: [%@]", [entity globalIdentifier
                localIdentifier:[entity localMasterIdentifier]
                             db:db
                          error:errorBlk];
+  }];
+}
+
+- (void)saveMasterEntity:(PELMMainSupport *)masterEntity
+             masterTable:(NSString *)masterTable
+        masterUpdateStmt:(NSString *)masterUpdateStmt
+     masterUpdateArgsBlk:(NSArray *(^)(id))masterUpdateArgsBlk
+               mainTable:(NSString *)mainTable
+ mainEntityFromResultSet:(entityFromResultSetBlk)mainEntityFromResultSet
+          mainUpdateStmt:(NSString *)mainUpdateStmt
+       mainUpdateArgsBlk:(NSArray *(^)(id))mainUpdateArgsBlk
+                   error:(PELMDaoErrorBlk)errorBlk {
+  // entity is presumed to ONLY have its domain properties populated, and
+  // its globalIdentifier populated.  That's it.
+  [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
+    // First, we'll get the entity's master local ID and set it on it.
+    NSNumber *localMasterId = [PELMUtils numberFromTable:masterTable
+                                            selectColumn:COL_LOCAL_ID
+                                             whereColumn:COL_GLOBAL_ID
+                                              whereValue:[masterEntity globalIdentifier]
+                                                      db:db
+                                                   error:errorBlk];
+    if (localMasterId) {
+      [masterEntity setLocalMasterIdentifier:localMasterId];
+      [PELMUtils doUpdate:masterUpdateStmt
+                argsArray:masterUpdateArgsBlk(masterEntity)
+                       db:db
+                    error:errorBlk];
+      NSNumber *localMainId = [PELMUtils localMainIdentifierForEntity:masterEntity
+                                                            mainTable:mainTable
+                                                                   db:db
+                                                                error:errorBlk];
+      if (localMainId) {
+        PELMMainSupport *mainEntity = [PELMUtils entityFromQuery:[NSString stringWithFormat:@"SELECT * FROM %@ WHERE %@ = ?", mainTable, COL_LOCAL_ID]
+                                                     entityTable:mainTable
+                                                   localIdGetter:^NSNumber *(PELMModelSupport *entity) { return [entity localMainIdentifier]; }
+                                                       argsArray:@[localMainId]
+                                                     rsConverter:mainEntityFromResultSet
+                                                              db:db
+                                                           error:errorBlk];
+        [mainEntity overwriteDomainProperties:masterEntity];
+        [mainEntity setUpdatedAt:[masterEntity updatedAt]];
+        [mainEntity setDateCopiedFromMaster:[masterEntity updatedAt]];
+        [PELMUtils doUpdate:mainUpdateStmt
+                  argsArray:mainUpdateArgsBlk(mainEntity)
+                         db:db
+                      error:errorBlk];
+      }
+    }
   }];
 }
 
@@ -2074,28 +2119,6 @@ Entity: %@", entity]
     value = rsExtractor(rs, selectColumn);
   }
   return value;
-}
-
-#pragma mark - Invariant-violation checkers (private)
-
-+ (void)readyForSyncEntityInvariantChecks:(PELMMainSupport *)mainEntity {
-  NSAssert(![mainEntity editInProgress], @"Entity is currently in edit-in-progress mode.");
-  NSAssert(![mainEntity synced], @"Entity is currently marked as 'synced.'");
-  NSAssert(![mainEntity syncInProgress], @"Entity is currently already marked as 'sync-in-progress.'");
-}
-
-+ (void)saveEntityInvariantChecks:(PELMMainSupport *)mainEntity {
-  NSAssert([mainEntity localMainIdentifier], @"Entity does not currently have a localMainIdentifier value.");
-  NSAssert([mainEntity editInProgress], @"Entity is not currently in edit-in-progress mode.");
-  NSAssert(![mainEntity synced], @"Entity is currently marked as 'synced.'");
-  NSAssert(![mainEntity syncInProgress], @"Entity is currently marked as 'sync-in-progress.'");
-}
-
-+ (void)newEntityInsertionInvariantChecks:(PELMMainSupport *)mainEntity {
-  NSAssert(![mainEntity editInProgress], @"editInProgress is YES");
-  NSAssert(![mainEntity synced], @"synced is YES");
-  NSAssert([mainEntity localMainIdentifier] == nil, @"localMainIdentifier is not nil");
-  NSAssert(![mainEntity syncInProgress], @"syncInProgress is YES");
 }
 
 @end

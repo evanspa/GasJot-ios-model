@@ -396,7 +396,6 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
        andLinkToLocalUser:(FPUser *)localUser
 preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                     error:(PELMDaoErrorBlk)errorBlk {
-  [PELMUtils newEntityInsertionInvariantChecks:remoteUser];
   // user is special in that, upon insertion, it should have a global-ID (this
   // is because as part of user-creation, we FIRST save to remote master, which
   // returns us back a global-ID, then we insert into local master, hence this
@@ -434,7 +433,6 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
            andLinkToLocalUser:(FPUser *)localUser
 preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                         error:(PELMDaoErrorBlk)errorBlk {
-  [PELMUtils newEntityInsertionInvariantChecks:remoteUser];
   NSAssert([remoteUser globalIdentifier] != nil, @"globalIdentifier is nil");
   [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
     [self saveNewRemoteUser:remoteUser
@@ -819,7 +817,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
 - (void)saveNewVehicle:(FPVehicle *)vehicle
                forUser:(FPUser *)user
                  error:(PELMDaoErrorBlk)errorBlk {
-  [PELMUtils newEntityInsertionInvariantChecks:vehicle];
   [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
     [self saveNewVehicle:vehicle forUser:user db:db error:errorBlk];
   }];
@@ -828,7 +825,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
 - (void)saveNewAndSyncImmediateVehicle:(FPVehicle *)vehicle
                                forUser:(FPUser *)user
                                  error:(PELMDaoErrorBlk)errorBlk {
-  [PELMUtils newEntityInsertionInvariantChecks:vehicle];
   [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
     [vehicle setSyncInProgress:YES];
     [self saveNewVehicle:vehicle forUser:user db:db error:errorBlk];
@@ -947,6 +943,20 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                             masterTable:TBL_MASTER_VEHICLE
                         masterInsertBlk:^(id entity, FMDatabase *db){[self insertIntoMasterVehicle:(FPVehicle *)entity forUser:user db:db error:errorBlk];}
                                   error:errorBlk];
+}
+
+- (void)saveMasterVehicle:(FPVehicle *)vehicle
+                  forUser:(FPUser *)user
+                    error:(PELMDaoErrorBlk)errorBlk {
+  [_localModelUtils saveMasterEntity:vehicle
+                         masterTable:TBL_MASTER_VEHICLE
+                    masterUpdateStmt:[self updateStmtForMasterVehicle]
+                 masterUpdateArgsBlk:^ NSArray * (FPVehicle *theVehicle) { return [self updateArgsForMasterVehicle:theVehicle]; }
+                           mainTable:TBL_MAIN_VEHICLE
+             mainEntityFromResultSet:^ FPVehicle * (FMResultSet *rs) { return [self mainVehicleFromResultSet:rs]; }
+                      mainUpdateStmt:[self updateStmtForMainVehicle]
+                   mainUpdateArgsBlk:^ NSArray * (FPVehicle *theVehicle) { return [self updateArgsForMainVehicle:theVehicle]; }
+                               error:errorBlk];
 }
 
 - (void)markAsSyncCompleteForNewVehicle:(FPVehicle *)vehicle
@@ -1171,7 +1181,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
 - (void)saveNewFuelStation:(FPFuelStation *)fuelStation
                    forUser:(FPUser *)user
                      error:(PELMDaoErrorBlk)errorBlk {
-  [PELMUtils newEntityInsertionInvariantChecks:fuelStation];
   [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
     [self saveNewFuelStation:fuelStation forUser:user db:db error:errorBlk];
   }];
@@ -1180,7 +1189,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
 - (void)saveNewAndSyncImmediateFuelStation:(FPFuelStation *)fuelStation
                                    forUser:(FPUser *)user
                                      error:(PELMDaoErrorBlk)errorBlk {
-  [PELMUtils newEntityInsertionInvariantChecks:fuelStation];
   [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
     [fuelStation setSyncInProgress:YES];
     [self saveNewFuelStation:fuelStation forUser:user db:db error:errorBlk];
@@ -1969,7 +1977,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                        vehicle:vehicle
                    fuelStation:fuelStation
                          error:(PELMDaoErrorBlk)errorBlk {
-  [PELMUtils newEntityInsertionInvariantChecks:fuelPurchaseLog];
   [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
     [self saveNewFuelPurchaseLog:fuelPurchaseLog
                          forUser:user
@@ -1985,7 +1992,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                        vehicle:vehicle
                                    fuelStation:fuelStation
                                          error:(PELMDaoErrorBlk)errorBlk {
-  [PELMUtils newEntityInsertionInvariantChecks:fuelPurchaseLog];
   [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
     [fuelPurchaseLog setSyncInProgress:YES];
     [self saveNewFuelPurchaseLog:fuelPurchaseLog
@@ -2093,7 +2099,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                     vehicle:(FPVehicle *)vehicle
                 fuelStation:(FPFuelStation *)fuelStation
                       error:(PELMDaoErrorBlk)errorBlk {
-  [PELMUtils saveEntityInvariantChecks:fuelPurchaseLog];
   [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
     [PELMUtils copyMasterEntity:user
                     toMainTable:TBL_MAIN_USER
@@ -2639,7 +2644,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                       forUser:(FPUser *)user
                       vehicle:vehicle
                         error:(PELMDaoErrorBlk)errorBlk {
-  [PELMUtils newEntityInsertionInvariantChecks:environmentLog];
   [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
     [self saveNewEnvironmentLog:environmentLog
                         forUser:user
@@ -2653,7 +2657,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                       forUser:(FPUser *)user
                                       vehicle:vehicle
                                         error:(PELMDaoErrorBlk)errorBlk {
-  [PELMUtils newEntityInsertionInvariantChecks:environmentLog];
   [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
     [environmentLog setSyncInProgress:YES];
     [self saveNewEnvironmentLog:environmentLog
@@ -2741,7 +2744,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                    forUser:(FPUser *)user
                    vehicle:(FPVehicle *)vehicle
                      error:(PELMDaoErrorBlk)errorBlk {
-  [PELMUtils saveEntityInvariantChecks:environmentLog];
   [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
     [PELMUtils copyMasterEntity:user
                     toMainTable:TBL_MAIN_USER

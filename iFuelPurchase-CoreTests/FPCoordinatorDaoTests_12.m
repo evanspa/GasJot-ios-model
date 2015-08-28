@@ -68,10 +68,10 @@ describe(@"FPCoordinatorDao", ^{
       [_coordDao deleteUser:user
         notFoundOnServerBlk:nil
              addlSuccessBlk:^{ saveSuccess = YES; }
-     addlRemoteStoreBusyBlk:nil
-     addlTempRemoteErrorBlk:nil
-         addlRemoteErrorBlk:nil
-            addlConflictBlk:nil
+     remoteStoreBusyBlk:nil
+     tempRemoteErrorBlk:nil
+         remoteErrorBlk:nil
+            conflictBlk:nil
         addlAuthRequiredBlk:nil
                       error:nil];
       [[expectFutureValue(theValue(saveSuccess)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];

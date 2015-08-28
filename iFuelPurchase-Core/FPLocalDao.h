@@ -185,6 +185,10 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                      forUser:(FPUser *)user
                        error:(PELMDaoErrorBlk)errorBlk;
 
+- (void)saveMasterVehicle:(FPVehicle *)vehicle
+                  forUser:(FPUser *)user
+                    error:(PELMDaoErrorBlk)errorBlk;
+
 - (void)markAsSyncCompleteForNewVehicle:(FPVehicle *)vehicle
                                 forUser:(FPUser *)user
                                   error:(PELMDaoErrorBlk)errorBlk;

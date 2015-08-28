@@ -122,10 +122,10 @@ describe(@"FPCoordinatorDao", ^{
                               forUser:user
                   notFoundOnServerBlk:nil
                        addlSuccessBlk:^{ success = YES; }
-               addlRemoteStoreBusyBlk:nil
-               addlTempRemoteErrorBlk:nil
-                   addlRemoteErrorBlk:nil
-                      addlConflictBlk:nil
+               remoteStoreBusyBlk:nil
+               tempRemoteErrorBlk:nil
+                   remoteErrorBlk:nil
+                      conflictBlk:nil
                   addlAuthRequiredBlk:nil
                                 error:[_coordTestCtx newLocalFetchErrBlkMaker]()];
       [[expectFutureValue(theValue(success)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];

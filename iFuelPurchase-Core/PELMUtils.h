@@ -154,6 +154,16 @@ void (^LogSyncLocal)(NSString *, NSInteger);
             masterInsertBlk:(void (^)(id, FMDatabase *))masterInsertBlk
                       error:(PELMDaoErrorBlk)errorBlk;
 
+- (void)saveMasterEntity:(PELMMainSupport *)entity
+             masterTable:(NSString *)masterTable
+        masterUpdateStmt:(NSString *)masterUpdateStmt
+     masterUpdateArgsBlk:(NSArray *(^)(id))masterUpdateArgsBlk
+               mainTable:(NSString *)mainTable
+ mainEntityFromResultSet:(entityFromResultSetBlk)mainEntityFromResultSet
+          mainUpdateStmt:(NSString *)mainUpdateStmt
+       mainUpdateArgsBlk:(NSArray *(^)(id))mainUpdateArgsBlk
+                   error:(PELMDaoErrorBlk)errorBlk;
+
 - (void)markAsSyncCompleteForNewEntity:(PELMMainSupport *)entity
                              mainTable:(NSString *)mainTable
                            masterTable:(NSString *)masterTable
@@ -518,13 +528,5 @@ void (^LogSyncLocal)(NSString *, NSInteger);
                    whereValue:(id)whereValue
                            db:(FMDatabase *)db
                         error:(PELMDaoErrorBlk)errorBlk;
-
-#pragma mark - Invariant-violation checkers (private)
-
-+ (void)readyForSyncEntityInvariantChecks:(PELMMainSupport *)mainEntity;
-
-+ (void)saveEntityInvariantChecks:(PELMMainSupport *)mainEntity;
-
-+ (void)newEntityInsertionInvariantChecks:(PELMMainSupport *)mainEntity;
 
 @end

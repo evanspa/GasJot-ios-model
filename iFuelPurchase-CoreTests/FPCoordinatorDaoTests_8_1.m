@@ -76,12 +76,12 @@ describe(@"FPCoordinatorDao", ^{
       [_coordDao saveNewAndSyncImmediateVehicle:vehicle
                                         forUser:user
                             notFoundOnServerBlk:^{}
-                                     successBlk:^{saveSuccess = YES;}
-                             remoteStoreBusyBlk:^(NSDate *retryAfter) {}
-                             tempRemoteErrorBlk:^{}
-                                 remoteErrorBlk:^(NSInteger fpErrMask) {}
-                                    conflictBlk:^(FPVehicle *latestVehicle) {}
-                                authRequiredBlk:^{}
+                                     addlSuccessBlk:^{saveSuccess = YES;}
+                             addlRemoteStoreBusyBlk:^(NSDate *retryAfter) {}
+                             addlTempRemoteErrorBlk:^{}
+                                 addlRemoteErrorBlk:^(NSInteger fpErrMask) {}
+                                    addlConflictBlk:^(FPVehicle *latestVehicle) {}
+                                addlAuthRequiredBlk:^{}
                                           error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[expectFutureValue(theValue(saveSuccess)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
       NSDate *createdAt = [vehicle updatedAt];
@@ -120,12 +120,12 @@ describe(@"FPCoordinatorDao", ^{
       [_coordDao markAsDoneEditingAndSyncVehicleImmediate:vehicle
                                                   forUser:user
                                       notFoundOnServerBlk:^{}
-                                               successBlk:^{saveSuccess = YES;}
-                                       remoteStoreBusyBlk:^(NSDate *retryAfter) {}
-                                       tempRemoteErrorBlk:^{}
-                                           remoteErrorBlk:^(NSInteger fpErrMask) {}
-                                              conflictBlk:^(FPVehicle *latestVehicle) {}
-                                          authRequiredBlk:^{}
+                                               addlSuccessBlk:^{saveSuccess = YES;}
+                                       addlRemoteStoreBusyBlk:^(NSDate *retryAfter) {}
+                                       addlTempRemoteErrorBlk:^{}
+                                           addlRemoteErrorBlk:^(NSInteger fpErrMask) {}
+                                              addlConflictBlk:^(FPVehicle *latestVehicle) {}
+                                          addlAuthRequiredBlk:^{}
                                                     error:[_coordTestCtx newLocalSaveErrBlkMaker]()];      
       [[expectFutureValue(theValue(saveSuccess)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
       [[theValue([[vehicle updatedAt] timeIntervalSince1970]) should] beGreaterThan:theValue([createdAt timeIntervalSince1970])];
@@ -156,12 +156,12 @@ describe(@"FPCoordinatorDao", ^{
       [_coordDao markAsDoneEditingAndSyncVehicleImmediate:vehicle
                                                   forUser:user
                                       notFoundOnServerBlk:^{}
-                                               successBlk:^{}
-                                       remoteStoreBusyBlk:^(NSDate *retryAfter) {}
-                                       tempRemoteErrorBlk:^{}
-                                           remoteErrorBlk:^(NSInteger fpErrMask) {}
-                                              conflictBlk:^(FPVehicle *latestVehicle) { conflict = YES; serverVehicle = latestVehicle; }
-                                          authRequiredBlk:^{}
+                                               addlSuccessBlk:^{}
+                                       addlRemoteStoreBusyBlk:^(NSDate *retryAfter) {}
+                                       addlTempRemoteErrorBlk:^{}
+                                           addlRemoteErrorBlk:^(NSInteger fpErrMask) {}
+                                              addlConflictBlk:^(FPVehicle *latestVehicle) { conflict = YES; serverVehicle = latestVehicle; }
+                                          addlAuthRequiredBlk:^{}
                                                     error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[expectFutureValue(theValue(conflict)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
       [serverVehicle shouldNotBeNil];
@@ -180,12 +180,12 @@ describe(@"FPCoordinatorDao", ^{
       [_coordDao markAsDoneEditingAndSyncVehicleImmediate:vehicle
                                                   forUser:user
                                       notFoundOnServerBlk:^{ notFound = YES; }
-                                               successBlk:^{}
-                                       remoteStoreBusyBlk:^(NSDate *retryAfter) {}
-                                       tempRemoteErrorBlk:^{}
-                                           remoteErrorBlk:^(NSInteger fpErrMask) {}
-                                              conflictBlk:^(FPVehicle *latestVehicle) {}
-                                          authRequiredBlk:^{}
+                                               addlSuccessBlk:^{}
+                                       addlRemoteStoreBusyBlk:^(NSDate *retryAfter) {}
+                                       addlTempRemoteErrorBlk:^{}
+                                           addlRemoteErrorBlk:^(NSInteger fpErrMask) {}
+                                              addlConflictBlk:^(FPVehicle *latestVehicle) {}
+                                          addlAuthRequiredBlk:^{}
                                                     error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[expectFutureValue(theValue(notFound)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
     });

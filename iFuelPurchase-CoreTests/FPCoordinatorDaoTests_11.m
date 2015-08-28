@@ -65,12 +65,12 @@ describe(@"FPCoordinatorDao", ^{
       __block BOOL saveSuccess = NO;
       [_coordDao markAsDoneEditingAndSyncUserImmediate:user
                                    notFoundOnServerBlk:^{}
-                                            successBlk:^{saveSuccess = YES;}
-                                    remoteStoreBusyBlk:^(NSDate *retryAfter) {}
-                                    tempRemoteErrorBlk:^{}
-                                        remoteErrorBlk:^(NSInteger fpErrMask) {}
-                                           conflictBlk:^(FPUser *latestUser) {}
-                                       authRequiredBlk:^{}
+                                            addlSuccessBlk:^{saveSuccess = YES;}
+                                    addlRemoteStoreBusyBlk:^(NSDate *retryAfter) {}
+                                    addlTempRemoteErrorBlk:^{}
+                                        addlRemoteErrorBlk:^(NSInteger fpErrMask) {}
+                                           addlConflictBlk:^(FPUser *latestUser) {}
+                                       addlAuthRequiredBlk:^{}
                                                  error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       
       [[expectFutureValue(theValue(saveSuccess)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
@@ -91,12 +91,12 @@ describe(@"FPCoordinatorDao", ^{
       __block BOOL saveFailed = NO;
       [_coordDao markAsDoneEditingAndSyncUserImmediate:user
                                    notFoundOnServerBlk:^{}
-                                            successBlk:^{}
-                                    remoteStoreBusyBlk:^(NSDate *retryAfter) {}
-                                    tempRemoteErrorBlk:^{saveFailed = YES;}
-                                        remoteErrorBlk:^(NSInteger fpErrMask) {}
-                                           conflictBlk:^(FPUser *latestUser) {}
-                                       authRequiredBlk:^{}
+                                            addlSuccessBlk:^{}
+                                    addlRemoteStoreBusyBlk:^(NSDate *retryAfter) {}
+                                    addlTempRemoteErrorBlk:^{saveFailed = YES;}
+                                        addlRemoteErrorBlk:^(NSInteger fpErrMask) {}
+                                           addlConflictBlk:^(FPUser *latestUser) {}
+                                       addlAuthRequiredBlk:^{}
                                                  error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[expectFutureValue(theValue(saveFailed)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
       user = [[_coordDao localDao] mainUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
@@ -113,12 +113,12 @@ describe(@"FPCoordinatorDao", ^{
       saveFailed = NO;
       [_coordDao markAsDoneEditingAndSyncUserImmediate:user
                                    notFoundOnServerBlk:^{}
-                                            successBlk:^{}
-                                    remoteStoreBusyBlk:^(NSDate *retryAfter) {}
-                                    tempRemoteErrorBlk:^{saveFailed = YES;}
-                                        remoteErrorBlk:^(NSInteger fpErrMask) {}
-                                           conflictBlk:^(FPUser *latestUser) {}
-                                       authRequiredBlk:^{}
+                                            addlSuccessBlk:^{}
+                                    addlRemoteStoreBusyBlk:^(NSDate *retryAfter) {}
+                                    addlTempRemoteErrorBlk:^{saveFailed = YES;}
+                                        addlRemoteErrorBlk:^(NSInteger fpErrMask) {}
+                                           addlConflictBlk:^(FPUser *latestUser) {}
+                                       addlAuthRequiredBlk:^{}
                                                  error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[expectFutureValue(theValue(saveFailed)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
       user = [[_coordDao localDao] mainUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
@@ -136,12 +136,12 @@ describe(@"FPCoordinatorDao", ^{
       __block NSInteger errMask = 0;
       [_coordDao markAsDoneEditingAndSyncUserImmediate:user
                                    notFoundOnServerBlk:^{}
-                                            successBlk:^{}
-                                    remoteStoreBusyBlk:^(NSDate *retryAfter) {}
-                                    tempRemoteErrorBlk:^{}
-                                        remoteErrorBlk:^(NSInteger fpErrMask) {saveFailed = YES; errMask = fpErrMask;}
-                                           conflictBlk:^(FPUser *latestUser) {}
-                                       authRequiredBlk:^{}
+                                            addlSuccessBlk:^{}
+                                    addlRemoteStoreBusyBlk:^(NSDate *retryAfter) {}
+                                    addlTempRemoteErrorBlk:^{}
+                                        addlRemoteErrorBlk:^(NSInteger fpErrMask) {saveFailed = YES; errMask = fpErrMask;}
+                                           addlConflictBlk:^(FPUser *latestUser) {}
+                                       addlAuthRequiredBlk:^{}
                                                  error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[expectFutureValue(theValue(saveFailed)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
       user = [[_coordDao localDao] mainUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
@@ -160,12 +160,12 @@ describe(@"FPCoordinatorDao", ^{
       __block NSDate *retryAfterVal = nil;
       [_coordDao markAsDoneEditingAndSyncUserImmediate:user
                                    notFoundOnServerBlk:^{}
-                                            successBlk:^{}
-                                    remoteStoreBusyBlk:^(NSDate *retryAfter) {saveFailed = YES; retryAfterVal = retryAfter;}
-                                    tempRemoteErrorBlk:^{}
-                                        remoteErrorBlk:^(NSInteger fpErrMask) {}
-                                           conflictBlk:^(FPUser *latestUser) {}
-                                       authRequiredBlk:^{}
+                                            addlSuccessBlk:^{}
+                                    addlRemoteStoreBusyBlk:^(NSDate *retryAfter) {saveFailed = YES; retryAfterVal = retryAfter;}
+                                    addlTempRemoteErrorBlk:^{}
+                                        addlRemoteErrorBlk:^(NSInteger fpErrMask) {}
+                                           addlConflictBlk:^(FPUser *latestUser) {}
+                                       addlAuthRequiredBlk:^{}
                                                  error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[expectFutureValue(theValue(saveFailed)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
       user = [[_coordDao localDao] mainUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
@@ -184,12 +184,12 @@ describe(@"FPCoordinatorDao", ^{
       saveFailed = NO;
       [_coordDao markAsDoneEditingAndSyncUserImmediate:user
                                    notFoundOnServerBlk:^{}
-                                            successBlk:^{}
-                                    remoteStoreBusyBlk:^(NSDate *retryAfter) {}
-                                    tempRemoteErrorBlk:^{}
-                                        remoteErrorBlk:^(NSInteger fpErrMask) {}
-                                           conflictBlk:^(FPUser *latestUser) {}
-                                       authRequiredBlk:^{saveFailed = YES;}
+                                            addlSuccessBlk:^{}
+                                    addlRemoteStoreBusyBlk:^(NSDate *retryAfter) {}
+                                    addlTempRemoteErrorBlk:^{}
+                                        addlRemoteErrorBlk:^(NSInteger fpErrMask) {}
+                                           addlConflictBlk:^(FPUser *latestUser) {}
+                                       addlAuthRequiredBlk:^{saveFailed = YES;}
                                                  error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[expectFutureValue(theValue(saveFailed)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
       user = [[_coordDao localDao] mainUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];

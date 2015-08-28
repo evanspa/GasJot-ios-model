@@ -64,12 +64,12 @@ describe(@"FPCoordinatorDao", ^{
       __block BOOL saveSuccess = NO;
       [_coordDao markAsDoneEditingAndSyncUserImmediate:user
                                    notFoundOnServerBlk:^{}
-                                            successBlk:^{saveSuccess = YES;}
-                                    remoteStoreBusyBlk:^(NSDate *retryAfter) {}
-                                    tempRemoteErrorBlk:^{}
-                                        remoteErrorBlk:^(NSInteger fpErrMask) {}
-                                           conflictBlk:^(FPUser *latestUser) {}
-                                       authRequiredBlk:^{}
+                                            addlSuccessBlk:^{saveSuccess = YES;}
+                                    addlRemoteStoreBusyBlk:^(NSDate *retryAfter) {}
+                                    addlTempRemoteErrorBlk:^{}
+                                        addlRemoteErrorBlk:^(NSInteger fpErrMask) {}
+                                           addlConflictBlk:^(FPUser *latestUser) {}
+                                       addlAuthRequiredBlk:^{}
                                                  error:[_coordTestCtx newLocalSaveErrBlkMaker]()];      
       [[expectFutureValue(theValue(saveSuccess)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
       // explicitly get the user from master

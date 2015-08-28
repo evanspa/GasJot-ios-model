@@ -60,14 +60,14 @@ describe(@"FPCoordinatorDao", ^{
       __block BOOL syncUserSuccess = NO;
       [_coordDao markAsDoneEditingAndSyncUserImmediate:user
                                    notFoundOnServerBlk:nil
-                                            successBlk:^{
+                                            addlSuccessBlk:^{
                                               syncUserSuccess = YES;
                                             }
-                                    remoteStoreBusyBlk:nil
-                                    tempRemoteErrorBlk:nil
-                                        remoteErrorBlk:nil
-                                           conflictBlk:nil
-                                       authRequiredBlk:nil
+                                    addlRemoteStoreBusyBlk:nil
+                                    addlTempRemoteErrorBlk:nil
+                                        addlRemoteErrorBlk:nil
+                                           addlConflictBlk:nil
+                                       addlAuthRequiredBlk:nil
                                                  error:nil];
       [[expectFutureValue(theValue(syncUserSuccess)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
       FPVehicle *vehicle = [_coordDao vehicleWithName:@"My Bimmer" defaultOctane:@87 fuelCapacity:[NSDecimalNumber decimalNumberWithString:@"20.5"]];
