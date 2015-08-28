@@ -258,6 +258,8 @@ PELMMainSupport * (^toMainSupport)(FMResultSet *, NSString *, NSDictionary *) = 
 
 - (void)cancelEditOfEntity:(PELMMainSupport *)entity
                  mainTable:(NSString *)mainTable
+            mainUpdateStmt:(NSString *)mainUpdateStmt
+         mainUpdateArgsBlk:(NSArray *(^)(id))mainUpdateArgsBlk
                masterTable:(NSString *)masterTable
                rsConverter:(entityFromResultSetBlk)rsConverter
                      error:(PELMDaoErrorBlk)errorBlk {
@@ -280,8 +282,17 @@ PELMMainSupport * (^toMainSupport)(FMResultSet *, NSString *, NSDictionary *) = 
                            }];
       if (pruneSuccess) {
         [entity setLocalMainIdentifier:nil];
+      } else {
+        // Okay, so we couldn't prune.  Maybe because a child entity of it is sitting
+        // in a main table, so entity HAS to exist in its main table.  That is not a
+        // surprising situation.  However, we should mark it as "synced" and save it.
+        [entity setSynced:YES];
+        [PELMUtils doUpdate:mainUpdateStmt
+                  argsArray:mainUpdateArgsBlk(entity)
+                         db:db
+                      error:errorBlk];
       }
-      if ([entity globalIdentifier]) {
+      /*if ([entity globalIdentifier]) {
         DDLogDebug(@"In PELMUtils/cancelEditOfEntity..., canceled edit of entity resulted in it being pruned \
 from its main table.  However its global ID is not nil.  Proceeding to load the entity \
 from its master table and overwrite in-memory entity with it.  In-memory entity before master-load: %@", entity);
@@ -302,7 +313,7 @@ overwrite with master-copy: %@", entity);
           DDLogDebug(@"In PELMUtils/cancelEditOfEntity..., ouch!  Master \
 version of entity not found!  It's global ID is: [%@]", [entity globalIdentifier]);
         }
-      }
+      }*/
     } else {
       [db executeUpdate:[NSString stringWithFormat:@"UPDATE %@ SET %@ = 0, %@ = ? WHERE %@ = ?", mainTable, COL_MAN_EDIT_IN_PROGRESS, COL_MAN_EDIT_COUNT, COL_LOCAL_ID]
    withArgumentsInArray:@[@([entity editCount]), [entity localMainIdentifier]]];
@@ -1291,6 +1302,7 @@ WHERE masparent.%@ IN (SELECT child.%@ \
                    error:(PELMDaoErrorBlk)errorBlk {
   void (^copyToMainAction)(void) = ^{
     [entity setSynced:YES];
+    [entity setDateCopiedFromMaster:[NSDate date]];
     mainTableInserter(entity);
     [PELMUtils insertRelations:[entity relations]
                      forEntity:entity

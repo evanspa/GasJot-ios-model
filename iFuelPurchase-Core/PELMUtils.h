@@ -127,6 +127,8 @@ void (^LogSyncLocal)(NSString *, NSInteger);
 
 - (void)cancelEditOfEntity:(PELMMainSupport *)entity
                  mainTable:(NSString *)mainTable
+            mainUpdateStmt:(NSString *)mainUpdateStmt
+         mainUpdateArgsBlk:(NSArray *(^)(id))mainUpdateArgsBlk
                masterTable:(NSString *)masterTable
                rsConverter:(entityFromResultSetBlk)rsConverter
                      error:(PELMDaoErrorBlk)errorBlk;

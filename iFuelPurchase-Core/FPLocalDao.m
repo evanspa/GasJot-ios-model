@@ -573,6 +573,8 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                    error:(PELMDaoErrorBlk)errorBlk {
   [_localModelUtils cancelEditOfEntity:user
                              mainTable:TBL_MAIN_USER
+                        mainUpdateStmt:[self updateStmtForMainUser]
+                     mainUpdateArgsBlk:^NSArray *(PELMMainSupport *entity){return [self updateArgsForMainUser:(FPUser *)entity];}
                            masterTable:TBL_MASTER_USER
                            rsConverter:^(FMResultSet *rs){return [self masterUserFromResultSet:rs];}
                                  error:errorBlk];
@@ -908,6 +910,8 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                       error:(PELMDaoErrorBlk)errorBlk {
   [_localModelUtils cancelEditOfEntity:vehicle
                              mainTable:TBL_MAIN_VEHICLE
+                        mainUpdateStmt:[self updateStmtForMainVehicle]
+                     mainUpdateArgsBlk:^NSArray *(PELMMainSupport *entity){return [self updateArgsForMainVehicle:(FPVehicle *)entity];}
                            masterTable:TBL_MASTER_VEHICLE
                            rsConverter:^(FMResultSet *rs){return [self masterVehicleFromResultSet:rs];}
                                  error:errorBlk];
@@ -1283,7 +1287,9 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                           error:(PELMDaoErrorBlk)errorBlk {
   [_localModelUtils cancelEditOfEntity:fuelStation
                              mainTable:TBL_MAIN_FUEL_STATION
-                            masterTable:TBL_MASTER_FUEL_STATION
+                        mainUpdateStmt:[self updateStmtForMainFuelStation]
+                     mainUpdateArgsBlk:^NSArray *(PELMMainSupport *entity){return [self updateArgsForMainFuelStation:(FPFuelStation *)entity];}
+                           masterTable:TBL_MASTER_FUEL_STATION
                            rsConverter:^(FMResultSet *rs){return [self masterFuelStationFromResultSet:rs];}
                                  error:errorBlk];
 }
@@ -2152,6 +2158,8 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                               error:(PELMDaoErrorBlk)errorBlk {
   [_localModelUtils cancelEditOfEntity:fuelPurchaseLog
                              mainTable:TBL_MAIN_FUELPURCHASE_LOG
+                        mainUpdateStmt:[self updateStmtForMainFuelPurchaseLogSansVehicleFuelStationFks]
+                     mainUpdateArgsBlk:^NSArray *(PELMMainSupport *entity){return [self updateArgsForMainFuelPurchaseLog:(FPFuelPurchaseLog *)entity];}
                            masterTable:TBL_MASTER_FUELPURCHASE_LOG
                            rsConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
                                  error:errorBlk];
@@ -2792,6 +2800,8 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                              error:(PELMDaoErrorBlk)errorBlk {
   [_localModelUtils cancelEditOfEntity:environmentLog
                              mainTable:TBL_MAIN_ENV_LOG
+                        mainUpdateStmt:[self updateStmtForMainEnvironmentLogSansVehicleFks]
+                     mainUpdateArgsBlk:^NSArray *(PELMMainSupport *entity){return [self updateArgsForMainEnvironmentLog:(FPEnvironmentLog *)entity];}
                            masterTable:TBL_MASTER_ENV_LOG
                            rsConverter:^(FMResultSet *rs){return [self masterEnvironmentLogFromResultSet:rs];}
                                  error:errorBlk];
@@ -2867,7 +2877,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                     globalIdentifier:[rs stringForColumn:COL_GLOBAL_ID]
                                            mediaType:[HCMediaType MediaTypeFromString:[rs stringForColumn:COL_MEDIA_TYPE]]
                                            relations:nil
-                                         deletedAt:nil // NA (this is a master store-only column)
+                                           deletedAt:nil // NA (this is a master store-only column)
                                            updatedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MAN_MASTER_UPDATED_AT]
                                 dateCopiedFromMaster:[PELMUtils dateFromResultSet:rs columnName:COL_MAN_DT_COPIED_DOWN_FROM_MASTER]
                                       editInProgress:[rs boolForColumn:COL_MAN_EDIT_IN_PROGRESS]
@@ -2889,7 +2899,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                     globalIdentifier:[rs stringForColumn:COL_GLOBAL_ID]
                                            mediaType:[HCMediaType MediaTypeFromString:[rs stringForColumn:COL_MEDIA_TYPE]]
                                            relations:nil
-                                         deletedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MST_DELETED_DT]
+                                           deletedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MST_DELETED_DT]
                                            updatedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MST_UPDATED_AT]
                                 dateCopiedFromMaster:nil // NA (this is a main store-only column)
                                       editInProgress:NO  // NA (this is a main store-only column)
