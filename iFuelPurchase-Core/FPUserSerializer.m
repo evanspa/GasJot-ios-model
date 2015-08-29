@@ -29,7 +29,7 @@ NSString * const FPUserUpdatedAtKey    = @"user/updated-at";
   [userDict nullSafeSetObject:[user name] forKey:FPUserFullnameKey];
   [userDict nullSafeSetObject:[user email] forKey:FPUserEmailKey];
   [userDict nullSafeSetObject:[user username] forKey:FPUserUsernameKey];
-  [userDict nullSafeSetObject:[user password] forKey:FPUserPasswordKey];
+  [userDict setObjectIfNotNull:[user password] forKey:FPUserPasswordKey];
   return userDict;
 }
 
