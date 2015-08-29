@@ -2227,16 +2227,18 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
 }
 
 - (void)saveMasterFuelPurchaseLog:(FPFuelPurchaseLog *)fplog
+                       forVehicle:(FPVehicle *)vehicle
+                   forFuelstation:(FPFuelStation *)fuelstation
                           forUser:(FPUser *)user
                             error:(PELMDaoErrorBlk)errorBlk {
   [_localModelUtils saveMasterEntity:fplog
                          masterTable:TBL_MASTER_FUELPURCHASE_LOG
                     masterUpdateStmt:[self updateStmtForMasterFuelPurchaseLog]
-                 masterUpdateArgsBlk:^ NSArray * (FPFuelPurchaseLog *theFplog) { return [self updateArgsForMasterFuelPurchaseLog:theFplog]; }
+                 masterUpdateArgsBlk:^ NSArray * (FPFuelPurchaseLog *theFplog) { return [self updateArgsForMasterFuelPurchaseLog:theFplog vehicle:vehicle fuelStation:fuelstation]; }
                            mainTable:TBL_MAIN_FUELPURCHASE_LOG
              mainEntityFromResultSet:^ FPFuelPurchaseLog * (FMResultSet *rs) { return [self mainFuelPurchaseLogFromResultSet:rs]; }
                       mainUpdateStmt:[self updateStmtForMainFuelPurchaseLog]
-                   mainUpdateArgsBlk:^ NSArray * (FPFuelPurchaseLog *theFplog) { return [self updateArgsForMainFuelPurchaseLog:theFplog]; }
+                   mainUpdateArgsBlk:^ NSArray * (FPFuelPurchaseLog *theFplog) { return [self updateArgsForMainFuelPurchaseLog:theFplog vehicle:vehicle fuelStation:fuelstation]; }
                                error:errorBlk];
 }
 

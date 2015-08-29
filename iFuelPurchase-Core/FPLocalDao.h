@@ -404,6 +404,8 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                                error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)saveMasterFuelPurchaseLog:(FPFuelPurchaseLog *)fplog
+                       forVehicle:(FPVehicle *)vehicle
+                   forFuelstation:(FPFuelStation *)fuelstation
                           forUser:(FPUser *)user
                             error:(PELMDaoErrorBlk)errorBlk;
 
