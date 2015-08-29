@@ -514,6 +514,7 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                               error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)saveMasterEnvironmentLog:(FPEnvironmentLog *)envlog
+                      forVehicle:(FPVehicle *)vehicle
                          forUser:(FPUser *)user
                            error:(PELMDaoErrorBlk)errorBlk;
 

@@ -638,6 +638,10 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                              rsConverter:^(FMResultSet *rs) { return [self masterVehicleFromResultSet:rs]; }
                                       db:db
                                    error:errorBlk];
+    NSNumber *localMainId = [PELMUtils localMainIdentifierForEntity:vehicle mainTable:TBL_MAIN_VEHICLE db:db error:errorBlk];
+    if (localMainId) {
+      [vehicle setLocalMainIdentifier:localMainId];
+    }
   }];
   return vehicle;
 }
@@ -654,6 +658,10 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                              rsConverter:^(FMResultSet *rs) { return [self masterVehicleFromResultSet:rs]; }
                                       db:db
                                    error:errorBlk];
+    NSNumber *localMainId = [PELMUtils localMainIdentifierForEntity:vehicle mainTable:TBL_MAIN_VEHICLE db:db error:errorBlk];
+    if (localMainId) {
+      [vehicle setLocalMainIdentifier:localMainId];
+    }
   }];
   return vehicle;
 }
@@ -1001,6 +1009,10 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                  rsConverter:^(FMResultSet *rs) { return [self masterFuelStationFromResultSet:rs]; }
                                           db:db
                                        error:errorBlk];
+    NSNumber *localMainId = [PELMUtils localMainIdentifierForEntity:fuelstation mainTable:TBL_MAIN_FUEL_STATION db:db error:errorBlk];
+    if (localMainId) {
+      [fuelstation setLocalMainIdentifier:localMainId];
+    }
   }];
   return fuelstation;
 }
@@ -1017,6 +1029,10 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                  rsConverter:^(FMResultSet *rs) { return [self masterFuelStationFromResultSet:rs]; }
                                           db:db
                                        error:errorBlk];
+    NSNumber *localMainId = [PELMUtils localMainIdentifierForEntity:fuelstation mainTable:TBL_MAIN_FUEL_STATION db:db error:errorBlk];
+    if (localMainId) {
+      [fuelstation setLocalMainIdentifier:localMainId];
+    }
   }];
   return fuelstation;
 }
@@ -1396,6 +1412,10 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                            rsConverter:^(FMResultSet *rs) { return [self masterFuelPurchaseLogFromResultSet:rs]; }
                                     db:db
                                  error:errorBlk];
+    NSNumber *localMainId = [PELMUtils localMainIdentifierForEntity:fplog mainTable:TBL_MAIN_FUELPURCHASE_LOG db:db error:errorBlk];
+    if (localMainId) {
+      [fplog setLocalMainIdentifier:localMainId];
+    }
   }];
   return fplog;
 }
@@ -1411,6 +1431,10 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                            rsConverter:^(FMResultSet *rs) { return [self masterFuelPurchaseLogFromResultSet:rs]; }
                                     db:db
                                  error:errorBlk];
+    NSNumber *localMainId = [PELMUtils localMainIdentifierForEntity:fplog mainTable:TBL_MAIN_FUELPURCHASE_LOG db:db error:errorBlk];
+    if (localMainId) {
+      [fplog setLocalMainIdentifier:localMainId];
+    }
   }];
   return fplog;
 }
@@ -2277,6 +2301,10 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                             rsConverter:^(FMResultSet *rs) { return [self masterEnvironmentLogFromResultSet:rs]; }
                                      db:db
                                   error:errorBlk];
+    NSNumber *localMainId = [PELMUtils localMainIdentifierForEntity:envlog mainTable:TBL_MAIN_ENV_LOG db:db error:errorBlk];
+    if (localMainId) {
+      [envlog setLocalMainIdentifier:localMainId];
+    }
   }];
   return envlog;
 }
@@ -2292,6 +2320,10 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                             rsConverter:^(FMResultSet *rs) { return [self masterEnvironmentLogFromResultSet:rs]; }
                                      db:db
                                   error:errorBlk];
+    NSNumber *localMainId = [PELMUtils localMainIdentifierForEntity:envlog mainTable:TBL_MAIN_ENV_LOG db:db error:errorBlk];
+    if (localMainId) {
+      [envlog setLocalMainIdentifier:localMainId];
+    }
   }];
   return envlog;
 }
@@ -2859,16 +2891,17 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
 }
 
 - (void)saveMasterEnvironmentLog:(FPEnvironmentLog *)envlog
+                      forVehicle:(FPVehicle *)vehicle
                          forUser:(FPUser *)user
                            error:(PELMDaoErrorBlk)errorBlk {
   [_localModelUtils saveMasterEntity:envlog
                          masterTable:TBL_MASTER_ENV_LOG
                     masterUpdateStmt:[self updateStmtForMasterEnvironmentLog]
-                 masterUpdateArgsBlk:^ NSArray * (FPEnvironmentLog *theEnvlog) { return [self updateArgsForMasterEnvironmentLog:theEnvlog]; }
+                 masterUpdateArgsBlk:^ NSArray * (FPEnvironmentLog *theEnvlog) { return [self updateArgsForMasterEnvironmentLog:theEnvlog vehicle:vehicle]; }
                            mainTable:TBL_MAIN_ENV_LOG
              mainEntityFromResultSet:^ FPEnvironmentLog * (FMResultSet *rs) { return [self mainEnvironmentLogFromResultSet:rs]; }
                       mainUpdateStmt:[self updateStmtForMainEnvironmentLog]
-                   mainUpdateArgsBlk:^ NSArray * (FPEnvironmentLog *theEnvlog) { return [self updateArgsForMainEnvironmentLog:theEnvlog]; }
+                   mainUpdateArgsBlk:^ NSArray * (FPEnvironmentLog *theEnvlog) { return [self updateArgsForMainEnvironmentLog:theEnvlog vehicle:vehicle]; }
                                error:errorBlk];
 }
 
