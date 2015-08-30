@@ -276,7 +276,7 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
                 error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)fetchVehicleWithGlobalId:(NSString *)globalIdentifier
-              ifNotModifiedSince:(NSDate *)ifNotModifiedSince
+                 ifModifiedSince:(NSDate *)ifModifiedSince
                          forUser:(FPUser *)user
              notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
                       successBlk:(void(^)(FPVehicle *))addlSuccessBlk
@@ -378,7 +378,7 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
                     error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)fetchFuelstationWithGlobalId:(NSString *)globalIdentifier
-                  ifNotModifiedSince:(NSDate *)ifNotModifiedSince
+                     ifModifiedSince:(NSDate *)ifModifiedSince
                              forUser:(FPUser *)user
                  notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
                           successBlk:(void(^)(FPFuelStation *))successBlk
@@ -546,7 +546,7 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
                         error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)fetchFuelPurchaseLogWithGlobalId:(NSString *)globalIdentifier
-                      ifNotModifiedSince:(NSDate *)ifNotModifiedSince
+                         ifModifiedSince:(NSDate *)ifModifiedSince
                                  forUser:(FPUser *)user
                      notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
                               successBlk:(void(^)(FPFuelPurchaseLog *))successBlk
@@ -676,7 +676,7 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
                        error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)fetchEnvironmentLogWithGlobalId:(NSString *)globalIdentifier
-                     ifNotModifiedSince:(NSDate *)ifNotModifiedSince
+                        ifModifiedSince:(NSDate *)ifModifiedSince
                                 forUser:(FPUser *)user
                     notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
                              successBlk:(void(^)(FPEnvironmentLog *))successBlk

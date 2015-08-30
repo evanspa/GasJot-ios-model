@@ -323,13 +323,13 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
 }
 
 - (void)fetchVehicleWithGlobalId:(NSString *)globalId
-              ifNotModifiedSince:(NSDate *)ifNotModifiedSince
+                 ifModifiedSince:(NSDate *)ifModifiedSince
                          timeout:(NSInteger)timeout
                  remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                     authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
                completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
   NSMutableDictionary *otherHeaders = [NSMutableDictionary dictionary];
-  if (ifNotModifiedSince) {
+  if (ifModifiedSince) {
     otherHeaders[_ifModifiedSinceHeaderName] = nil;
   }
   [_relationExecutor doGetForURLString:globalId
@@ -348,7 +348,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
                                timeout:timeout
                           otherHeaders:[self addDateHeaderToHeaders:@{}
                                                          headerName:_ifModifiedSinceHeaderName
-                                                              value:ifNotModifiedSince]];
+                                                              value:ifModifiedSince]];
 }
 
 #pragma mark - FuelStation Operations
@@ -416,7 +416,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
 }
 
 - (void)fetchFuelstationWithGlobalId:(NSString *)globalId
-                  ifNotModifiedSince:(NSDate *)ifNotModifiedSince
+                     ifModifiedSince:(NSDate *)ifModifiedSince
                              timeout:(NSInteger)timeout
                      remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                         authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
@@ -435,7 +435,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
                       unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
                      connectionFailure:[self newConnFailureBlk:complHandler]
                                timeout:timeout
-                          otherHeaders:[self addDateHeaderToHeaders:@{} headerName:_ifModifiedSinceHeaderName value:ifNotModifiedSince]];
+                          otherHeaders:[self addDateHeaderToHeaders:@{} headerName:_ifModifiedSinceHeaderName value:ifModifiedSince]];
 }
 
 #pragma mark - Fuel Purchase Log Operations
@@ -501,7 +501,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
 }
 
 - (void)fetchFuelPurchaseLogWithGlobalId:(NSString *)globalId
-                      ifNotModifiedSince:(NSDate *)ifNotModifiedSince
+                         ifModifiedSince:(NSDate *)ifModifiedSince
                                  timeout:(NSInteger)timeout
                          remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                             authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
@@ -520,7 +520,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
                       unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
                      connectionFailure:[self newConnFailureBlk:complHandler]
                                timeout:timeout
-                          otherHeaders:[self addDateHeaderToHeaders:@{} headerName:_ifModifiedSinceHeaderName value:ifNotModifiedSince]];
+                          otherHeaders:[self addDateHeaderToHeaders:@{} headerName:_ifModifiedSinceHeaderName value:ifModifiedSince]];
 }
 
 #pragma mark - Environment Log Operations
@@ -586,7 +586,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
 }
 
 - (void)fetchEnvironmentLogWithGlobalId:(NSString *)globalId
-                     ifNotModifiedSince:(NSDate *)ifNotModifiedSince
+                        ifModifiedSince:(NSDate *)ifModifiedSince
                                 timeout:(NSInteger)timeout
                         remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                            authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
@@ -605,7 +605,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
                       unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
                      connectionFailure:[self newConnFailureBlk:complHandler]
                                timeout:timeout
-                          otherHeaders:[self addDateHeaderToHeaders:@{} headerName:_ifModifiedSinceHeaderName value:ifNotModifiedSince]];
+                          otherHeaders:[self addDateHeaderToHeaders:@{} headerName:_ifModifiedSinceHeaderName value:ifModifiedSince]];
 }
 
 #pragma mark - User Operations
