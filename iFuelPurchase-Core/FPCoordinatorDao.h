@@ -50,6 +50,7 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
              errorMaskHeaderName:(NSString *)errorMaskHeaderName
       establishSessionHeaderName:(NSString *)establishHeaderSessionName
      authTokenResponseHeaderName:(NSString *)authTokenHeaderName
+       ifModifiedSinceHeaderName:(NSString *)ifModifiedSinceHeaderName
      ifUnmodifiedSinceHeaderName:(NSString *)ifUnmodifiedSinceHeaderName
      loginFailedReasonHeaderName:(NSString *)loginFailedReasonHeaderName
    accountClosedReasonHeaderName:(NSString *)accountClosedReasonHeaderName
@@ -275,6 +276,7 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
                 error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)fetchVehicleWithGlobalId:(NSString *)globalIdentifier
+              ifNotModifiedSince:(NSDate *)ifNotModifiedSince
                          forUser:(FPUser *)user
              notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
                       successBlk:(void(^)(FPVehicle *))addlSuccessBlk
@@ -376,6 +378,7 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
                     error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)fetchFuelstationWithGlobalId:(NSString *)globalIdentifier
+                  ifNotModifiedSince:(NSDate *)ifNotModifiedSince
                              forUser:(FPUser *)user
                  notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
                           successBlk:(void(^)(FPFuelStation *))successBlk
@@ -543,6 +546,7 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
                         error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)fetchFuelPurchaseLogWithGlobalId:(NSString *)globalIdentifier
+                      ifNotModifiedSince:(NSDate *)ifNotModifiedSince
                                  forUser:(FPUser *)user
                      notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
                               successBlk:(void(^)(FPFuelPurchaseLog *))successBlk
@@ -672,6 +676,7 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
                        error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)fetchEnvironmentLogWithGlobalId:(NSString *)globalIdentifier
+                     ifNotModifiedSince:(NSDate *)ifNotModifiedSince
                                 forUser:(FPUser *)user
                     notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
                              successBlk:(void(^)(FPEnvironmentLog *))successBlk

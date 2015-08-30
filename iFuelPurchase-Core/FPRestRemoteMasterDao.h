@@ -33,6 +33,7 @@ FOUNDATION_EXPORT NSString * const LAST_MODIFIED_HEADER;
         errorMaskHeaderName:(NSString *)errorMaskHeaderName
  establishSessionHeaderName:(NSString *)establishHeaderSessionName
         authTokenHeaderName:(NSString *)authTokenHeaderName
+  ifModifiedSinceHeaderName:(NSString *)ifModifiedSinceHeaderName
 ifUnmodifiedSinceHeaderName:(NSString *)ifUnmodifiedSinceHeaderName
 loginFailedReasonHeaderName:(NSString *)loginFailedReasonHeaderName
 accountClosedReasonHeaderName:(NSString *)accountClosedReasonHeaderName

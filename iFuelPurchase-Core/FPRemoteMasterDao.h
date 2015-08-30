@@ -43,6 +43,7 @@
     completionHandler:(PELMRemoteMasterCompletionHandler)complHandler;
 
 - (void)fetchVehicleWithGlobalId:(NSString *)globalId
+              ifNotModifiedSince:(NSDate *)ifNotModifiedSince
                          timeout:(NSInteger)timeout
                  remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                     authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
@@ -70,6 +71,7 @@
         completionHandler:(PELMRemoteMasterCompletionHandler)complHandler;
 
 - (void)fetchFuelstationWithGlobalId:(NSString *)globalId
+                  ifNotModifiedSince:(NSDate *)ifNotModifiedSince
                              timeout:(NSInteger)timeout
                      remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                         authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
@@ -97,6 +99,7 @@
             completionHandler:(PELMRemoteMasterCompletionHandler)complHandler;
 
 - (void)fetchFuelPurchaseLogWithGlobalId:(NSString *)globalId
+                      ifNotModifiedSince:(NSDate *)ifNotModifiedSince
                                  timeout:(NSInteger)timeout
                          remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                             authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
@@ -124,6 +127,7 @@
            completionHandler:(PELMRemoteMasterCompletionHandler)complHandler;
 
 - (void)fetchEnvironmentLogWithGlobalId:(NSString *)globalId
+                     ifNotModifiedSince:(NSDate *)ifNotModifiedSince
                                 timeout:(NSInteger)timeout
                         remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                            authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired

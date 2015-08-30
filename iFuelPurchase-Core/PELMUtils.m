@@ -402,13 +402,18 @@ PELMMainSupport * (^toMainSupport)(FMResultSet *, NSString *, NSDictionary *) = 
                                                      rsConverter:mainEntityFromResultSet
                                                               db:db
                                                            error:errorBlk];
-        [mainEntity overwriteDomainProperties:masterEntity];
-        [mainEntity setUpdatedAt:[masterEntity updatedAt]];
-        [mainEntity setDateCopiedFromMaster:[masterEntity updatedAt]];
-        [PELMUtils doUpdate:mainUpdateStmt
-                  argsArray:mainUpdateArgsBlk(mainEntity)
-                         db:db
-                      error:errorBlk];
+        // obviously we should only update the main-instance if it is currently
+        // synced; because if it is not synced, that means the user is currently
+        // editing it and therefore we don't want to overwrite their changes.
+        if (![mainEntity synced]) {
+          [mainEntity overwriteDomainProperties:masterEntity];
+          [mainEntity setUpdatedAt:[masterEntity updatedAt]];
+          [mainEntity setDateCopiedFromMaster:[masterEntity updatedAt]];
+          [PELMUtils doUpdate:mainUpdateStmt
+                    argsArray:mainUpdateArgsBlk(mainEntity)
+                           db:db
+                        error:errorBlk];
+        }
       }
     }
   }];

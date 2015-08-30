@@ -47,6 +47,7 @@
              errorMaskHeaderName:(NSString *)errorMaskHeaderName
       establishSessionHeaderName:(NSString *)establishHeaderSessionName
      authTokenResponseHeaderName:(NSString *)authTokenHeaderName
+       ifModifiedSinceHeaderName:(NSString *)ifModifiedSinceHeaderName
      ifUnmodifiedSinceHeaderName:(NSString *)ifUnmodifiedSinceHeaderName
      loginFailedReasonHeaderName:(NSString *)loginFailedReasonHeaderName
    accountClosedReasonHeaderName:(NSString *)accountClosedReasonHeaderName
@@ -104,6 +105,7 @@
           errorMaskHeaderName:errorMaskHeaderName
    establishSessionHeaderName:establishHeaderSessionName
           authTokenHeaderName:authTokenHeaderName
+    ifModifiedSinceHeaderName:ifModifiedSinceHeaderName
   ifUnmodifiedSinceHeaderName:ifUnmodifiedSinceHeaderName
   loginFailedReasonHeaderName:loginFailedReasonHeaderName
 accountClosedReasonHeaderName:accountClosedReasonHeaderName
@@ -921,6 +923,7 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
 }
 
 - (void)fetchVehicleWithGlobalId:(NSString *)globalIdentifier
+              ifNotModifiedSince:(NSDate *)ifNotModifiedSince
                          forUser:(FPUser *)user
              notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
                       successBlk:(void(^)(FPVehicle *))successBlk
@@ -936,6 +939,7 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
                                   }
                                    newAuthTokenBlk:^(NSString *newAuthTkn){[self processNewAuthToken:newAuthTkn forUser:user];}];
   [_remoteMasterDao fetchVehicleWithGlobalId:globalIdentifier
+                          ifNotModifiedSince:ifNotModifiedSince
                                      timeout:_timeout
                              remoteStoreBusy:^(NSDate *retryAfter) { if (remoteStoreBusyBlk) { remoteStoreBusyBlk(retryAfter); } }
                                 authRequired:^(HCAuthentication *auth) {
@@ -954,6 +958,7 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
                        addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
                                      error:(PELMDaoErrorBlk)errorBlk {
   [self fetchVehicleWithGlobalId:globalIdentifier
+              ifNotModifiedSince:nil
                          forUser:user
              notFoundOnServerBlk:notFoundOnServerBlk
                       successBlk:^(FPVehicle *fetchedVehicle) {
@@ -1181,6 +1186,7 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
 }
 
 - (void)fetchFuelstationWithGlobalId:(NSString *)globalIdentifier
+                  ifNotModifiedSince:(NSDate *)ifNotModifiedSince
                              forUser:(FPUser *)user
                  notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
                           successBlk:(void(^)(FPFuelStation *))successBlk
@@ -1196,6 +1202,7 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
                                   }
                                    newAuthTokenBlk:^(NSString *newAuthTkn){[self processNewAuthToken:newAuthTkn forUser:user];}];
   [_remoteMasterDao fetchFuelstationWithGlobalId:globalIdentifier
+                              ifNotModifiedSince:ifNotModifiedSince
                                          timeout:_timeout
                                  remoteStoreBusy:^(NSDate *retryAfter) { if (remoteStoreBusyBlk) { remoteStoreBusyBlk(retryAfter); } }
                                     authRequired:^(HCAuthentication *auth) {
@@ -1214,6 +1221,7 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
                            addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
                                          error:(PELMDaoErrorBlk)errorBlk {
   [self fetchFuelstationWithGlobalId:globalIdentifier
+                  ifNotModifiedSince:nil
                              forUser:user
                  notFoundOnServerBlk:notFoundOnServerBlk
                           successBlk:^(FPFuelStation *fetchedFuelstation) {
@@ -1607,6 +1615,7 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
 }
 
 - (void)fetchFuelPurchaseLogWithGlobalId:(NSString *)globalIdentifier
+                      ifNotModifiedSince:(NSDate *)ifNotModifiedSince
                                  forUser:(FPUser *)user
                      notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
                               successBlk:(void(^)(FPFuelPurchaseLog *))successBlk
@@ -1622,6 +1631,7 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
                                   }
                                    newAuthTokenBlk:^(NSString *newAuthTkn){[self processNewAuthToken:newAuthTkn forUser:user];}];
   [_remoteMasterDao fetchFuelPurchaseLogWithGlobalId:globalIdentifier
+                                  ifNotModifiedSince:ifNotModifiedSince
                                              timeout:_timeout
                                      remoteStoreBusy:^(NSDate *retryAfter) { if (remoteStoreBusyBlk) { remoteStoreBusyBlk(retryAfter); } }
                                         authRequired:^(HCAuthentication *auth) {
@@ -1933,6 +1943,7 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
 }
 
 - (void)fetchEnvironmentLogWithGlobalId:(NSString *)globalIdentifier
+                     ifNotModifiedSince:(NSDate *)ifNotModifiedSince
                                 forUser:(FPUser *)user
                     notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
                              successBlk:(void(^)(FPEnvironmentLog *))successBlk
@@ -1948,6 +1959,7 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
                                   }
                                    newAuthTokenBlk:^(NSString *newAuthTkn){[self processNewAuthToken:newAuthTkn forUser:user];}];
   [_remoteMasterDao fetchEnvironmentLogWithGlobalId:globalIdentifier
+                                 ifNotModifiedSince:ifNotModifiedSince
                                             timeout:_timeout
                                     remoteStoreBusy:^(NSDate *retryAfter) { if (remoteStoreBusyBlk) { remoteStoreBusyBlk(retryAfter); } }
                                        authRequired:^(HCAuthentication *auth) {

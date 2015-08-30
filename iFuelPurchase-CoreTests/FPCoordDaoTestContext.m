@@ -239,6 +239,7 @@
                                           errorMaskHeaderName:@"fp-error-mask"
                                    establishSessionHeaderName:@"fp-establish-session"
                                   authTokenResponseHeaderName:@"fp-auth-token"
+                                    ifModifiedSinceHeaderName:@"fp-if-modified-since"
                                   ifUnmodifiedSinceHeaderName:@"fp-if-unmodified-since"
                                   loginFailedReasonHeaderName:@"fp-login-failed-reason"
                                 accountClosedReasonHeaderName:@"fp-delete-reason"

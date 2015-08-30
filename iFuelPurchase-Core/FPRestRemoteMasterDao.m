@@ -24,6 +24,7 @@ NSString * const LAST_MODIFIED_HEADER = @"last-modified";
   NSString *_errorMaskHeaderName;
   NSString *_establishSessionHeaderName;
   NSString *_authTokenHeaderName;
+  NSString *_ifModifiedSinceHeaderName;
   NSString *_ifUnmodifiedSinceHeaderName;
   NSString *_loginFailedReasonHeaderName;
   NSString *_accountClosedReasonHeaderName;
@@ -49,6 +50,7 @@ NSString * const LAST_MODIFIED_HEADER = @"last-modified";
         errorMaskHeaderName:(NSString *)errorMaskHeaderName
  establishSessionHeaderName:(NSString *)establishHeaderSessionName
         authTokenHeaderName:(NSString *)authTokenHeaderName
+  ifModifiedSinceHeaderName:(NSString *)ifModifiedSinceHeaderName
 ifUnmodifiedSinceHeaderName:(NSString *)ifUnmodifiedSinceHeaderName
 loginFailedReasonHeaderName:(NSString *)loginFailedReasonHeaderName
 accountClosedReasonHeaderName:(NSString *)accountClosedReasonHeaderName
@@ -76,6 +78,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
     _errorMaskHeaderName = errorMaskHeaderName;
     _establishSessionHeaderName = establishHeaderSessionName;
     _authTokenHeaderName = authTokenHeaderName;
+    _ifModifiedSinceHeaderName = ifModifiedSinceHeaderName;
     _ifUnmodifiedSinceHeaderName = ifUnmodifiedSinceHeaderName;
     _loginFailedReasonHeaderName = loginFailedReasonHeaderName;
     _accountClosedReasonHeaderName = accountClosedReasonHeaderName;
@@ -97,16 +100,24 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
 
 #pragma mark - Helpers
 
-- (NSDictionary *)addFpIfUnmodifiedSinceHeaderToHeader:(NSDictionary *)headers
-                                                entity:(PELMMasterSupport *)entity {
-  if ([entity updatedAt]) {
+- (NSDictionary *)addDateHeaderToHeaders:(NSDictionary *)headers
+                              headerName:(NSString *)headerName
+                                   value:(NSDate *)value {
+  if (value) {
     NSMutableDictionary *newHeaders = [headers mutableCopy];
-    [newHeaders setObject:[[NSNumber numberWithInteger:([[entity updatedAt] timeIntervalSince1970] * 1000)] description]
-                   forKey:_ifUnmodifiedSinceHeaderName];
+    [newHeaders setObject:[[NSNumber numberWithInteger:([value timeIntervalSince1970] * 1000)] description]
+                   forKey:headerName];
     return newHeaders;
   } else {
     return headers;
   }
+}
+
+- (NSDictionary *)addFpIfUnmodifiedSinceHeaderToHeader:(NSDictionary *)headers
+                                                entity:(PELMMasterSupport *)entity {
+  return [self addDateHeaderToHeaders:headers
+                           headerName:_ifUnmodifiedSinceHeaderName
+                                value:[entity updatedAt]];
 }
 
 + (HCServerUnavailableBlk)serverUnavailableBlk:(PELMRemoteMasterBusyBlk)busyHandler {
@@ -312,10 +323,15 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
 }
 
 - (void)fetchVehicleWithGlobalId:(NSString *)globalId
+              ifNotModifiedSince:(NSDate *)ifNotModifiedSince
                          timeout:(NSInteger)timeout
                  remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                     authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
                completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
+  NSMutableDictionary *otherHeaders = [NSMutableDictionary dictionary];
+  if (ifNotModifiedSince) {
+    otherHeaders[_ifModifiedSinceHeaderName] = nil;
+  }
   [_relationExecutor doGetForURLString:globalId
                        ifModifiedSince:nil
                       targetSerializer:_vehicleSerializer
@@ -330,7 +346,9 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
                       unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
                      connectionFailure:[self newConnFailureBlk:complHandler]
                                timeout:timeout
-                          otherHeaders:nil];
+                          otherHeaders:[self addDateHeaderToHeaders:@{}
+                                                         headerName:_ifModifiedSinceHeaderName
+                                                              value:ifNotModifiedSince]];
 }
 
 #pragma mark - FuelStation Operations
@@ -398,6 +416,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
 }
 
 - (void)fetchFuelstationWithGlobalId:(NSString *)globalId
+                  ifNotModifiedSince:(NSDate *)ifNotModifiedSince
                              timeout:(NSInteger)timeout
                      remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                         authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
@@ -416,7 +435,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
                       unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
                      connectionFailure:[self newConnFailureBlk:complHandler]
                                timeout:timeout
-                          otherHeaders:nil];
+                          otherHeaders:[self addDateHeaderToHeaders:@{} headerName:_ifModifiedSinceHeaderName value:ifNotModifiedSince]];
 }
 
 #pragma mark - Fuel Purchase Log Operations
@@ -482,6 +501,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
 }
 
 - (void)fetchFuelPurchaseLogWithGlobalId:(NSString *)globalId
+                      ifNotModifiedSince:(NSDate *)ifNotModifiedSince
                                  timeout:(NSInteger)timeout
                          remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                             authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
@@ -500,7 +520,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
                       unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
                      connectionFailure:[self newConnFailureBlk:complHandler]
                                timeout:timeout
-                          otherHeaders:nil];
+                          otherHeaders:[self addDateHeaderToHeaders:@{} headerName:_ifModifiedSinceHeaderName value:ifNotModifiedSince]];
 }
 
 #pragma mark - Environment Log Operations
@@ -566,6 +586,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
 }
 
 - (void)fetchEnvironmentLogWithGlobalId:(NSString *)globalId
+                     ifNotModifiedSince:(NSDate *)ifNotModifiedSince
                                 timeout:(NSInteger)timeout
                         remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                            authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
@@ -584,7 +605,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
                       unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
                      connectionFailure:[self newConnFailureBlk:complHandler]
                                timeout:timeout
-                          otherHeaders:nil];
+                          otherHeaders:[self addDateHeaderToHeaders:@{} headerName:_ifModifiedSinceHeaderName value:ifNotModifiedSince]];
 }
 
 #pragma mark - User Operations
