@@ -328,10 +328,6 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
                  remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                     authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
                completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
-  NSMutableDictionary *otherHeaders = [NSMutableDictionary dictionary];
-  if (ifModifiedSince) {
-    otherHeaders[_ifModifiedSinceHeaderName] = nil;
-  }
   [_relationExecutor doGetForURLString:globalId
                        ifModifiedSince:nil
                       targetSerializer:_vehicleSerializer
@@ -346,6 +342,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
                       unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
                      connectionFailure:[self newConnFailureBlk:complHandler]
                                timeout:timeout
+                           cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
                           otherHeaders:[self addDateHeaderToHeaders:@{}
                                                          headerName:_ifModifiedSinceHeaderName
                                                               value:ifModifiedSince]];
@@ -435,6 +432,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
                       unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
                      connectionFailure:[self newConnFailureBlk:complHandler]
                                timeout:timeout
+                           cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
                           otherHeaders:[self addDateHeaderToHeaders:@{} headerName:_ifModifiedSinceHeaderName value:ifModifiedSince]];
 }
 
@@ -520,6 +518,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
                       unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
                      connectionFailure:[self newConnFailureBlk:complHandler]
                                timeout:timeout
+                           cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
                           otherHeaders:[self addDateHeaderToHeaders:@{} headerName:_ifModifiedSinceHeaderName value:ifModifiedSince]];
 }
 
@@ -605,6 +604,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
                       unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
                      connectionFailure:[self newConnFailureBlk:complHandler]
                                timeout:timeout
+                           cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
                           otherHeaders:[self addDateHeaderToHeaders:@{} headerName:_ifModifiedSinceHeaderName value:ifModifiedSince]];
 }
 

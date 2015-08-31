@@ -5,7 +5,7 @@ platform :ios, '8.3'
 pod 'PEObjc-Commons', '~> 1.0.44'
 pod 'PEFuelPurchase-Common', '~> 1.0.8'
 pod 'FMDB', '~> 2.5'
-pod 'PEHateoas-Client', '~> 1.0.5'
+pod 'PEHateoas-Client', '~> 1.0.6'
 pod 'CocoaLumberjack', '~> 1.9'
 pod 'UICKeyChainStore', '~> 2.0.4'
 
