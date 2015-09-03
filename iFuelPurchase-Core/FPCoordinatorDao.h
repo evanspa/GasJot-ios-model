@@ -96,17 +96,6 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
                                           allDone:(void(^)(void))allDoneBlk
                                             error:(PELMDaoErrorBlk)errorBlk;
 
-#pragma mark - Changelog
-
-- (void)fetchChangelogWithGlobalId:(NSString *)globalIdentifier
-                   ifModifiedSince:(NSDate *)ifModifiedSince
-                           forUser:(FPUser *)user
-               notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
-                        successBlk:(void(^)(FPChangelog *))successBlk
-                remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
-                tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk
-               addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk;
-
 #pragma mark - User
 
 - (void)deleteUser:(FPUser *)user
@@ -201,11 +190,18 @@ tempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
 addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
              error:(PELMDaoErrorBlk)errorBlk;
 
-- (void)fetchUserWithGlobalId:(NSString *)globalIdentifier
+- (void)fetchUser:(FPUser *)user
+  ifModifiedSince:(NSDate *)ifModifiedSince
+notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
+       successBlk:(void(^)(FPUser *))successBlk
+remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
+tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk
+addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk;
+
+- (void)fetchChangelogForUser:(FPUser *)user
               ifModifiedSince:(NSDate *)ifModifiedSince
-                      forUser:(FPUser *)user
           notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
-                   successBlk:(void(^)(FPUser *))successBlk
+                   successBlk:(void(^)(FPChangelog *))successBlk
            remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
            tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk
           addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk;

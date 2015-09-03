@@ -18,6 +18,7 @@
 #import <PEObjc-Commons/PEUtils.h>
 #import "PELMNotificationUtils.h"
 #import "FPLogging.h"
+#import <PEHateoas-Client/HCRelation.h>
 
 @implementation FPCoordinatorDao {
   id<FPRemoteMasterDao> _remoteMasterDao;
@@ -451,35 +452,6 @@ accountClosedReasonHeaderName:accountClosedReasonHeaderName
   return totalNumToSync;
 }
 
-#pragma mark - Changelog
-
-- (void)fetchChangelogWithGlobalId:(NSString *)globalIdentifier
-                   ifModifiedSince:(NSDate *)ifModifiedSince
-                           forUser:(FPUser *)user
-               notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
-                        successBlk:(void(^)(FPChangelog *))successBlk
-                remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
-                tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk
-               addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk {
-  PELMRemoteMasterCompletionHandler remoteStoreComplHandler =
-  [PELMUtils complHandlerToFetchEntityWithGlobalId:globalIdentifier
-                               remoteStoreErrorBlk:^(NSError *err, NSNumber *httpStatusCode) { if (tempRemoteErrorBlk) { tempRemoteErrorBlk(); } }
-                                 entityNotFoundBlk:^{ if (notFoundOnServerBlk) { notFoundOnServerBlk(); } }
-                                  fetchCompleteBlk:^(FPChangelog *fetchedChangelog) {
-                                    if (successBlk) { successBlk(fetchedChangelog); }
-                                  }
-                                   newAuthTokenBlk:^(NSString *newAuthTkn){[self processNewAuthToken:newAuthTkn forUser:user];}];
-  [_remoteMasterDao fetchChangelogWithGlobalId:globalIdentifier
-                               ifModifiedSince:ifModifiedSince
-                                       timeout:_timeout
-                               remoteStoreBusy:^(NSDate *retryAfter) { if (remoteStoreBusyBlk) { remoteStoreBusyBlk(retryAfter); } }
-                                  authRequired:^(HCAuthentication *auth) {
-                                    [self authReqdBlk](auth);
-                                    if (addlAuthRequiredBlk) { addlAuthRequiredBlk(); }
-                                  }
-                             completionHandler:remoteStoreComplHandler];
-}
-
 #pragma mark - User
 
 - (void)deleteUser:(FPUser *)user
@@ -777,23 +749,22 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
              completionHandler:remoteStoreComplHandler];
 }
 
-- (void)fetchUserWithGlobalId:(NSString *)globalIdentifier
-              ifModifiedSince:(NSDate *)ifModifiedSince
-                      forUser:(FPUser *)user
-          notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
-                   successBlk:(void(^)(FPUser *))successBlk
-           remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
-           tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk
-          addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk {
+- (void)fetchUser:(FPUser *)user
+  ifModifiedSince:(NSDate *)ifModifiedSince
+notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
+       successBlk:(void(^)(FPUser *))successBlk
+remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
+tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk
+addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk {
   PELMRemoteMasterCompletionHandler remoteStoreComplHandler =
-  [PELMUtils complHandlerToFetchEntityWithGlobalId:globalIdentifier
+  [PELMUtils complHandlerToFetchEntityWithGlobalId:user.globalIdentifier
                                remoteStoreErrorBlk:^(NSError *err, NSNumber *httpStatusCode) { if (tempRemoteErrorBlk) { tempRemoteErrorBlk(); } }
                                  entityNotFoundBlk:^{ if (notFoundOnServerBlk) { notFoundOnServerBlk(); } }
                                   fetchCompleteBlk:^(FPUser *fetchedUser) {
                                     if (successBlk) { successBlk(fetchedUser); }
                                   }
                                    newAuthTokenBlk:^(NSString *newAuthTkn){[self processNewAuthToken:newAuthTkn forUser:user];}];
-  [_remoteMasterDao fetchUserWithGlobalId:globalIdentifier
+  [_remoteMasterDao fetchUserWithGlobalId:user.globalIdentifier
                           ifModifiedSince:ifModifiedSince
                                   timeout:_timeout
                           remoteStoreBusy:^(NSDate *retryAfter) { if (remoteStoreBusyBlk) { remoteStoreBusyBlk(retryAfter); } }
@@ -802,6 +773,33 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
                                if (addlAuthRequiredBlk) { addlAuthRequiredBlk(); }
                              }
                         completionHandler:remoteStoreComplHandler];
+}
+
+- (void)fetchChangelogForUser:(FPUser *)user
+              ifModifiedSince:(NSDate *)ifModifiedSince
+          notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
+                   successBlk:(void(^)(FPChangelog *))successBlk
+           remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
+           tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk
+          addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk {
+  HCRelation *changelogRelation = [[user relations] objectForKey:FPChangelogRelation];
+  PELMRemoteMasterCompletionHandler remoteStoreComplHandler =
+  [PELMUtils complHandlerToFetchEntityWithGlobalId:changelogRelation.target.uri.absoluteString
+                               remoteStoreErrorBlk:^(NSError *err, NSNumber *httpStatusCode) { if (tempRemoteErrorBlk) { tempRemoteErrorBlk(); } }
+                                 entityNotFoundBlk:^{ if (notFoundOnServerBlk) { notFoundOnServerBlk(); } }
+                                  fetchCompleteBlk:^(FPChangelog *fetchedChangelog) {
+                                    if (successBlk) { successBlk(fetchedChangelog); }
+                                  }
+                                   newAuthTokenBlk:^(NSString *newAuthTkn){[self processNewAuthToken:newAuthTkn forUser:user];}];
+  [_remoteMasterDao fetchChangelogWithGlobalId:changelogRelation.target.uri.absoluteString
+                               ifModifiedSince:ifModifiedSince
+                                       timeout:_timeout
+                               remoteStoreBusy:^(NSDate *retryAfter) { if (remoteStoreBusyBlk) { remoteStoreBusyBlk(retryAfter); } }
+                                  authRequired:^(HCAuthentication *auth) {
+                                    [self authReqdBlk](auth);
+                                    if (addlAuthRequiredBlk) { addlAuthRequiredBlk(); }
+                                  }
+                             completionHandler:remoteStoreComplHandler];
 }
 
 - (void)reloadUser:(FPUser *)user
