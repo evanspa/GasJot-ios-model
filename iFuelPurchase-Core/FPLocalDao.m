@@ -612,6 +612,19 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                   error:errorBlk];
 }
 
+- (void)saveMasterUser:(FPUser *)user
+                 error:(PELMDaoErrorBlk)errorBlk {
+  [_localModelUtils saveMasterEntity:user
+                         masterTable:TBL_MASTER_USER
+                    masterUpdateStmt:[self updateStmtForMasterUser]
+                 masterUpdateArgsBlk:^ NSArray * (FPUser *theUser) { return [self updateArgsForMasterUser:theUser]; }
+                           mainTable:TBL_MAIN_USER
+             mainEntityFromResultSet:^ FPUser * (FMResultSet *rs) { return [self mainUserFromResultSet:rs]; }
+                      mainUpdateStmt:[self updateStmtForMainUser]
+                   mainUpdateArgsBlk:^ NSArray * (FPUser *theUser) { return [self updateArgsForMainUser:theUser]; }
+                               error:errorBlk];
+}
+
 - (void)markAsSyncCompleteForUser:(FPUser *)user
                             error:(PELMDaoErrorBlk)errorBlk {
   [_localModelUtils markAsSyncCompleteForUpdatedEntityInTxn:user
@@ -953,7 +966,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                        error:(PELMDaoErrorBlk)errorBlk {
   [_localModelUtils saveNewMasterEntity:vehicle
                             masterTable:TBL_MASTER_VEHICLE
-                        masterInsertBlk:^(id entity, FMDatabase *db){[self insertIntoMasterVehicle:(FPVehicle *)entity forUser:user db:db error:errorBlk];}
+                        masterInsertBlk:^(id entity, FMDatabase *db){[self insertIntoMasterVehicle:(FPVehicle *)entity forUser:user db:db           error:errorBlk];}
                                   error:errorBlk];
 }
 

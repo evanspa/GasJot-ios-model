@@ -29,6 +29,7 @@ NSString * const LAST_MODIFIED_HEADER = @"last-modified";
   NSString *_loginFailedReasonHeaderName;
   NSString *_accountClosedReasonHeaderName;
   NSDictionary *_restApiRelations;
+  FPChangelogSerializer *_changelogSerializer;
   FPUserSerializer *_userSerializer;
   FPLoginSerializer *_loginSerializer;
   FPLogoutSerializer *_logoutSerializer;
@@ -57,6 +58,7 @@ accountClosedReasonHeaderName:(NSString *)accountClosedReasonHeaderName
 bundleHoldingApiJsonResource:(NSBundle *)bundle
   nameOfApiJsonResourceFile:(NSString *)apiResourceFileName
             apiResMtVersion:(NSString *)apiResMtVersion
+        changelogSerializer:(FPChangelogSerializer *)changelogSerializer
              userSerializer:(FPUserSerializer *)userSerializer
             loginSerializer:(FPLoginSerializer *)loginSerializer
            logoutSerializer:(FPLogoutSerializer *)logoutSerializer
@@ -86,6 +88,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
       [HCUtils relsFromLocalHalJsonResource:bundle
                                    fileName:apiResourceFileName
                        resourceApiMediaType:[FPKnownMediaTypes apiMediaTypeWithVersion:apiResMtVersion]];
+    _changelogSerializer = changelogSerializer;
     _userSerializer = userSerializer;
     _loginSerializer = loginSerializer;
     _logoutSerializer = logoutSerializer;
@@ -735,6 +738,56 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
            connectionFailure:[self newConnFailureBlk:complHandler]
                      timeout:timeout
                 otherHeaders:[self addFpIfUnmodifiedSinceHeaderToHeader:@{} entity:user]];
+}
+
+- (void)fetchUserWithGlobalId:(NSString *)globalId
+              ifModifiedSince:(NSDate *)ifModifiedSince
+                      timeout:(NSInteger)timeout
+              remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
+                 authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
+            completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
+  [_relationExecutor doGetForURLString:globalId
+                       ifModifiedSince:nil
+                      targetSerializer:_userSerializer
+                          asynchronous:YES
+                       completionQueue:_serialQueue
+                         authorization:[self authorization]
+                               success:[self newGetSuccessBlk:complHandler]
+                           redirection:[self newRedirectionBlk:complHandler]
+                           clientError:[self newClientErrBlk:complHandler]
+                authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired]
+                           serverError:[self newServerErrBlk:complHandler]
+                      unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
+                     connectionFailure:[self newConnFailureBlk:complHandler]
+                               timeout:timeout
+                           cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
+                          otherHeaders:[self addDateHeaderToHeaders:@{} headerName:_ifModifiedSinceHeaderName value:ifModifiedSince]];
+}
+
+#pragma mark - Changelog Operations
+
+- (void)fetchChangelogWithGlobalId:(NSString *)globalId
+                   ifModifiedSince:(NSDate *)ifModifiedSince
+                           timeout:(NSInteger)timeout
+                   remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
+                      authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
+                 completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
+  [_relationExecutor doGetForURLString:globalId
+                       ifModifiedSince:nil
+                      targetSerializer:_changelogSerializer
+                          asynchronous:YES
+                       completionQueue:_serialQueue
+                         authorization:[self authorization]
+                               success:[self newGetSuccessBlk:complHandler]
+                           redirection:[self newRedirectionBlk:complHandler]
+                           clientError:[self newClientErrBlk:complHandler]
+                authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired]
+                           serverError:[self newServerErrBlk:complHandler]
+                      unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
+                     connectionFailure:[self newConnFailureBlk:complHandler]
+                               timeout:timeout
+                           cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
+                          otherHeaders:[self addDateHeaderToHeaders:@{} headerName:_ifModifiedSinceHeaderName value:ifModifiedSince]];
 }
 
 @end

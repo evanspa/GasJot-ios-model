@@ -12,6 +12,7 @@
 #import "FPFuelStation.h"
 #import "FPEnvironmentLog.h"
 
+FOUNDATION_EXPORT NSString * const FPChangelogRelation;
 FOUNDATION_EXPORT NSString * const FPVehiclesRelation;
 FOUNDATION_EXPORT NSString * const FPFuelStationsRelation;
 FOUNDATION_EXPORT NSString * const FPFuelPurchaseLogsRelation;

@@ -10,6 +10,7 @@
 #import <PEObjc-Commons/PEUtils.h>
 #import "FPDDLUtils.h"
 
+NSString * const FPChangelogRelation = @"changelog";
 NSString * const FPVehiclesRelation = @"vehicles";
 NSString * const FPFuelStationsRelation = @"fuelstations";
 NSString * const FPFuelPurchaseLogsRelation = @"fuelpurchase-logs";

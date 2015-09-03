@@ -1,5 +1,5 @@
 //
-//  PELMChangeLogSerializer.h
+//  FPChangelogSerializer.h
 //  PEFuelPurchase-Model
 //
 //  Created by Evans, Paul on 9/11/14.
@@ -8,6 +8,6 @@
 
 #import <PEHateoas-Client/HCHalJsonSerializerExtensionSupport.h>
 
-@interface PELMChangeLogSerializer : HCHalJsonSerializerExtensionSupport
+@interface FPChangelogSerializer : HCHalJsonSerializerExtensionSupport
 
 @end

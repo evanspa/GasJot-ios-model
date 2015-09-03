@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <PEHateoas-Client/HCAuthentication.h>
+#import "FPChangelog.h"
 #import "FPUser.h"
 #import "FPVehicle.h"
 #import "FPFuelStation.h"
@@ -171,5 +172,21 @@
    remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
       authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
  completionHandler:(PELMRemoteMasterCompletionHandler)complHandler;
+
+- (void)fetchUserWithGlobalId:(NSString *)globalId
+              ifModifiedSince:(NSDate *)ifModifiedSince
+                      timeout:(NSInteger)timeout
+              remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
+                 authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
+            completionHandler:(PELMRemoteMasterCompletionHandler)complHandler;
+
+#pragma mark - Changelog Operations
+
+- (void)fetchChangelogWithGlobalId:(NSString *)globalId
+                   ifModifiedSince:(NSDate *)ifModifiedSince
+                           timeout:(NSInteger)timeout
+                   remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
+                      authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
+                 completionHandler:(PELMRemoteMasterCompletionHandler)complHandler;
 
 @end

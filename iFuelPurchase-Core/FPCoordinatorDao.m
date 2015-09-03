@@ -89,6 +89,12 @@
                fuelStationSerializer:fuelStationSerializer
            fuelPurchaseLogSerializer:fuelPurchaseLogSerializer
             environmentLogSerializer:environmentLogSerializer];
+    FPChangelogSerializer *changelogSerializer = [self changelogSerializerForCharset:acceptCharset
+                                                                      userSerializer:userSerializer
+                                                                   vehicleSerializer:vehicleSerializer
+                                                               fuelStationSerializer:fuelStationSerializer
+                                                           fuelPurchaseLogSerializer:fuelPurchaseLogSerializer
+                                                            environmentLogSerializer:environmentLogSerializer];
     FPLoginSerializer *loginSerializer =
       [[FPLoginSerializer alloc] initWithMediaType:[FPKnownMediaTypes userMediaTypeWithVersion:_userResMtVersion]
                                            charset:acceptCharset
@@ -112,6 +118,7 @@ accountClosedReasonHeaderName:accountClosedReasonHeaderName
  bundleHoldingApiJsonResource:bundle
     nameOfApiJsonResourceFile:apiResourceFileName
               apiResMtVersion:apiResMtVersion
+          changelogSerializer:changelogSerializer
                userSerializer:userSerializer
               loginSerializer:loginSerializer
              logoutSerializer:logoutSerializer
@@ -173,6 +180,41 @@ accountClosedReasonHeaderName:accountClosedReasonHeaderName
                                                charset:charset
                             serializersForEmbeddedResources:@{}
                                 actionsForEmbeddedResources:@{}];
+}
+
+- (FPChangelogSerializer *)changelogSerializerForCharset:(HCCharset *)charset
+                                          userSerializer:(FPUserSerializer *)userSerializer
+                                       vehicleSerializer:(FPVehicleSerializer *)vehicleSerializer
+                                   fuelStationSerializer:(FPFuelStationSerializer *)fuelStationSerializer
+                               fuelPurchaseLogSerializer:(FPFuelPurchaseLogSerializer *)fuelPurchaseLogSerializer
+                                environmentLogSerializer:(FPEnvironmentLogSerializer *)environmentLogSerializer {
+  HCActionForEmbeddedResource actionForEmbeddedUser = ^(FPChangelog *changelog, id embeddedUser) {
+    [changelog setUser:embeddedUser];
+  };
+  HCActionForEmbeddedResource actionForEmbeddedVehicle = ^(FPChangelog *changelog, id embeddedVehicle) {
+    [changelog addVehicle:embeddedVehicle];
+  };
+  HCActionForEmbeddedResource actionForEmbeddedFuelStation = ^(FPChangelog *changelog, id embeddedFuelStation) {
+    [changelog addFuelStation:embeddedFuelStation];
+  };
+  HCActionForEmbeddedResource actionForEmbeddedFuelPurchaseLog = ^(FPChangelog *changelog, id embeddedFuelPurchaseLog) {
+    [changelog addFuelPurchaseLog:embeddedFuelPurchaseLog];
+  };
+  HCActionForEmbeddedResource actionForEmbeddedEnvironmentLog = ^(FPChangelog *changelog, id embeddedEnvironmentLog) {
+    [changelog addEnvironmentLog:embeddedEnvironmentLog];
+  };
+  return [[FPChangelogSerializer alloc] initWithMediaType:[FPKnownMediaTypes userMediaTypeWithVersion:_userResMtVersion]
+                                                  charset:charset
+                          serializersForEmbeddedResources:@{[[userSerializer mediaType] description] : userSerializer,
+                                                            [[vehicleSerializer mediaType] description] : vehicleSerializer,
+                                                            [[fuelStationSerializer mediaType] description] : fuelStationSerializer,
+                                                            [[fuelPurchaseLogSerializer mediaType] description] : fuelPurchaseLogSerializer,
+                                                            [[environmentLogSerializer mediaType] description] : environmentLogSerializer}
+                              actionsForEmbeddedResources:@{[[userSerializer mediaType] description] : actionForEmbeddedUser,
+                                                            [[vehicleSerializer mediaType] description] : actionForEmbeddedVehicle,
+                                                            [[fuelStationSerializer mediaType] description] : actionForEmbeddedFuelStation,
+                                                            [[fuelPurchaseLogSerializer mediaType] description] : actionForEmbeddedFuelPurchaseLog,
+                                                            [[environmentLogSerializer mediaType] description] : actionForEmbeddedEnvironmentLog}];
 }
 
 - (FPUserSerializer *)userSerializerForCharset:(HCCharset *)charset
@@ -407,6 +449,35 @@ accountClosedReasonHeaderName:accountClosedReasonHeaderName
     syncFpLogs();
   }
   return totalNumToSync;
+}
+
+#pragma mark - Changelog
+
+- (void)fetchChangelogWithGlobalId:(NSString *)globalIdentifier
+                   ifModifiedSince:(NSDate *)ifModifiedSince
+                           forUser:(FPUser *)user
+               notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
+                        successBlk:(void(^)(FPChangelog *))successBlk
+                remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
+                tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk
+               addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk {
+  PELMRemoteMasterCompletionHandler remoteStoreComplHandler =
+  [PELMUtils complHandlerToFetchEntityWithGlobalId:globalIdentifier
+                               remoteStoreErrorBlk:^(NSError *err, NSNumber *httpStatusCode) { if (tempRemoteErrorBlk) { tempRemoteErrorBlk(); } }
+                                 entityNotFoundBlk:^{ if (notFoundOnServerBlk) { notFoundOnServerBlk(); } }
+                                  fetchCompleteBlk:^(FPChangelog *fetchedChangelog) {
+                                    if (successBlk) { successBlk(fetchedChangelog); }
+                                  }
+                                   newAuthTokenBlk:^(NSString *newAuthTkn){[self processNewAuthToken:newAuthTkn forUser:user];}];
+  [_remoteMasterDao fetchChangelogWithGlobalId:globalIdentifier
+                               ifModifiedSince:ifModifiedSince
+                                       timeout:_timeout
+                               remoteStoreBusy:^(NSDate *retryAfter) { if (remoteStoreBusyBlk) { remoteStoreBusyBlk(retryAfter); } }
+                                  authRequired:^(HCAuthentication *auth) {
+                                    [self authReqdBlk](auth);
+                                    if (addlAuthRequiredBlk) { addlAuthRequiredBlk(); }
+                                  }
+                             completionHandler:remoteStoreComplHandler];
 }
 
 #pragma mark - User
@@ -704,6 +775,33 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
                     if (addlAuthRequiredBlk) { addlAuthRequiredBlk(); }
                   }
              completionHandler:remoteStoreComplHandler];
+}
+
+- (void)fetchUserWithGlobalId:(NSString *)globalIdentifier
+              ifModifiedSince:(NSDate *)ifModifiedSince
+                      forUser:(FPUser *)user
+          notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
+                   successBlk:(void(^)(FPUser *))successBlk
+           remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
+           tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk
+          addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk {
+  PELMRemoteMasterCompletionHandler remoteStoreComplHandler =
+  [PELMUtils complHandlerToFetchEntityWithGlobalId:globalIdentifier
+                               remoteStoreErrorBlk:^(NSError *err, NSNumber *httpStatusCode) { if (tempRemoteErrorBlk) { tempRemoteErrorBlk(); } }
+                                 entityNotFoundBlk:^{ if (notFoundOnServerBlk) { notFoundOnServerBlk(); } }
+                                  fetchCompleteBlk:^(FPUser *fetchedUser) {
+                                    if (successBlk) { successBlk(fetchedUser); }
+                                  }
+                                   newAuthTokenBlk:^(NSString *newAuthTkn){[self processNewAuthToken:newAuthTkn forUser:user];}];
+  [_remoteMasterDao fetchUserWithGlobalId:globalIdentifier
+                          ifModifiedSince:ifModifiedSince
+                                  timeout:_timeout
+                          remoteStoreBusy:^(NSDate *retryAfter) { if (remoteStoreBusyBlk) { remoteStoreBusyBlk(retryAfter); } }
+                             authRequired:^(HCAuthentication *auth) {
+                               [self authReqdBlk](auth);
+                               if (addlAuthRequiredBlk) { addlAuthRequiredBlk(); }
+                             }
+                        completionHandler:remoteStoreComplHandler];
 }
 
 - (void)reloadUser:(FPUser *)user

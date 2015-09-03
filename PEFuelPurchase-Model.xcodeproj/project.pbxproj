@@ -49,8 +49,7 @@
 		18D8C12119C532DA006C65F9 /* FPKnownMediaTypes.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D8C12019C532DA006C65F9 /* FPKnownMediaTypes.m */; };
 		18EC862A19E852AC006C104A /* FPFuelPurchaseLogSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 18EC862919E852AC006C104A /* FPFuelPurchaseLogSerializer.m */; };
 		18F0E42E1984A4010024971B /* FPDDLUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 18F0E42D1984A4010024971B /* FPDDLUtils.m */; };
-		18F113FB19C158900013A903 /* PELMChangeLog.m in Sources */ = {isa = PBXBuildFile; fileRef = 18F113FA19C158900013A903 /* PELMChangeLog.m */; };
-		18F1140019C159420013A903 /* PELMChangeLogSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 18F113FF19C159420013A903 /* PELMChangeLogSerializer.m */; };
+		18F1140019C159420013A903 /* FPChangelogSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 18F113FF19C159420013A903 /* FPChangelogSerializer.m */; };
 		18F23A9F19A150330059DA22 /* FPCoordinatorDao.m in Sources */ = {isa = PBXBuildFile; fileRef = 18F23A9E19A150330059DA22 /* FPCoordinatorDao.m */; };
 		18F23AA919A153460059DA22 /* FPRemoteDaoErrorDomains.m in Sources */ = {isa = PBXBuildFile; fileRef = 18F23AA819A153460059DA22 /* FPRemoteDaoErrorDomains.m */; };
 		18F23AAC19A1537F0059DA22 /* FPUserSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 18F23AAB19A1537F0059DA22 /* FPUserSerializer.m */; };
@@ -75,6 +74,7 @@
 		CADD42651B695073005E1DF8 /* FPCoordinatorDaoTests_13.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBDF1A5CF12C00747936 /* FPCoordinatorDaoTests_13.m */; };
 		CADD42661B695073005E1DF8 /* FPCoordinatorDaoTests_14.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBE01A5CF12C00747936 /* FPCoordinatorDaoTests_14.m */; };
 		CADD42671B695073005E1DF8 /* FPCoordinatorDaoTests_15.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBF21A5D045D00747936 /* FPCoordinatorDaoTests_15.m */; };
+		CAFC844E1B98AC9500FAEB66 /* FPChangelog.m in Sources */ = {isa = PBXBuildFile; fileRef = CAFC844D1B98AC9500FAEB66 /* FPChangelog.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -181,10 +181,8 @@
 		18EC862919E852AC006C104A /* FPFuelPurchaseLogSerializer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FPFuelPurchaseLogSerializer.m; sourceTree = "<group>"; };
 		18F0E42C1984A4010024971B /* FPDDLUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FPDDLUtils.h; sourceTree = "<group>"; };
 		18F0E42D1984A4010024971B /* FPDDLUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FPDDLUtils.m; sourceTree = "<group>"; };
-		18F113F919C158900013A903 /* PELMChangeLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PELMChangeLog.h; sourceTree = "<group>"; };
-		18F113FA19C158900013A903 /* PELMChangeLog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PELMChangeLog.m; sourceTree = "<group>"; };
-		18F113FE19C159420013A903 /* PELMChangeLogSerializer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PELMChangeLogSerializer.h; sourceTree = "<group>"; };
-		18F113FF19C159420013A903 /* PELMChangeLogSerializer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PELMChangeLogSerializer.m; sourceTree = "<group>"; };
+		18F113FE19C159420013A903 /* FPChangelogSerializer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FPChangelogSerializer.h; sourceTree = "<group>"; };
+		18F113FF19C159420013A903 /* FPChangelogSerializer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FPChangelogSerializer.m; sourceTree = "<group>"; };
 		18F23A9D19A150330059DA22 /* FPCoordinatorDao.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FPCoordinatorDao.h; sourceTree = "<group>"; };
 		18F23A9E19A150330059DA22 /* FPCoordinatorDao.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FPCoordinatorDao.m; sourceTree = "<group>"; };
 		18F23AA719A153460059DA22 /* FPRemoteDaoErrorDomains.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FPRemoteDaoErrorDomains.h; sourceTree = "<group>"; };
@@ -210,6 +208,8 @@
 		CA848CE01B2F660500411A09 /* FPCoordinatorDaoTests_8_1.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FPCoordinatorDaoTests_8_1.m; sourceTree = "<group>"; };
 		CADD42471B681756005E1DF8 /* FPLogoutSerializer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FPLogoutSerializer.h; sourceTree = "<group>"; };
 		CADD42481B681756005E1DF8 /* FPLogoutSerializer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FPLogoutSerializer.m; sourceTree = "<group>"; };
+		CAFC844C1B98AC9500FAEB66 /* FPChangelog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FPChangelog.h; sourceTree = "<group>"; };
+		CAFC844D1B98AC9500FAEB66 /* FPChangelog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FPChangelog.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -302,7 +302,6 @@
 			children = (
 				CA7D5AAB1B3B074800433581 /* Login User */,
 				18417F411AA17FBD007B8489 /* Base User */,
-				18F113F819C158800013A903 /* Change Log */,
 				18D0802B198594E10076A71E /* Model Support */,
 				18D0802C198594F00076A71E /* Master Support */,
 				18D08030198596290076A71E /* Main Support */,
@@ -632,6 +631,7 @@
 		18C266A519843A09000BD684 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				CAFC844B1B98AC4E00FAEB66 /* Change Log */,
 				18C266A619843A23000BD684 /* User */,
 				1882CAF119889B5100A00E67 /* Vehicle */,
 				1824816919B95D6C00A71C97 /* Fuel Station */,
@@ -764,20 +764,10 @@
 			name = DDL;
 			sourceTree = "<group>";
 		};
-		18F113F819C158800013A903 /* Change Log */ = {
-			isa = PBXGroup;
-			children = (
-				18F113F919C158900013A903 /* PELMChangeLog.h */,
-				18F113FA19C158900013A903 /* PELMChangeLog.m */,
-			);
-			name = "Change Log";
-			sourceTree = "<group>";
-		};
 		18F113FC19C159120013A903 /* Model JSON Serializers */ = {
 			isa = PBXGroup;
 			children = (
 				18D8C10B19C3EB03006C65F9 /* Common JSON Member Names */,
-				18F113FD19C159200013A903 /* Change Log Serializer */,
 			);
 			name = "Model JSON Serializers";
 			sourceTree = "<group>";
@@ -785,8 +775,8 @@
 		18F113FD19C159200013A903 /* Change Log Serializer */ = {
 			isa = PBXGroup;
 			children = (
-				18F113FE19C159420013A903 /* PELMChangeLogSerializer.h */,
-				18F113FF19C159420013A903 /* PELMChangeLogSerializer.m */,
+				18F113FE19C159420013A903 /* FPChangelogSerializer.h */,
+				18F113FF19C159420013A903 /* FPChangelogSerializer.m */,
 			);
 			name = "Change Log Serializer";
 			sourceTree = "<group>";
@@ -813,6 +803,7 @@
 		18F23AA419A152F80059DA22 /* Model JSON Serializers */ = {
 			isa = PBXGroup;
 			children = (
+				18F113FD19C159200013A903 /* Change Log Serializer */,
 				CADD42461B68172B005E1DF8 /* Logout Serializer */,
 				18417F3D1AA1797C007B8489 /* Login Serializer */,
 				187289DE19FA145C00B5D7B0 /* Environment Log */,
@@ -867,6 +858,15 @@
 				CADD42481B681756005E1DF8 /* FPLogoutSerializer.m */,
 			);
 			name = "Logout Serializer";
+			sourceTree = "<group>";
+		};
+		CAFC844B1B98AC4E00FAEB66 /* Change Log */ = {
+			isa = PBXGroup;
+			children = (
+				CAFC844C1B98AC9500FAEB66 /* FPChangelog.h */,
+				CAFC844D1B98AC9500FAEB66 /* FPChangelog.m */,
+			);
+			name = "Change Log";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1036,14 +1036,14 @@
 				18CF89AF1AAEB1E300AC42E6 /* FPLogging.m in Sources */,
 				188A03BC19DFAD32005C14D8 /* FPFuelStationSerializer.m in Sources */,
 				18F23A9F19A150330059DA22 /* FPCoordinatorDao.m in Sources */,
+				CAFC844E1B98AC9500FAEB66 /* FPChangelog.m in Sources */,
 				18F0E42E1984A4010024971B /* FPDDLUtils.m in Sources */,
 				18D080331985964D0076A71E /* PELMMainSupport.m in Sources */,
 				18D0802F198595070076A71E /* PELMMasterSupport.m in Sources */,
-				18F113FB19C158900013A903 /* PELMChangeLog.m in Sources */,
 				18F23AA919A153460059DA22 /* FPRemoteDaoErrorDomains.m in Sources */,
 				1800F3C319D5222B004DCEC1 /* PELMNotificationUtils.m in Sources */,
 				1824817119B95DCD00A71C97 /* FPFuelPurchaseLog.m in Sources */,
-				18F1140019C159420013A903 /* PELMChangeLogSerializer.m in Sources */,
+				18F1140019C159420013A903 /* FPChangelogSerializer.m in Sources */,
 				CA7D5AAE1B3B07B500433581 /* PELMLoginUser.m in Sources */,
 				18F23AAC19A1537F0059DA22 /* FPUserSerializer.m in Sources */,
 				18F23AB519A1F4730059DA22 /* FPErrorDomains.m in Sources */,

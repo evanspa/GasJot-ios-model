@@ -10,6 +10,7 @@
 #import <PEHateoas-Client/HCMediaType.h>
 #import <PEHateoas-Client/HCCharset.h>
 #import "FPRemoteMasterDao.h"
+#import "FPChangelogSerializer.h"
 #import "FPUserSerializer.h"
 #import "FPLoginSerializer.h"
 #import "FPLogoutSerializer.h"
@@ -40,6 +41,7 @@ accountClosedReasonHeaderName:(NSString *)accountClosedReasonHeaderName
 bundleHoldingApiJsonResource:(NSBundle *)bundle
   nameOfApiJsonResourceFile:(NSString *)apiResourceFileName
             apiResMtVersion:(NSString *)apiResMtVersion
+        changelogSerializer:(FPChangelogSerializer *)changelogSerializer
              userSerializer:(FPUserSerializer *)userSerializer
             loginSerializer:(FPLoginSerializer *)loginSerializer
            logoutSerializer:(FPLogoutSerializer *)logoutSerializer

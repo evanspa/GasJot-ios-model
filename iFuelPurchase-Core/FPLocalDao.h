@@ -112,6 +112,9 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                   retryAt:(NSDate *)retryAt
                     error:(PELMDaoErrorBlk)errorBlk;
 
+- (void)saveMasterUser:(FPUser *)user
+                 error:(PELMDaoErrorBlk)errorBlk;
+
 - (void)markAsSyncCompleteForUser:(FPUser *)user
                             error:(PELMDaoErrorBlk)errorBlk;
 
