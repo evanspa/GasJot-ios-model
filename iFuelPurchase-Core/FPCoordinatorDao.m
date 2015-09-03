@@ -26,6 +26,7 @@
   NSString *_authScheme;
   NSString *_authTokenParamName;
   NSString *_apiResMtVersion;
+  NSString *_changelogResMtVersion;
   NSString *_userResMtVersion;
   NSString *_vehicleResMtVersion;
   NSString *_fuelStationResMtVersion;
@@ -55,6 +56,7 @@
     bundleHoldingApiJsonResource:(NSBundle *)bundle
        nameOfApiJsonResourceFile:(NSString *)apiResourceFileName
                  apiResMtVersion:(NSString *)apiResMtVersion
+           changelogResMtVersion:(NSString *)changelogResMtVersion
                 userResMtVersion:(NSString *)userResMtVersion
              vehicleResMtVersion:(NSString *)vehicleResMtVersion
          fuelStationResMtVersion:(NSString *)fuelStationResMtVersion
@@ -70,6 +72,7 @@
     _authTokenParamName = authTokenParamName;
     _authToken = authToken;
     _apiResMtVersion = apiResMtVersion;
+    _changelogResMtVersion = changelogResMtVersion;
     _userResMtVersion = userResMtVersion;
     _vehicleResMtVersion = vehicleResMtVersion;
     _fuelStationResMtVersion = fuelStationResMtVersion;
@@ -204,7 +207,7 @@ accountClosedReasonHeaderName:accountClosedReasonHeaderName
   HCActionForEmbeddedResource actionForEmbeddedEnvironmentLog = ^(FPChangelog *changelog, id embeddedEnvironmentLog) {
     [changelog addEnvironmentLog:embeddedEnvironmentLog];
   };
-  return [[FPChangelogSerializer alloc] initWithMediaType:[FPKnownMediaTypes userMediaTypeWithVersion:_userResMtVersion]
+  return [[FPChangelogSerializer alloc] initWithMediaType:[FPKnownMediaTypes changelogMediaTypeWithVersion:_changelogResMtVersion]
                                                   charset:charset
                           serializersForEmbeddedResources:@{[[userSerializer mediaType] description] : userSerializer,
                                                             [[vehicleSerializer mediaType] description] : vehicleSerializer,

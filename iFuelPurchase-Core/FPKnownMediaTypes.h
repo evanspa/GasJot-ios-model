@@ -13,6 +13,8 @@
 
 + (HCMediaType *)apiMediaTypeWithVersion:(NSString *)version;
 
++ (HCMediaType *)changelogMediaTypeWithVersion:(NSString *)version;
+
 + (HCMediaType *)userMediaTypeWithVersion:(NSString *)version;
 
 + (HCMediaType *)vehicleMediaTypeWithVersion:(NSString *)version;

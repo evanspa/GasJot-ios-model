@@ -246,6 +246,7 @@
                                  bundleHoldingApiJsonResource:_testBundle
                                     nameOfApiJsonResourceFile:@"fpapi-resource"
                                               apiResMtVersion:@"0.0.1"
+                                        changelogResMtVersion:@"0.0.1"
                                              userResMtVersion:@"0.0.1"
                                           vehicleResMtVersion:@"0.0.1"
                                       fuelStationResMtVersion:@"0.0.1"

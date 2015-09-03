@@ -57,6 +57,7 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
     bundleHoldingApiJsonResource:(NSBundle *)bundle
        nameOfApiJsonResourceFile:(NSString *)apiResourceFileName
                  apiResMtVersion:(NSString *)apiResourceMediaTypeVersion
+           changelogResMtVersion:(NSString *)changelogResMtVersion
                 userResMtVersion:(NSString *)userResMtVersion
              vehicleResMtVersion:(NSString *)vehicleResMtVersion
          fuelStationResMtVersion:(NSString *)fuelStationResMtVersion
