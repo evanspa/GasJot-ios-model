@@ -230,12 +230,27 @@ PELMMainSupport * (^toMainSupport)(FMResultSet *, NSString *, NSDictionary *) = 
 }
 
 + (NSDate *)dateFromResultSet:(FMResultSet *)rs
-                   columnName:(NSString *)columnName {
+                    isNullBlk:(BOOL(^)(void))isNullBlk
+           doubleForColumnBlk:(double(^)(void))doubleForColumnBlk {
   NSDate *date = nil;
-  if (![rs columnIsNull:columnName]) {
-    date = [NSDate dateWithTimeIntervalSince1970:([rs doubleForColumn:columnName] / 1000)];
+  if (!isNullBlk()) {
+    date = [NSDate dateWithTimeIntervalSince1970:(doubleForColumnBlk() / 1000)];
   }
   return date;
+}
+
++ (NSDate *)dateFromResultSet:(FMResultSet *)rs
+                  columnIndex:(int)columnIndex {
+  return [PELMUtils dateFromResultSet:rs
+                            isNullBlk:^ BOOL { return [rs columnIndexIsNull:columnIndex]; }
+                   doubleForColumnBlk:^ double { return [rs doubleForColumnIndex:columnIndex]; }];
+}
+
++ (NSDate *)dateFromResultSet:(FMResultSet *)rs
+                   columnName:(NSString *)columnName {
+  return [PELMUtils dateFromResultSet:rs
+                            isNullBlk:^ BOOL { return [rs columnIsNull:columnName]; }
+                   doubleForColumnBlk:^ double { return [rs doubleForColumn:columnName]; }];
 }
 
 #pragma mark - Utils
@@ -350,19 +365,91 @@ PELMMainSupport * (^toMainSupport)(FMResultSet *, NSString *, NSDictionary *) = 
   }];
 }
 
+- (void)saveNewOrExistingMasterEntity:(PELMMainSupport *)masterEntity
+                          masterTable:(NSString *)masterTable
+                      masterInsertBlk:(void (^)(id, FMDatabase *))masterInsertBlk
+                     masterUpdateStmt:(NSString *)masterUpdateStmt
+                  masterUpdateArgsBlk:(NSArray *(^)(id))masterUpdateArgsBlk
+                            mainTable:(NSString *)mainTable
+              mainEntityFromResultSet:(entityFromResultSetBlk)mainEntityFromResultSet
+                       mainUpdateStmt:(NSString *)mainUpdateStmt
+                    mainUpdateArgsBlk:(NSArray *(^)(id))mainUpdateArgsBlk
+                                error:(PELMDaoErrorBlk)errorBlk {
+  [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
+    [PELMUtils saveNewOrExistingMasterEntity:masterEntity
+                                 masterTable:masterTable
+                             masterInsertBlk:masterInsertBlk
+                            masterUpdateStmt:masterUpdateStmt
+                         masterUpdateArgsBlk:masterUpdateArgsBlk
+                                   mainTable:mainTable
+                     mainEntityFromResultSet:mainEntityFromResultSet
+                              mainUpdateStmt:mainUpdateStmt
+                           mainUpdateArgsBlk:mainUpdateArgsBlk
+                                          db:db
+                                       error:errorBlk];
+  }];
+}
+
++ (void)saveNewOrExistingMasterEntity:(PELMMainSupport *)masterEntity
+                          masterTable:(NSString *)masterTable
+                      masterInsertBlk:(void (^)(id, FMDatabase *))masterInsertBlk
+                     masterUpdateStmt:(NSString *)masterUpdateStmt
+                  masterUpdateArgsBlk:(NSArray *(^)(id))masterUpdateArgsBlk
+                            mainTable:(NSString *)mainTable
+              mainEntityFromResultSet:(entityFromResultSetBlk)mainEntityFromResultSet
+                       mainUpdateStmt:(NSString *)mainUpdateStmt
+                    mainUpdateArgsBlk:(NSArray *(^)(id))mainUpdateArgsBlk
+                                   db:(FMDatabase *)db
+                                error:(PELMDaoErrorBlk)errorBlk {
+  NSNumber *localMasterId = [PELMUtils masterLocalIdFromEntityTable:masterTable
+                                                   globalIdentifier:masterEntity.globalIdentifier
+                                                                 db:db
+                                                              error:errorBlk];
+  if (localMasterId) {
+    [PELMUtils saveMasterEntity:masterEntity
+                    masterTable:masterTable
+               masterUpdateStmt:masterUpdateStmt
+            masterUpdateArgsBlk:masterUpdateArgsBlk
+                      mainTable:mainTable
+        mainEntityFromResultSet:mainEntityFromResultSet
+                 mainUpdateStmt:mainUpdateStmt
+              mainUpdateArgsBlk:mainUpdateArgsBlk
+                             db:db
+                          error:errorBlk];
+  } else {
+    [PELMUtils saveNewMasterEntity:masterEntity
+                       masterTable:masterTable
+                   masterInsertBlk:masterInsertBlk
+                                db:db
+                             error:errorBlk];
+  }
+}
+
 - (void)saveNewMasterEntity:(PELMMainSupport *)entity
                 masterTable:(NSString *)masterTable
             masterInsertBlk:(void (^)(id, FMDatabase *))masterInsertBlk
                       error:(PELMDaoErrorBlk)errorBlk {
   [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
-    masterInsertBlk(entity, db);
-    [PELMUtils insertRelations:[entity relations]
-                     forEntity:entity
-                   entityTable:masterTable
-               localIdentifier:[entity localMasterIdentifier]
-                            db:db
-                         error:errorBlk];
+    [PELMUtils saveNewMasterEntity:entity
+                       masterTable:masterTable
+                   masterInsertBlk:masterInsertBlk
+                                db:db
+                             error:errorBlk];
   }];
+}
+
++ (void)saveNewMasterEntity:(PELMMainSupport *)entity
+                masterTable:(NSString *)masterTable
+            masterInsertBlk:(void (^)(id, FMDatabase *))masterInsertBlk
+                         db:(FMDatabase *)db
+                      error:(PELMDaoErrorBlk)errorBlk {
+  masterInsertBlk(entity, db);
+  [PELMUtils insertRelations:[entity relations]
+                   forEntity:entity
+                 entityTable:masterTable
+             localIdentifier:[entity localMasterIdentifier]
+                          db:db
+                       error:errorBlk];
 }
 
 - (void)saveMasterEntity:(PELMMainSupport *)masterEntity
@@ -374,49 +461,71 @@ PELMMainSupport * (^toMainSupport)(FMResultSet *, NSString *, NSDictionary *) = 
           mainUpdateStmt:(NSString *)mainUpdateStmt
        mainUpdateArgsBlk:(NSArray *(^)(id))mainUpdateArgsBlk
                    error:(PELMDaoErrorBlk)errorBlk {
+  [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
+    [PELMUtils saveMasterEntity:masterEntity
+                    masterTable:masterTable
+               masterUpdateStmt:masterUpdateStmt
+            masterUpdateArgsBlk:masterUpdateArgsBlk
+                      mainTable:mainTable
+        mainEntityFromResultSet:mainEntityFromResultSet
+                 mainUpdateStmt:mainUpdateStmt
+              mainUpdateArgsBlk:mainUpdateArgsBlk
+                             db:db
+                          error:errorBlk];
+  }];
+}
+
++ (void)saveMasterEntity:(PELMMainSupport *)masterEntity
+             masterTable:(NSString *)masterTable
+        masterUpdateStmt:(NSString *)masterUpdateStmt
+     masterUpdateArgsBlk:(NSArray *(^)(id))masterUpdateArgsBlk
+               mainTable:(NSString *)mainTable
+ mainEntityFromResultSet:(entityFromResultSetBlk)mainEntityFromResultSet
+          mainUpdateStmt:(NSString *)mainUpdateStmt
+       mainUpdateArgsBlk:(NSArray *(^)(id))mainUpdateArgsBlk
+                      db:(FMDatabase *)db
+                   error:(PELMDaoErrorBlk)errorBlk {
   // entity is presumed to ONLY have its domain properties populated, and
   // its globalIdentifier populated.  That's it.
-  [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
-    // First, we'll get the entity's master local ID and set it on it.
-    NSNumber *localMasterId = [PELMUtils numberFromTable:masterTable
-                                            selectColumn:COL_LOCAL_ID
-                                             whereColumn:COL_GLOBAL_ID
-                                              whereValue:[masterEntity globalIdentifier]
-                                                      db:db
-                                                   error:errorBlk];
-    if (localMasterId) {
-      [masterEntity setLocalMasterIdentifier:localMasterId];
-      [PELMUtils doUpdate:masterUpdateStmt
-                argsArray:masterUpdateArgsBlk(masterEntity)
-                       db:db
-                    error:errorBlk];
-      NSNumber *localMainId = [PELMUtils localMainIdentifierForEntity:masterEntity
-                                                            mainTable:mainTable
-                                                                   db:db
-                                                                error:errorBlk];
-      if (localMainId) {
-        PELMMainSupport *mainEntity = [PELMUtils entityFromQuery:[NSString stringWithFormat:@"SELECT * FROM %@ WHERE %@ = ?", mainTable, COL_LOCAL_ID]
-                                                     entityTable:mainTable
-                                                   localIdGetter:^NSNumber *(PELMModelSupport *entity) { return [entity localMainIdentifier]; }
-                                                       argsArray:@[localMainId]
-                                                     rsConverter:mainEntityFromResultSet
-                                                              db:db
-                                                           error:errorBlk];
-        // obviously we should only update the main-instance if it is currently
-        // synced; because if it is not synced, that means the user is currently
-        // editing it and therefore we don't want to overwrite their changes.
-        if ([mainEntity synced]) {
-          [mainEntity overwriteDomainProperties:masterEntity];
-          [mainEntity setUpdatedAt:[masterEntity updatedAt]];
-          [mainEntity setDateCopiedFromMaster:[masterEntity updatedAt]];
-          [PELMUtils doUpdate:mainUpdateStmt
-                    argsArray:mainUpdateArgsBlk(mainEntity)
-                           db:db
-                        error:errorBlk];
-        }
+  // First, we'll get the entity's master local ID and set it on it.
+  NSNumber *localMasterId = [PELMUtils numberFromTable:masterTable
+                                          selectColumn:COL_LOCAL_ID
+                                           whereColumn:COL_GLOBAL_ID
+                                            whereValue:[masterEntity globalIdentifier]
+                                                    db:db
+                                                 error:errorBlk];
+  if (localMasterId) {
+    [masterEntity setLocalMasterIdentifier:localMasterId];
+    [PELMUtils doUpdate:masterUpdateStmt
+              argsArray:masterUpdateArgsBlk(masterEntity)
+                     db:db
+                  error:errorBlk];
+    NSNumber *localMainId = [PELMUtils localMainIdentifierForEntity:masterEntity
+                                                          mainTable:mainTable
+                                                                 db:db
+                                                              error:errorBlk];
+    if (localMainId) {
+      PELMMainSupport *mainEntity = [PELMUtils entityFromQuery:[NSString stringWithFormat:@"SELECT * FROM %@ WHERE %@ = ?", mainTable, COL_LOCAL_ID]
+                                                   entityTable:mainTable
+                                                 localIdGetter:^NSNumber *(PELMModelSupport *entity) { return [entity localMainIdentifier]; }
+                                                     argsArray:@[localMainId]
+                                                   rsConverter:mainEntityFromResultSet
+                                                            db:db
+                                                         error:errorBlk];
+      // obviously we should only update the main-instance if it is currently
+      // synced; because if it is not synced, that means the user is currently
+      // editing it and therefore we don't want to overwrite their changes.
+      if ([mainEntity synced]) {
+        [mainEntity overwriteDomainProperties:masterEntity];
+        [mainEntity setUpdatedAt:[masterEntity updatedAt]];
+        [mainEntity setDateCopiedFromMaster:[masterEntity updatedAt]];
+        [PELMUtils doUpdate:mainUpdateStmt
+                  argsArray:mainUpdateArgsBlk(mainEntity)
+                         db:db
+                      error:errorBlk];
       }
     }
-  }];
+  }
 }
 
 - (void)markAsSyncCompleteForNewEntity:(PELMMainSupport *)entity
@@ -1974,6 +2083,17 @@ Entity: %@", entity]
 }
 
 #pragma mark - Helpers
+
++ (NSDate *)maxDateFromTable:(NSString *)table
+                  dateColumn:(NSString *)dateColumn
+                 whereColumn:(NSString *)whereColumn
+                  whereValue:(id)whereValue
+                          db:(FMDatabase *)db
+                       error:(PELMDaoErrorBlk)errorBlk {
+  FMResultSet *rs = [db executeQuery:[NSString stringWithFormat:@"SELECT MAX(%@) FROM %@ WHERE %@ = ?", dateColumn, table, whereColumn]
+                withArgumentsInArray:@[whereValue]];
+  return [PELMUtils dateFromResultSet:rs columnIndex:0];
+}
 
 + (NSInteger)intFromQuery:(NSString *)query args:(NSArray *)args db:(FMDatabase *)db {
   NSInteger num = 0;

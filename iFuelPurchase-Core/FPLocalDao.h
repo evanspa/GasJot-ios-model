@@ -39,6 +39,9 @@
 
 #pragma mark - User
 
+- (NSDate *)mostRecentMasterUpdateForUser:(FPUser *)user
+                                    error:(PELMDaoErrorBlk)errorBlk;
+
 - (FPUser *)masterUserWithId:(NSNumber *)userId
                        error:(PELMDaoErrorBlk)errorBlk;
 
@@ -112,11 +115,9 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                   retryAt:(NSDate *)retryAt
                     error:(PELMDaoErrorBlk)errorBlk;
 
-- (void)saveMasterUser:(FPUser *)user
-                 error:(PELMDaoErrorBlk)errorBlk;
+- (void)saveMasterUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk;
 
-- (void)markAsSyncCompleteForUser:(FPUser *)user
-                            error:(PELMDaoErrorBlk)errorBlk;
+- (void)markAsSyncCompleteForUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk;
 
 #pragma mark - Vehicle
 
@@ -183,6 +184,10 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                    errorMask:(NSNumber *)errorMask
                      retryAt:(NSDate *)retryAt
                        error:(PELMDaoErrorBlk)errorBlk;
+
+- (void)saveNewOrExistingMasterVehicle:(FPVehicle *)vehicle
+                               forUser:(FPUser *)user
+                                 error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)saveNewMasterVehicle:(FPVehicle *)vehicle
                      forUser:(FPUser *)user

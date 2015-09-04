@@ -25,7 +25,9 @@ NSString * const FPChangelogUpdatedAtKey = @"changelog/updated-at";
 
 - (id)resourceModelWithDictionary:(NSDictionary *)resDict
                         relations:(NSDictionary *)relations
-                     httpResponse:(NSHTTPURLResponse *)httpResponse {
+                        mediaType:(HCMediaType *)mediaType
+                         location:(NSString *)location
+                     lastModified:(NSDate *)lastModified {
   return [[FPChangelog alloc] initWithUpdatedAt:[resDict dateSince1970ForKey:FPChangelogUpdatedAtKey]];
 }
 

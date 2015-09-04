@@ -151,9 +151,38 @@ void (^LogSyncLocal)(NSString *, NSInteger);
                            mainUpdateArgsBlk:(NSArray *(^)(id))mainUpdateArgsBlk
                                        error:(PELMDaoErrorBlk)errorBlk;
 
+- (void)saveNewOrExistingMasterEntity:(PELMMainSupport *)masterEntity
+                          masterTable:(NSString *)masterTable
+                      masterInsertBlk:(void (^)(id, FMDatabase *))masterInsertBlk
+                     masterUpdateStmt:(NSString *)masterUpdateStmt
+                  masterUpdateArgsBlk:(NSArray *(^)(id))masterUpdateArgsBlk
+                            mainTable:(NSString *)mainTable
+              mainEntityFromResultSet:(entityFromResultSetBlk)mainEntityFromResultSet
+                       mainUpdateStmt:(NSString *)mainUpdateStmt
+                    mainUpdateArgsBlk:(NSArray *(^)(id))mainUpdateArgsBlk
+                                error:(PELMDaoErrorBlk)errorBlk;
+
++ (void)saveNewOrExistingMasterEntity:(PELMMainSupport *)masterEntity
+                          masterTable:(NSString *)masterTable
+                      masterInsertBlk:(void (^)(id, FMDatabase *))masterInsertBlk
+                     masterUpdateStmt:(NSString *)masterUpdateStmt
+                  masterUpdateArgsBlk:(NSArray *(^)(id))masterUpdateArgsBlk
+                            mainTable:(NSString *)mainTable
+              mainEntityFromResultSet:(entityFromResultSetBlk)mainEntityFromResultSet
+                       mainUpdateStmt:(NSString *)mainUpdateStmt
+                    mainUpdateArgsBlk:(NSArray *(^)(id))mainUpdateArgsBlk
+                                   db:(FMDatabase *)db
+                                error:(PELMDaoErrorBlk)errorBlk;
+
 - (void)saveNewMasterEntity:(PELMMainSupport *)entity
                 masterTable:(NSString *)masterTable
             masterInsertBlk:(void (^)(id, FMDatabase *))masterInsertBlk
+                      error:(PELMDaoErrorBlk)errorBlk;
+
++ (void)saveNewMasterEntity:(PELMMainSupport *)entity
+                masterTable:(NSString *)masterTable
+            masterInsertBlk:(void (^)(id, FMDatabase *))masterInsertBlk
+                         db:(FMDatabase *)db
                       error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)saveMasterEntity:(PELMMainSupport *)entity
@@ -164,6 +193,17 @@ void (^LogSyncLocal)(NSString *, NSInteger);
  mainEntityFromResultSet:(entityFromResultSetBlk)mainEntityFromResultSet
           mainUpdateStmt:(NSString *)mainUpdateStmt
        mainUpdateArgsBlk:(NSArray *(^)(id))mainUpdateArgsBlk
+                   error:(PELMDaoErrorBlk)errorBlk;
+
++ (void)saveMasterEntity:(PELMMainSupport *)masterEntity
+             masterTable:(NSString *)masterTable
+        masterUpdateStmt:(NSString *)masterUpdateStmt
+     masterUpdateArgsBlk:(NSArray *(^)(id))masterUpdateArgsBlk
+               mainTable:(NSString *)mainTable
+ mainEntityFromResultSet:(entityFromResultSetBlk)mainEntityFromResultSet
+          mainUpdateStmt:(NSString *)mainUpdateStmt
+       mainUpdateArgsBlk:(NSArray *(^)(id))mainUpdateArgsBlk
+                      db:(FMDatabase *)db
                    error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)markAsSyncCompleteForNewEntity:(PELMMainSupport *)entity
@@ -497,6 +537,13 @@ void (^LogSyncLocal)(NSString *, NSInteger);
                                error:(PELMDaoErrorBlk)errorBlk;
 
 #pragma mark - Helpers
+
++ (NSDate *)maxDateFromTable:(NSString *)table
+                  dateColumn:(NSString *)dateColumn
+                 whereColumn:(NSString *)whereColumn
+                  whereValue:(id)whereValue
+                          db:(FMDatabase *)db
+                       error:(PELMDaoErrorBlk)errorBlk;
 
 - (NSInteger)numEntitiesFromTable:(NSString *)table
                             error:(PELMDaoErrorBlk)errorBlk;

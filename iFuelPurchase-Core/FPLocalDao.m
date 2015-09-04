@@ -173,6 +173,36 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
 
 #pragma mark - User
 
+- (NSDate *)mostRecentMasterUpdateForUser:(FPUser *)user
+                                    error:(PELMDaoErrorBlk)errorBlk {
+  __block NSDate *overallMostRecent = nil;
+  [_databaseQueue inDatabase:^(FMDatabase *db) {
+    NSDate *(^mostRecentDate)(NSString *) = ^ NSDate * (NSString *table) {
+      return [PELMUtils maxDateFromTable:table
+                              dateColumn:COL_MST_UPDATED_AT
+                             whereColumn:COL_MASTER_USER_ID
+                              whereValue:user.localMasterIdentifier
+                                      db:db
+                                   error:errorBlk];
+    };
+    overallMostRecent = [PELMUtils maxDateFromTable:TBL_MASTER_USER
+                                         dateColumn:COL_MST_UPDATED_AT
+                                        whereColumn:COL_LOCAL_ID
+                                         whereValue:user.localMasterIdentifier
+                                                 db:db
+                                       error:errorBlk];
+    overallMostRecent = [PEUtils largerOfDate:overallMostRecent
+                                      andDate:mostRecentDate(TBL_MASTER_VEHICLE)];
+    overallMostRecent = [PEUtils largerOfDate:overallMostRecent
+                                      andDate:mostRecentDate(TBL_MASTER_FUEL_STATION)];
+    overallMostRecent = [PEUtils largerOfDate:overallMostRecent
+                                      andDate:mostRecentDate(TBL_MASTER_FUELPURCHASE_LOG)];
+    overallMostRecent = [PEUtils largerOfDate:overallMostRecent
+                                      andDate:mostRecentDate(TBL_MASTER_ENV_LOG)];
+  }];
+  return overallMostRecent;
+}
+
 - (FPUser *)masterUserWithId:(NSNumber *)userId
                        error:(PELMDaoErrorBlk)errorBlk {
   NSString *userTable = TBL_MASTER_USER;
@@ -961,12 +991,18 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                   error:errorBlk];
 }
 
+- (void)saveNewOrExistingMasterVehicle:(FPVehicle *)vehicle
+                               forUser:(FPUser *)user
+                                 error:(PELMDaoErrorBlk)errorBlk {
+  
+}
+
 - (void)saveNewMasterVehicle:(FPVehicle *)vehicle
                      forUser:(FPUser *)user
                        error:(PELMDaoErrorBlk)errorBlk {
   [_localModelUtils saveNewMasterEntity:vehicle
                             masterTable:TBL_MASTER_VEHICLE
-                        masterInsertBlk:^(id entity, FMDatabase *db){[self insertIntoMasterVehicle:(FPVehicle *)entity forUser:user db:db           error:errorBlk];}
+                        masterInsertBlk:^(id entity, FMDatabase *db){[self insertIntoMasterVehicle:(FPVehicle *)entity forUser:user db:db error:errorBlk];}
                                   error:errorBlk];
 }
 
