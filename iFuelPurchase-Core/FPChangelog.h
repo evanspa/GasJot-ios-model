@@ -26,6 +26,8 @@
 
 @property (nonatomic) NSDictionary *relations;
 
+@property (nonatomic) NSDate *updatedAt;
+
 #pragma mark - Methods
 
 - (void)setUser:(FPUser *)user;

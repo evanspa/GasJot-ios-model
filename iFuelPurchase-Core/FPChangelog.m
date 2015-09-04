@@ -9,7 +9,6 @@
 #import "FPChangelog.h"
 
 @implementation FPChangelog {
-  NSDate *_updatedAt;
   FPUser *_user;
   NSMutableArray *_vehicles;
   NSMutableArray *_fuelStations;
