@@ -190,7 +190,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                         whereColumn:COL_LOCAL_ID
                                          whereValue:user.localMasterIdentifier
                                                  db:db
-                                       error:errorBlk];
+                                              error:errorBlk];
     overallMostRecent = [PEUtils largerOfDate:overallMostRecent
                                       andDate:mostRecentDate(TBL_MASTER_VEHICLE)];
     overallMostRecent = [PEUtils largerOfDate:overallMostRecent
@@ -286,6 +286,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
       [rs next];
       numEntities = [rs intForColumnIndex:0];
       [rs next]; // to not have 'open result set' warning
+      [rs close];
     }];
   }
   return numEntities;
@@ -314,6 +315,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
       [rs next];
       numEntities = [rs intForColumnIndex:0];
       [rs next]; // to not have 'open result set' warning
+      [rs close];
     }];
   }
   return numEntities;

@@ -230,11 +230,13 @@ PELMMainSupport * (^toMainSupport)(FMResultSet *, NSString *, NSDictionary *) = 
 }
 
 + (NSDate *)dateFromResultSet:(FMResultSet *)rs
-                    isNullBlk:(BOOL(^)(void))isNullBlk
-           doubleForColumnBlk:(double(^)(void))doubleForColumnBlk {
+                    isNullBlk:(BOOL(^)(FMResultSet *))isNullBlk
+           doubleForColumnBlk:(double(^)(FMResultSet *))doubleForColumnBlk {
   NSDate *date = nil;
-  if (!isNullBlk()) {
-    date = [NSDate dateWithTimeIntervalSince1970:(doubleForColumnBlk() / 1000)];
+  while ([rs next]) {
+    if (!isNullBlk(rs)) {
+      date = [NSDate dateWithTimeIntervalSince1970:(doubleForColumnBlk(rs) / 1000)];
+    }
   }
   return date;
 }
@@ -242,15 +244,15 @@ PELMMainSupport * (^toMainSupport)(FMResultSet *, NSString *, NSDictionary *) = 
 + (NSDate *)dateFromResultSet:(FMResultSet *)rs
                   columnIndex:(int)columnIndex {
   return [PELMUtils dateFromResultSet:rs
-                            isNullBlk:^ BOOL { return [rs columnIndexIsNull:columnIndex]; }
-                   doubleForColumnBlk:^ double { return [rs doubleForColumnIndex:columnIndex]; }];
+                            isNullBlk:^ BOOL (FMResultSet *rs) { return [rs columnIndexIsNull:columnIndex]; }
+                   doubleForColumnBlk:^ double (FMResultSet *rs) { return [rs doubleForColumnIndex:columnIndex]; }];
 }
 
 + (NSDate *)dateFromResultSet:(FMResultSet *)rs
                    columnName:(NSString *)columnName {
   return [PELMUtils dateFromResultSet:rs
-                            isNullBlk:^ BOOL { return [rs columnIsNull:columnName]; }
-                   doubleForColumnBlk:^ double { return [rs doubleForColumn:columnName]; }];
+                            isNullBlk:^ BOOL (FMResultSet *rs) { return [rs columnIsNull:columnName]; }
+                   doubleForColumnBlk:^ double (FMResultSet *rs) { return [rs doubleForColumn:columnName]; }];
 }
 
 #pragma mark - Utils
@@ -1460,6 +1462,7 @@ Entity: %@", entity]
                                        subjectResourceModel:entity];
     [relations setObject:relation forKey:[relation name]];
   }
+  [rs close];
   return relations;
 }
 
@@ -1784,6 +1787,7 @@ Entity: %@", entity]
       while ([rs next]) {
         [syncedEntitiesDicts addObject:[NSDictionary dictionaryWithObjects:@[toMainSupport(rs, table, nil), table] forKeys:@[entityKey, tableKey]]];
       }
+      [rs close];
     }
   }];
   for (NSDictionary *syncedEntityDict in syncedEntitiesDicts) {
@@ -1903,11 +1907,13 @@ Entity: %@", entity]
                    db:(FMDatabase *)db
                 error:(PELMDaoErrorBlk)errorBlk {
   id entity = nil;
-  FMResultSet *rs = [self doQuery:query
-                        argsArray:argsArray
-                               db:db
-                            error:errorBlk];
-  if (rs) { while ([rs next]) { entity = rsConverter(rs); } }
+  FMResultSet *rs = [self doQuery:query argsArray:argsArray db:db error:errorBlk];
+  if (rs) {
+    while ([rs next]) {
+      entity = rsConverter(rs);
+    }
+    [rs close];
+  }
   if (entity) {
     [PELMUtils setRelationsForEntity:entity
                          entityTable:entityTable
@@ -2024,15 +2030,20 @@ Entity: %@", entity]
                          error:(PELMDaoErrorBlk)errorBlk {
   NSMutableArray *entities = [NSMutableArray array];
   FMResultSet *rs = [self doQuery:query argsArray:argsArray db:db error:errorBlk];
+  BOOL closedResultSet = NO;
   if (rs) {
     int count = 0;
     while ([rs next]) {
       if (numAllowed && (count == [numAllowed intValue])) {
         [rs close];
+        closedResultSet = YES;
         break;
       }
       [entities addObject:rsConverter(rs)];
       count++;
+    }
+    if (!closedResultSet) {
+      [rs close];
     }
   }
   for (PELMModelSupport *entity in entities) {
@@ -2092,7 +2103,9 @@ Entity: %@", entity]
                        error:(PELMDaoErrorBlk)errorBlk {
   FMResultSet *rs = [db executeQuery:[NSString stringWithFormat:@"SELECT MAX(%@) FROM %@ WHERE %@ = ?", dateColumn, table, whereColumn]
                 withArgumentsInArray:@[whereValue]];
-  return [PELMUtils dateFromResultSet:rs columnIndex:0];
+  NSDate *date = [PELMUtils dateFromResultSet:rs columnIndex:0];
+  [rs close];
+  return date;
 }
 
 + (NSInteger)intFromQuery:(NSString *)query args:(NSArray *)args db:(FMDatabase *)db {
@@ -2101,6 +2114,7 @@ Entity: %@", entity]
   while ([rs next]) {
     num = [rs intForColumnIndex:0];
   }
+  [rs close];
   return num;
 }
 
@@ -2121,6 +2135,7 @@ Entity: %@", entity]
   while ([rs next]) {
     numEntities = [rs intForColumnIndex:0];
   }
+  [rs close];
   return numEntities;
 }
 
@@ -2238,6 +2253,7 @@ Entity: %@", entity]
   while ([rs next]) {
     value = rsExtractor(rs, selectColumn);
   }
+  [rs close];
   return value;
 }
 
