@@ -233,10 +233,8 @@ PELMMainSupport * (^toMainSupport)(FMResultSet *, NSString *, NSDictionary *) = 
                     isNullBlk:(BOOL(^)(FMResultSet *))isNullBlk
            doubleForColumnBlk:(double(^)(FMResultSet *))doubleForColumnBlk {
   NSDate *date = nil;
-  while ([rs next]) {
-    if (!isNullBlk(rs)) {
-      date = [NSDate dateWithTimeIntervalSince1970:(doubleForColumnBlk(rs) / 1000)];
-    }
+  if (!isNullBlk(rs)) {
+    date = [NSDate dateWithTimeIntervalSince1970:(doubleForColumnBlk(rs) / 1000)];
   }
   return date;
 }
@@ -2101,9 +2099,12 @@ Entity: %@", entity]
                   whereValue:(id)whereValue
                           db:(FMDatabase *)db
                        error:(PELMDaoErrorBlk)errorBlk {
+  NSDate *date = nil;
   FMResultSet *rs = [db executeQuery:[NSString stringWithFormat:@"SELECT MAX(%@) FROM %@ WHERE %@ = ?", dateColumn, table, whereColumn]
                 withArgumentsInArray:@[whereValue]];
-  NSDate *date = [PELMUtils dateFromResultSet:rs columnIndex:0];
+  while ([rs next]) {
+     date = [PELMUtils dateFromResultSet:rs columnIndex:0];
+  }
   [rs close];
   return date;
 }

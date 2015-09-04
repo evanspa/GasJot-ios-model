@@ -9,8 +9,12 @@
 #import "FPLocalDao.h"
 #import <FMDB/FMDatabase.h>
 #import "FPCoordDaoTestContext.h"
-#import <CocoaLumberjack/CocoaLumberjack.h>
+#import <CocoaLumberjack/DDLog.h>
+#import <CocoaLumberjack/DDASLLogger.h>
+#import <CocoaLumberjack/DDTTYLogger.h>
 #import <Kiwi/Kiwi.h>
+
+static const int ddLogLevel = LOG_LEVEL_VERBOSE;
 
 SPEC_BEGIN(FPLocalDaoSpec)
 
