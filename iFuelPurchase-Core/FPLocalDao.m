@@ -688,6 +688,31 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
               forUser:(FPUser *)user
                 error:(PELMDaoErrorBlk)errorBlk {
   [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
+    void (^processChangelogEntities)(NSArray *, NSString *, NSString *, void(^)(id), void(^)(id)) =
+    ^ (NSArray *entities, NSString *masterTable, NSString *mainTable, void(^deleteBlk)(id), void(^saveNewOrExistingBlk)(id)) {
+      for (PELMMainSupport *entity in entities) {
+        if (entity.deletedAt) {
+          NSNumber *masterLocalId = [PELMUtils masterLocalIdFromEntityTable:masterTable
+                                                           globalIdentifier:entity.globalIdentifier
+                                                                         db:db
+                                                                      error:errorBlk];
+          if (masterLocalId) {
+            [entity setLocalMasterIdentifier:masterLocalId];
+            NSNumber *mainLocalId = [PELMUtils localMainIdentifierForEntity:entity
+                                                                  mainTable:mainTable
+                                                                         db:db
+                                                                      error:errorBlk];
+            [entity setLocalMainIdentifier:mainLocalId];
+            deleteBlk(entity);
+          } else {
+            // the entity never existed on our device (i.e., it was created and deleted
+            // before it could ever be downloaded to this device)
+          }
+        } else {
+          saveNewOrExistingBlk(entity);
+        }
+      }
+    };
     FPUser *updatedUser = [changelog user];
     if (updatedUser) {
       if ([updatedUser.updatedAt compare:user.updatedAt] == NSOrderedDescending) {
@@ -695,22 +720,26 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
         [user overwriteDomainProperties:updatedUser];
       }
     }
-    NSArray *vehicles = [changelog vehicles];
-    for (FPVehicle *vehicle in vehicles) {
-      [self saveNewOrExistingMasterVehicle:vehicle forUser:user db:db error:errorBlk];
-    }
-    NSArray *fuelstations = [changelog fuelStations];
-    for (FPFuelStation *fuelstation in fuelstations) {
-      [self saveNewOrExistingMasterFuelstation:fuelstation forUser:user db:db error:errorBlk];
-    }
-    NSArray *fplogs = [changelog fuelPurchaseLogs];
-    for (FPFuelPurchaseLog *fplog in fplogs) {
-      [self saveNewOrExistingMasterFuelPurchaseLog:fplog forUser:user db:db error:errorBlk];
-    }
-    NSArray *envlogs = [changelog environmentLogs];
-    for (FPEnvironmentLog *envlog in envlogs) {
-      [self saveNewOrExistingMasterEnvironmentLog:envlog forUser:user db:db error:errorBlk];
-    }
+    processChangelogEntities([changelog vehicles],
+                             TBL_MASTER_VEHICLE,
+                             TBL_MAIN_VEHICLE,
+                             ^(FPVehicle *vehicle) { [self deleteVehicle:vehicle db:db error:errorBlk]; },
+                             ^(FPVehicle *vehicle) { [self saveNewOrExistingMasterVehicle:vehicle forUser:user db:db error:errorBlk]; });
+    processChangelogEntities([changelog fuelStations],
+                             TBL_MASTER_FUEL_STATION,
+                             TBL_MAIN_FUEL_STATION,
+                             ^(FPFuelStation *fuelstation) { [self deleteFuelstation:fuelstation db:db error:errorBlk]; },
+                             ^(FPFuelStation *fuelstation) { [self saveNewOrExistingMasterFuelstation:fuelstation forUser:user db:db error:errorBlk]; });
+    processChangelogEntities([changelog fuelPurchaseLogs],
+                             TBL_MASTER_FUELPURCHASE_LOG,
+                             TBL_MAIN_FUELPURCHASE_LOG,
+                             ^(FPFuelPurchaseLog *fplog) { [self deleteFuelPurchaseLog:fplog db:db error:errorBlk]; },
+                             ^(FPFuelPurchaseLog *fplog) { [self saveNewOrExistingMasterFuelPurchaseLog:fplog forUser:user db:db error:errorBlk]; });
+    processChangelogEntities([changelog environmentLogs],
+                             TBL_MASTER_ENV_LOG,
+                             TBL_MAIN_ENV_LOG,
+                             ^(FPEnvironmentLog *envlog) { [self deleteEnvironmentLog:envlog db:db error:errorBlk]; },
+                             ^(FPEnvironmentLog *envlog) { [self saveNewOrExistingMasterEnvironmentLog:envlog forUser:user db:db error:errorBlk]; });
   }];
 }
 
