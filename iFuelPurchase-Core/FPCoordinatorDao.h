@@ -207,6 +207,10 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk;
            tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk
           addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk;
 
+- (void)saveChangelog:(FPChangelog *)changelog
+              forUser:(FPUser *)user
+                error:(PELMDaoErrorBlk)errorBlk;
+
 - (void)reloadUser:(FPUser *)user
              error:(PELMDaoErrorBlk)errorBlk;
 

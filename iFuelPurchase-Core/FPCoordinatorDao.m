@@ -805,6 +805,12 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk {
                              completionHandler:remoteStoreComplHandler];
 }
 
+- (void)saveChangelog:(FPChangelog *)changelog
+              forUser:(FPUser *)user
+                error:(PELMDaoErrorBlk)errorBlk {
+  [_localDao saveChangelog:changelog forUser:user error:errorBlk];
+}
+
 - (void)reloadUser:(FPUser *)user
              error:(PELMDaoErrorBlk)errorBlk {
   [_localDao reloadUser:user error:errorBlk];

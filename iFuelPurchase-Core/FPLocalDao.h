@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <CoreLocation/CoreLocation.h>
 #import "PELMUtils.h"
+#import "FPChangelog.h"
 #import "FPUser.h"
 #import "FPVehicle.h"
 #import "FPFuelStation.h"
@@ -119,6 +120,10 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
 
 - (void)markAsSyncCompleteForUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk;
 
+- (void)saveChangelog:(FPChangelog *)changelog
+              forUser:(FPUser *)user
+                error:(PELMDaoErrorBlk)errorBlk;
+
 #pragma mark - Vehicle
 
 - (FPVehicle *)masterVehicleWithId:(NSNumber *)vehicleId
@@ -187,6 +192,7 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
 
 - (void)saveNewOrExistingMasterVehicle:(FPVehicle *)vehicle
                                forUser:(FPUser *)user
+                                    db:(FMDatabase *)db
                                  error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)saveNewMasterVehicle:(FPVehicle *)vehicle
