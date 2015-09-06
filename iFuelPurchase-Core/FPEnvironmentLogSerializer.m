@@ -21,6 +21,7 @@ NSString * const FPEnvironmentLogReportedOutsideTempKey = @"envlog/reported-outs
 NSString * const FPEnvironmentLogLogDateKey             = @"envlog/logged-at";
 NSString * const FPEnvironmentLogReportedDteKey         = @"envlog/dte";
 NSString * const FPEnvironmentLogUpdatedAtKey           = @"envlog/updated-at";
+NSString * const FPEnvironmentLogDeletedAtKey           = @"envlog/deleted-at";
 
 @implementation FPEnvironmentLogSerializer
 
@@ -60,6 +61,7 @@ NSString * const FPEnvironmentLogUpdatedAtKey           = @"envlog/updated-at";
               relations:relations
               updatedAt:[resDict dateSince1970ForKey:FPEnvironmentLogUpdatedAtKey]];
   [envlog setVehicleGlobalIdentifier:resDict[FPEnvironmentLogVehicleGlobalIdKey]];
+  [envlog setDeletedAt:resDict[FPEnvironmentLogDeletedAtKey]];
   return envlog;
 }
 

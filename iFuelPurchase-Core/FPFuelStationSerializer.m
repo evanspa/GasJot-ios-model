@@ -20,6 +20,7 @@ NSString * const FPFuelStationZipKey       = @"fpfuelstation/zip";
 NSString * const FPFuelStationLatitudeKey  = @"fpfuelstation/latitude";
 NSString * const FPFuelStationLongitudeKey = @"fpfuelstation/longitude";
 NSString * const FPFuelStationUpdatedAtKey = @"fpfuelstation/updated-at";
+NSString * const FPFuelStationDeletedAtKey = @"fpfuelstation/deleted-at";
 
 @implementation FPFuelStationSerializer
 
@@ -45,17 +46,20 @@ NSString * const FPFuelStationUpdatedAtKey = @"fpfuelstation/updated-at";
                         mediaType:(HCMediaType *)mediaType
                          location:(NSString *)location
                      lastModified:(NSDate *)lastModified {
-  return [FPFuelStation fuelStationWithName:[resDict objectForKey:FPFuelStationNameKey]
-                                     street:[resDict objectForKey:FPFuelStationStreetKey]
-                                       city:[resDict objectForKey:FPFuelStationCityKey]
-                                      state:[resDict objectForKey:FPFuelStationStateKey]
-                                        zip:[resDict objectForKey:FPFuelStationZipKey]
-                                   latitude:[resDict objectForKey:FPFuelStationLatitudeKey]
-                                  longitude:[resDict objectForKey:FPFuelStationLongitudeKey]
-                           globalIdentifier:location
-                                  mediaType:mediaType
-                                  relations:relations
-                                  updatedAt:[resDict dateSince1970ForKey:FPFuelStationUpdatedAtKey]];
+  FPFuelStation *fuelstation =
+  [FPFuelStation fuelStationWithName:[resDict objectForKey:FPFuelStationNameKey]
+                              street:[resDict objectForKey:FPFuelStationStreetKey]
+                                city:[resDict objectForKey:FPFuelStationCityKey]
+                               state:[resDict objectForKey:FPFuelStationStateKey]
+                                 zip:[resDict objectForKey:FPFuelStationZipKey]
+                            latitude:[resDict objectForKey:FPFuelStationLatitudeKey]
+                           longitude:[resDict objectForKey:FPFuelStationLongitudeKey]
+                    globalIdentifier:location
+                           mediaType:mediaType
+                           relations:relations
+                           updatedAt:[resDict dateSince1970ForKey:FPFuelStationUpdatedAtKey]];
+  [fuelstation setDeletedAt:resDict[FPFuelStationDeletedAtKey]];
+  return fuelstation;
 }
 
 @end

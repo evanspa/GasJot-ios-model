@@ -22,6 +22,7 @@ NSString * const FPFuelPurchaseLogGotCarWashKey               = @"fplog/got-car-
 NSString * const FPFuelPurchaseLogCarWashPerGallonDiscountKey = @"fplog/car-wash-per-gal-discount";
 NSString * const FPFuelPurchaseLogPurchasedAtKey              = @"fplog/purchased-at";
 NSString * const FPFuelPurchaseLogUpdatedAtKey                = @"fplog/updated-at";
+NSString * const FPFuelPurchaseLogDeletedAtKey                = @"fplog/deleted-at";
 
 @implementation FPFuelPurchaseLogSerializer
 
@@ -70,6 +71,7 @@ NSString * const FPFuelPurchaseLogUpdatedAtKey                = @"fplog/updated-
                           updatedAt:[resDict dateSince1970ForKey:FPFuelPurchaseLogUpdatedAtKey]];
   [fplog setVehicleGlobalIdentifier:resDict[FPFuelPurchaseLogVehicleGlobalIdKey]];
   [fplog setFuelStationGlobalIdentifier:resDict[FPFuelPurchaseLogFuelStationGlobalIdKey]];
+  [fplog setDeletedAt:resDict[FPFuelPurchaseLogDeletedAtKey]];
   return fplog;
 }
 

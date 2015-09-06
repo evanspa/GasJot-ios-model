@@ -16,6 +16,7 @@ NSString * const FPVehicleNameKey          = @"fpvehicle/name";
 NSString * const FPVehicleDefaultOctaneKey = @"fpvehicle/default-octane";
 NSString * const FPVehicleFuelCapacityKey  = @"fpvehicle/fuel-capacity";
 NSString * const FPVehicleUpdatedAtKey     = @"fpvehicle/updated-at";
+NSString * const FPVehicleDeletedAtKey     = @"fpvehicle/deleted-at";
 
 @implementation FPVehicleSerializer
 
@@ -37,13 +38,15 @@ NSString * const FPVehicleUpdatedAtKey     = @"fpvehicle/updated-at";
                         mediaType:(HCMediaType *)mediaType
                          location:(NSString *)location
                      lastModified:(NSDate *)lastModified {
-    return [FPVehicle vehicleWithName:[resDict objectForKey:FPVehicleNameKey]
-                        defaultOctane:resDict[FPVehicleDefaultOctaneKey]
-                         fuelCapacity:resDict[FPVehicleFuelCapacityKey]
-                     globalIdentifier:location
-                            mediaType:mediaType
-                            relations:relations
-                            updatedAt:[resDict dateSince1970ForKey:FPVehicleUpdatedAtKey]];
+  FPVehicle *vehicle = [FPVehicle vehicleWithName:[resDict objectForKey:FPVehicleNameKey]
+                                    defaultOctane:resDict[FPVehicleDefaultOctaneKey]
+                                     fuelCapacity:resDict[FPVehicleFuelCapacityKey]
+                                 globalIdentifier:location
+                                        mediaType:mediaType
+                                        relations:relations
+                                        updatedAt:[resDict dateSince1970ForKey:FPVehicleUpdatedAtKey]];
+  [vehicle setDeletedAt:resDict[FPVehicleDeletedAtKey]];
+  return vehicle;
 }
 
 @end
