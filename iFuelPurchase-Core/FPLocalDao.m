@@ -691,12 +691,12 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
     void (^processChangelogEntities)(NSArray *, NSString *, NSString *, void(^)(id), void(^)(id)) =
     ^ (NSArray *entities, NSString *masterTable, NSString *mainTable, void(^deleteBlk)(id), void(^saveNewOrExistingBlk)(id)) {
       for (PELMMainSupport *entity in entities) {
-        if (entity.deletedAt) {
+        if (![PEUtils isNil:entity.deletedAt]) {
           NSNumber *masterLocalId = [PELMUtils masterLocalIdFromEntityTable:masterTable
                                                            globalIdentifier:entity.globalIdentifier
                                                                          db:db
                                                                       error:errorBlk];
-          if (masterLocalId) {
+          if (![PEUtils isNil:masterLocalId]) {
             [entity setLocalMasterIdentifier:masterLocalId];
             NSNumber *mainLocalId = [PELMUtils localMainIdentifierForEntity:entity
                                                                   mainTable:mainTable
@@ -714,7 +714,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
       }
     };
     FPUser *updatedUser = [changelog user];
-    if (updatedUser) {
+    if (![PEUtils isNil:updatedUser]) {
       if ([updatedUser.updatedAt compare:user.updatedAt] == NSOrderedDescending) {
         [self saveMasterUser:updatedUser db:db error:errorBlk];
         [user overwriteDomainProperties:updatedUser];
