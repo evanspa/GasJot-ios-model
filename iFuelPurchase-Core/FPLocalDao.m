@@ -644,32 +644,32 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                   error:errorBlk];
 }
 
-- (void)saveMasterUser:(FPUser *)user
+- (BOOL)saveMasterUser:(FPUser *)user
                  error:(PELMDaoErrorBlk)errorBlk {
-  [_localModelUtils saveMasterEntity:user
+  return [_localModelUtils saveMasterEntity:user
+                                masterTable:TBL_MASTER_USER
+                           masterUpdateStmt:[self updateStmtForMasterUser]
+                        masterUpdateArgsBlk:^NSArray * (FPUser *theUser) { return [self updateArgsForMasterUser:theUser]; }
+                                  mainTable:TBL_MAIN_USER
+                    mainEntityFromResultSet:^FPUser * (FMResultSet *rs) { return [self mainUserFromResultSet:rs]; }
+                             mainUpdateStmt:[self updateStmtForMainUser]
+                          mainUpdateArgsBlk:^NSArray * (FPUser *theUser) { return [self updateArgsForMainUser:theUser]; }
+                                      error:errorBlk];
+}
+
+- (BOOL)saveMasterUser:(FPUser *)user
+                    db:(FMDatabase *)db
+                 error:(PELMDaoErrorBlk)errorBlk {
+  return [PELMUtils saveMasterEntity:user
                          masterTable:TBL_MASTER_USER
                     masterUpdateStmt:[self updateStmtForMasterUser]
-                 masterUpdateArgsBlk:^ NSArray * (FPUser *theUser) { return [self updateArgsForMasterUser:theUser]; }
+                 masterUpdateArgsBlk:^NSArray * (FPUser *theUser) { return [self updateArgsForMasterUser:theUser]; }
                            mainTable:TBL_MAIN_USER
              mainEntityFromResultSet:^ FPUser * (FMResultSet *rs) { return [self mainUserFromResultSet:rs]; }
                       mainUpdateStmt:[self updateStmtForMainUser]
-                   mainUpdateArgsBlk:^ NSArray * (FPUser *theUser) { return [self updateArgsForMainUser:theUser]; }
+                   mainUpdateArgsBlk:^NSArray * (FPUser *theUser) { return [self updateArgsForMainUser:theUser]; }
+                                  db:db
                                error:errorBlk];
-}
-
-- (void)saveMasterUser:(FPUser *)user
-                    db:(FMDatabase *)db
-                 error:(PELMDaoErrorBlk)errorBlk {
-  [PELMUtils saveMasterEntity:user
-                  masterTable:TBL_MASTER_USER
-             masterUpdateStmt:[self updateStmtForMasterUser]
-          masterUpdateArgsBlk:^ NSArray * (FPUser *theUser) { return [self updateArgsForMasterUser:theUser]; }
-                    mainTable:TBL_MAIN_USER
-      mainEntityFromResultSet:^ FPUser * (FMResultSet *rs) { return [self mainUserFromResultSet:rs]; }
-               mainUpdateStmt:[self updateStmtForMainUser]
-            mainUpdateArgsBlk:^ NSArray * (FPUser *theUser) { return [self updateArgsForMainUser:theUser]; }
-                           db:db
-                        error:errorBlk];
 }
 
 - (void)markAsSyncCompleteForUser:(FPUser *)user
@@ -684,12 +684,17 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                                       error:errorBlk];
 }
 
-- (void)saveChangelog:(FPChangelog *)changelog
-              forUser:(FPUser *)user
-                error:(PELMDaoErrorBlk)errorBlk {
+- (NSInteger)saveChangelog:(FPChangelog *)changelog
+                   forUser:(FPUser *)user
+                     error:(PELMDaoErrorBlk)errorBlk {
+  __block NSInteger numChanges = 0;
   [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
-    void (^processChangelogEntities)(NSArray *, NSString *, NSString *, void(^)(id), void(^)(id)) =
-    ^ (NSArray *entities, NSString *masterTable, NSString *mainTable, void(^deleteBlk)(id), void(^saveNewOrExistingBlk)(id)) {
+    void (^processChangelogEntities)(NSArray *,
+                                     NSString *,
+                                     NSString *,
+                                     void(^)(id),
+                                     BOOL(^)(id)) =
+    ^ (NSArray *entities, NSString *masterTable, NSString *mainTable, void(^deleteBlk)(id), BOOL(^saveNewOrExistingBlk)(id)) {
       for (PELMMainSupport *entity in entities) {
         if (![PEUtils isNil:entity.deletedAt]) {
           NSNumber *masterLocalId = [PELMUtils masterLocalIdFromEntityTable:masterTable
@@ -704,43 +709,49 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                                                       error:errorBlk];
             [entity setLocalMainIdentifier:mainLocalId];
             deleteBlk(entity);
+            numChanges++;
           } else {
             // the entity never existed on our device (i.e., it was created and deleted
             // before it could ever be downloaded to this device)
           }
         } else {
-          saveNewOrExistingBlk(entity);
+          if (saveNewOrExistingBlk(entity)) {
+            numChanges++;
+          }
         }
       }
     };
     FPUser *updatedUser = [changelog user];
     if (![PEUtils isNil:updatedUser]) {
       if ([updatedUser.updatedAt compare:user.updatedAt] == NSOrderedDescending) {
-        [self saveMasterUser:updatedUser db:db error:errorBlk];
-        [user overwriteDomainProperties:updatedUser];
+        if ([self saveMasterUser:updatedUser db:db error:errorBlk]) {
+          [user overwriteDomainProperties:updatedUser];
+          numChanges++;
+        }
       }
     }
     processChangelogEntities([changelog vehicles],
                              TBL_MASTER_VEHICLE,
                              TBL_MAIN_VEHICLE,
                              ^(FPVehicle *vehicle) { [self deleteVehicle:vehicle db:db error:errorBlk]; },
-                             ^(FPVehicle *vehicle) { [self saveNewOrExistingMasterVehicle:vehicle forUser:user db:db error:errorBlk]; });
+                             ^(FPVehicle *vehicle) { return [self saveNewOrExistingMasterVehicle:vehicle forUser:user db:db error:errorBlk]; });
     processChangelogEntities([changelog fuelStations],
                              TBL_MASTER_FUEL_STATION,
                              TBL_MAIN_FUEL_STATION,
                              ^(FPFuelStation *fuelstation) { [self deleteFuelstation:fuelstation db:db error:errorBlk]; },
-                             ^(FPFuelStation *fuelstation) { [self saveNewOrExistingMasterFuelstation:fuelstation forUser:user db:db error:errorBlk]; });
+                             ^(FPFuelStation *fuelstation) { return [self saveNewOrExistingMasterFuelstation:fuelstation forUser:user db:db error:errorBlk]; });
     processChangelogEntities([changelog fuelPurchaseLogs],
                              TBL_MASTER_FUELPURCHASE_LOG,
                              TBL_MAIN_FUELPURCHASE_LOG,
                              ^(FPFuelPurchaseLog *fplog) { [self deleteFuelPurchaseLog:fplog db:db error:errorBlk]; },
-                             ^(FPFuelPurchaseLog *fplog) { [self saveNewOrExistingMasterFuelPurchaseLog:fplog forUser:user db:db error:errorBlk]; });
+                             ^(FPFuelPurchaseLog *fplog) { return [self saveNewOrExistingMasterFuelPurchaseLog:fplog forUser:user db:db error:errorBlk]; });
     processChangelogEntities([changelog environmentLogs],
                              TBL_MASTER_ENV_LOG,
                              TBL_MAIN_ENV_LOG,
                              ^(FPEnvironmentLog *envlog) { [self deleteEnvironmentLog:envlog db:db error:errorBlk]; },
-                             ^(FPEnvironmentLog *envlog) { [self saveNewOrExistingMasterEnvironmentLog:envlog forUser:user db:db error:errorBlk]; });
+                             ^(FPEnvironmentLog *envlog) { return [self saveNewOrExistingMasterEnvironmentLog:envlog forUser:user db:db error:errorBlk]; });
   }];
+  return numChanges;
 }
 
 #pragma mark - Vehicle
@@ -1067,21 +1078,21 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                   error:errorBlk];
 }
 
-- (void)saveNewOrExistingMasterVehicle:(FPVehicle *)vehicle
+- (BOOL)saveNewOrExistingMasterVehicle:(FPVehicle *)vehicle
                                forUser:(FPUser *)user
                                     db:(FMDatabase *)db
                                  error:(PELMDaoErrorBlk)errorBlk {
-  [PELMUtils saveNewOrExistingMasterEntity:vehicle
-                               masterTable:TBL_MASTER_VEHICLE
-                           masterInsertBlk:^(id entity, FMDatabase *db){[self insertIntoMasterVehicle:(FPVehicle *)entity forUser:user db:db error:errorBlk];}
-                          masterUpdateStmt:[self updateStmtForMasterVehicle]
-                       masterUpdateArgsBlk:^NSArray * (FPVehicle *theVehicle) { return [self updateArgsForMasterVehicle:theVehicle]; }
-                                 mainTable:TBL_MAIN_VEHICLE
-                   mainEntityFromResultSet:^FPVehicle * (FMResultSet *rs) { return [self mainVehicleFromResultSet:rs]; }
-                            mainUpdateStmt:[self updateStmtForMainVehicle]
-                         mainUpdateArgsBlk:^NSArray * (FPVehicle *theVehicle) { return [self updateArgsForMainVehicle:theVehicle]; }
-                                        db:db
-                                     error:errorBlk];
+  return [PELMUtils saveNewOrExistingMasterEntity:vehicle
+                                      masterTable:TBL_MASTER_VEHICLE
+                                  masterInsertBlk:^(id entity, FMDatabase *db){[self insertIntoMasterVehicle:(FPVehicle *)entity forUser:user db:db error:errorBlk];}
+                                 masterUpdateStmt:[self updateStmtForMasterVehicle]
+                              masterUpdateArgsBlk:^NSArray * (FPVehicle *theVehicle) { return [self updateArgsForMasterVehicle:theVehicle]; }
+                                        mainTable:TBL_MAIN_VEHICLE
+                          mainEntityFromResultSet:^FPVehicle * (FMResultSet *rs) { return [self mainVehicleFromResultSet:rs]; }
+                                   mainUpdateStmt:[self updateStmtForMainVehicle]
+                                mainUpdateArgsBlk:^NSArray * (FPVehicle *theVehicle) { return [self updateArgsForMainVehicle:theVehicle]; }
+                                               db:db
+                                            error:errorBlk];
 }
 
 - (void)saveNewMasterVehicle:(FPVehicle *)vehicle
@@ -1093,18 +1104,18 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                   error:errorBlk];
 }
 
-- (void)saveMasterVehicle:(FPVehicle *)vehicle
+- (BOOL)saveMasterVehicle:(FPVehicle *)vehicle
                   forUser:(FPUser *)user
                     error:(PELMDaoErrorBlk)errorBlk {
-  [_localModelUtils saveMasterEntity:vehicle
-                         masterTable:TBL_MASTER_VEHICLE
-                    masterUpdateStmt:[self updateStmtForMasterVehicle]
-                 masterUpdateArgsBlk:^NSArray * (FPVehicle *theVehicle) { return [self updateArgsForMasterVehicle:theVehicle]; }
-                           mainTable:TBL_MAIN_VEHICLE
-             mainEntityFromResultSet:^FPVehicle * (FMResultSet *rs) { return [self mainVehicleFromResultSet:rs]; }
-                      mainUpdateStmt:[self updateStmtForMainVehicle]
-                   mainUpdateArgsBlk:^NSArray * (FPVehicle *theVehicle) { return [self updateArgsForMainVehicle:theVehicle]; }
-                               error:errorBlk];
+  return [_localModelUtils saveMasterEntity:vehicle
+                                masterTable:TBL_MASTER_VEHICLE
+                           masterUpdateStmt:[self updateStmtForMasterVehicle]
+                        masterUpdateArgsBlk:^NSArray * (FPVehicle *theVehicle) { return [self updateArgsForMasterVehicle:theVehicle]; }
+                                  mainTable:TBL_MAIN_VEHICLE
+                    mainEntityFromResultSet:^FPVehicle * (FMResultSet *rs) { return [self mainVehicleFromResultSet:rs]; }
+                             mainUpdateStmt:[self updateStmtForMainVehicle]
+                          mainUpdateArgsBlk:^NSArray * (FPVehicle *theVehicle) { return [self updateArgsForMainVehicle:theVehicle]; }
+                                      error:errorBlk];
 }
 
 - (void)markAsSyncCompleteForNewVehicle:(FPVehicle *)vehicle
@@ -1488,21 +1499,21 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                   error:errorBlk];
 }
 
-- (void)saveNewOrExistingMasterFuelstation:(FPFuelStation *)fuelstation
+- (BOOL)saveNewOrExistingMasterFuelstation:(FPFuelStation *)fuelstation
                                    forUser:(FPUser *)user
                                         db:(FMDatabase *)db
                                      error:(PELMDaoErrorBlk)errorBlk {
-  [PELMUtils saveNewOrExistingMasterEntity:fuelstation
-                               masterTable:TBL_MASTER_FUEL_STATION
-                           masterInsertBlk:^(id entity, FMDatabase *db){[self insertIntoMasterFuelStation:(FPFuelStation *)entity forUser:user db:db error:errorBlk];}
-                          masterUpdateStmt:[self updateStmtForMasterFuelStation]
-                       masterUpdateArgsBlk:^NSArray * (FPFuelStation *theFuelstation) { return [self updateArgsForMasterFuelStation:theFuelstation]; }
-                                 mainTable:TBL_MAIN_FUEL_STATION
-                   mainEntityFromResultSet:^FPFuelStation * (FMResultSet *rs) { return [self mainFuelStationFromResultSet:rs]; }
-                            mainUpdateStmt:[self updateStmtForMainFuelStation]
-                         mainUpdateArgsBlk:^NSArray * (FPFuelStation *theFuelstation) { return [self updateArgsForMainFuelStation:theFuelstation]; }
-                                        db:db
-                                     error:errorBlk];
+  return [PELMUtils saveNewOrExistingMasterEntity:fuelstation
+                                      masterTable:TBL_MASTER_FUEL_STATION
+                                  masterInsertBlk:^(id entity, FMDatabase *db){[self insertIntoMasterFuelStation:(FPFuelStation *)entity forUser:user db:db error:errorBlk];}
+                                 masterUpdateStmt:[self updateStmtForMasterFuelStation]
+                              masterUpdateArgsBlk:^NSArray * (FPFuelStation *theFuelstation) { return [self updateArgsForMasterFuelStation:theFuelstation]; }
+                                        mainTable:TBL_MAIN_FUEL_STATION
+                          mainEntityFromResultSet:^FPFuelStation * (FMResultSet *rs) { return [self mainFuelStationFromResultSet:rs]; }
+                                   mainUpdateStmt:[self updateStmtForMainFuelStation]
+                                mainUpdateArgsBlk:^NSArray * (FPFuelStation *theFuelstation) { return [self updateArgsForMainFuelStation:theFuelstation]; }
+                                               db:db
+                                            error:errorBlk];
 }
 
 - (void)saveNewMasterFuelstation:(FPFuelStation *)fuelstation
@@ -1514,18 +1525,18 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                   error:errorBlk];
 }
 
-- (void)saveMasterFuelstation:(FPFuelStation *)fuelstation
+- (BOOL)saveMasterFuelstation:(FPFuelStation *)fuelstation
                       forUser:(FPUser *)user
                         error:(PELMDaoErrorBlk)errorBlk {
-  [_localModelUtils saveMasterEntity:fuelstation
-                         masterTable:TBL_MASTER_FUEL_STATION
-                    masterUpdateStmt:[self updateStmtForMasterFuelStation]
-                 masterUpdateArgsBlk:^ NSArray * (FPFuelStation *theFuelstation) { return [self updateArgsForMasterFuelStation:theFuelstation]; }
-                           mainTable:TBL_MAIN_FUEL_STATION
-             mainEntityFromResultSet:^ FPFuelStation * (FMResultSet *rs) { return [self mainFuelStationFromResultSet:rs]; }
-                      mainUpdateStmt:[self updateStmtForMainFuelStation]
-                   mainUpdateArgsBlk:^ NSArray * (FPFuelStation *theFuelstation) { return [self updateArgsForMainFuelStation:theFuelstation]; }
-                               error:errorBlk];
+  return [_localModelUtils saveMasterEntity:fuelstation
+                                masterTable:TBL_MASTER_FUEL_STATION
+                           masterUpdateStmt:[self updateStmtForMasterFuelStation]
+                        masterUpdateArgsBlk:^ NSArray * (FPFuelStation *theFuelstation) { return [self updateArgsForMasterFuelStation:theFuelstation]; }
+                                  mainTable:TBL_MAIN_FUEL_STATION
+                    mainEntityFromResultSet:^ FPFuelStation * (FMResultSet *rs) { return [self mainFuelStationFromResultSet:rs]; }
+                             mainUpdateStmt:[self updateStmtForMainFuelStation]
+                          mainUpdateArgsBlk:^ NSArray * (FPFuelStation *theFuelstation) { return [self updateArgsForMainFuelStation:theFuelstation]; }
+                                      error:errorBlk];
 }
 
 - (void)markAsSyncCompleteForNewFuelStation:(FPFuelStation *)fuelStation
@@ -2379,37 +2390,37 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                   error:errorBlk];
 }
 
-- (void)saveNewOrExistingMasterFuelPurchaseLog:(FPFuelPurchaseLog *)fplog
+- (BOOL)saveNewOrExistingMasterFuelPurchaseLog:(FPFuelPurchaseLog *)fplog
                                        forUser:(FPUser *)user
                                             db:(FMDatabase *)db
                                          error:(PELMDaoErrorBlk)errorBlk {
-  [PELMUtils saveNewOrExistingMasterEntity:fplog
-                               masterTable:TBL_MASTER_FUELPURCHASE_LOG
-                           masterInsertBlk:^(id entity, FMDatabase *db){[self insertIntoMasterFuelPurchaseLog:(FPFuelPurchaseLog *)entity forUser:user db:db error:errorBlk];}
-                          masterUpdateStmt:[self updateStmtForMasterFuelPurchaseLog]
-                       masterUpdateArgsBlk:^NSArray * (FPFuelPurchaseLog *theFplog) {return [self updateArgsForMasterFuelPurchaseLog:theFplog];}
-                                 mainTable:TBL_MAIN_FUELPURCHASE_LOG
-                   mainEntityFromResultSet:^FPFuelPurchaseLog * (FMResultSet *rs) {return [self mainFuelPurchaseLogFromResultSet:rs];}
-                            mainUpdateStmt:[self updateStmtForMainFuelPurchaseLog]
-                         mainUpdateArgsBlk:^NSArray * (FPFuelPurchaseLog *theFplog) {return [self updateArgsForMainFuelPurchaseLog:theFplog];}
-                                        db:db
-                                     error:errorBlk];
+  return [PELMUtils saveNewOrExistingMasterEntity:fplog
+                                      masterTable:TBL_MASTER_FUELPURCHASE_LOG
+                                  masterInsertBlk:^(id entity, FMDatabase *db){[self insertIntoMasterFuelPurchaseLog:(FPFuelPurchaseLog *)entity forUser:user db:db error:errorBlk];}
+                                 masterUpdateStmt:[self updateStmtForMasterFuelPurchaseLog]
+                              masterUpdateArgsBlk:^NSArray * (FPFuelPurchaseLog *theFplog) {return [self updateArgsForMasterFuelPurchaseLog:theFplog];}
+                                        mainTable:TBL_MAIN_FUELPURCHASE_LOG
+                          mainEntityFromResultSet:^FPFuelPurchaseLog * (FMResultSet *rs) {return [self mainFuelPurchaseLogFromResultSet:rs];}
+                                   mainUpdateStmt:[self updateStmtForMainFuelPurchaseLog]
+                                mainUpdateArgsBlk:^NSArray * (FPFuelPurchaseLog *theFplog) {return [self updateArgsForMainFuelPurchaseLog:theFplog];}
+                                               db:db
+                                            error:errorBlk];
 }
 
-- (void)saveMasterFuelPurchaseLog:(FPFuelPurchaseLog *)fplog
+- (BOOL)saveMasterFuelPurchaseLog:(FPFuelPurchaseLog *)fplog
                        forVehicle:(FPVehicle *)vehicle
                    forFuelstation:(FPFuelStation *)fuelstation
                           forUser:(FPUser *)user
                             error:(PELMDaoErrorBlk)errorBlk {
-  [_localModelUtils saveMasterEntity:fplog
-                         masterTable:TBL_MASTER_FUELPURCHASE_LOG
-                    masterUpdateStmt:[self updateStmtForMasterFuelPurchaseLog]
-                 masterUpdateArgsBlk:^ NSArray * (FPFuelPurchaseLog *theFplog) { return [self updateArgsForMasterFuelPurchaseLog:theFplog vehicle:vehicle fuelStation:fuelstation]; }
-                           mainTable:TBL_MAIN_FUELPURCHASE_LOG
-             mainEntityFromResultSet:^ FPFuelPurchaseLog * (FMResultSet *rs) { return [self mainFuelPurchaseLogFromResultSet:rs]; }
-                      mainUpdateStmt:[self updateStmtForMainFuelPurchaseLog]
-                   mainUpdateArgsBlk:^ NSArray * (FPFuelPurchaseLog *theFplog) { return [self updateArgsForMainFuelPurchaseLog:theFplog vehicle:vehicle fuelStation:fuelstation]; }
-                               error:errorBlk];
+  return [_localModelUtils saveMasterEntity:fplog
+                                masterTable:TBL_MASTER_FUELPURCHASE_LOG
+                           masterUpdateStmt:[self updateStmtForMasterFuelPurchaseLog]
+                        masterUpdateArgsBlk:^ NSArray * (FPFuelPurchaseLog *theFplog) { return [self updateArgsForMasterFuelPurchaseLog:theFplog vehicle:vehicle fuelStation:fuelstation]; }
+                                  mainTable:TBL_MAIN_FUELPURCHASE_LOG
+                    mainEntityFromResultSet:^ FPFuelPurchaseLog * (FMResultSet *rs) { return [self mainFuelPurchaseLogFromResultSet:rs]; }
+                             mainUpdateStmt:[self updateStmtForMainFuelPurchaseLog]
+                          mainUpdateArgsBlk:^ NSArray * (FPFuelPurchaseLog *theFplog) { return [self updateArgsForMainFuelPurchaseLog:theFplog vehicle:vehicle fuelStation:fuelstation]; }
+                                      error:errorBlk];
 }
 
 - (void)markAsSyncCompleteForNewFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
@@ -3062,36 +3073,36 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                   error:errorBlk];
 }
 
-- (void)saveNewOrExistingMasterEnvironmentLog:(FPEnvironmentLog *)envlog
+- (BOOL)saveNewOrExistingMasterEnvironmentLog:(FPEnvironmentLog *)envlog
                                       forUser:(FPUser *)user
                                            db:(FMDatabase *)db
                                         error:(PELMDaoErrorBlk)errorBlk {
-  [PELMUtils saveNewOrExistingMasterEntity:envlog
-                               masterTable:TBL_MASTER_ENV_LOG
-                           masterInsertBlk:^(id entity, FMDatabase *db){[self insertIntoMasterEnvironmentLog:(FPEnvironmentLog *)entity forUser:user db:db error:errorBlk];}
-                          masterUpdateStmt:[self updateStmtForMasterEnvironmentLog]
-                       masterUpdateArgsBlk:^NSArray * (FPEnvironmentLog *theEnvlog) {return [self updateArgsForMasterEnvironmentLog:theEnvlog];}
-                                 mainTable:TBL_MAIN_ENV_LOG
-                   mainEntityFromResultSet:^FPEnvironmentLog * (FMResultSet *rs) {return [self mainEnvironmentLogFromResultSet:rs];}
-                            mainUpdateStmt:[self updateStmtForMainEnvironmentLog]
-                         mainUpdateArgsBlk:^NSArray * (FPEnvironmentLog *theEnvlog) {return [self updateArgsForMainEnvironmentLog:theEnvlog];}
-                                        db:db
-                                     error:errorBlk];
+  return [PELMUtils saveNewOrExistingMasterEntity:envlog
+                                      masterTable:TBL_MASTER_ENV_LOG
+                                  masterInsertBlk:^(id entity, FMDatabase *db){[self insertIntoMasterEnvironmentLog:(FPEnvironmentLog *)entity forUser:user db:db error:errorBlk];}
+                                 masterUpdateStmt:[self updateStmtForMasterEnvironmentLog]
+                              masterUpdateArgsBlk:^NSArray * (FPEnvironmentLog *theEnvlog) {return [self updateArgsForMasterEnvironmentLog:theEnvlog];}
+                                        mainTable:TBL_MAIN_ENV_LOG
+                          mainEntityFromResultSet:^FPEnvironmentLog * (FMResultSet *rs) {return [self mainEnvironmentLogFromResultSet:rs];}
+                                   mainUpdateStmt:[self updateStmtForMainEnvironmentLog]
+                                mainUpdateArgsBlk:^NSArray * (FPEnvironmentLog *theEnvlog) {return [self updateArgsForMainEnvironmentLog:theEnvlog];}
+                                               db:db
+                                            error:errorBlk];
 }
 
-- (void)saveMasterEnvironmentLog:(FPEnvironmentLog *)envlog
+- (BOOL)saveMasterEnvironmentLog:(FPEnvironmentLog *)envlog
                       forVehicle:(FPVehicle *)vehicle
                          forUser:(FPUser *)user
                            error:(PELMDaoErrorBlk)errorBlk {
-  [_localModelUtils saveMasterEntity:envlog
-                         masterTable:TBL_MASTER_ENV_LOG
-                    masterUpdateStmt:[self updateStmtForMasterEnvironmentLog]
-                 masterUpdateArgsBlk:^ NSArray * (FPEnvironmentLog *theEnvlog) { return [self updateArgsForMasterEnvironmentLog:theEnvlog vehicle:vehicle]; }
-                           mainTable:TBL_MAIN_ENV_LOG
-             mainEntityFromResultSet:^ FPEnvironmentLog * (FMResultSet *rs) { return [self mainEnvironmentLogFromResultSet:rs]; }
-                      mainUpdateStmt:[self updateStmtForMainEnvironmentLog]
-                   mainUpdateArgsBlk:^ NSArray * (FPEnvironmentLog *theEnvlog) { return [self updateArgsForMainEnvironmentLog:theEnvlog vehicle:vehicle]; }
-                               error:errorBlk];
+  return [_localModelUtils saveMasterEntity:envlog
+                                masterTable:TBL_MASTER_ENV_LOG
+                           masterUpdateStmt:[self updateStmtForMasterEnvironmentLog]
+                        masterUpdateArgsBlk:^ NSArray * (FPEnvironmentLog *theEnvlog) { return [self updateArgsForMasterEnvironmentLog:theEnvlog vehicle:vehicle]; }
+                                  mainTable:TBL_MAIN_ENV_LOG
+                    mainEntityFromResultSet:^ FPEnvironmentLog * (FMResultSet *rs) { return [self mainEnvironmentLogFromResultSet:rs]; }
+                             mainUpdateStmt:[self updateStmtForMainEnvironmentLog]
+                          mainUpdateArgsBlk:^ NSArray * (FPEnvironmentLog *theEnvlog) { return [self updateArgsForMainEnvironmentLog:theEnvlog vehicle:vehicle]; }
+                                      error:errorBlk];
 }
 
 - (void)markAsSyncCompleteForNewEnvironmentLog:(FPEnvironmentLog *)environmentLog

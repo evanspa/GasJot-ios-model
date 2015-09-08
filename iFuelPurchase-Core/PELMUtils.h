@@ -151,7 +151,7 @@ void (^LogSyncLocal)(NSString *, NSInteger);
                            mainUpdateArgsBlk:(NSArray *(^)(id))mainUpdateArgsBlk
                                        error:(PELMDaoErrorBlk)errorBlk;
 
-- (void)saveNewOrExistingMasterEntity:(PELMMainSupport *)masterEntity
+- (BOOL)saveNewOrExistingMasterEntity:(PELMMainSupport *)masterEntity
                           masterTable:(NSString *)masterTable
                       masterInsertBlk:(void (^)(id, FMDatabase *))masterInsertBlk
                      masterUpdateStmt:(NSString *)masterUpdateStmt
@@ -162,7 +162,7 @@ void (^LogSyncLocal)(NSString *, NSInteger);
                     mainUpdateArgsBlk:(NSArray *(^)(id))mainUpdateArgsBlk
                                 error:(PELMDaoErrorBlk)errorBlk;
 
-+ (void)saveNewOrExistingMasterEntity:(PELMMainSupport *)masterEntity
++ (BOOL)saveNewOrExistingMasterEntity:(PELMMainSupport *)masterEntity
                           masterTable:(NSString *)masterTable
                       masterInsertBlk:(void (^)(id, FMDatabase *))masterInsertBlk
                      masterUpdateStmt:(NSString *)masterUpdateStmt
@@ -185,7 +185,7 @@ void (^LogSyncLocal)(NSString *, NSInteger);
                          db:(FMDatabase *)db
                       error:(PELMDaoErrorBlk)errorBlk;
 
-- (void)saveMasterEntity:(PELMMainSupport *)entity
+- (BOOL)saveMasterEntity:(PELMMainSupport *)entity
              masterTable:(NSString *)masterTable
         masterUpdateStmt:(NSString *)masterUpdateStmt
      masterUpdateArgsBlk:(NSArray *(^)(id))masterUpdateArgsBlk
@@ -195,7 +195,7 @@ void (^LogSyncLocal)(NSString *, NSInteger);
        mainUpdateArgsBlk:(NSArray *(^)(id))mainUpdateArgsBlk
                    error:(PELMDaoErrorBlk)errorBlk;
 
-+ (void)saveMasterEntity:(PELMMainSupport *)masterEntity
++ (BOOL)saveMasterEntity:(PELMMainSupport *)masterEntity
              masterTable:(NSString *)masterTable
         masterUpdateStmt:(NSString *)masterUpdateStmt
      masterUpdateArgsBlk:(NSArray *(^)(id))masterUpdateArgsBlk
@@ -544,6 +544,13 @@ void (^LogSyncLocal)(NSString *, NSInteger);
                   whereValue:(id)whereValue
                           db:(FMDatabase *)db
                        error:(PELMDaoErrorBlk)errorBlk;
+
++ (NSDate *)dateFromTable:(NSString *)table
+               dateColumn:(NSString *)dateColumn
+              whereColumn:(NSString *)whereColumn
+               whereValue:(id)whereValue
+                       db:(FMDatabase *)db
+                    error:(PELMDaoErrorBlk)errorBlk;
 
 - (NSInteger)numEntitiesFromTable:(NSString *)table
                             error:(PELMDaoErrorBlk)errorBlk;

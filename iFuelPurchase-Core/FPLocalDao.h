@@ -116,13 +116,13 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                   retryAt:(NSDate *)retryAt
                     error:(PELMDaoErrorBlk)errorBlk;
 
-- (void)saveMasterUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk;
+- (BOOL)saveMasterUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)markAsSyncCompleteForUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk;
 
-- (void)saveChangelog:(FPChangelog *)changelog
-              forUser:(FPUser *)user
-                error:(PELMDaoErrorBlk)errorBlk;
+- (NSInteger)saveChangelog:(FPChangelog *)changelog
+                   forUser:(FPUser *)user
+                     error:(PELMDaoErrorBlk)errorBlk;
 
 #pragma mark - Vehicle
 
@@ -190,16 +190,11 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                      retryAt:(NSDate *)retryAt
                        error:(PELMDaoErrorBlk)errorBlk;
 
-- (void)saveNewOrExistingMasterVehicle:(FPVehicle *)vehicle
-                               forUser:(FPUser *)user
-                                    db:(FMDatabase *)db
-                                 error:(PELMDaoErrorBlk)errorBlk;
-
 - (void)saveNewMasterVehicle:(FPVehicle *)vehicle
                      forUser:(FPUser *)user
                        error:(PELMDaoErrorBlk)errorBlk;
 
-- (void)saveMasterVehicle:(FPVehicle *)vehicle
+- (BOOL)saveMasterVehicle:(FPVehicle *)vehicle
                   forUser:(FPUser *)user
                     error:(PELMDaoErrorBlk)errorBlk;
 
@@ -277,7 +272,7 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                          forUser:(FPUser *)user
                            error:(PELMDaoErrorBlk)errorBlk;
 
-- (void)saveMasterFuelstation:(FPFuelStation *)fuelstation
+- (BOOL)saveMasterFuelstation:(FPFuelStation *)fuelstation
                       forUser:(FPUser *)user
                         error:(PELMDaoErrorBlk)errorBlk;
 
@@ -417,7 +412,7 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                              retryAt:(NSDate *)retryAt
                                error:(PELMDaoErrorBlk)errorBlk;
 
-- (void)saveMasterFuelPurchaseLog:(FPFuelPurchaseLog *)fplog
+- (BOOL)saveMasterFuelPurchaseLog:(FPFuelPurchaseLog *)fplog
                        forVehicle:(FPVehicle *)vehicle
                    forFuelstation:(FPFuelStation *)fuelstation
                           forUser:(FPUser *)user
@@ -529,7 +524,7 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                             retryAt:(NSDate *)retryAt
                               error:(PELMDaoErrorBlk)errorBlk;
 
-- (void)saveMasterEnvironmentLog:(FPEnvironmentLog *)envlog
+- (BOOL)saveMasterEnvironmentLog:(FPEnvironmentLog *)envlog
                       forVehicle:(FPVehicle *)vehicle
                          forUser:(FPUser *)user
                            error:(PELMDaoErrorBlk)errorBlk;
