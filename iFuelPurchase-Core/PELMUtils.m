@@ -1573,7 +1573,7 @@ Entity: %@", entity]
            ([entity syncHttpRespCode].integerValue == 504) ||
            ([entity syncHttpRespCode].integerValue == 500)) && // each of these err codes can be temporary, so even if the previous sync attempt yielded one of these, we can still try again on the next attempt
           (([entity syncRetryAt] == nil) ||
-           ([NSDate date] > [entity syncRetryAt]))) {
+           ([[NSDate date] compare:[entity syncRetryAt]] == NSOrderedDescending))) {
             if (filterBlk) {
               if (filterBlk(entity)) {
                 markSyncInProgressAction(entity, db);
