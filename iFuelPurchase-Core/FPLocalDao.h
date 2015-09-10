@@ -120,7 +120,7 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
 
 - (void)markAsSyncCompleteForUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk;
 
-- (NSInteger)saveChangelog:(FPChangelog *)changelog
+- (NSArray *)saveChangelog:(FPChangelog *)changelog
                    forUser:(FPUser *)user
                      error:(PELMDaoErrorBlk)errorBlk;
 

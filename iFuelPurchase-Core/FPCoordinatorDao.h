@@ -207,7 +207,7 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk;
            tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk
           addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk;
 
-- (NSInteger)saveChangelog:(FPChangelog *)changelog
+- (NSArray *)saveChangelog:(FPChangelog *)changelog
                    forUser:(FPUser *)user
                      error:(PELMDaoErrorBlk)errorBlk;
 

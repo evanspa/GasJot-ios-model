@@ -365,69 +365,71 @@ PELMMainSupport * (^toMainSupport)(FMResultSet *, NSString *, NSDictionary *) = 
   }];
 }
 
-- (BOOL)saveNewOrExistingMasterEntity:(PELMMainSupport *)masterEntity
-                          masterTable:(NSString *)masterTable
-                      masterInsertBlk:(void (^)(id, FMDatabase *))masterInsertBlk
-                     masterUpdateStmt:(NSString *)masterUpdateStmt
-                  masterUpdateArgsBlk:(NSArray *(^)(id))masterUpdateArgsBlk
-                            mainTable:(NSString *)mainTable
-              mainEntityFromResultSet:(entityFromResultSetBlk)mainEntityFromResultSet
-                       mainUpdateStmt:(NSString *)mainUpdateStmt
-                    mainUpdateArgsBlk:(NSArray *(^)(id))mainUpdateArgsBlk
-                                error:(PELMDaoErrorBlk)errorBlk {
-  __block BOOL didUpdateDatabase;
+- (PELMSaveNewOrExistingCode)saveNewOrExistingMasterEntity:(PELMMainSupport *)masterEntity
+                                               masterTable:(NSString *)masterTable
+                                           masterInsertBlk:(void (^)(id, FMDatabase *))masterInsertBlk
+                                          masterUpdateStmt:(NSString *)masterUpdateStmt
+                                       masterUpdateArgsBlk:(NSArray *(^)(id))masterUpdateArgsBlk
+                                                 mainTable:(NSString *)mainTable
+                                   mainEntityFromResultSet:(entityFromResultSetBlk)mainEntityFromResultSet
+                                            mainUpdateStmt:(NSString *)mainUpdateStmt
+                                         mainUpdateArgsBlk:(NSArray *(^)(id))mainUpdateArgsBlk
+                                                     error:(PELMDaoErrorBlk)errorBlk {
+  __block PELMSaveNewOrExistingCode returnCode;
   [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
-    didUpdateDatabase = [PELMUtils saveNewOrExistingMasterEntity:masterEntity
-                                                     masterTable:masterTable
-                                                 masterInsertBlk:masterInsertBlk
-                                                masterUpdateStmt:masterUpdateStmt
-                                             masterUpdateArgsBlk:masterUpdateArgsBlk
-                                                       mainTable:mainTable
-                                         mainEntityFromResultSet:mainEntityFromResultSet
-                                                  mainUpdateStmt:mainUpdateStmt
-                                               mainUpdateArgsBlk:mainUpdateArgsBlk
-                                                              db:db
-                                                           error:errorBlk];
+    returnCode = [PELMUtils saveNewOrExistingMasterEntity:masterEntity
+                                              masterTable:masterTable
+                                          masterInsertBlk:masterInsertBlk
+                                         masterUpdateStmt:masterUpdateStmt
+                                      masterUpdateArgsBlk:masterUpdateArgsBlk
+                                                mainTable:mainTable
+                                  mainEntityFromResultSet:mainEntityFromResultSet
+                                           mainUpdateStmt:mainUpdateStmt
+                                        mainUpdateArgsBlk:mainUpdateArgsBlk
+                                                       db:db
+                                                    error:errorBlk];
   }];
-  return didUpdateDatabase;
+  return returnCode;
 }
 
-+ (BOOL)saveNewOrExistingMasterEntity:(PELMMainSupport *)masterEntity
-                          masterTable:(NSString *)masterTable
-                      masterInsertBlk:(void (^)(id, FMDatabase *))masterInsertBlk
-                     masterUpdateStmt:(NSString *)masterUpdateStmt
-                  masterUpdateArgsBlk:(NSArray *(^)(id))masterUpdateArgsBlk
-                            mainTable:(NSString *)mainTable
-              mainEntityFromResultSet:(entityFromResultSetBlk)mainEntityFromResultSet
-                       mainUpdateStmt:(NSString *)mainUpdateStmt
-                    mainUpdateArgsBlk:(NSArray *(^)(id))mainUpdateArgsBlk
-                                   db:(FMDatabase *)db
-                                error:(PELMDaoErrorBlk)errorBlk {
-  BOOL didUpdateDatabase;
++ (PELMSaveNewOrExistingCode)saveNewOrExistingMasterEntity:(PELMMainSupport *)masterEntity
+                                               masterTable:(NSString *)masterTable
+                                           masterInsertBlk:(void (^)(id, FMDatabase *))masterInsertBlk
+                                          masterUpdateStmt:(NSString *)masterUpdateStmt
+                                       masterUpdateArgsBlk:(NSArray *(^)(id))masterUpdateArgsBlk
+                                                 mainTable:(NSString *)mainTable
+                                   mainEntityFromResultSet:(entityFromResultSetBlk)mainEntityFromResultSet
+                                            mainUpdateStmt:(NSString *)mainUpdateStmt
+                                         mainUpdateArgsBlk:(NSArray *(^)(id))mainUpdateArgsBlk
+                                                        db:(FMDatabase *)db
+                                                     error:(PELMDaoErrorBlk)errorBlk {
+  PELMSaveNewOrExistingCode returnCode = PELMSaveNewOrExistingCodeDidNothing;
   NSNumber *localMasterId = [PELMUtils masterLocalIdFromEntityTable:masterTable
                                                    globalIdentifier:masterEntity.globalIdentifier
                                                                  db:db
                                                               error:errorBlk];
   if (localMasterId) {
-    didUpdateDatabase = [PELMUtils saveMasterEntity:masterEntity
-                                        masterTable:masterTable
-                                   masterUpdateStmt:masterUpdateStmt
-                                masterUpdateArgsBlk:masterUpdateArgsBlk
-                                          mainTable:mainTable
-                            mainEntityFromResultSet:mainEntityFromResultSet
-                                     mainUpdateStmt:mainUpdateStmt
-                                  mainUpdateArgsBlk:mainUpdateArgsBlk
-                                                 db:db
-                                              error:errorBlk];
+    if ([PELMUtils saveMasterEntity:masterEntity
+                        masterTable:masterTable
+                   masterUpdateStmt:masterUpdateStmt
+                masterUpdateArgsBlk:masterUpdateArgsBlk
+                          mainTable:mainTable
+            mainEntityFromResultSet:mainEntityFromResultSet
+                     mainUpdateStmt:mainUpdateStmt
+                  mainUpdateArgsBlk:mainUpdateArgsBlk
+                                 db:db
+                              error:errorBlk]) {
+      returnCode = PELMSaveNewOrExistingCodeDidUpdate;
+    }
   } else {
     [PELMUtils saveNewMasterEntity:masterEntity
                        masterTable:masterTable
                    masterInsertBlk:masterInsertBlk
                                 db:db
                              error:errorBlk];
-    didUpdateDatabase = YES;
+    returnCode = PELMSaveNewOrExistingCodeDidInsert;
   }
-  return didUpdateDatabase;
+  return returnCode;
 }
 
 - (void)saveNewMasterEntity:(PELMMainSupport *)entity

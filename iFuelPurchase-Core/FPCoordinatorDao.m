@@ -805,7 +805,7 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk {
                              completionHandler:remoteStoreComplHandler];
 }
 
-- (NSInteger)saveChangelog:(FPChangelog *)changelog
+- (NSArray *)saveChangelog:(FPChangelog *)changelog
                    forUser:(FPUser *)user
                      error:(PELMDaoErrorBlk)errorBlk {
   return [_localDao saveChangelog:changelog forUser:user error:errorBlk];

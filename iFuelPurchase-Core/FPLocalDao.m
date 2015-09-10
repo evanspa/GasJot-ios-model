@@ -684,17 +684,19 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                                       error:errorBlk];
 }
 
-- (NSInteger)saveChangelog:(FPChangelog *)changelog
+- (NSArray *)saveChangelog:(FPChangelog *)changelog
                    forUser:(FPUser *)user
                      error:(PELMDaoErrorBlk)errorBlk {
-  __block NSInteger numChanges = 0;
+  __block NSInteger numDeletes = 0;
+  __block NSInteger numUpdates = 0;
+  __block NSInteger numInserts = 0;
   [_databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
     void (^processChangelogEntities)(NSArray *,
                                      NSString *,
                                      NSString *,
                                      void(^)(id),
-                                     BOOL(^)(id)) =
-    ^ (NSArray *entities, NSString *masterTable, NSString *mainTable, void(^deleteBlk)(id), BOOL(^saveNewOrExistingBlk)(id)) {
+                                     PELMSaveNewOrExistingCode(^)(id)) =
+    ^ (NSArray *entities, NSString *masterTable, NSString *mainTable, void(^deleteBlk)(id), PELMSaveNewOrExistingCode(^saveNewOrExistingBlk)(id)) {
       for (PELMMainSupport *entity in entities) {
         if (![PEUtils isNil:entity.deletedAt]) {
           NSNumber *masterLocalId = [PELMUtils masterLocalIdFromEntityTable:masterTable
@@ -709,14 +711,23 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                                                       error:errorBlk];
             [entity setLocalMainIdentifier:mainLocalId];
             deleteBlk(entity);
-            numChanges++;
+            numDeletes++;
           } else {
             // the entity never existed on our device (i.e., it was created and deleted
             // before it could ever be downloaded to this device)
           }
         } else {
-          if (saveNewOrExistingBlk(entity)) {
-            numChanges++;
+          PELMSaveNewOrExistingCode returnCode = saveNewOrExistingBlk(entity);
+          switch (returnCode) {
+            case PELMSaveNewOrExistingCodeDidUpdate:
+              numUpdates++;
+              break;
+            case PELMSaveNewOrExistingCodeDidInsert:
+              numInserts++;
+              break;
+            case PELMSaveNewOrExistingCodeDidNothing:
+              // do nothing
+              break;
           }
         }
       }
@@ -726,7 +737,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
       if ([updatedUser.updatedAt compare:user.updatedAt] == NSOrderedDescending) {
         if ([self saveMasterUser:updatedUser db:db error:errorBlk]) {
           [user overwriteDomainProperties:updatedUser];
-          numChanges++;
+          numUpdates++;
         }
       }
     }
@@ -751,7 +762,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                              ^(FPEnvironmentLog *envlog) { [self deleteEnvironmentLog:envlog db:db error:errorBlk]; },
                              ^(FPEnvironmentLog *envlog) { return [self saveNewOrExistingMasterEnvironmentLog:envlog forUser:user db:db error:errorBlk]; });
   }];
-  return numChanges;
+  return @[@(numDeletes), @(numUpdates), @(numInserts)];
 }
 
 #pragma mark - Vehicle
@@ -1078,10 +1089,10 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                   error:errorBlk];
 }
 
-- (BOOL)saveNewOrExistingMasterVehicle:(FPVehicle *)vehicle
-                               forUser:(FPUser *)user
-                                    db:(FMDatabase *)db
-                                 error:(PELMDaoErrorBlk)errorBlk {
+- (PELMSaveNewOrExistingCode)saveNewOrExistingMasterVehicle:(FPVehicle *)vehicle
+                                                    forUser:(FPUser *)user
+                                                         db:(FMDatabase *)db
+                                                      error:(PELMDaoErrorBlk)errorBlk {
   return [PELMUtils saveNewOrExistingMasterEntity:vehicle
                                       masterTable:TBL_MASTER_VEHICLE
                                   masterInsertBlk:^(id entity, FMDatabase *db){[self insertIntoMasterVehicle:(FPVehicle *)entity forUser:user db:db error:errorBlk];}
@@ -1499,10 +1510,10 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                   error:errorBlk];
 }
 
-- (BOOL)saveNewOrExistingMasterFuelstation:(FPFuelStation *)fuelstation
-                                   forUser:(FPUser *)user
-                                        db:(FMDatabase *)db
-                                     error:(PELMDaoErrorBlk)errorBlk {
+- (PELMSaveNewOrExistingCode)saveNewOrExistingMasterFuelstation:(FPFuelStation *)fuelstation
+                                                        forUser:(FPUser *)user
+                                                             db:(FMDatabase *)db
+                                                          error:(PELMDaoErrorBlk)errorBlk {
   return [PELMUtils saveNewOrExistingMasterEntity:fuelstation
                                       masterTable:TBL_MASTER_FUEL_STATION
                                   masterInsertBlk:^(id entity, FMDatabase *db){[self insertIntoMasterFuelStation:(FPFuelStation *)entity forUser:user db:db error:errorBlk];}
@@ -2390,10 +2401,10 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                   error:errorBlk];
 }
 
-- (BOOL)saveNewOrExistingMasterFuelPurchaseLog:(FPFuelPurchaseLog *)fplog
-                                       forUser:(FPUser *)user
-                                            db:(FMDatabase *)db
-                                         error:(PELMDaoErrorBlk)errorBlk {
+- (PELMSaveNewOrExistingCode)saveNewOrExistingMasterFuelPurchaseLog:(FPFuelPurchaseLog *)fplog
+                                                            forUser:(FPUser *)user
+                                                                 db:(FMDatabase *)db
+                                                              error:(PELMDaoErrorBlk)errorBlk {
   return [PELMUtils saveNewOrExistingMasterEntity:fplog
                                       masterTable:TBL_MASTER_FUELPURCHASE_LOG
                                   masterInsertBlk:^(id entity, FMDatabase *db){[self insertIntoMasterFuelPurchaseLog:(FPFuelPurchaseLog *)entity forUser:user db:db error:errorBlk];}
@@ -3073,10 +3084,10 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                   error:errorBlk];
 }
 
-- (BOOL)saveNewOrExistingMasterEnvironmentLog:(FPEnvironmentLog *)envlog
-                                      forUser:(FPUser *)user
-                                           db:(FMDatabase *)db
-                                        error:(PELMDaoErrorBlk)errorBlk {
+- (PELMSaveNewOrExistingCode)saveNewOrExistingMasterEnvironmentLog:(FPEnvironmentLog *)envlog
+                                                           forUser:(FPUser *)user
+                                                                db:(FMDatabase *)db
+                                                             error:(PELMDaoErrorBlk)errorBlk {
   return [PELMUtils saveNewOrExistingMasterEntity:envlog
                                       masterTable:TBL_MASTER_ENV_LOG
                                   masterInsertBlk:^(id entity, FMDatabase *db){[self insertIntoMasterEnvironmentLog:(FPEnvironmentLog *)entity forUser:user db:db error:errorBlk];}

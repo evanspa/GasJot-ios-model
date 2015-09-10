@@ -67,6 +67,12 @@ void (^LogSystemPrune)(NSString *, NSInteger);
 
 void (^LogSyncLocal)(NSString *, NSInteger);
 
+typedef NS_ENUM(NSInteger, PELMSaveNewOrExistingCode) {
+  PELMSaveNewOrExistingCodeDidNothing,
+  PELMSaveNewOrExistingCodeDidUpdate,
+  PELMSaveNewOrExistingCodeDidInsert
+};
+
 @interface PELMUtils : NSObject
 
 #pragma mark - Initializers
@@ -151,28 +157,28 @@ void (^LogSyncLocal)(NSString *, NSInteger);
                            mainUpdateArgsBlk:(NSArray *(^)(id))mainUpdateArgsBlk
                                        error:(PELMDaoErrorBlk)errorBlk;
 
-- (BOOL)saveNewOrExistingMasterEntity:(PELMMainSupport *)masterEntity
-                          masterTable:(NSString *)masterTable
-                      masterInsertBlk:(void (^)(id, FMDatabase *))masterInsertBlk
-                     masterUpdateStmt:(NSString *)masterUpdateStmt
-                  masterUpdateArgsBlk:(NSArray *(^)(id))masterUpdateArgsBlk
-                            mainTable:(NSString *)mainTable
-              mainEntityFromResultSet:(entityFromResultSetBlk)mainEntityFromResultSet
-                       mainUpdateStmt:(NSString *)mainUpdateStmt
-                    mainUpdateArgsBlk:(NSArray *(^)(id))mainUpdateArgsBlk
-                                error:(PELMDaoErrorBlk)errorBlk;
+- (PELMSaveNewOrExistingCode)saveNewOrExistingMasterEntity:(PELMMainSupport *)masterEntity
+                                               masterTable:(NSString *)masterTable
+                                           masterInsertBlk:(void (^)(id, FMDatabase *))masterInsertBlk
+                                          masterUpdateStmt:(NSString *)masterUpdateStmt
+                                       masterUpdateArgsBlk:(NSArray *(^)(id))masterUpdateArgsBlk
+                                                 mainTable:(NSString *)mainTable
+                                   mainEntityFromResultSet:(entityFromResultSetBlk)mainEntityFromResultSet
+                                            mainUpdateStmt:(NSString *)mainUpdateStmt
+                                         mainUpdateArgsBlk:(NSArray *(^)(id))mainUpdateArgsBlk
+                                                     error:(PELMDaoErrorBlk)errorBlk;
 
-+ (BOOL)saveNewOrExistingMasterEntity:(PELMMainSupport *)masterEntity
-                          masterTable:(NSString *)masterTable
-                      masterInsertBlk:(void (^)(id, FMDatabase *))masterInsertBlk
-                     masterUpdateStmt:(NSString *)masterUpdateStmt
-                  masterUpdateArgsBlk:(NSArray *(^)(id))masterUpdateArgsBlk
-                            mainTable:(NSString *)mainTable
-              mainEntityFromResultSet:(entityFromResultSetBlk)mainEntityFromResultSet
-                       mainUpdateStmt:(NSString *)mainUpdateStmt
-                    mainUpdateArgsBlk:(NSArray *(^)(id))mainUpdateArgsBlk
-                                   db:(FMDatabase *)db
-                                error:(PELMDaoErrorBlk)errorBlk;
++ (PELMSaveNewOrExistingCode)saveNewOrExistingMasterEntity:(PELMMainSupport *)masterEntity
+                                               masterTable:(NSString *)masterTable
+                                           masterInsertBlk:(void (^)(id, FMDatabase *))masterInsertBlk
+                                          masterUpdateStmt:(NSString *)masterUpdateStmt
+                                       masterUpdateArgsBlk:(NSArray *(^)(id))masterUpdateArgsBlk
+                                                 mainTable:(NSString *)mainTable
+                                   mainEntityFromResultSet:(entityFromResultSetBlk)mainEntityFromResultSet
+                                            mainUpdateStmt:(NSString *)mainUpdateStmt
+                                         mainUpdateArgsBlk:(NSArray *(^)(id))mainUpdateArgsBlk
+                                                        db:(FMDatabase *)db
+                                                     error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)saveNewMasterEntity:(PELMMainSupport *)entity
                 masterTable:(NSString *)masterTable
