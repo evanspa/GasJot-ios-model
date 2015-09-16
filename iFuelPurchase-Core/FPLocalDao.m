@@ -3917,13 +3917,14 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                         db:(FMDatabase *)db
                      error:(PELMDaoErrorBlk)errorBlk {
   NSString *stmt = [NSString stringWithFormat:@"INSERT INTO %@ (%@, %@, %@, %@, %@, %@, \
-%@, %@, %@, %@, %@, %@, %@, %@, %@, %@) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, \
+%@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, \
 ?, ?, ?, ?, ?, ?, ?)",
                     TBL_MAIN_USER,
                     COL_LOCAL_ID,
                     COL_MASTER_USER_ID,
                     COL_GLOBAL_ID,
                     COL_MEDIA_TYPE,
+                    COL_MAN_MASTER_UPDATED_AT,
                     COL_MAN_DT_COPIED_DOWN_FROM_MASTER,
                     COL_USR_NAME,
                     COL_USR_EMAIL,
@@ -3941,6 +3942,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                             orNil([user localMasterIdentifier]),
                             orNil([user globalIdentifier]),
                             orNil([[user mediaType] description]),
+                            orNil([PEUtils millisecondsFromDate:[user updatedAt]]),
                             orNil([PEUtils millisecondsFromDate:[user dateCopiedFromMaster]]),
                             orNil([user name]),
                             orNil([user email]),
