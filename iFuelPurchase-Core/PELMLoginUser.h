@@ -10,8 +10,7 @@
 
 @interface PELMLoginUser : NSObject
 
-@property (nonatomic) NSString *usernameOrEmail;
-
+@property (nonatomic) NSString *email;
 @property (nonatomic) NSString *password;
 
 @end

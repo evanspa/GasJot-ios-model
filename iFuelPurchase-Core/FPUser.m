@@ -18,7 +18,6 @@ NSString * const FPEnvironmentLogsRelation = @"environment-logs";
 
 NSString * const FPUserNameField = @"FPUserNameField";
 NSString * const FPUserEmailField = @"FPUserEmailField";
-NSString * const FPUserUsernameField = @"FPUserUsernameField";
 
 @implementation FPUser {
   NSMutableArray *_vehicles;
@@ -46,7 +45,6 @@ NSString * const FPUserUsernameField = @"FPUserUsernameField";
                       syncRetryAt:(NSDate *)syncRetryAt
                              name:(NSString *)name
                             email:(NSString *)email
-                         username:(NSString *)username
                          password:(NSString *)password {
   self = [super initWithLocalMainIdentifier:localMainIdentifier
                       localMasterIdentifier:localMasterIdentifier
@@ -65,7 +63,6 @@ NSString * const FPUserUsernameField = @"FPUserUsernameField";
                                 syncRetryAt:syncRetryAt
                                        name:name
                                       email:email
-                                   username:username
                                    password:password];
   if (self) {
     _vehicles = [NSMutableArray array];
@@ -96,7 +93,6 @@ NSString * const FPUserUsernameField = @"FPUserUsernameField";
                                                  syncRetryAt:[self syncRetryAt]
                                                         name:[self name]
                                                        email:[self email]
-                                                    username:[self username]
                                                     password:[self password]];
   return copy;
 }
@@ -105,12 +101,10 @@ NSString * const FPUserUsernameField = @"FPUserUsernameField";
 
 + (FPUser *)userWithName:(NSString *)name
                    email:(NSString *)email
-                username:(NSString *)username
                 password:(NSString *)password
                mediaType:(HCMediaType *)mediaType {
   return [FPUser userWithName:name
                         email:email
-                     username:username
                      password:password
              globalIdentifier:nil
                     mediaType:mediaType
@@ -120,7 +114,6 @@ NSString * const FPUserUsernameField = @"FPUserUsernameField";
 
 + (FPUser *)userWithName:(NSString *)name
                    email:(NSString *)email
-                username:(NSString *)username
                 password:(NSString *)password
         globalIdentifier:(NSString *)globalIdentifier
                mediaType:(HCMediaType *)mediaType
@@ -143,7 +136,6 @@ NSString * const FPUserUsernameField = @"FPUserUsernameField";
                                          syncRetryAt:nil
                                                 name:name
                                                email:email
-                                            username:username
                                             password:password];
 }
 
@@ -164,12 +156,7 @@ NSString * const FPUserUsernameField = @"FPUserUsernameField";
                                         [NSValue valueWithPointer:@selector(setEmail:)],
                                         ^(SEL getter, id obj1, id obj2) {return [PEUtils isStringProperty:getter equalFor:obj1 and:obj2];},
                                         ^(FPUser * localObject, FPUser * remoteObject) {[localObject setEmail:[remoteObject email]];},
-                                        FPUserEmailField],
-                                      @[[NSValue valueWithPointer:@selector(username)],
-                                        [NSValue valueWithPointer:@selector(setUsername:)],
-                                        ^(SEL getter, id obj1, id obj2) {return [PEUtils isStringProperty:getter equalFor:obj1 and:obj2];},
-                                        ^(FPUser * localObject, FPUser * remoteObject) { [localObject setUsername:[remoteObject username]];},
-                                        FPUserUsernameField]]];
+                                        FPUserEmailField]]];
 }
 
 #pragma mark - Overwriting
@@ -177,7 +164,6 @@ NSString * const FPUserUsernameField = @"FPUserUsernameField";
 - (void)overwriteDomainProperties:(FPUser *)user {
   [super overwriteDomainProperties:user];
   [self setEmail:[user email]];
-  [self setUsername:[user username]];
   [self setName:[user name]];
 }
 

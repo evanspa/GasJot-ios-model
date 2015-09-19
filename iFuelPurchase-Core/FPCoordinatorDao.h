@@ -136,13 +136,13 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
 
 - (FPUser *)userWithError:(PELMDaoErrorBlk)errorBlk;
 
-- (void)loginWithUsernameOrEmail:(NSString *)usernameOrEmail
-                        password:(NSString *)password
-    andLinkRemoteUserToLocalUser:(FPUser *)localUser
-   preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
-                 remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
-               completionHandler:(FPFetchedEntityCompletionHandler)complHandler
-           localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler;
+- (void)loginWithEmail:(NSString *)email
+              password:(NSString *)password
+andLinkRemoteUserToLocalUser:(FPUser *)localUser
+preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
+       remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
+     completionHandler:(FPFetchedEntityCompletionHandler)complHandler
+ localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler;
 
 - (void)lightLoginForUser:(FPUser *)user
                  password:(NSString *)password

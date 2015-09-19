@@ -50,13 +50,13 @@ describe(@"FPCoordinatorDao", ^{
       [user shouldBeNil];
       _mocker(@"http-response.login.POST.200", 0, 0);
       user = [_coordDao newLocalUserWithError:[_coordTestCtx newLocalSaveErrBlkMaker]()];
-      [_coordDao loginWithUsernameOrEmail:@"evansp2"
-                                 password:@"1n53cur3"
-             andLinkRemoteUserToLocalUser:user
-            preserveExistingLocalEntities:YES
-                          remoteStoreBusy:[_coordTestCtx newRemoteStoreBusyBlkMaker]()
-                        completionHandler:[_coordTestCtx new1ErrArgComplHandlerBlkMaker]()
-                    localSaveErrorHandler:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+      [_coordDao loginWithEmail:@"evansp@test.com"
+                       password:@"1n53cur3"
+   andLinkRemoteUserToLocalUser:user
+  preserveExistingLocalEntities:YES
+                remoteStoreBusy:[_coordTestCtx newRemoteStoreBusyBlkMaker]()
+              completionHandler:[_coordTestCtx new1ErrArgComplHandlerBlkMaker]()
+          localSaveErrorHandler:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[expectFutureValue(theValue([_coordTestCtx authTokenReceived])) shouldEventuallyBeforeTimingOutAfter(60)] beYes];
       user = [_coordDao userWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
       [user shouldNotBeNil]; // sanity check

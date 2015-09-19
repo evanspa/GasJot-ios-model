@@ -387,28 +387,25 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   [mainUser setLocalMasterIdentifier:[masterUser localMasterIdentifier]];
   [mainUser setSynced:YES];
   [PELMUtils doUpdate:[NSString stringWithFormat:@"update %@ set \
-                       %@ = ?, \
-                       %@ = 1, \
-                       %@ = ?, \
-                       %@ = ?, \
-                       %@ = ?, \
-                       %@ = ?, \
-                       %@ = ? \
-                       where %@ = ?", TBL_MAIN_USER,
+%@ = ?, \
+%@ = 1, \
+%@ = ?, \
+%@ = ?, \
+%@ = ?, \
+%@ = ? \
+where %@ = ?", TBL_MAIN_USER,
                        COL_MASTER_USER_ID,
                        COL_MAN_SYNCED,
                        COL_GLOBAL_ID,
                        COL_MAN_MASTER_UPDATED_AT,
                        COL_USR_NAME,
                        COL_USR_EMAIL,
-                       COL_USR_USERNAME,
                        COL_LOCAL_ID]
             argsArray:@[[masterUser localMasterIdentifier],
                         [masterUser globalIdentifier],
                         [PEUtils millisecondsFromDate:[masterUser updatedAt]],
                         orNil([masterUser name]),
                         orNil([masterUser email]),
-                        orNil([masterUser username]),
                         [mainUser localMainIdentifier]]
                    db:db
                 error:errorBlk];
@@ -3175,7 +3172,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                          syncRetryAt:[PELMUtils dateFromResultSet:rs columnName:COL_MAN_SYNC_RETRY_AT]
                                                 name:[rs stringForColumn:COL_USR_NAME]
                                                email:[rs stringForColumn:COL_USR_EMAIL]
-                                            username:[rs stringForColumn:COL_USR_USERNAME]
                                             password:[rs stringForColumn:COL_USR_PASSWORD_HASH]];
 }
 
@@ -3197,7 +3193,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                          syncRetryAt:nil // NA (this is a main store-only column)
                                                 name:[rs stringForColumn:COL_USR_NAME]
                                                email:[rs stringForColumn:COL_USR_EMAIL]
-                                            username:[rs stringForColumn:COL_USR_USERNAME]
                                             password:[rs stringForColumn:COL_USR_PASSWORD_HASH]];
 }
 
@@ -3207,7 +3202,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                        globalIdentifier:[rs stringForColumn:COL_GLOBAL_ID]
                                               mediaType:[HCMediaType MediaTypeFromString:[rs stringForColumn:COL_MEDIA_TYPE]]
                                               relations:nil
-                                            deletedAt:nil // NA (this is a master store-only column)
+                                              deletedAt:nil // NA (this is a master store-only column)
                                               updatedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MAN_MASTER_UPDATED_AT]
                                    dateCopiedFromMaster:[PELMUtils dateFromResultSet:rs columnName:COL_MAN_DT_COPIED_DOWN_FROM_MASTER]
                                          editInProgress:[rs boolForColumn:COL_MAN_EDIT_IN_PROGRESS]
@@ -3830,7 +3825,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
           %@ = ?, \
           %@ = ?, \
           %@ = ?, \
-          %@ = ?, \
           %@ = ? \
           WHERE %@ = ?",
           TBL_MASTER_USER,        // table
@@ -3840,7 +3834,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
           COL_MST_DELETED_DT,     // col4
           COL_USR_NAME,           // col5
           COL_USR_EMAIL,          // col6
-          COL_USR_USERNAME,       // col7
           COL_USR_PASSWORD_HASH,  // col8
           COL_LOCAL_ID];          // where, col1
 }
@@ -3852,14 +3845,12 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
            orNil([PEUtils millisecondsFromDate:[user deletedAt]]),
            orNil([user name]),
            orNil([user email]),
-           orNil([user username]),
            orNil([user password]),
            [user localMasterIdentifier]];
 }
 
 - (NSString *)updateStmtForMainUser {
   return [NSString stringWithFormat:@"UPDATE %@ SET \
-          %@ = ?, \
           %@ = ?, \
           %@ = ?, \
           %@ = ?, \
@@ -3882,7 +3873,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
           COL_MAN_DT_COPIED_DOWN_FROM_MASTER, // col4
           COL_USR_NAME,                       // col5
           COL_USR_EMAIL,                      // col6
-          COL_USR_USERNAME,                   // col7
           COL_USR_PASSWORD_HASH,              // col8
           COL_MAN_EDIT_IN_PROGRESS,           // col10
           COL_MAN_SYNC_IN_PROGRESS,           // col11
@@ -3901,7 +3891,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
            orNil([PEUtils millisecondsFromDate:[user dateCopiedFromMaster]]),
            orNil([user name]),
            orNil([user email]),
-           orNil([user username]),
            orNil([user password]),
            [NSNumber numberWithBool:[user editInProgress]],
            [NSNumber numberWithBool:[user syncInProgress]],
@@ -3917,7 +3906,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                         db:(FMDatabase *)db
                      error:(PELMDaoErrorBlk)errorBlk {
   NSString *stmt = [NSString stringWithFormat:@"INSERT INTO %@ (%@, %@, %@, %@, %@, %@, \
-%@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, \
+%@, %@, %@, %@, %@, %@, %@, %@, %@, %@) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, \
 ?, ?, ?, ?, ?, ?, ?)",
                     TBL_MAIN_USER,
                     COL_LOCAL_ID,
@@ -3928,7 +3917,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                     COL_MAN_DT_COPIED_DOWN_FROM_MASTER,
                     COL_USR_NAME,
                     COL_USR_EMAIL,
-                    COL_USR_USERNAME,
                     COL_USR_PASSWORD_HASH,
                     COL_MAN_EDIT_IN_PROGRESS,
                     COL_MAN_SYNC_IN_PROGRESS,
@@ -3946,7 +3934,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                             orNil([PEUtils millisecondsFromDate:[user dateCopiedFromMaster]]),
                             orNil([user name]),
                             orNil([user email]),
-                            orNil([user username]),
                             orNil([user password]),
                             [NSNumber numberWithBool:[user editInProgress]],
                             [NSNumber numberWithBool:[user syncInProgress]],
@@ -3963,8 +3950,8 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
 - (void)insertIntoMasterUser:(FPUser *)user
                           db:(FMDatabase *)db
                        error:(PELMDaoErrorBlk)errorBlk {
-  NSString *stmt = [NSString stringWithFormat:@"INSERT INTO %@ (%@, %@, %@, \
-%@, %@, %@, %@, %@) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+  NSString *stmt = [NSString stringWithFormat:@"INSERT INTO %@ (%@, %@, \
+%@, %@, %@, %@, %@) VALUES (?, ?, ?, ?, ?, ?, ?)",
                     TBL_MASTER_USER,
                     COL_GLOBAL_ID,
                     COL_MEDIA_TYPE,
@@ -3972,7 +3959,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                     COL_MST_DELETED_DT,
                     COL_USR_NAME,
                     COL_USR_EMAIL,
-                    COL_USR_USERNAME,
                     COL_USR_PASSWORD_HASH];
   [PELMUtils doMasterInsert:stmt
                   argsArray:@[orNil([user globalIdentifier]),
@@ -3981,7 +3967,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                               orNil([PEUtils millisecondsFromDate:[user deletedAt]]),
                               orNil([user name]),
                               orNil([user email]),
-                              orNil([user username]),
                               orNil([user password])]
                      entity:user
                          db:db

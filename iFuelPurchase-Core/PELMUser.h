@@ -35,20 +35,17 @@ FOUNDATION_EXPORT NSString * const PELMLogoutRelation;
                       syncRetryAt:(NSDate *)syncRetryAt
                              name:(NSString *)name
                             email:(NSString *)email
-                         username:(NSString *)username
                          password:(NSString *)password;
 
 #pragma mark - Creation Functions
 
 + (PELMUser *)userWithName:(NSString *)name
                      email:(NSString *)email
-                  username:(NSString *)username
                   password:(NSString *)password
                  mediaType:(HCMediaType *)mediaType;
 
 + (PELMUser *)userWithName:(NSString *)name
                      email:(NSString *)email
-                  username:(NSString *)username
                   password:(NSString *)password
           globalIdentifier:(NSString *)globalIdentifier
                  mediaType:(HCMediaType *)mediaType
@@ -59,15 +56,11 @@ FOUNDATION_EXPORT NSString * const PELMLogoutRelation;
 
 - (void)overwrite:(PELMUser *)user;
 
-- (NSString *)usernameOrEmail;
-
 #pragma mark - Properties
 
 @property (nonatomic) NSString *name;
 
 @property (nonatomic) NSString *email;
-
-@property (nonatomic) NSString *username;
 
 @property (nonatomic) NSString *password;
 

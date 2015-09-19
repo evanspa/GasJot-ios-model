@@ -36,7 +36,6 @@ NSString * const PELMLogoutRelation = @"logout";
                       syncRetryAt:(NSDate *)syncRetryAt
                              name:(NSString *)name
                             email:(NSString *)email
-                         username:(NSString *)username
                          password:(NSString *)password {
   self = [super initWithLocalMainIdentifier:localMainIdentifier
                       localMasterIdentifier:localMasterIdentifier
@@ -58,7 +57,6 @@ NSString * const PELMLogoutRelation = @"logout";
   if (self) {
     _name = name;
     _email = email;
-    _username = username;
     _password = password;
   }
   return self;
@@ -84,7 +82,6 @@ NSString * const PELMLogoutRelation = @"logout";
                                                      syncRetryAt:[self syncRetryAt]
                                                             name:_name
                                                            email:_email
-                                                        username:_username
                                                         password:_password];
   return copy;
 }
@@ -93,12 +90,10 @@ NSString * const PELMLogoutRelation = @"logout";
 
 + (PELMUser *)userWithName:(NSString *)name
                    email:(NSString *)email
-                username:(NSString *)username
                 password:(NSString *)password
                mediaType:(HCMediaType *)mediaType {
   return [PELMUser userWithName:name
                         email:email
-                     username:username
                      password:password
              globalIdentifier:nil
                     mediaType:mediaType
@@ -108,7 +103,6 @@ NSString * const PELMLogoutRelation = @"logout";
 
 + (PELMUser *)userWithName:(NSString *)name
                    email:(NSString *)email
-                username:(NSString *)username
                 password:(NSString *)password
         globalIdentifier:(NSString *)globalIdentifier
                mediaType:(HCMediaType *)mediaType
@@ -131,7 +125,6 @@ NSString * const PELMLogoutRelation = @"logout";
                                            syncRetryAt:nil
                                                   name:name
                                                  email:email
-                                              username:username
                                               password:password];
 }
 
@@ -142,14 +135,6 @@ NSString * const PELMLogoutRelation = @"logout";
   [self setName:[user name]];
   [self setEmail:[user email]];
   [self setPassword:[user password]];
-  [self setUsername:[user username]];
-}
-
-- (NSString *)usernameOrEmail {
-  if (!([self username] == (id)[NSNull null] || [self username].length == 0)) {
-    return [self username];
-  }
-  return [self email];
 }
 
 #pragma mark - Equality
@@ -159,7 +144,6 @@ NSString * const PELMLogoutRelation = @"logout";
   if ([super isEqualToMainSupport:user]) {
     return [PEUtils isString:[self name] equalTo:[user name]] &&
     [PEUtils isString:[self email] equalTo:[user email]] &&
-    [PEUtils isString:[self username] equalTo:[user username]] &&
     [PEUtils isString:[self password] equalTo:[user password]];
   }
   return NO;
@@ -177,15 +161,14 @@ NSString * const PELMLogoutRelation = @"logout";
   return [super hash] ^
   [[self name] hash] ^
   [[self email] hash] ^
-  [[self username] hash] ^
   [[self password] hash];
 }
 
 - (NSString *)description {
   return [NSString stringWithFormat:@"%@, name: [%@], email: [%@], \
-          username: [%@], password: [%@]",
+password: [%@]",
           [super description],
-          _name, _email, _username, _password];
+          _name, _email, _password];
 }
 
 @end

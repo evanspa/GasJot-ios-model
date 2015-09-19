@@ -153,12 +153,12 @@
             authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
        completionHandler:(PELMRemoteMasterCompletionHandler)complHandler;
 
-- (void)loginWithUsernameOrEmail:(NSString *)usernameOrEmail
-                        password:(NSString *)password
-                         timeout:(NSInteger)timeout
-                 remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
-                    authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
-               completionHandler:(PELMRemoteMasterCompletionHandler)complHandler;
+- (void)loginWithEmail:(NSString *)email
+              password:(NSString *)password
+               timeout:(NSInteger)timeout
+       remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
+          authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
+     completionHandler:(PELMRemoteMasterCompletionHandler)complHandler;
 
 - (void)lightLoginForUser:(FPUser *)user
                  password:(NSString *)password

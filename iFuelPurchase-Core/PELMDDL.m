@@ -45,7 +45,6 @@ NSString * const TBL_MAIN_USER = @"main_user";
 // ----Columns------------------------------------------------------------------
 NSString * const COL_USR_NAME = @"name";
 NSString * const COL_USR_EMAIL = @"email";
-NSString * const COL_USR_USERNAME = @"username";
 NSString * const COL_USR_PASSWORD_HASH = @"password_hash";
 
 @implementation PELMDDL

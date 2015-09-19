@@ -515,18 +515,16 @@ accountClosedReasonHeaderName:accountClosedReasonHeaderName
 }
 
 - (FPUser *)newLocalUserWithError:(PELMDaoErrorBlk)errorBlk {
-  FPUser *user = [self userWithName:nil email:nil username:nil password:nil];
+  FPUser *user = [self userWithName:nil email:nil password:nil];
   [_localDao saveNewLocalUser:user error:errorBlk];
   return user;
 }
 
 - (FPUser *)userWithName:(NSString *)name
                    email:(NSString *)email
-                username:(NSString *)username
                 password:(NSString *)password {
   return [FPUser userWithName:name
                         email:email
-                     username:username
                      password:password
                     mediaType:[FPKnownMediaTypes userMediaTypeWithVersion:_userResMtVersion]];
 }
@@ -558,13 +556,13 @@ accountClosedReasonHeaderName:accountClosedReasonHeaderName
                           completionHandler:remoteMasterComplHandler];
 }
 
-- (void)loginWithUsernameOrEmail:(NSString *)usernameOrEmail
-                        password:(NSString *)password
-    andLinkRemoteUserToLocalUser:(FPUser *)localUser
-   preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
-                 remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
-               completionHandler:(FPFetchedEntityCompletionHandler)complHandler
-           localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler {
+- (void)loginWithEmail:(NSString *)email
+              password:(NSString *)password
+andLinkRemoteUserToLocalUser:(FPUser *)localUser
+preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
+       remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
+     completionHandler:(FPFetchedEntityCompletionHandler)complHandler
+ localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler {
   PELMRemoteMasterCompletionHandler masterStoreComplHandler =
   ^(NSString *newAuthTkn, NSString *globalId, id resourceModel, NSDictionary *rels,
     NSDate *lastModified, BOOL isConflict, BOOL gone, BOOL notFound, BOOL movedPermanently,
@@ -585,12 +583,12 @@ accountClosedReasonHeaderName:accountClosedReasonHeaderName
                                      userInfo:nil];
     complHandler(nil, error);
   };
-  [_remoteMasterDao loginWithUsernameOrEmail:usernameOrEmail
-                                    password:password
-                                     timeout:_timeout
-                             remoteStoreBusy:busyHandler
-                                authRequired:authReqdBlk
-                           completionHandler:masterStoreComplHandler];
+  [_remoteMasterDao loginWithEmail:email
+                          password:password
+                           timeout:_timeout
+                   remoteStoreBusy:busyHandler
+                      authRequired:authReqdBlk
+                 completionHandler:masterStoreComplHandler];
 }
 
 - (void)lightLoginForUser:(FPUser *)user

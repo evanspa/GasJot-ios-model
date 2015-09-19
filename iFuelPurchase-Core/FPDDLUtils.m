@@ -444,7 +444,6 @@ FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MAIN_VEHICLE,
 %@ INTEGER, \
 %@ TEXT, \
 %@ TEXT, \
-%@ TEXT, \
 %@ TEXT)", TBL_MASTER_USER,
                    COL_LOCAL_ID,           // col1
                    COL_GLOBAL_ID,          // col2
@@ -453,7 +452,6 @@ FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MAIN_VEHICLE,
                    COL_MST_DELETED_DT,     // col5
                    COL_USR_NAME,           // col6
                    COL_USR_EMAIL,          // col7
-                   COL_USR_USERNAME,       // col8
                    COL_USR_PASSWORD_HASH]; // col9
 }
 
@@ -465,7 +463,6 @@ FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MAIN_VEHICLE,
 %@ TEXT, \
 %@ INTEGER, \
 %@ INTEGER, \
-%@ TEXT, \
 %@ TEXT, \
 %@ TEXT, \
 %@ TEXT, \
@@ -486,7 +483,6 @@ FOREIGN KEY (%@) REFERENCES %@(%@))",
                    COL_MAN_DT_COPIED_DOWN_FROM_MASTER, // col6
                    COL_USR_NAME,                       // col7
                    COL_USR_EMAIL,                      // col8
-                   COL_USR_USERNAME,                   // col9
                    COL_USR_PASSWORD_HASH,              // col10
                    COL_MAN_EDIT_IN_PROGRESS,           // col12
                    COL_MAN_SYNC_IN_PROGRESS,           // col13

@@ -52,7 +52,6 @@ describe(@"FPCoordinatorDao", ^{
       user = [_coordDao newLocalUserWithError:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [user setName:@"Joe Smith"];
       [user setEmail:@"joe.smith@example.com"];
-      [user setUsername:@"smithjoe"];
       [user setPassword:@"pa55w0rd"];
       [_coordDao establishRemoteAccountForLocalUser:user
                       preserveExistingLocalEntities:YES

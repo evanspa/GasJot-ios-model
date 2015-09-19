@@ -157,7 +157,6 @@
   return ^ FPUser * (NSString *Two01MockResponseFile,
                      NSString *name,
                      NSString *email,
-                     NSString *username,
                      NSString *password,
                      FPCoordinatorDao *coordDao,
                      void (^waitBlock)(void)) {
@@ -170,7 +169,6 @@
     FPUser *localUser = [coordDao newLocalUserWithError:localDaoErrHandler];
     [localUser setName:name];
     [localUser setEmail:email];
-    [localUser setUsername:username];
     [localUser setPassword:password];
     FPSavedNewEntityCompletionHandler complHandler = ^(FPUser *savedUser, NSError *error) { };
     [coordDao establishRemoteAccountForLocalUser:localUser
@@ -190,7 +188,6 @@
     return [self newFreshUserMaker](@"http-response.users.POST.201",
                                     @"Joe Smith",
                                     @"joe.smith@example.com",
-                                    @"smithjoe",
                                     @"pa55w0rd",
                                     coordDao,
                                     waitBlock);

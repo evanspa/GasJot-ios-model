@@ -19,7 +19,7 @@ typedef void (^(^FPCoordTestingNewRemoteStoreBusyBlkMaker)(void))(NSDate *);
 typedef void (^(^FPCoordTestingNew1ErrArgComplHandlerBlkMaker)(void))(FPUser *, NSError *);
 typedef void (^(^FPCoordTestingNew0ErrArgComplHandlerBlkMaker)(void))(NSError *);
 typedef NSNumber * (^FPCoordTestingNumValueFetcher)(FPCoordinatorDao *, NSString *, NSString *, NSNumber *);
-typedef FPUser *(^FPCoordTestingFreshUserMaker)(NSString *, NSString *, NSString *, NSString *, NSString *, FPCoordinatorDao *, void (^)(void));
+typedef FPUser *(^FPCoordTestingFreshUserMaker)(NSString *, NSString *, NSString *, NSString *, FPCoordinatorDao *, void (^)(void));
 typedef FPUser * (^FPCoordTestingFreshJoeSmithMaker)(FPCoordinatorDao *, void (^waitBlock)(void));
 typedef FPToggler * (^FPCoordTestingObserver)(NSArray *);
 typedef void (^FPCoordTestingExpectedNumberOfEntitiesAsserter)(FPCoordinatorDao *, NSString *, int);

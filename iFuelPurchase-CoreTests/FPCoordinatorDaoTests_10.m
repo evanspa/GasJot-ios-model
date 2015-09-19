@@ -60,7 +60,6 @@ describe(@"FPCoordinatorDao", ^{
       [[theValue([user editInProgress]) should] beYes];
       [user setName:@"Paul Evans"];
       [user setEmail:@"paul.evans@example.com"];
-      [user setUsername:@"pevans"];
       _mocker(@"http-response.user.PUT.200", 0, 0);
       __block BOOL syncUserSuccess = NO;
       [_coordDao markAsDoneEditingAndSyncUserImmediate:user
@@ -81,7 +80,6 @@ describe(@"FPCoordinatorDao", ^{
       [user shouldNotBeNil];
       [[[user name] should] equal:@"Paul Evans"];
       [[[user email] should] equal:@"paul.evans@example.com"];
-      [[[user username] should] equal:@"pevans"];
       [[[user updatedAt] should] equal:[HCUtils rfc7231DateFromString:@"Wed, 03 Sep 2014 9:04:02 GMT"]];
       [_coordDao pruneAllSyncedEntitiesWithError:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[[_coordDao localDao] mainUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()] shouldBeNil]; // it should have been pruned

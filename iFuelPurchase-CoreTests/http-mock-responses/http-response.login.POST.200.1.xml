@@ -17,7 +17,6 @@
     <![CDATA[
       { "user/name": "Paul Evans",
         "user/email": "evansp2@gmail.com",
-        "user/username": "evansp2",
         "user/created-at": 1409644992000,
         "user/updated-at": 1409644992000,
         "_links": {

@@ -65,7 +65,6 @@ describe(@"FPUserSerializer", ^{
             FPUser *user = [pair resourceModel];
             [user shouldNotBeNil];
             [[[user name] should] equal:@"Paul Evans"];
-            [[[user username] should] equal:@"evansp2"];
             [[[user email] should] equal:@"evansp2@gmail.com"];
             [[[user relations] should] haveCountOf:3];
             [[[user vehicles] should] haveCountOf:2];

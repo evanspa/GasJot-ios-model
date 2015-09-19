@@ -665,17 +665,17 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
               otherHeaders:[self addFpIfUnmodifiedSinceHeaderToHeader:@{} entity:user]];
 }
 
-- (void)loginWithUsernameOrEmail:(NSString *)usernameOrEmail
-                        password:(NSString *)password
-                   loginRelation:(NSString *)loginRelation
-                         timeout:(NSInteger)timeout
-                 remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
-                    authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
-               completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
+- (void)loginWithEmail:(NSString *)email
+              password:(NSString *)password
+         loginRelation:(NSString *)loginRelation
+               timeout:(NSInteger)timeout
+       remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
+          authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
+     completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
   NSMutableDictionary *headers = [NSMutableDictionary new];
   [headers setObject:@"true" forKey:_establishSessionHeaderName];
   PELMLoginUser *loginUser = [[PELMLoginUser alloc] init];
-  [loginUser setUsernameOrEmail:usernameOrEmail];
+  [loginUser setEmail:email];
   [loginUser setPassword:password];
   [self doPostToRelation:[_restApiRelations objectForKey:loginRelation]
       resourceModelParam:loginUser
@@ -687,19 +687,19 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
             otherHeaders:headers];
 }
 
-- (void)loginWithUsernameOrEmail:(NSString *)usernameOrEmail
-                        password:(NSString *)password
-                         timeout:(NSInteger)timeout
-                 remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
-                    authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
-               completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
-  [self loginWithUsernameOrEmail:usernameOrEmail
-                        password:password
-                   loginRelation:PELMLoginRelation
-                         timeout:timeout
-                 remoteStoreBusy:busyHandler
-                    authRequired:authRequired
-               completionHandler:complHandler];
+- (void)loginWithEmail:(NSString *)email
+              password:(NSString *)password
+               timeout:(NSInteger)timeout
+       remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
+          authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
+     completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
+  [self loginWithEmail:email
+              password:password
+         loginRelation:PELMLoginRelation
+               timeout:timeout
+       remoteStoreBusy:busyHandler
+          authRequired:authRequired
+     completionHandler:complHandler];
 }
 
 - (void)lightLoginForUser:(FPUser *)user
@@ -708,13 +708,13 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
           remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
              authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
         completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
-  [self loginWithUsernameOrEmail:[user usernameOrEmail]
-                        password:password
-                   loginRelation:PELMLightLoginRelation
-                         timeout:timeout
-                 remoteStoreBusy:busyHandler
-                    authRequired:authRequired
-               completionHandler:complHandler];
+  [self loginWithEmail:[user email]
+              password:password
+         loginRelation:PELMLightLoginRelation
+               timeout:timeout
+       remoteStoreBusy:busyHandler
+          authRequired:authRequired
+     completionHandler:complHandler];
 }
 
 - (void)deleteUser:(FPUser *)user

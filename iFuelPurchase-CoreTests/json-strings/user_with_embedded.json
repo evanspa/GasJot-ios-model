@@ -4,7 +4,6 @@
   "payload": {
       "user/name": "Paul Evans",
       "user/email": "evansp2@gmail.com",
-      "user/username": "evansp2",
       "user/creation-date": "Tue, 02 Sep 2014 8:03:12 GMT",
       "_links": {
           "vehicles": {

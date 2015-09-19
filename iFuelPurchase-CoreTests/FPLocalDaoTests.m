@@ -74,7 +74,6 @@ describe(@"FPLocalDao", ^{
       // =======================================================================
       user = [FPUser userWithName:@"John Smith"
                             email:@"jsmith@example.com"
-                         username:@"jsmith"
                          password:@"IFJSOSKDF02910"
                      creationDate:[NSDate date]
                         mediaType:appJsonMediaType()];
@@ -183,7 +182,6 @@ describe(@"FPLocalDao", ^{
       // =======================================================================
       user = [FPUser userWithName:@"John Smith"
                             email:@"jsmith@example.com"
-                         username:@"jsmith"
                          password:@"IFJSOSKDF02910"
                      creationDate:[NSDate date]
                         mediaType:appJsonMediaType()];
@@ -283,7 +281,6 @@ describe(@"FPLocalDao", ^{
       // =======================================================================
       user = [FPUser userWithName:@"John Smith"
                             email:@"jsmith@example.com"
-                         username:@"jsmith"
                      password:@"IFJSOSKDF02910"
                      creationDate:[NSDate date]
                         mediaType:appJsonMediaType()];

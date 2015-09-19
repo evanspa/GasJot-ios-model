@@ -10,8 +10,8 @@
 #import "PELMLoginUser.h"
 #import <PEObjc-Commons/NSMutableDictionary+PEAdditions.h>
 
-NSString * const FPLoginUserUsernameOrEmailKey = @"user/username-or-email";
-NSString * const FPLoginUserPasswordKey        = @"user/password";
+NSString * const FPLoginUserEmailKey    = @"user/email";
+NSString * const FPLoginUserPasswordKey = @"user/password";
 
 @implementation FPLoginSerializer {
   FPUserSerializer *_userSerializer;
@@ -35,7 +35,7 @@ NSString * const FPLoginUserPasswordKey        = @"user/password";
 - (NSDictionary *)dictionaryWithResourceModel:(id)resourceModel {
   PELMLoginUser *loginUser = (PELMLoginUser *)resourceModel;
   NSMutableDictionary *userDict = [NSMutableDictionary dictionary];
-  [userDict setObjectIfNotNull:[loginUser usernameOrEmail] forKey:FPLoginUserUsernameOrEmailKey];
+  [userDict setObjectIfNotNull:[loginUser email] forKey:FPLoginUserEmailKey];
   [userDict setObjectIfNotNull:[loginUser password] forKey:FPLoginUserPasswordKey];
   return userDict;
 }

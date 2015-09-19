@@ -20,7 +20,6 @@ FOUNDATION_EXPORT NSString * const FPEnvironmentLogsRelation;
 
 FOUNDATION_EXPORT NSString * const FPUserNameField;
 FOUNDATION_EXPORT NSString * const FPUserEmailField;
-FOUNDATION_EXPORT NSString * const FPUserUsernameField;
 
 @interface FPUser : PELMUser <NSCopying>
 
@@ -43,20 +42,17 @@ FOUNDATION_EXPORT NSString * const FPUserUsernameField;
                       syncRetryAt:(NSDate *)syncRetryAt
                              name:(NSString *)name
                             email:(NSString *)email
-                         username:(NSString *)username
                          password:(NSString *)password;
 
 #pragma mark - Creation Functions
 
 + (FPUser *)userWithName:(NSString *)name
                    email:(NSString *)email
-                username:(NSString *)username
                 password:(NSString *)password
                mediaType:(HCMediaType *)mediaType;
 
 + (FPUser *)userWithName:(NSString *)name
                    email:(NSString *)email
-                username:(NSString *)username
                 password:(NSString *)password
         globalIdentifier:(NSString *)globalIdentifier
                mediaType:(HCMediaType *)mediaType

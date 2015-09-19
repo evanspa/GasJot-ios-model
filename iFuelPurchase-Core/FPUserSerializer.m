@@ -14,7 +14,6 @@
 
 NSString * const FPUserFullnameKey     = @"user/name";
 NSString * const FPUserEmailKey        = @"user/email";
-NSString * const FPUserUsernameKey     = @"user/username";
 NSString * const FPUserPasswordKey     = @"user/password";
 NSString * const FPUserCreatedAtKey    = @"user/created-at";
 NSString * const FPUserUpdatedAtKey    = @"user/updated-at";
@@ -28,7 +27,6 @@ NSString * const FPUserUpdatedAtKey    = @"user/updated-at";
   NSMutableDictionary *userDict = [NSMutableDictionary dictionary];
   [userDict nullSafeSetObject:[user name] forKey:FPUserFullnameKey];
   [userDict nullSafeSetObject:[user email] forKey:FPUserEmailKey];
-  [userDict nullSafeSetObject:[user username] forKey:FPUserUsernameKey];
   [userDict setObjectIfNotNull:[user password] forKey:FPUserPasswordKey];
   return userDict;
 }
@@ -42,8 +40,7 @@ NSString * const FPUserUpdatedAtKey    = @"user/updated-at";
                      lastModified:(NSDate *)lastModified {
   return [FPUser userWithName:[resDict objectForKey:FPUserFullnameKey]
                         email:[resDict objectForKey:FPUserEmailKey]
-                     username:[resDict objectForKey:FPUserUsernameKey]
-                     password:[resDict objectForKey:FPUserPasswordKey]                 
+                     password:[resDict objectForKey:FPUserPasswordKey]
              globalIdentifier:location
                     mediaType:mediaType
                     relations:relations

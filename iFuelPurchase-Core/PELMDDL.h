@@ -45,7 +45,6 @@ FOUNDATION_EXPORT NSString * const TBL_MAIN_USER;
 // ----Columns------------------------------------------------------------------
 FOUNDATION_EXPORT NSString * const COL_USR_NAME;
 FOUNDATION_EXPORT NSString * const COL_USR_EMAIL;
-FOUNDATION_EXPORT NSString * const COL_USR_USERNAME;
 FOUNDATION_EXPORT NSString * const COL_USR_PASSWORD_HASH;
 
 @interface PELMDDL : NSObject

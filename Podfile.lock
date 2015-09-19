@@ -71,10 +71,13 @@ PODS:
   - UICKeyChainStore (2.0.6)
 
 DEPENDENCIES:
+  - AFNetworking (~> 2.5.4)
+  - BlocksKit (~> 2.2.5)
   - CocoaLumberjack (~> 1.9)
   - FMDB (~> 2.5)
   - KissXML (~> 5.0)
   - Kiwi (~> 2.3.1)
+  - OHHTTPStubs (~> 3.1.12)
   - PEFuelPurchase-Common (~> 1.0.8)
   - PEHateoas-Client (~> 1.0.6)
   - PEObjc-Commons (~> 1.0.56)

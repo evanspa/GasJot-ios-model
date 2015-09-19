@@ -14,6 +14,7 @@ pod 'BlocksKit', '~> 2.2.5', :inhibit_warnings => true
 
 target :'PEFuelPurchase-ModelTests',:exclusive => true do
   pod 'KissXML', '~> 5.0', :inhibit_warnings => true
-  pod 'Kiwi', '~> 2.3.1'
+  pod 'Kiwi', '~> 2.3.1', :inhibit_warnings => true
+  pod 'OHHTTPStubs', '~> 3.1.12', :inhibit_warnings => true
   pod 'PEWire-Control', '~> 1.0.2'
 end
