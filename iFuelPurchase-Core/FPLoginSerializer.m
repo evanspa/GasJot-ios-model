@@ -10,7 +10,7 @@
 #import "PELMLoginUser.h"
 #import <PEObjc-Commons/NSMutableDictionary+PEAdditions.h>
 
-NSString * const FPLoginUserEmailKey    = @"user/email";
+NSString * const FPLoginUserEmailKey    = @"user/username-or-email";
 NSString * const FPLoginUserPasswordKey = @"user/password";
 
 @implementation FPLoginSerializer {
