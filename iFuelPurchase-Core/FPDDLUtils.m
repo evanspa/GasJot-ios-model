@@ -87,6 +87,7 @@ NSString * const COL_ENVL_DTE = @"dte";
 %@ INTEGER, \
 %@ INTEGER, \
 %@ INTEGER, \
+%@ INTEGER, \
 %@ TEXT, \
 %@ TEXT, \
 %@ INTEGER, \
@@ -99,6 +100,7 @@ FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MASTER_ENV_LOG,
                    COL_MASTER_VEHICLE_ID,         // col3
                    COL_GLOBAL_ID,                 // col4
                    COL_MEDIA_TYPE,                // col5
+                   COL_MST_CREATED_AT,
                    COL_MST_UPDATED_AT,         // col6
                    COL_MST_DELETED_DT,            // col7
                    COL_ENVL_ODOMETER_READING,     // col8
@@ -179,6 +181,7 @@ FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MAIN_ENV_LOG,
 %@ TEXT, \
 %@ INTEGER, \
 %@ INTEGER, \
+%@ INTEGER, \
 %@ TEXT, \
 %@ TEXT, \
 %@ INTEGER, \
@@ -194,6 +197,7 @@ FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MASTER_FUELPURCHASE_LOG,
                    COL_MASTER_FUELSTATION_ID,               // col4
                    COL_GLOBAL_ID,                           // col5
                    COL_MEDIA_TYPE,                          // col6
+                   COL_MST_CREATED_AT,
                    COL_MST_UPDATED_AT,                   // col7
                    COL_MST_DELETED_DT,                      // col8
                    COL_FUELPL_NUM_GALLONS,                  // col9
@@ -281,6 +285,7 @@ FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MAIN_FUELPURCHASE_LOG,
 %@ TEXT, \
 %@ INTEGER, \
 %@ INTEGER, \
+%@ INTEGER, \
 %@ TEXT, \
 %@ TEXT, \
 %@ TEXT, \
@@ -292,6 +297,7 @@ FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MASTER_FUEL_STATION,
                    COL_MASTER_USER_ID,     // col2
                    COL_GLOBAL_ID,          // col3
                    COL_MEDIA_TYPE,         // col4
+                   COL_MST_CREATED_AT,
                    COL_MST_UPDATED_AT,  // col5
                    COL_MST_DELETED_DT,     // col6
                    COL_FUELST_NAME,        // col7
@@ -361,6 +367,7 @@ FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MAIN_FUEL_STATION,
 %@ TEXT, \
 %@ INTEGER, \
 %@ INTEGER, \
+%@ INTEGER, \
 %@ TEXT, \
 %@ INTEGER, \
 %@ TEXT, \
@@ -369,6 +376,7 @@ FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MASTER_VEHICLE,
                    COL_MASTER_USER_ID,     // col2
                    COL_GLOBAL_ID,          // col3
                    COL_MEDIA_TYPE,         // col4
+                   COL_MST_CREATED_AT,
                    COL_MST_UPDATED_AT,  // col5
                    COL_MST_DELETED_DT,     // col6
                    COL_VEH_NAME,           // col7
@@ -442,17 +450,21 @@ FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MAIN_VEHICLE,
 %@ TEXT, \
 %@ INTEGER, \
 %@ INTEGER, \
+%@ INTEGER, \
 %@ TEXT, \
 %@ TEXT, \
-%@ TEXT)", TBL_MASTER_USER,
+%@ TEXT, \
+%@ INTEGER)", TBL_MASTER_USER,
                    COL_LOCAL_ID,           // col1
                    COL_GLOBAL_ID,          // col2
                    COL_MEDIA_TYPE,         // col3
-                   COL_MST_UPDATED_AT,  // col4
-                   COL_MST_DELETED_DT,     // col5
-                   COL_USR_NAME,           // col6
-                   COL_USR_EMAIL,          // col7
-                   COL_USR_PASSWORD_HASH]; // col9
+                   COL_MST_CREATED_AT,  // col4
+                   COL_MST_UPDATED_AT,  // col5
+                   COL_MST_DELETED_DT,     // col6
+                   COL_USR_NAME,           // col7
+                   COL_USR_EMAIL,          // col8
+                   COL_USR_PASSWORD_HASH, // col9
+                   COL_USR_VERIFIED_AT];
 }
 
 + (NSString *)mainUserDDL {
@@ -473,6 +485,7 @@ FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MAIN_VEHICLE,
 %@ INTEGER, \
 %@ INTEGER, \
 %@ INTEGER, \
+%@ INTEGER, \
 FOREIGN KEY (%@) REFERENCES %@(%@))",
                    TBL_MAIN_USER,                      // table
                    COL_LOCAL_ID,                       // col1
@@ -484,6 +497,7 @@ FOREIGN KEY (%@) REFERENCES %@(%@))",
                    COL_USR_NAME,                       // col7
                    COL_USR_EMAIL,                      // col8
                    COL_USR_PASSWORD_HASH,              // col10
+                   COL_USR_VERIFIED_AT,
                    COL_MAN_EDIT_IN_PROGRESS,           // col12
                    COL_MAN_SYNC_IN_PROGRESS,           // col13
                    COL_MAN_SYNCED,                     // col14

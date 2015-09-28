@@ -24,6 +24,7 @@ NSString * const PELMLogoutRelation = @"logout";
                  globalIdentifier:(NSString *)globalIdentifier
                         mediaType:(HCMediaType *)mediaType
                         relations:(NSDictionary *)relations
+                        createdAt:(NSDate *)createdAt
                         deletedAt:(NSDate *)deletedAt
                         updatedAt:(NSDate *)updatedAt
              dateCopiedFromMaster:(NSDate *)dateCopiedFromMaster
@@ -36,7 +37,8 @@ NSString * const PELMLogoutRelation = @"logout";
                       syncRetryAt:(NSDate *)syncRetryAt
                              name:(NSString *)name
                             email:(NSString *)email
-                         password:(NSString *)password {
+                         password:(NSString *)password
+                       verifiedAt:(NSDate *)verifiedAt {
   self = [super initWithLocalMainIdentifier:localMainIdentifier
                       localMasterIdentifier:localMasterIdentifier
                            globalIdentifier:globalIdentifier
@@ -44,6 +46,7 @@ NSString * const PELMLogoutRelation = @"logout";
                           masterEntityTable:TBL_MASTER_USER
                                   mediaType:mediaType
                                   relations:relations
+                                  createdAt:createdAt
                                   deletedAt:deletedAt
                                   updatedAt:updatedAt
                        dateCopiedFromMaster:dateCopiedFromMaster
@@ -58,6 +61,7 @@ NSString * const PELMLogoutRelation = @"logout";
     _name = name;
     _email = email;
     _password = password;
+    _verifiedAt = verifiedAt;
   }
   return self;
 }
@@ -70,6 +74,7 @@ NSString * const PELMLogoutRelation = @"logout";
                                                 globalIdentifier:[self globalIdentifier]
                                                        mediaType:[self mediaType]
                                                        relations:[self relations]
+                                                       createdAt:[self createdAt]
                                                        deletedAt:[self deletedAt]
                                                        updatedAt:[self updatedAt]
                                             dateCopiedFromMaster:[self dateCopiedFromMaster]
@@ -82,38 +87,44 @@ NSString * const PELMLogoutRelation = @"logout";
                                                      syncRetryAt:[self syncRetryAt]
                                                             name:_name
                                                            email:_email
-                                                        password:_password];
+                                                        password:_password
+                                                      verifiedAt:_verifiedAt];
   return copy;
 }
 
 #pragma mark - Creation Functions
 
 + (PELMUser *)userWithName:(NSString *)name
-                   email:(NSString *)email
-                password:(NSString *)password
-               mediaType:(HCMediaType *)mediaType {
+                     email:(NSString *)email
+                  password:(NSString *)password
+                 mediaType:(HCMediaType *)mediaType {
   return [PELMUser userWithName:name
-                        email:email
-                     password:password
-             globalIdentifier:nil
-                    mediaType:mediaType
-                    relations:nil
-                    updatedAt:nil];
+                          email:email
+                       password:password
+               globalIdentifier:nil
+                      mediaType:mediaType
+                      relations:nil
+                      createdAt:nil
+                      deletedAt:nil
+                      updatedAt:nil];
 }
 
 + (PELMUser *)userWithName:(NSString *)name
-                   email:(NSString *)email
-                password:(NSString *)password
-        globalIdentifier:(NSString *)globalIdentifier
-               mediaType:(HCMediaType *)mediaType
-               relations:(NSDictionary *)relations
-               updatedAt:(NSDate *)updatedAt {
+                     email:(NSString *)email
+                  password:(NSString *)password
+          globalIdentifier:(NSString *)globalIdentifier
+                 mediaType:(HCMediaType *)mediaType
+                 relations:(NSDictionary *)relations
+                 createdAt:(NSDate *)createdAt
+                 deletedAt:(NSDate *)deletedAt
+                 updatedAt:(NSDate *)updatedAt {
   return [[PELMUser alloc] initWithLocalMainIdentifier:nil
                                  localMasterIdentifier:nil
                                       globalIdentifier:globalIdentifier
                                              mediaType:mediaType
                                              relations:relations
-                                           deletedAt:nil
+                                             createdAt:createdAt
+                                             deletedAt:deletedAt
                                              updatedAt:updatedAt
                                   dateCopiedFromMaster:nil
                                         editInProgress:NO
@@ -125,7 +136,8 @@ NSString * const PELMLogoutRelation = @"logout";
                                            syncRetryAt:nil
                                                   name:name
                                                  email:email
-                                              password:password];
+                                              password:password
+                                            verifiedAt:nil];
 }
 
 #pragma mark - Methods
@@ -135,6 +147,7 @@ NSString * const PELMLogoutRelation = @"logout";
   [self setName:[user name]];
   [self setEmail:[user email]];
   [self setPassword:[user password]];
+  [self setVerifiedAt:[user verifiedAt]];
 }
 
 #pragma mark - Equality
@@ -144,7 +157,8 @@ NSString * const PELMLogoutRelation = @"logout";
   if ([super isEqualToMainSupport:user]) {
     return [PEUtils isString:[self name] equalTo:[user name]] &&
     [PEUtils isString:[self email] equalTo:[user email]] &&
-    [PEUtils isString:[self password] equalTo:[user password]];
+    [PEUtils isString:[self password] equalTo:[user password]] &&
+    [PEUtils isDate:[self verifiedAt] equalTo:[user verifiedAt]];
   }
   return NO;
 }
@@ -161,14 +175,15 @@ NSString * const PELMLogoutRelation = @"logout";
   return [super hash] ^
   [[self name] hash] ^
   [[self email] hash] ^
-  [[self password] hash];
+  [[self password] hash] ^
+  [[self verifiedAt] hash];
 }
 
 - (NSString *)description {
   return [NSString stringWithFormat:@"%@, name: [%@], email: [%@], \
-password: [%@]",
+password: [%@], verified-at: [%@]",
           [super description],
-          _name, _email, _password];
+          _name, _email, _password, _verifiedAt];
 }
 
 @end

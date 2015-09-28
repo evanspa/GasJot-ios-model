@@ -23,6 +23,7 @@ FOUNDATION_EXPORT NSString * const PELMLogoutRelation;
                  globalIdentifier:(NSString *)globalIdentifier
                         mediaType:(HCMediaType *)mediaType
                         relations:(NSDictionary *)relations
+                        createdAt:(NSDate *)createdAt
                         deletedAt:(NSDate *)deletedAt
                         updatedAt:(NSDate *)updatedAt
              dateCopiedFromMaster:(NSDate *)dateCopiedFromMaster
@@ -35,7 +36,8 @@ FOUNDATION_EXPORT NSString * const PELMLogoutRelation;
                       syncRetryAt:(NSDate *)syncRetryAt
                              name:(NSString *)name
                             email:(NSString *)email
-                         password:(NSString *)password;
+                         password:(NSString *)password
+                       verifiedAt:(NSDate *)verifiedAt;
 
 #pragma mark - Creation Functions
 
@@ -50,6 +52,8 @@ FOUNDATION_EXPORT NSString * const PELMLogoutRelation;
           globalIdentifier:(NSString *)globalIdentifier
                  mediaType:(HCMediaType *)mediaType
                  relations:(NSDictionary *)relations
+                 createdAt:(NSDate *)createdAt
+                 deletedAt:(NSDate *)deletedAt
                  updatedAt:(NSDate *)updatedAt;
 
 #pragma mark - Methods
@@ -63,6 +67,8 @@ FOUNDATION_EXPORT NSString * const PELMLogoutRelation;
 @property (nonatomic) NSString *email;
 
 @property (nonatomic) NSString *password;
+
+@property (nonatomic) NSDate *verifiedAt;
 
 #pragma mark - Equality
 

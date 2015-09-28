@@ -17,6 +17,7 @@ NSString * const FPUserEmailKey        = @"user/email";
 NSString * const FPUserPasswordKey     = @"user/password";
 NSString * const FPUserCreatedAtKey    = @"user/created-at";
 NSString * const FPUserUpdatedAtKey    = @"user/updated-at";
+NSString * const FPUserDeletedAtKey    = @"user/deleted-at";
 
 @implementation FPUserSerializer
 
@@ -44,6 +45,8 @@ NSString * const FPUserUpdatedAtKey    = @"user/updated-at";
              globalIdentifier:location
                     mediaType:mediaType
                     relations:relations
+                    createdAt:[resDict dateSince1970ForKey:FPUserCreatedAtKey]
+                    deletedAt:[resDict dateSince1970ForKey:FPUserDeletedAtKey]
                     updatedAt:[resDict dateSince1970ForKey:FPUserUpdatedAtKey]];
 }
 

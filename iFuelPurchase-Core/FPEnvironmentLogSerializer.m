@@ -20,6 +20,7 @@ NSString * const FPEnvironmentLogReportedAvgMphKey      = @"envlog/reported-avg-
 NSString * const FPEnvironmentLogReportedOutsideTempKey = @"envlog/reported-outside-temp";
 NSString * const FPEnvironmentLogLogDateKey             = @"envlog/logged-at";
 NSString * const FPEnvironmentLogReportedDteKey         = @"envlog/dte";
+NSString * const FPEnvironmentLogCreatedAtKey           = @"envlog/created-at";
 NSString * const FPEnvironmentLogUpdatedAtKey           = @"envlog/updated-at";
 NSString * const FPEnvironmentLogDeletedAtKey           = @"envlog/deleted-at";
 
@@ -48,20 +49,19 @@ NSString * const FPEnvironmentLogDeletedAtKey           = @"envlog/deleted-at";
                         mediaType:(HCMediaType *)mediaType
                          location:(NSString *)location
                      lastModified:(NSDate *)lastModified {
-  FPEnvironmentLog *envlog =
-    [FPEnvironmentLog
-     envLogWithOdometer:resDict[FPEnvironmentLogOdometerKey]
-         reportedAvgMpg:resDict[FPEnvironmentLogReportedAvgMpgKey]
-         reportedAvgMph:resDict[FPEnvironmentLogReportedAvgMphKey]
-    reportedOutsideTemp:resDict[FPEnvironmentLogReportedOutsideTempKey]
-                logDate:[resDict dateSince1970ForKey:FPEnvironmentLogLogDateKey]
-            reportedDte:resDict[FPEnvironmentLogReportedDteKey]
-       globalIdentifier:location
-              mediaType:mediaType
-              relations:relations
-              updatedAt:[resDict dateSince1970ForKey:FPEnvironmentLogUpdatedAtKey]];
+  FPEnvironmentLog *envlog = [FPEnvironmentLog envLogWithOdometer:resDict[FPEnvironmentLogOdometerKey]
+                                                   reportedAvgMpg:resDict[FPEnvironmentLogReportedAvgMpgKey]
+                                                   reportedAvgMph:resDict[FPEnvironmentLogReportedAvgMphKey]
+                                              reportedOutsideTemp:resDict[FPEnvironmentLogReportedOutsideTempKey]
+                                                          logDate:[resDict dateSince1970ForKey:FPEnvironmentLogLogDateKey]
+                                                      reportedDte:resDict[FPEnvironmentLogReportedDteKey]
+                                                 globalIdentifier:location
+                                                        mediaType:mediaType
+                                                        relations:relations
+                                                        createdAt:[resDict dateSince1970ForKey:FPEnvironmentLogCreatedAtKey]
+                                                        deletedAt:[resDict dateSince1970ForKey:FPEnvironmentLogDeletedAtKey]
+                                                        updatedAt:[resDict dateSince1970ForKey:FPEnvironmentLogUpdatedAtKey]];
   [envlog setVehicleGlobalIdentifier:resDict[FPEnvironmentLogVehicleGlobalIdKey]];
-  [envlog setDeletedAt:resDict[FPEnvironmentLogDeletedAtKey]];
   return envlog;
 }
 

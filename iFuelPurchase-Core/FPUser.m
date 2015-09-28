@@ -15,9 +15,11 @@ NSString * const FPVehiclesRelation = @"vehicles";
 NSString * const FPFuelStationsRelation = @"fuelstations";
 NSString * const FPFuelPurchaseLogsRelation = @"fuelpurchase-logs";
 NSString * const FPEnvironmentLogsRelation = @"environment-logs";
+NSString * const FPSendEmailConfirmationRelation = @"send-email-confirmation";
 
 NSString * const FPUserNameField = @"FPUserNameField";
 NSString * const FPUserEmailField = @"FPUserEmailField";
+NSString * const FPUserVerifiedAtField = @"FPUserVerifiedAtField";
 
 @implementation FPUser {
   NSMutableArray *_vehicles;
@@ -33,6 +35,7 @@ NSString * const FPUserEmailField = @"FPUserEmailField";
                  globalIdentifier:(NSString *)globalIdentifier
                         mediaType:(HCMediaType *)mediaType
                         relations:(NSDictionary *)relations
+                        createdAt:(NSDate *)createdAt
                         deletedAt:(NSDate *)deletedAt
                         updatedAt:(NSDate *)updatedAt
              dateCopiedFromMaster:(NSDate *)dateCopiedFromMaster
@@ -45,12 +48,14 @@ NSString * const FPUserEmailField = @"FPUserEmailField";
                       syncRetryAt:(NSDate *)syncRetryAt
                              name:(NSString *)name
                             email:(NSString *)email
-                         password:(NSString *)password {
+                         password:(NSString *)password
+                       verifiedAt:(NSDate *)verifiedAt {
   self = [super initWithLocalMainIdentifier:localMainIdentifier
                       localMasterIdentifier:localMasterIdentifier
                            globalIdentifier:globalIdentifier
                                   mediaType:mediaType
                                   relations:relations
+                                  createdAt:createdAt
                                   deletedAt:deletedAt
                                   updatedAt:updatedAt
                        dateCopiedFromMaster:dateCopiedFromMaster
@@ -63,7 +68,8 @@ NSString * const FPUserEmailField = @"FPUserEmailField";
                                 syncRetryAt:syncRetryAt
                                        name:name
                                       email:email
-                                   password:password];
+                                   password:password
+                                 verifiedAt:verifiedAt];
   if (self) {
     _vehicles = [NSMutableArray array];
     _fuelStations = [NSMutableArray array];
@@ -81,7 +87,8 @@ NSString * const FPUserEmailField = @"FPUserEmailField";
                                             globalIdentifier:[self globalIdentifier]
                                                    mediaType:[self mediaType]
                                                    relations:[self relations]
-                                                 deletedAt:[self deletedAt]
+                                                   createdAt:[self createdAt]
+                                                   deletedAt:[self deletedAt]
                                                    updatedAt:[self updatedAt]
                                         dateCopiedFromMaster:[self dateCopiedFromMaster]
                                               editInProgress:[self editInProgress]
@@ -93,7 +100,8 @@ NSString * const FPUserEmailField = @"FPUserEmailField";
                                                  syncRetryAt:[self syncRetryAt]
                                                         name:[self name]
                                                        email:[self email]
-                                                    password:[self password]];
+                                                    password:[self password]
+                                                  verifiedAt:[self verifiedAt]];
   return copy;
 }
 
@@ -109,6 +117,8 @@ NSString * const FPUserEmailField = @"FPUserEmailField";
              globalIdentifier:nil
                     mediaType:mediaType
                     relations:nil
+                    createdAt:nil
+                    deletedAt:nil
                     updatedAt:nil];
 }
 
@@ -118,13 +128,16 @@ NSString * const FPUserEmailField = @"FPUserEmailField";
         globalIdentifier:(NSString *)globalIdentifier
                mediaType:(HCMediaType *)mediaType
                relations:(NSDictionary *)relations
+               createdAt:(NSDate *)createdAt
+               deletedAt:(NSDate *)deletedAt
                updatedAt:(NSDate *)updatedAt {
   return [[FPUser alloc] initWithLocalMainIdentifier:nil
                                localMasterIdentifier:nil
                                     globalIdentifier:globalIdentifier
                                            mediaType:mediaType
                                            relations:relations
-                                         deletedAt:nil
+                                           createdAt:createdAt
+                                           deletedAt:deletedAt
                                            updatedAt:updatedAt
                                 dateCopiedFromMaster:nil
                                       editInProgress:NO
@@ -136,7 +149,8 @@ NSString * const FPUserEmailField = @"FPUserEmailField";
                                          syncRetryAt:nil
                                                 name:name
                                                email:email
-                                            password:password];
+                                            password:password
+                                          verifiedAt:nil];
 }
 
 #pragma mark - Merging

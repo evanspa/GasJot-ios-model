@@ -27,6 +27,7 @@ NSString * const FPFuelstationLongitudeField = @"FPFuelstationLongitudeField";
                  globalIdentifier:(NSString *)globalIdentifier
                         mediaType:(HCMediaType *)mediaType
                         relations:(NSDictionary *)relations
+                        createdAt:(NSDate *)createdAt
                         deletedAt:(NSDate *)deletedAt
                         updatedAt:(NSDate *)updatedAt
              dateCopiedFromMaster:(NSDate *)dateCopiedFromMaster
@@ -51,6 +52,7 @@ NSString * const FPFuelstationLongitudeField = @"FPFuelstationLongitudeField";
                           masterEntityTable:TBL_MASTER_FUEL_STATION
                                   mediaType:mediaType
                                   relations:relations
+                                  createdAt:createdAt
                                   deletedAt:deletedAt
                                   updatedAt:updatedAt
                        dateCopiedFromMaster:dateCopiedFromMaster
@@ -81,6 +83,7 @@ NSString * const FPFuelstationLongitudeField = @"FPFuelstationLongitudeField";
                                                           globalIdentifier:[self globalIdentifier]
                                                                  mediaType:[self mediaType]
                                                                  relations:[self relations]
+                                                                 createdAt:[self createdAt]
                                                                  deletedAt:[self deletedAt]
                                                                  updatedAt:[self updatedAt]
                                                       dateCopiedFromMaster:[self dateCopiedFromMaster]
@@ -121,7 +124,9 @@ NSString * const FPFuelstationLongitudeField = @"FPFuelstationLongitudeField";
                            globalIdentifier:nil
                                   mediaType:mediaType
                                   relations:nil
-                               updatedAt:nil];
+                                  createdAt:nil
+                                  deletedAt:nil
+                                  updatedAt:nil];
 }
 
 + (FPFuelStation *)fuelStationWithName:(NSString *)name
@@ -134,14 +139,17 @@ NSString * const FPFuelstationLongitudeField = @"FPFuelstationLongitudeField";
                       globalIdentifier:(NSString *)globalIdentifier
                              mediaType:(HCMediaType *)mediaType
                              relations:(NSDictionary *)relations
-                          updatedAt:(NSDate *)updatedAt {
+                             createdAt:(NSDate *)createdAt
+                             deletedAt:(NSDate *)deletedAt
+                             updatedAt:(NSDate *)updatedAt {
   return [[FPFuelStation alloc] initWithLocalMainIdentifier:nil
                                       localMasterIdentifier:nil
                                            globalIdentifier:globalIdentifier
                                                   mediaType:mediaType
                                                   relations:relations
-                                                deletedAt:nil
-                                                updatedAt:updatedAt
+                                                  createdAt:createdAt
+                                                  deletedAt:deletedAt
+                                                  updatedAt:updatedAt
                                        dateCopiedFromMaster:nil
                                              editInProgress:NO
                                              syncInProgress:NO
@@ -165,8 +173,9 @@ NSString * const FPFuelstationLongitudeField = @"FPFuelstationLongitudeField";
                                            globalIdentifier:nil
                                                   mediaType:nil
                                                   relations:nil
-                                                deletedAt:nil
-                                               updatedAt:nil
+                                                  createdAt:nil
+                                                  deletedAt:nil
+                                                  updatedAt:nil
                                        dateCopiedFromMaster:nil
                                              editInProgress:NO
                                              syncInProgress:NO

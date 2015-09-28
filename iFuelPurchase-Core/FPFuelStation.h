@@ -26,6 +26,7 @@ FOUNDATION_EXPORT NSString * const FPFuelstationLongitudeField;
                  globalIdentifier:(NSString *)globalIdentifier
                         mediaType:(HCMediaType *)mediaType
                         relations:(NSDictionary *)relations
+                        createdAt:(NSDate *)createdAt
                         deletedAt:(NSDate *)deletedAt
                         updatedAt:(NSDate *)updatedAt
              dateCopiedFromMaster:(NSDate *)dateCopiedFromMaster
@@ -65,6 +66,8 @@ FOUNDATION_EXPORT NSString * const FPFuelstationLongitudeField;
                       globalIdentifier:(NSString *)globalIdentifier
                              mediaType:(HCMediaType *)mediaType
                              relations:(NSDictionary *)relations
+                             createdAt:(NSDate *)createdAt
+                             deletedAt:(NSDate *)deletedAt
                              updatedAt:(NSDate *)updatedAt;
 
 + (FPFuelStation *)fuelStationWithLocalMasterIdentifier:(NSNumber *)localMasterIdentifier;

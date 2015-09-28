@@ -25,6 +25,7 @@
       { "user/name": "Paul Evans",
         "user/email": "paul.evans@example.com",
         "user/username": "pevans",
+        "user/created-at": 1409735042000,
         "user/updated-at": 1409735042000,
         "_links": {
           "self": {

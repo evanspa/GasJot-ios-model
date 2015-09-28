@@ -15,6 +15,7 @@
 NSString * const FPVehicleNameKey          = @"fpvehicle/name";
 NSString * const FPVehicleDefaultOctaneKey = @"fpvehicle/default-octane";
 NSString * const FPVehicleFuelCapacityKey  = @"fpvehicle/fuel-capacity";
+NSString * const FPVehicleCreatedAtKey     = @"fpvehicle/created-at";
 NSString * const FPVehicleUpdatedAtKey     = @"fpvehicle/updated-at";
 NSString * const FPVehicleDeletedAtKey     = @"fpvehicle/deleted-at";
 
@@ -44,8 +45,9 @@ NSString * const FPVehicleDeletedAtKey     = @"fpvehicle/deleted-at";
                                  globalIdentifier:location
                                         mediaType:mediaType
                                         relations:relations
+                                        createdAt:[resDict dateSince1970ForKey:FPVehicleCreatedAtKey]
+                                        deletedAt:[resDict dateSince1970ForKey:FPVehicleDeletedAtKey]
                                         updatedAt:[resDict dateSince1970ForKey:FPVehicleUpdatedAtKey]];
-  [vehicle setDeletedAt:resDict[FPVehicleDeletedAtKey]];
   return vehicle;
 }
 

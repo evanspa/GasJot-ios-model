@@ -3160,6 +3160,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                     globalIdentifier:[rs stringForColumn:COL_GLOBAL_ID]
                                            mediaType:[HCMediaType MediaTypeFromString:[rs stringForColumn:COL_MEDIA_TYPE]]
                                            relations:nil
+                                           createdAt:nil // NA (this is a master store-only column)
                                            deletedAt:nil // NA (this is a master store-only column)
                                            updatedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MAN_MASTER_UPDATED_AT]
                                 dateCopiedFromMaster:[PELMUtils dateFromResultSet:rs columnName:COL_MAN_DT_COPIED_DOWN_FROM_MASTER]
@@ -3172,7 +3173,8 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                          syncRetryAt:[PELMUtils dateFromResultSet:rs columnName:COL_MAN_SYNC_RETRY_AT]
                                                 name:[rs stringForColumn:COL_USR_NAME]
                                                email:[rs stringForColumn:COL_USR_EMAIL]
-                                            password:[rs stringForColumn:COL_USR_PASSWORD_HASH]];
+                                            password:[rs stringForColumn:COL_USR_PASSWORD_HASH]
+                                          verifiedAt:[PELMUtils dateFromResultSet:rs columnName:COL_USR_VERIFIED_AT]];
 }
 
 - (FPUser *)masterUserFromResultSet:(FMResultSet *)rs {
@@ -3181,6 +3183,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                     globalIdentifier:[rs stringForColumn:COL_GLOBAL_ID]
                                            mediaType:[HCMediaType MediaTypeFromString:[rs stringForColumn:COL_MEDIA_TYPE]]
                                            relations:nil
+                                           createdAt:[PELMUtils dateFromResultSet:rs columnName:COL_MST_CREATED_AT]
                                            deletedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MST_DELETED_DT]
                                            updatedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MST_UPDATED_AT]
                                 dateCopiedFromMaster:nil // NA (this is a main store-only column)
@@ -3193,7 +3196,8 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                          syncRetryAt:nil // NA (this is a main store-only column)
                                                 name:[rs stringForColumn:COL_USR_NAME]
                                                email:[rs stringForColumn:COL_USR_EMAIL]
-                                            password:[rs stringForColumn:COL_USR_PASSWORD_HASH]];
+                                            password:[rs stringForColumn:COL_USR_PASSWORD_HASH]
+                                          verifiedAt:[PELMUtils dateFromResultSet:rs columnName:COL_USR_VERIFIED_AT]];
 }
 
 - (FPVehicle *)mainVehicleFromResultSet:(FMResultSet *)rs {
@@ -3202,6 +3206,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                        globalIdentifier:[rs stringForColumn:COL_GLOBAL_ID]
                                               mediaType:[HCMediaType MediaTypeFromString:[rs stringForColumn:COL_MEDIA_TYPE]]
                                               relations:nil
+                                              createdAt:nil // NA (this is a master store-only column)
                                               deletedAt:nil // NA (this is a master store-only column)
                                               updatedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MAN_MASTER_UPDATED_AT]
                                    dateCopiedFromMaster:[PELMUtils dateFromResultSet:rs columnName:COL_MAN_DT_COPIED_DOWN_FROM_MASTER]
@@ -3223,7 +3228,8 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                        globalIdentifier:[rs stringForColumn:COL_GLOBAL_ID]
                                               mediaType:[HCMediaType MediaTypeFromString:[rs stringForColumn:COL_MEDIA_TYPE]]
                                               relations:nil
-                                            deletedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MST_DELETED_DT]
+                                              createdAt:[PELMUtils dateFromResultSet:rs columnName:COL_MST_CREATED_AT]
+                                              deletedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MST_DELETED_DT]
                                               updatedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MST_UPDATED_AT]
                                    dateCopiedFromMaster:nil // NA (this is a main store-only column)
                                          editInProgress:NO  // NA (this is a main store-only column)
@@ -3244,7 +3250,8 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                            globalIdentifier:[rs stringForColumn:COL_GLOBAL_ID]
                                                   mediaType:[HCMediaType MediaTypeFromString:[rs stringForColumn:COL_MEDIA_TYPE]]
                                                   relations:nil
-                                                deletedAt:nil // NA (this is a master store-only column)
+                                                  createdAt:nil // NA (this is a master store-only column)
+                                                  deletedAt:nil // NA (this is a master store-only column)
                                                   updatedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MAN_MASTER_UPDATED_AT]
                                        dateCopiedFromMaster:[PELMUtils dateFromResultSet:rs columnName:COL_MAN_DT_COPIED_DOWN_FROM_MASTER]
                                              editInProgress:[rs boolForColumn:COL_MAN_EDIT_IN_PROGRESS]
@@ -3269,7 +3276,8 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                            globalIdentifier:[rs stringForColumn:COL_GLOBAL_ID]
                                                   mediaType:[HCMediaType MediaTypeFromString:[rs stringForColumn:COL_MEDIA_TYPE]]
                                                   relations:nil
-                                                deletedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MST_DELETED_DT]
+                                                  createdAt:[PELMUtils dateFromResultSet:rs columnName:COL_MST_CREATED_AT]
+                                                  deletedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MST_DELETED_DT]
                                                   updatedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MST_UPDATED_AT]
                                        dateCopiedFromMaster:nil // NA (this is a main store-only column)
                                              editInProgress:NO  // NA (this is a main store-only column)
@@ -3294,8 +3302,9 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                                globalIdentifier:[rs stringForColumn:COL_GLOBAL_ID]
                                                       mediaType:[HCMediaType MediaTypeFromString:[rs stringForColumn:COL_MEDIA_TYPE]]
                                                       relations:nil
-                                                    deletedAt:nil // NA (this is a master store-only column)
-                                                   updatedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MAN_MASTER_UPDATED_AT]
+                                                      createdAt:nil // NA (this is a master store-only column)
+                                                      deletedAt:nil // NA (this is a master store-only column)
+                                                      updatedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MAN_MASTER_UPDATED_AT]
                                            dateCopiedFromMaster:[PELMUtils dateFromResultSet:rs columnName:COL_MAN_DT_COPIED_DOWN_FROM_MASTER]
                                                  editInProgress:[rs boolForColumn:COL_MAN_EDIT_IN_PROGRESS]
                                                  syncInProgress:[rs boolForColumn:COL_MAN_SYNC_IN_PROGRESS]
@@ -3311,7 +3320,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                                     gallonPrice:[PELMUtils decimalNumberFromResultSet:rs columnName:COL_FUELPL_PRICE_PER_GALLON]
                                                      gotCarWash:[rs boolForColumn:COL_FUELPL_GOT_CAR_WASH]
                                        carWashPerGallonDiscount:[PELMUtils decimalNumberFromResultSet:rs columnName:COL_FUELPL_CAR_WASH_PER_GALLON_DISCOUNT]
-                                                        purchasedAt:[PELMUtils dateFromResultSet:rs columnName:COL_FUELPL_PURCHASED_AT]];
+                                                    purchasedAt:[PELMUtils dateFromResultSet:rs columnName:COL_FUELPL_PURCHASED_AT]];
 }
 
 - (FPFuelPurchaseLog *)mainFuelPurchaseLogFromResultSet:(FMResultSet *)rs {
@@ -3320,6 +3329,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                                globalIdentifier:[rs stringForColumn:COL_GLOBAL_ID]
                                                       mediaType:[HCMediaType MediaTypeFromString:[rs stringForColumn:COL_MEDIA_TYPE]]
                                                       relations:nil
+                                                      createdAt:nil // NA (this is a master store-only column)
                                                       deletedAt:nil // NA (this is a master store-only column)
                                                       updatedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MAN_MASTER_UPDATED_AT]
                                            dateCopiedFromMaster:[PELMUtils dateFromResultSet:rs columnName:COL_MAN_DT_COPIED_DOWN_FROM_MASTER]
@@ -3330,14 +3340,14 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                                syncHttpRespCode:[PELMUtils numberFromResultSet:rs columnName:COL_MAN_SYNC_HTTP_RESP_CODE]
                                                     syncErrMask:[PELMUtils numberFromResultSet:rs columnName:COL_MAN_SYNC_ERR_MASK]
                                                     syncRetryAt:[PELMUtils dateFromResultSet:rs columnName:COL_MAN_SYNC_RETRY_AT]
-                                        vehicleMainIdentifier:nil
-                                    fuelStationMainIdentifier:nil
+                                          vehicleMainIdentifier:nil
+                                      fuelStationMainIdentifier:nil
                                                      numGallons:[PELMUtils decimalNumberFromResultSet:rs columnName:COL_FUELPL_NUM_GALLONS]
                                                          octane:[PELMUtils numberFromResultSet:rs columnName:COL_FUELPL_OCTANE]
                                                     gallonPrice:[PELMUtils decimalNumberFromResultSet:rs columnName:COL_FUELPL_PRICE_PER_GALLON]
                                                      gotCarWash:[rs boolForColumn:COL_FUELPL_GOT_CAR_WASH]
                                        carWashPerGallonDiscount:[PELMUtils decimalNumberFromResultSet:rs columnName:COL_FUELPL_CAR_WASH_PER_GALLON_DISCOUNT]
-                                                        purchasedAt:[PELMUtils dateFromResultSet:rs columnName:COL_FUELPL_PURCHASED_AT]];
+                                                    purchasedAt:[PELMUtils dateFromResultSet:rs columnName:COL_FUELPL_PURCHASED_AT]];
 }
 
 - (FPFuelPurchaseLog *)masterFuelPurchaseLogFromResultSet:(FMResultSet *)rs {
@@ -3346,6 +3356,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                                globalIdentifier:[rs stringForColumn:COL_GLOBAL_ID]
                                                       mediaType:[HCMediaType MediaTypeFromString:[rs stringForColumn:COL_MEDIA_TYPE]]
                                                       relations:nil
+                                                      createdAt:[PELMUtils dateFromResultSet:rs columnName:COL_MST_CREATED_AT]
                                                       deletedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MST_DELETED_DT]
                                                       updatedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MST_UPDATED_AT]
                                            dateCopiedFromMaster:nil // NA (this is a main store-only column)
@@ -3356,14 +3367,14 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                                syncHttpRespCode:nil // NA (this is a main store-only column)
                                                     syncErrMask:nil // NA (this is a main store-only column)
                                                     syncRetryAt:nil // NA (this is a main store-only column)
-                                        vehicleMainIdentifier:nil
-                                    fuelStationMainIdentifier:nil
+                                          vehicleMainIdentifier:nil
+                                      fuelStationMainIdentifier:nil
                                                      numGallons:[PELMUtils decimalNumberFromResultSet:rs columnName:COL_FUELPL_NUM_GALLONS]
                                                          octane:[PELMUtils numberFromResultSet:rs columnName:COL_FUELPL_OCTANE]
                                                     gallonPrice:[PELMUtils decimalNumberFromResultSet:rs columnName:COL_FUELPL_PRICE_PER_GALLON]
                                                      gotCarWash:[rs boolForColumn:COL_FUELPL_GOT_CAR_WASH]
                                        carWashPerGallonDiscount:[PELMUtils decimalNumberFromResultSet:rs columnName:COL_FUELPL_CAR_WASH_PER_GALLON_DISCOUNT]
-                                                        purchasedAt:[PELMUtils dateFromResultSet:rs columnName:COL_FUELPL_PURCHASED_AT]];
+                                                    purchasedAt:[PELMUtils dateFromResultSet:rs columnName:COL_FUELPL_PURCHASED_AT]];
 }
 
 - (FPEnvironmentLog *)mainEnvironmentLogFromResultSet:(FMResultSet *)rs {
@@ -3372,6 +3383,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                               globalIdentifier:[rs stringForColumn:COL_GLOBAL_ID]
                                                      mediaType:[HCMediaType MediaTypeFromString:[rs stringForColumn:COL_MEDIA_TYPE]]
                                                      relations:nil
+                                                     createdAt:nil // NA (this is a master store-only column)
                                                      deletedAt:nil // NA (this is a master store-only column)
                                                      updatedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MAN_MASTER_UPDATED_AT]
                                           dateCopiedFromMaster:[PELMUtils dateFromResultSet:rs columnName:COL_MAN_DT_COPIED_DOWN_FROM_MASTER]
@@ -3397,6 +3409,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                               globalIdentifier:[rs stringForColumn:COL_GLOBAL_ID]
                                                      mediaType:[HCMediaType MediaTypeFromString:[rs stringForColumn:COL_MEDIA_TYPE]]
                                                      relations:nil
+                                                     createdAt:[PELMUtils dateFromResultSet:rs columnName:COL_MST_CREATED_AT]
                                                      deletedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MST_DELETED_DT]
                                                      updatedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MST_UPDATED_AT]
                                           dateCopiedFromMaster:nil // NA (this is a main store-only column)
@@ -3407,7 +3420,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                               syncHttpRespCode:nil // NA (this is a main store-only column)
                                                    syncErrMask:nil // NA (this is a main store-only column)
                                                    syncRetryAt:nil // NA (this is a main store-only column)
-                                       vehicleMainIdentifier:nil
+                                         vehicleMainIdentifier:nil
                                                       odometer:[PELMUtils decimalNumberFromResultSet:rs columnName:COL_ENVL_ODOMETER_READING]
                                                 reportedAvgMpg:[PELMUtils decimalNumberFromResultSet:rs columnName:COL_ENVL_MPG_READING]
                                                 reportedAvgMph:[PELMUtils decimalNumberFromResultSet:rs columnName:COL_ENVL_MPH_READING]
@@ -3423,11 +3436,12 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                  db:(FMDatabase *)db
                               error:(PELMDaoErrorBlk)errorBlk {
   NSString *stmt = [NSString stringWithFormat:@"INSERT INTO %@ (%@, %@, %@, \
-                    %@, %@, %@, %@, %@, %@, %@, %@, %@) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+%@, %@, %@, %@, %@, %@, %@, %@, %@, %@) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                     TBL_MASTER_FUEL_STATION,
                     COL_MASTER_USER_ID,
                     COL_GLOBAL_ID,
                     COL_MEDIA_TYPE,
+                    COL_MST_CREATED_AT,
                     COL_MST_UPDATED_AT,
                     COL_MST_DELETED_DT,
                     COL_FUELST_NAME,
@@ -3441,6 +3455,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                   argsArray:@[orNil([user localMasterIdentifier]),
                               orNil([fuelStation globalIdentifier]),
                               orNil([[fuelStation mediaType] description]),
+                              orNil([PEUtils millisecondsFromDate:[fuelStation createdAt]]),
                               orNil([PEUtils millisecondsFromDate:[fuelStation updatedAt]]),
                               orNil([PEUtils millisecondsFromDate:[fuelStation deletedAt]]),
                               orNil([fuelStation name]),
@@ -3519,14 +3534,16 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
           %@ = ?, \
           %@ = ?, \
           %@ = ?, \
+          %@ = ?, \
           %@ = ? \
           WHERE %@ = ?",
           TBL_MASTER_FUEL_STATION,// table
           COL_GLOBAL_ID,          // col1
           COL_MEDIA_TYPE,         // col2
-          COL_MST_UPDATED_AT,  // col3
-          COL_MST_DELETED_DT,     // col4
-          COL_FUELST_NAME,        // col5
+          COL_MST_CREATED_AT,
+          COL_MST_UPDATED_AT,  // col4
+          COL_MST_DELETED_DT,     // col5
+          COL_FUELST_NAME,        // col6
           COL_FUELST_STREET,
           COL_FUELST_CITY,
           COL_FUELST_STATE,
@@ -3539,6 +3556,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
 - (NSArray *)updateArgsForMasterFuelStation:(FPFuelStation *)fuelStation {
   return @[orNil([fuelStation globalIdentifier]),
            orNil([[fuelStation mediaType] description]),
+           orNil([PEUtils millisecondsFromDate:[fuelStation createdAt]]),
            orNil([PEUtils millisecondsFromDate:[fuelStation updatedAt]]),
            orNil([PEUtils millisecondsFromDate:[fuelStation deletedAt]]),
            orNil([fuelStation name]),
@@ -3623,11 +3641,12 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                              db:(FMDatabase *)db
                           error:(PELMDaoErrorBlk)errorBlk {
   NSString *stmt = [NSString stringWithFormat:@"INSERT INTO %@ (%@, %@, %@, \
-                    %@, %@, %@, %@, %@) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+%@, %@, %@, %@, %@, %@) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
                     TBL_MASTER_VEHICLE,
                     COL_MASTER_USER_ID,
                     COL_GLOBAL_ID,
                     COL_MEDIA_TYPE,
+                    COL_MST_CREATED_AT,
                     COL_MST_UPDATED_AT,
                     COL_MST_DELETED_DT,
                     COL_VEH_NAME,
@@ -3637,6 +3656,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                   argsArray:@[orNil([user localMasterIdentifier]),
                               orNil([vehicle globalIdentifier]),
                               orNil([[vehicle mediaType] description]),
+                              orNil([PEUtils millisecondsFromDate:[vehicle createdAt]]),
                               orNil([PEUtils millisecondsFromDate:[vehicle updatedAt]]),
                               orNil([PEUtils millisecondsFromDate:[vehicle deletedAt]]),
                               orNil([vehicle name]),
@@ -3698,14 +3718,16 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
           %@ = ?, \
           %@ = ?, \
           %@ = ?, \
+          %@ = ?, \
           %@ = ? \
           WHERE %@ = ?",
           TBL_MASTER_VEHICLE,     // table
           COL_GLOBAL_ID,          // col1
           COL_MEDIA_TYPE,         // col2
-          COL_MST_UPDATED_AT,  // col3
-          COL_MST_DELETED_DT,     // col4
-          COL_VEH_NAME,           // col5
+          COL_MST_CREATED_AT,
+          COL_MST_UPDATED_AT,  // col4
+          COL_MST_DELETED_DT,     // col5
+          COL_VEH_NAME,           // col6
           COL_VEH_DEFAULT_OCTANE,
           COL_VEH_FUEL_CAPACITY,
           COL_LOCAL_ID];          // where, col1
@@ -3714,6 +3736,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
 - (NSArray *)updateArgsForMasterVehicle:(FPVehicle *)vehicle {
   return @[orNil([vehicle globalIdentifier]),
            orNil([[vehicle mediaType] description]),
+           orNil([PEUtils millisecondsFromDate:[vehicle createdAt]]),
            orNil([PEUtils millisecondsFromDate:[vehicle updatedAt]]),
            orNil([PEUtils millisecondsFromDate:[vehicle deletedAt]]),
            orNil([vehicle name]),
@@ -3825,15 +3848,17 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
           %@ = ?, \
           %@ = ?, \
           %@ = ?, \
+          %@ = ?, \
           %@ = ? \
           WHERE %@ = ?",
           TBL_MASTER_USER,        // table
           COL_GLOBAL_ID,          // col1
           COL_MEDIA_TYPE,         // col2
-          COL_MST_UPDATED_AT, // col3
-          COL_MST_DELETED_DT,     // col4
-          COL_USR_NAME,           // col5
-          COL_USR_EMAIL,          // col6
+          COL_MST_CREATED_AT,
+          COL_MST_UPDATED_AT, // col4
+          COL_MST_DELETED_DT,     // col5
+          COL_USR_NAME,           // col6
+          COL_USR_EMAIL,          // col7
           COL_USR_PASSWORD_HASH,  // col8
           COL_LOCAL_ID];          // where, col1
 }
@@ -3841,6 +3866,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
 - (NSArray *)updateArgsForMasterUser:(FPUser *)user {
   return @[orNil([user globalIdentifier]),
            orNil([[user mediaType] description]),
+           orNil([PEUtils millisecondsFromDate:[user createdAt]]),
            orNil([PEUtils millisecondsFromDate:[user updatedAt]]),
            orNil([PEUtils millisecondsFromDate:[user deletedAt]]),
            orNil([user name]),
@@ -3951,10 +3977,11 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                           db:(FMDatabase *)db
                        error:(PELMDaoErrorBlk)errorBlk {
   NSString *stmt = [NSString stringWithFormat:@"INSERT INTO %@ (%@, %@, \
-%@, %@, %@, %@, %@) VALUES (?, ?, ?, ?, ?, ?, ?)",
+%@, %@, %@, %@, %@, %@) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                     TBL_MASTER_USER,
                     COL_GLOBAL_ID,
                     COL_MEDIA_TYPE,
+                    COL_MST_CREATED_AT,
                     COL_MST_UPDATED_AT,
                     COL_MST_DELETED_DT,
                     COL_USR_NAME,
@@ -3963,6 +3990,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
   [PELMUtils doMasterInsert:stmt
                   argsArray:@[orNil([user globalIdentifier]),
                               orNil([[user mediaType] description]),
+                              orNil([PEUtils millisecondsFromDate:[user createdAt]]),
                               orNil([PEUtils millisecondsFromDate:[user updatedAt]]),
                               orNil([PEUtils millisecondsFromDate:[user deletedAt]]),
                               orNil([user name]),
@@ -4016,13 +4044,14 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                            db:db
                                         error:errorBlk];
   NSString *stmt = [NSString stringWithFormat:@"INSERT INTO %@ (%@, %@, %@, \
-%@, %@, %@, %@, %@, %@, %@, %@, %@, %@) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+%@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                     TBL_MASTER_FUELPURCHASE_LOG,
                     COL_MASTER_USER_ID,
                     COL_MASTER_VEHICLE_ID,
                     COL_MASTER_FUELSTATION_ID,
                     COL_GLOBAL_ID,
                     COL_MEDIA_TYPE,
+                    COL_MST_CREATED_AT,
                     COL_MST_UPDATED_AT,
                     COL_MST_DELETED_DT,
                     COL_FUELPL_NUM_GALLONS,
@@ -4037,6 +4066,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                               orNil([fuelStation localMasterIdentifier]),
                               orNil([fuelPurchaseLog globalIdentifier]),
                               orNil([[fuelPurchaseLog mediaType] description]),
+                              orNil([PEUtils millisecondsFromDate:[fuelPurchaseLog createdAt]]),
                               orNil([PEUtils millisecondsFromDate:[fuelPurchaseLog updatedAt]]),
                               orNil([PEUtils millisecondsFromDate:[fuelPurchaseLog deletedAt]]),
                               orNil([fuelPurchaseLog numGallons]),
@@ -4119,6 +4149,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
 %@ = ?, \
 %@ = ?, \
 %@ = ?, \
+%@ = ?, \
 %@ = ? \
 WHERE %@ = ?",
           TBL_MASTER_FUELPURCHASE_LOG, // table
@@ -4126,8 +4157,9 @@ WHERE %@ = ?",
           COL_MASTER_FUELSTATION_ID,
           COL_GLOBAL_ID,          // col1
           COL_MEDIA_TYPE,         // col2
-          COL_MST_UPDATED_AT,  // col3
-          COL_MST_DELETED_DT,     // col4
+          COL_MST_CREATED_AT,
+          COL_MST_UPDATED_AT,  // col4
+          COL_MST_DELETED_DT,     // col5
           COL_FUELPL_NUM_GALLONS,
           COL_FUELPL_OCTANE,
           COL_FUELPL_PRICE_PER_GALLON,
@@ -4148,13 +4180,15 @@ WHERE %@ = ?",
 %@ = ?, \
 %@ = ?, \
 %@ = ?, \
+%@ = ?, \
 %@ = ? \
 WHERE %@ = ?",
           TBL_MASTER_FUELPURCHASE_LOG, // table
           COL_GLOBAL_ID,          // col1
           COL_MEDIA_TYPE,         // col2
-          COL_MST_UPDATED_AT,  // col3
-          COL_MST_DELETED_DT,     // col4
+          COL_MST_CREATED_AT,
+          COL_MST_UPDATED_AT,  // col4
+          COL_MST_DELETED_DT,     // col5
           COL_FUELPL_NUM_GALLONS,
           COL_FUELPL_OCTANE,
           COL_FUELPL_PRICE_PER_GALLON,
@@ -4344,12 +4378,13 @@ WHERE %@ = ?",
                                        db:db
                                     error:errorBlk];
   NSString *stmt = [NSString stringWithFormat:@"INSERT INTO %@ (%@, %@, %@, \
-                    %@, %@, %@, %@, %@, %@, %@, %@, %@) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+%@, %@, %@, %@, %@, %@, %@, %@, %@, %@) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                     TBL_MASTER_ENV_LOG,
                     COL_MASTER_USER_ID,
                     COL_MASTER_VEHICLE_ID,
                     COL_GLOBAL_ID,
                     COL_MEDIA_TYPE,
+                    COL_MST_CREATED_AT,
                     COL_MST_UPDATED_AT,
                     COL_MST_DELETED_DT,
                     COL_ENVL_ODOMETER_READING,
@@ -4363,6 +4398,7 @@ WHERE %@ = ?",
                               orNil([vehicle localMasterIdentifier]),
                               orNil([environmentLog globalIdentifier]),
                               orNil([[environmentLog mediaType] description]),
+                              orNil([PEUtils millisecondsFromDate:[environmentLog createdAt]]),
                               orNil([PEUtils millisecondsFromDate:[environmentLog updatedAt]]),
                               orNil([PEUtils millisecondsFromDate:[environmentLog deletedAt]]),
                               orNil([environmentLog odometer]),
@@ -4441,14 +4477,16 @@ WHERE %@ = ?",
           %@ = ?, \
           %@ = ?, \
           %@ = ?, \
+          %@ = ?, \
           %@ = ? \
           WHERE %@ = ?",
           TBL_MASTER_ENV_LOG, // table
           COL_MASTER_VEHICLE_ID,
           COL_GLOBAL_ID,          // col1
           COL_MEDIA_TYPE,         // col2
-          COL_MST_UPDATED_AT,  // col3
-          COL_MST_DELETED_DT,     // col4
+          COL_MST_CREATED_AT,
+          COL_MST_UPDATED_AT,  // col4
+          COL_MST_DELETED_DT,     // col5
           COL_ENVL_ODOMETER_READING,
           COL_ENVL_MPG_READING,
           COL_ENVL_MPH_READING,
@@ -4469,13 +4507,15 @@ WHERE %@ = ?",
           %@ = ?, \
           %@ = ?, \
           %@ = ?, \
+          %@ = ?, \
           %@ = ? \
           WHERE %@ = ?",
           TBL_MASTER_ENV_LOG, // table
           COL_GLOBAL_ID,          // col1
           COL_MEDIA_TYPE,         // col2
-          COL_MST_UPDATED_AT,  // col3
-          COL_MST_DELETED_DT,     // col4
+          COL_MST_CREATED_AT,
+          COL_MST_UPDATED_AT,  // col4
+          COL_MST_DELETED_DT,     // col5
           COL_ENVL_ODOMETER_READING,
           COL_ENVL_MPG_READING,
           COL_ENVL_MPH_READING,

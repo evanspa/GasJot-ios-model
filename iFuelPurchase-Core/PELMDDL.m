@@ -21,6 +21,7 @@ NSString * const COL_REL_NAME = @"name";
 NSString * const COL_REL_URI = @"uri";
 NSString * const COL_REL_MEDIA_TYPE = @"media_type";
 // ----Common master columns----------------------------------------------------
+NSString * const COL_MST_CREATED_AT = @"created_at";
 NSString * const COL_MST_UPDATED_AT = @"updated_at";
 NSString * const COL_MST_DELETED_DT = @"deleted_date";
 // ----Common main columns------------------------------------------------------
@@ -46,6 +47,7 @@ NSString * const TBL_MAIN_USER = @"main_user";
 NSString * const COL_USR_NAME = @"name";
 NSString * const COL_USR_EMAIL = @"email";
 NSString * const COL_USR_PASSWORD_HASH = @"password_hash";
+NSString * const COL_USR_VERIFIED_AT = @"verified_at";
 
 @implementation PELMDDL
 

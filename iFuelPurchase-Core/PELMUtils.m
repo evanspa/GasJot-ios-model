@@ -35,7 +35,8 @@ PELMMainSupport * (^toMainSupport)(FMResultSet *, NSString *, NSDictionary *) = 
                                             masterEntityTable:nil
                                                     mediaType:[HCMediaType MediaTypeFromString:[rs stringForColumn:COL_MEDIA_TYPE]]
                                                     relations:relations
-                                                  deletedAt:nil // NA (this is a master entity-only column)
+                                                    createdAt:nil // NA (this is a master entity-only column)
+                                                    deletedAt:nil // NA (this is a master entity-only column)
                                                     updatedAt:[PELMUtils dateFromResultSet:rs columnName:COL_MAN_MASTER_UPDATED_AT]
                                          dateCopiedFromMaster:[PELMUtils dateFromResultSet:rs columnName:COL_MAN_DT_COPIED_DOWN_FROM_MASTER]
                                                editInProgress:[rs boolForColumn:COL_MAN_EDIT_IN_PROGRESS]

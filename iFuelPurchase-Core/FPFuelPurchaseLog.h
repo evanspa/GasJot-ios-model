@@ -27,6 +27,7 @@ FOUNDATION_EXPORT NSString * const FPFplogFuelstationGlobalIdField;
                  globalIdentifier:(NSString *)globalIdentifier
                         mediaType:(HCMediaType *)mediaType
                         relations:(NSDictionary *)relations
+                        createdAt:(NSDate *)createdAt
                         deletedAt:(NSDate *)deletedAt
                         updatedAt:(NSDate *)updatedAt
              dateCopiedFromMaster:(NSDate *)dateCopiedFromMaster
@@ -65,6 +66,8 @@ FOUNDATION_EXPORT NSString * const FPFplogFuelstationGlobalIdField;
                                     globalIdentifier:(NSString *)globalIdentifier
                                            mediaType:(HCMediaType *)mediaType
                                            relations:(NSDictionary *)relations
+                                           createdAt:(NSDate *)createdAt
+                                           deletedAt:(NSDate *)deletedAt
                                            updatedAt:(NSDate *)updatedAt;
 
 #pragma mark - Merging

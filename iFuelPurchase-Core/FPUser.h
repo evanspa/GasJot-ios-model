@@ -17,6 +17,7 @@ FOUNDATION_EXPORT NSString * const FPVehiclesRelation;
 FOUNDATION_EXPORT NSString * const FPFuelStationsRelation;
 FOUNDATION_EXPORT NSString * const FPFuelPurchaseLogsRelation;
 FOUNDATION_EXPORT NSString * const FPEnvironmentLogsRelation;
+FOUNDATION_EXPORT NSString * const FPSendEmailConfirmationRelation;
 
 FOUNDATION_EXPORT NSString * const FPUserNameField;
 FOUNDATION_EXPORT NSString * const FPUserEmailField;
@@ -30,6 +31,7 @@ FOUNDATION_EXPORT NSString * const FPUserEmailField;
                  globalIdentifier:(NSString *)globalIdentifier
                         mediaType:(HCMediaType *)mediaType
                         relations:(NSDictionary *)relations
+                        createdAt:(NSDate *)createdAt
                         deletedAt:(NSDate *)deletedAt
                         updatedAt:(NSDate *)updatedAt
              dateCopiedFromMaster:(NSDate *)dateCopiedFromMaster
@@ -42,7 +44,8 @@ FOUNDATION_EXPORT NSString * const FPUserEmailField;
                       syncRetryAt:(NSDate *)syncRetryAt
                              name:(NSString *)name
                             email:(NSString *)email
-                         password:(NSString *)password;
+                         password:(NSString *)password
+                       verifiedAt:(NSDate *)verifiedAt;
 
 #pragma mark - Creation Functions
 
@@ -57,6 +60,8 @@ FOUNDATION_EXPORT NSString * const FPUserEmailField;
         globalIdentifier:(NSString *)globalIdentifier
                mediaType:(HCMediaType *)mediaType
                relations:(NSDictionary *)relations
+               createdAt:(NSDate *)createdAt
+               deletedAt:(NSDate *)deletedAt
                updatedAt:(NSDate *)updatedAt;
 
 #pragma mark - Merging

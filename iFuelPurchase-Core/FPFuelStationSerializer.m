@@ -19,6 +19,7 @@ NSString * const FPFuelStationStateKey     = @"fpfuelstation/state";
 NSString * const FPFuelStationZipKey       = @"fpfuelstation/zip";
 NSString * const FPFuelStationLatitudeKey  = @"fpfuelstation/latitude";
 NSString * const FPFuelStationLongitudeKey = @"fpfuelstation/longitude";
+NSString * const FPFuelStationCreatedAtKey = @"fpfuelstation/created-at";
 NSString * const FPFuelStationUpdatedAtKey = @"fpfuelstation/updated-at";
 NSString * const FPFuelStationDeletedAtKey = @"fpfuelstation/deleted-at";
 
@@ -57,8 +58,9 @@ NSString * const FPFuelStationDeletedAtKey = @"fpfuelstation/deleted-at";
                     globalIdentifier:location
                            mediaType:mediaType
                            relations:relations
+                           createdAt:[resDict dateSince1970ForKey:FPFuelStationCreatedAtKey]
+                           deletedAt:[resDict dateSince1970ForKey:FPFuelStationDeletedAtKey]
                            updatedAt:[resDict dateSince1970ForKey:FPFuelStationUpdatedAtKey]];
-  [fuelstation setDeletedAt:resDict[FPFuelStationDeletedAtKey]];
   return fuelstation;
 }
 

@@ -27,11 +27,13 @@
             "location": "http://example.com/fp/users/U1123409100/vehicles/V429",
             "payload": {
               "fpvehicle/name": "My Mazda",
+              "fpvehicle/created-at": 1409913262000,
               "fpvehicle/updated-at": 1409913262000}},
           { "media-type": "application/vnd.fp.vehicle-v0.0.1+json",
             "location": "http://example.com/fp/users/U1123409100/vehicles/V430",
             "payload": {
               "fpvehicle/name": "My 300zx",
+              "fpvehicle/created-at": 1409913262000,
               "fpvehicle/updated-at": 1409913262000}}]}
     ]]>
   </body>

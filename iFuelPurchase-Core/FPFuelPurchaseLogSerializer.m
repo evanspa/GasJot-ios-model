@@ -21,6 +21,7 @@ NSString * const FPFuelPurchaseLogGallonPriceKey              = @"fplog/gallon-p
 NSString * const FPFuelPurchaseLogGotCarWashKey               = @"fplog/got-car-wash";
 NSString * const FPFuelPurchaseLogCarWashPerGallonDiscountKey = @"fplog/car-wash-per-gal-discount";
 NSString * const FPFuelPurchaseLogPurchasedAtKey              = @"fplog/purchased-at";
+NSString * const FPFuelPurchaseLogCreatedAtKey                = @"fplog/created-at";
 NSString * const FPFuelPurchaseLogUpdatedAtKey                = @"fplog/updated-at";
 NSString * const FPFuelPurchaseLogDeletedAtKey                = @"fplog/deleted-at";
 
@@ -58,20 +59,20 @@ NSString * const FPFuelPurchaseLogDeletedAtKey                = @"fplog/deleted-
                          location:(NSString *)location
                      lastModified:(NSDate *)lastModified {
   FPFuelPurchaseLog *fplog =
-    [FPFuelPurchaseLog
-      fuelPurchaseLogWithNumGallons:resDict[FPFuelPurchaseLogNumGallonsKey]
-                             octane:resDict[FPFuelPurchaseLogOctaneKey]
-                        gallonPrice:resDict[FPFuelPurchaseLogGallonPriceKey]
-                         gotCarWash:[resDict[FPFuelPurchaseLogGotCarWashKey] boolValue]
-           carWashPerGallonDiscount:resDict[FPFuelPurchaseLogCarWashPerGallonDiscountKey]
-                        purchasedAt:[resDict dateSince1970ForKey:FPFuelPurchaseLogPurchasedAtKey]
-                   globalIdentifier:location
-                          mediaType:mediaType
-                          relations:relations
-                          updatedAt:[resDict dateSince1970ForKey:FPFuelPurchaseLogUpdatedAtKey]];
+  [FPFuelPurchaseLog fuelPurchaseLogWithNumGallons:resDict[FPFuelPurchaseLogNumGallonsKey]
+                                            octane:resDict[FPFuelPurchaseLogOctaneKey]
+                                       gallonPrice:resDict[FPFuelPurchaseLogGallonPriceKey]
+                                        gotCarWash:[resDict[FPFuelPurchaseLogGotCarWashKey] boolValue]
+                          carWashPerGallonDiscount:resDict[FPFuelPurchaseLogCarWashPerGallonDiscountKey]
+                                       purchasedAt:[resDict dateSince1970ForKey:FPFuelPurchaseLogPurchasedAtKey]
+                                  globalIdentifier:location
+                                         mediaType:mediaType
+                                         relations:relations
+                                         createdAt:[resDict dateSince1970ForKey:FPFuelPurchaseLogCreatedAtKey]
+                                         deletedAt:[resDict dateSince1970ForKey:FPFuelPurchaseLogDeletedAtKey]
+                                         updatedAt:[resDict dateSince1970ForKey:FPFuelPurchaseLogUpdatedAtKey]];
   [fplog setVehicleGlobalIdentifier:resDict[FPFuelPurchaseLogVehicleGlobalIdKey]];
   [fplog setFuelStationGlobalIdentifier:resDict[FPFuelPurchaseLogFuelStationGlobalIdKey]];
-  [fplog setDeletedAt:resDict[FPFuelPurchaseLogDeletedAtKey]];
   return fplog;
 }
 

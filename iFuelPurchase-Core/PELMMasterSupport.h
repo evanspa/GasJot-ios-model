@@ -19,6 +19,7 @@
                 masterEntityTable:(NSString *)masterEntityTable
                         mediaType:(HCMediaType *)mediaType
                         relations:(NSDictionary *)relations
+                        createdAt:(NSDate *)createdAt
                         deletedAt:(NSDate *)deletedAt
                         updatedAt:(NSDate *)updatedAt;
 
@@ -27,6 +28,8 @@
 - (void)overwrite:(PELMMasterSupport *)entity;
 
 #pragma mark - Properties
+
+@property (nonatomic) NSDate *createdAt;
 
 @property (nonatomic) NSDate *updatedAt;
 

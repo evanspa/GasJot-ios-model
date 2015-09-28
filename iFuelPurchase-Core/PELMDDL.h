@@ -21,6 +21,7 @@ FOUNDATION_EXPORT NSString * const COL_REL_NAME;
 FOUNDATION_EXPORT NSString * const COL_REL_URI;
 FOUNDATION_EXPORT NSString * const COL_REL_MEDIA_TYPE;
 // ----Common master columns----------------------------------------------------
+FOUNDATION_EXPORT NSString * const COL_MST_CREATED_AT;
 FOUNDATION_EXPORT NSString * const COL_MST_UPDATED_AT;
 FOUNDATION_EXPORT NSString * const COL_MST_DELETED_DT;
 // ----Common main columns------------------------------------------------------
@@ -46,6 +47,7 @@ FOUNDATION_EXPORT NSString * const TBL_MAIN_USER;
 FOUNDATION_EXPORT NSString * const COL_USR_NAME;
 FOUNDATION_EXPORT NSString * const COL_USR_EMAIL;
 FOUNDATION_EXPORT NSString * const COL_USR_PASSWORD_HASH;
+FOUNDATION_EXPORT NSString * const COL_USR_VERIFIED_AT;
 
 @interface PELMDDL : NSObject
 

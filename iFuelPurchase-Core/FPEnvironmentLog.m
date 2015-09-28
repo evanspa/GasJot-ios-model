@@ -27,7 +27,8 @@ NSString * const FPEnvlogVehicleGlobalIdField = @"FPEnvlogVehicleGlobalIdField";
                  globalIdentifier:(NSString *)globalIdentifier
                         mediaType:(HCMediaType *)mediaType
                         relations:(NSDictionary *)relations
-                      deletedAt:(NSDate *)deletedAt
+                        createdAt:(NSDate *)createdAt
+                        deletedAt:(NSDate *)deletedAt
                         updatedAt:(NSDate *)updatedAt
              dateCopiedFromMaster:(NSDate *)dateCopiedFromMaster
                    editInProgress:(BOOL)editInProgress
@@ -51,7 +52,8 @@ NSString * const FPEnvlogVehicleGlobalIdField = @"FPEnvlogVehicleGlobalIdField";
                           masterEntityTable:TBL_MASTER_ENV_LOG
                                   mediaType:mediaType
                                   relations:relations
-                                deletedAt:deletedAt
+                                  createdAt:createdAt
+                                  deletedAt:deletedAt
                                   updatedAt:updatedAt
                        dateCopiedFromMaster:dateCopiedFromMaster
                              editInProgress:editInProgress
@@ -81,7 +83,8 @@ NSString * const FPEnvlogVehicleGlobalIdField = @"FPEnvlogVehicleGlobalIdField";
                                                                 globalIdentifier:[self globalIdentifier]
                                                                        mediaType:[self mediaType]
                                                                        relations:[self relations]
-                                                                     deletedAt:[self deletedAt]
+                                                                       createdAt:[self createdAt]
+                                                                       deletedAt:[self deletedAt]
                                                                        updatedAt:[self updatedAt]
                                                             dateCopiedFromMaster:[self dateCopiedFromMaster]
                                                                   editInProgress:[self editInProgress]
@@ -91,7 +94,7 @@ NSString * const FPEnvlogVehicleGlobalIdField = @"FPEnvlogVehicleGlobalIdField";
                                                                 syncHttpRespCode:[self syncHttpRespCode]
                                                                      syncErrMask:[self syncErrMask]
                                                                      syncRetryAt:[self syncRetryAt]
-                                                         vehicleMainIdentifier:_vehicleMainIdentifier
+                                                           vehicleMainIdentifier:_vehicleMainIdentifier
                                                                         odometer:_odometer
                                                                   reportedAvgMpg:_reportedAvgMpg
                                                                   reportedAvgMph:_reportedAvgMph
@@ -119,7 +122,9 @@ NSString * const FPEnvlogVehicleGlobalIdField = @"FPEnvlogVehicleGlobalIdField";
                              globalIdentifier:nil
                                     mediaType:mediaType
                                     relations:nil
-                                 updatedAt:nil];
+                                    createdAt:nil
+                                    deletedAt:nil
+                                    updatedAt:nil];
 }
 
 + (FPEnvironmentLog *)envLogWithOdometer:(NSDecimalNumber *)odometer
@@ -131,13 +136,16 @@ NSString * const FPEnvlogVehicleGlobalIdField = @"FPEnvlogVehicleGlobalIdField";
                         globalIdentifier:(NSString *)globalIdentifier
                                mediaType:(HCMediaType *)mediaType
                                relations:(NSDictionary *)relations
+                               createdAt:(NSDate *)createdAt
+                               deletedAt:(NSDate *)deletedAt
                                updatedAt:(NSDate *)updatedAt {
   return [[FPEnvironmentLog alloc] initWithLocalMainIdentifier:nil
                                          localMasterIdentifier:nil
                                               globalIdentifier:globalIdentifier
                                                      mediaType:mediaType
                                                      relations:relations
-                                                   deletedAt:nil
+                                                     createdAt:createdAt
+                                                     deletedAt:deletedAt
                                                      updatedAt:updatedAt
                                           dateCopiedFromMaster:nil
                                                 editInProgress:NO
@@ -147,7 +155,7 @@ NSString * const FPEnvlogVehicleGlobalIdField = @"FPEnvlogVehicleGlobalIdField";
                                               syncHttpRespCode:nil
                                                    syncErrMask:nil
                                                    syncRetryAt:nil
-                                       vehicleMainIdentifier:nil
+                                         vehicleMainIdentifier:nil
                                                       odometer:odometer
                                                 reportedAvgMpg:reportedAvgMpg
                                                 reportedAvgMph:reportedAvgMph

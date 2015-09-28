@@ -20,25 +20,27 @@ describe(@"FPMasterSupport", ^{
     beforeEach(^{
       NSDate *now = [NSDate date];
       ms1 =
-        [[PELMMasterSupport alloc] initWithLocalMainIdentifier:[NSNumber numberWithInt:0]
-                                         localMasterIdentifier:[NSNumber numberWithInt:0]
-                                              globalIdentifier:@"http://someuri.com"
-                                               mainEntityTable:nil
-                                             masterEntityTable:nil
-                                                     mediaType:[HCMediaType MediaTypeFromString:@"application/json"]
-                                                     relations:nil
+      [[PELMMasterSupport alloc] initWithLocalMainIdentifier:[NSNumber numberWithInt:0]
+                                       localMasterIdentifier:[NSNumber numberWithInt:0]
+                                            globalIdentifier:@"http://someuri.com"
+                                             mainEntityTable:nil
+                                           masterEntityTable:nil
+                                                   mediaType:[HCMediaType MediaTypeFromString:@"application/json"]
+                                                   relations:nil
+                                                   createdAt:now
                                                    deletedAt:now
-                                                  updatedAt:now];
+                                                   updatedAt:now];
       ms2 =
-        [[PELMMasterSupport alloc] initWithLocalMainIdentifier:[NSNumber numberWithInt:0]
-                                         localMasterIdentifier:[NSNumber numberWithInt:0]
-                                              globalIdentifier:@"http://someuri.com"
-                                               mainEntityTable:nil
-                                             masterEntityTable:nil
-                                                     mediaType:[HCMediaType MediaTypeFromString:@"application/json"]
-                                                     relations:nil
+      [[PELMMasterSupport alloc] initWithLocalMainIdentifier:[NSNumber numberWithInt:0]
+                                       localMasterIdentifier:[NSNumber numberWithInt:0]
+                                            globalIdentifier:@"http://someuri.com"
+                                             mainEntityTable:nil
+                                           masterEntityTable:nil
+                                                   mediaType:[HCMediaType MediaTypeFromString:@"application/json"]
+                                                   relations:nil
+                                                   createdAt:now
                                                    deletedAt:now
-                                                  updatedAt:now];
+                                                   updatedAt:now];
     });
     
     it(@"Works for 2 equal objects", ^{

@@ -28,8 +28,9 @@ NSString * const FPFplogFuelstationGlobalIdField = @"FPFplogFuelstationGlobalIdF
                  globalIdentifier:(NSString *)globalIdentifier
                         mediaType:(HCMediaType *)mediaType
                         relations:(NSDictionary *)relations
-                      deletedAt:(NSDate *)deletedAt
-                     updatedAt:(NSDate *)updatedAt
+                        createdAt:(NSDate *)createdAt
+                        deletedAt:(NSDate *)deletedAt
+                        updatedAt:(NSDate *)updatedAt
              dateCopiedFromMaster:(NSDate *)dateCopiedFromMaster
                    editInProgress:(BOOL)editInProgress
                    syncInProgress:(BOOL)syncInProgress
@@ -53,7 +54,8 @@ NSString * const FPFplogFuelstationGlobalIdField = @"FPFplogFuelstationGlobalIdF
                           masterEntityTable:TBL_MASTER_FUELPURCHASE_LOG
                                   mediaType:mediaType
                                   relations:relations
-                                deletedAt:deletedAt
+                                  createdAt:createdAt
+                                  deletedAt:deletedAt
                                   updatedAt:updatedAt
                        dateCopiedFromMaster:dateCopiedFromMaster
                              editInProgress:editInProgress
@@ -84,6 +86,7 @@ NSString * const FPFplogFuelstationGlobalIdField = @"FPFplogFuelstationGlobalIdF
                                                                   globalIdentifier:[self globalIdentifier]
                                                                          mediaType:[self mediaType]
                                                                          relations:[self relations]
+                                                                         createdAt:[self createdAt]
                                                                          deletedAt:[self deletedAt]
                                                                          updatedAt:[self updatedAt]
                                                               dateCopiedFromMaster:[self dateCopiedFromMaster]
@@ -112,7 +115,7 @@ NSString * const FPFplogFuelstationGlobalIdField = @"FPFplogFuelstationGlobalIdF
                                          gallonPrice:(NSDecimalNumber *)gallonPrice
                                           gotCarWash:(BOOL)gotCarWash
                             carWashPerGallonDiscount:(NSDecimalNumber *)carWashPerGallonDiscount
-                                             purchasedAt:(NSDate *)purchasedAt
+                                         purchasedAt:(NSDate *)purchasedAt
                                            mediaType:(HCMediaType *)mediaType {
   return [FPFuelPurchaseLog fuelPurchaseLogWithNumGallons:numGallons
                                                    octane:octane
@@ -123,6 +126,8 @@ NSString * const FPFplogFuelstationGlobalIdField = @"FPFplogFuelstationGlobalIdF
                                          globalIdentifier:nil
                                                 mediaType:mediaType
                                                 relations:nil
+                                                createdAt:nil
+                                                deletedAt:nil
                                                 updatedAt:nil];
 }
 
@@ -135,13 +140,16 @@ NSString * const FPFplogFuelstationGlobalIdField = @"FPFplogFuelstationGlobalIdF
                                     globalIdentifier:(NSString *)globalIdentifier
                                            mediaType:(HCMediaType *)mediaType
                                            relations:(NSDictionary *)relations
+                                           createdAt:(NSDate *)createdAt
+                                           deletedAt:(NSDate *)deletedAt
                                            updatedAt:(NSDate *)updatedAt {
   return [[FPFuelPurchaseLog alloc] initWithLocalMainIdentifier:nil
                                           localMasterIdentifier:nil
                                                globalIdentifier:globalIdentifier
                                                       mediaType:mediaType
                                                       relations:relations
-                                                      deletedAt:nil
+                                                      createdAt:createdAt
+                                                      deletedAt:deletedAt
                                                       updatedAt:updatedAt
                                            dateCopiedFromMaster:nil
                                                  editInProgress:NO
@@ -151,8 +159,8 @@ NSString * const FPFplogFuelstationGlobalIdField = @"FPFplogFuelstationGlobalIdF
                                                syncHttpRespCode:nil
                                                     syncErrMask:nil
                                                     syncRetryAt:nil
-                                        vehicleMainIdentifier:nil
-                                    fuelStationMainIdentifier:nil
+                                          vehicleMainIdentifier:nil
+                                      fuelStationMainIdentifier:nil
                                                      numGallons:numGallons
                                                          octane:octane
                                                     gallonPrice:gallonPrice

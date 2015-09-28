@@ -717,6 +717,21 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
      completionHandler:complHandler];
 }
 
+- (void)sendConfirmationEmailForUser:(FPUser *)user
+                             timeout:(NSInteger)timeout
+                     remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
+                        authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
+                   completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
+  [self doPostToRelation:[[user relations] objectForKey:FPSendEmailConfirmationRelation]
+      resourceModelParam:user
+              serializer:nil
+                 timeout:timeout
+         remoteStoreBusy:busyHandler
+            authRequired:authRequired
+       completionHandler:complHandler
+            otherHeaders:@{}];
+}
+
 - (void)deleteUser:(FPUser *)user
            timeout:(NSInteger)timeout
    remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler

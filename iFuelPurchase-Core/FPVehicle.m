@@ -23,6 +23,7 @@ NSString * const FPVehicleFuelCapacityField = @"FPVehicleFuelCapacityField";
                  globalIdentifier:(NSString *)globalIdentifier
                         mediaType:(HCMediaType *)mediaType
                         relations:(NSDictionary *)relations
+                        createdAt:(NSDate *)createdAt
                         deletedAt:(NSDate *)deletedAt
                         updatedAt:(NSDate *)updatedAt
              dateCopiedFromMaster:(NSDate *)dateCopiedFromMaster
@@ -43,6 +44,7 @@ NSString * const FPVehicleFuelCapacityField = @"FPVehicleFuelCapacityField";
                           masterEntityTable:TBL_MASTER_VEHICLE
                                   mediaType:mediaType
                                   relations:relations
+                                  createdAt:createdAt
                                   deletedAt:deletedAt
                                   updatedAt:updatedAt
                        dateCopiedFromMaster:dateCopiedFromMaster
@@ -69,6 +71,7 @@ NSString * const FPVehicleFuelCapacityField = @"FPVehicleFuelCapacityField";
                                                   globalIdentifier:[self globalIdentifier]
                                                          mediaType:[self mediaType]
                                                          relations:[self relations]
+                                                         createdAt:[self createdAt]
                                                          deletedAt:[self deletedAt]
                                                          updatedAt:[self updatedAt]
                                               dateCopiedFromMaster:[self dateCopiedFromMaster]
@@ -97,6 +100,8 @@ NSString * const FPVehicleFuelCapacityField = @"FPVehicleFuelCapacityField";
                    globalIdentifier:nil
                           mediaType:mediaType
                           relations:nil
+                          createdAt:nil
+                          deletedAt:nil
                           updatedAt:nil];
 }
 
@@ -106,13 +111,16 @@ NSString * const FPVehicleFuelCapacityField = @"FPVehicleFuelCapacityField";
               globalIdentifier:(NSString *)globalIdentifier
                      mediaType:(HCMediaType *)mediaType
                      relations:(NSDictionary *)relations
+                     createdAt:(NSDate *)createdAt
+                     deletedAt:(NSDate *)deletedAt
                      updatedAt:(NSDate *)updatedAt {
   return [[FPVehicle alloc] initWithLocalMainIdentifier:nil
                                   localMasterIdentifier:nil
                                        globalIdentifier:globalIdentifier
                                               mediaType:mediaType
                                               relations:relations
-                                              deletedAt:nil
+                                              createdAt:createdAt
+                                              deletedAt:deletedAt
                                               updatedAt:updatedAt
                                    dateCopiedFromMaster:nil
                                          editInProgress:NO
@@ -133,6 +141,7 @@ NSString * const FPVehicleFuelCapacityField = @"FPVehicleFuelCapacityField";
                                        globalIdentifier:nil
                                               mediaType:nil
                                               relations:nil
+                                              createdAt:nil
                                               deletedAt:nil
                                               updatedAt:nil
                                    dateCopiedFromMaster:nil
