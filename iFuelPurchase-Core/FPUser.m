@@ -114,6 +114,7 @@ NSString * const FPUserVerifiedAtField = @"FPUserVerifiedAtField";
   return [FPUser userWithName:name
                         email:email
                      password:password
+                   verifiedAt:nil
              globalIdentifier:nil
                     mediaType:mediaType
                     relations:nil
@@ -125,6 +126,7 @@ NSString * const FPUserVerifiedAtField = @"FPUserVerifiedAtField";
 + (FPUser *)userWithName:(NSString *)name
                    email:(NSString *)email
                 password:(NSString *)password
+              verifiedAt:(NSDate *)verifiedAt
         globalIdentifier:(NSString *)globalIdentifier
                mediaType:(HCMediaType *)mediaType
                relations:(NSDictionary *)relations
@@ -150,7 +152,7 @@ NSString * const FPUserVerifiedAtField = @"FPUserVerifiedAtField";
                                                 name:name
                                                email:email
                                             password:password
-                                          verifiedAt:nil];
+                                          verifiedAt:verifiedAt];
 }
 
 #pragma mark - Merging

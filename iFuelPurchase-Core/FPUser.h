@@ -21,6 +21,7 @@ FOUNDATION_EXPORT NSString * const FPSendEmailConfirmationRelation;
 
 FOUNDATION_EXPORT NSString * const FPUserNameField;
 FOUNDATION_EXPORT NSString * const FPUserEmailField;
+FOUNDATION_EXPORT NSString * const FPUserVerifiedAtField;
 
 @interface FPUser : PELMUser <NSCopying>
 
@@ -57,6 +58,7 @@ FOUNDATION_EXPORT NSString * const FPUserEmailField;
 + (FPUser *)userWithName:(NSString *)name
                    email:(NSString *)email
                 password:(NSString *)password
+              verifiedAt:(NSDate *)verifiedAt
         globalIdentifier:(NSString *)globalIdentifier
                mediaType:(HCMediaType *)mediaType
                relations:(NSDictionary *)relations

@@ -101,6 +101,7 @@ NSString * const PELMLogoutRelation = @"logout";
   return [PELMUser userWithName:name
                           email:email
                        password:password
+                     verifiedAt:nil
                globalIdentifier:nil
                       mediaType:mediaType
                       relations:nil
@@ -112,6 +113,7 @@ NSString * const PELMLogoutRelation = @"logout";
 + (PELMUser *)userWithName:(NSString *)name
                      email:(NSString *)email
                   password:(NSString *)password
+                verifiedAt:(NSDate *)verifiedAt
           globalIdentifier:(NSString *)globalIdentifier
                  mediaType:(HCMediaType *)mediaType
                  relations:(NSDictionary *)relations
@@ -137,7 +139,7 @@ NSString * const PELMLogoutRelation = @"logout";
                                                   name:name
                                                  email:email
                                               password:password
-                                            verifiedAt:nil];
+                                            verifiedAt:verifiedAt];
 }
 
 #pragma mark - Methods

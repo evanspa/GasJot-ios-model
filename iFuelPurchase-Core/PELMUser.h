@@ -49,6 +49,7 @@ FOUNDATION_EXPORT NSString * const PELMLogoutRelation;
 + (PELMUser *)userWithName:(NSString *)name
                      email:(NSString *)email
                   password:(NSString *)password
+                verifiedAt:(NSDate *)verifiedAt
           globalIdentifier:(NSString *)globalIdentifier
                  mediaType:(HCMediaType *)mediaType
                  relations:(NSDictionary *)relations

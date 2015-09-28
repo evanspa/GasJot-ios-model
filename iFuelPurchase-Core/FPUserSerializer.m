@@ -15,6 +15,7 @@
 NSString * const FPUserFullnameKey     = @"user/name";
 NSString * const FPUserEmailKey        = @"user/email";
 NSString * const FPUserPasswordKey     = @"user/password";
+NSString * const FPUserVerifiedAtKey   = @"user/verified-at";
 NSString * const FPUserCreatedAtKey    = @"user/created-at";
 NSString * const FPUserUpdatedAtKey    = @"user/updated-at";
 NSString * const FPUserDeletedAtKey    = @"user/deleted-at";
@@ -42,6 +43,7 @@ NSString * const FPUserDeletedAtKey    = @"user/deleted-at";
   return [FPUser userWithName:[resDict objectForKey:FPUserFullnameKey]
                         email:[resDict objectForKey:FPUserEmailKey]
                      password:[resDict objectForKey:FPUserPasswordKey]
+                   verifiedAt:[resDict dateSince1970ForKey:FPUserVerifiedAtKey]
              globalIdentifier:location
                     mediaType:mediaType
                     relations:relations
