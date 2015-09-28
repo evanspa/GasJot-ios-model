@@ -181,6 +181,7 @@ NSString * const FPUserVerifiedAtField = @"FPUserVerifiedAtField";
   [super overwriteDomainProperties:user];
   [self setEmail:[user email]];
   [self setName:[user name]];
+  [self setVerifiedAt:[user verifiedAt]];
 }
 
 - (void)overwrite:(FPUser *)user {
