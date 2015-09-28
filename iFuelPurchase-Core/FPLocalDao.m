@@ -392,6 +392,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
 %@ = ?, \
 %@ = ?, \
 %@ = ?, \
+%@ = ?, \
 %@ = ? \
 where %@ = ?", TBL_MAIN_USER,
                        COL_MASTER_USER_ID,
@@ -400,12 +401,14 @@ where %@ = ?", TBL_MAIN_USER,
                        COL_MAN_MASTER_UPDATED_AT,
                        COL_USR_NAME,
                        COL_USR_EMAIL,
+                       COL_USR_VERIFIED_AT,
                        COL_LOCAL_ID]
             argsArray:@[[masterUser localMasterIdentifier],
                         [masterUser globalIdentifier],
                         [PEUtils millisecondsFromDate:[masterUser updatedAt]],
                         orNil([masterUser name]),
                         orNil([masterUser email]),
+                        orNil([PEUtils millisecondsFromDate:[masterUser verifiedAt]]),
                         [mainUser localMainIdentifier]]
                    db:db
                 error:errorBlk];
@@ -3849,6 +3852,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
           %@ = ?, \
           %@ = ?, \
           %@ = ?, \
+          %@ = ?, \
           %@ = ? \
           WHERE %@ = ?",
           TBL_MASTER_USER,        // table
@@ -3860,6 +3864,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
           COL_USR_NAME,           // col6
           COL_USR_EMAIL,          // col7
           COL_USR_PASSWORD_HASH,  // col8
+          COL_USR_VERIFIED_AT,    // col 9
           COL_LOCAL_ID];          // where, col1
 }
 
@@ -3872,11 +3877,13 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
            orNil([user name]),
            orNil([user email]),
            orNil([user password]),
+           orNil([PEUtils millisecondsFromDate:[user verifiedAt]]),
            [user localMasterIdentifier]];
 }
 
 - (NSString *)updateStmtForMainUser {
   return [NSString stringWithFormat:@"UPDATE %@ SET \
+          %@ = ?, \
           %@ = ?, \
           %@ = ?, \
           %@ = ?, \
@@ -3900,6 +3907,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
           COL_USR_NAME,                       // col5
           COL_USR_EMAIL,                      // col6
           COL_USR_PASSWORD_HASH,              // col8
+          COL_USR_VERIFIED_AT,
           COL_MAN_EDIT_IN_PROGRESS,           // col10
           COL_MAN_SYNC_IN_PROGRESS,           // col11
           COL_MAN_SYNCED,                     // col12
@@ -3918,6 +3926,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
            orNil([user name]),
            orNil([user email]),
            orNil([user password]),
+           orNil([PEUtils millisecondsFromDate:[user verifiedAt]]),
            [NSNumber numberWithBool:[user editInProgress]],
            [NSNumber numberWithBool:[user syncInProgress]],
            [NSNumber numberWithBool:[user synced]],
@@ -3932,8 +3941,8 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                         db:(FMDatabase *)db
                      error:(PELMDaoErrorBlk)errorBlk {
   NSString *stmt = [NSString stringWithFormat:@"INSERT INTO %@ (%@, %@, %@, %@, %@, %@, \
-%@, %@, %@, %@, %@, %@, %@, %@, %@, %@) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, \
-?, ?, ?, ?, ?, ?, ?)",
+%@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, \
+?, ?, ?, ?, ?, ?, ?, ?)",
                     TBL_MAIN_USER,
                     COL_LOCAL_ID,
                     COL_MASTER_USER_ID,
@@ -3944,6 +3953,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                     COL_USR_NAME,
                     COL_USR_EMAIL,
                     COL_USR_PASSWORD_HASH,
+                    COL_USR_VERIFIED_AT,
                     COL_MAN_EDIT_IN_PROGRESS,
                     COL_MAN_SYNC_IN_PROGRESS,
                     COL_MAN_SYNCED,
@@ -3961,6 +3971,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                             orNil([user name]),
                             orNil([user email]),
                             orNil([user password]),
+                            orNil([PEUtils millisecondsFromDate:[user verifiedAt]]),
                             [NSNumber numberWithBool:[user editInProgress]],
                             [NSNumber numberWithBool:[user syncInProgress]],
                             [NSNumber numberWithBool:[user synced]],
@@ -3977,7 +3988,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                           db:(FMDatabase *)db
                        error:(PELMDaoErrorBlk)errorBlk {
   NSString *stmt = [NSString stringWithFormat:@"INSERT INTO %@ (%@, %@, \
-%@, %@, %@, %@, %@, %@) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+%@, %@, %@, %@, %@, %@, %@) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
                     TBL_MASTER_USER,
                     COL_GLOBAL_ID,
                     COL_MEDIA_TYPE,
@@ -3986,7 +3997,8 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                     COL_MST_DELETED_DT,
                     COL_USR_NAME,
                     COL_USR_EMAIL,
-                    COL_USR_PASSWORD_HASH];
+                    COL_USR_PASSWORD_HASH,
+                    COL_USR_VERIFIED_AT];
   [PELMUtils doMasterInsert:stmt
                   argsArray:@[orNil([user globalIdentifier]),
                               orNil([[user mediaType] description]),
@@ -3995,7 +4007,8 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                               orNil([PEUtils millisecondsFromDate:[user deletedAt]]),
                               orNil([user name]),
                               orNil([user email]),
-                              orNil([user password])]
+                              orNil([user password]),
+                              orNil([PEUtils millisecondsFromDate:[user verifiedAt]])]
                      entity:user
                          db:db
                       error:errorBlk];
