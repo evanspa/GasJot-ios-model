@@ -648,8 +648,7 @@ localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler {
 
 - (void)resendVerificationEmailForUser:(FPUser *)user
                     remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
-                     addlCompletionBlk:(void(^)(void))completionBlk
-                 localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler {
+                         completionBlk:(void(^)(void))completionBlk {
   PELMRemoteMasterCompletionHandler masterStoreComplHandler =
   ^(NSString *newAuthTkn, NSString *globalId, id resourceModel, NSDictionary *rels,
     NSDate *lastModified, BOOL isConflict, BOOL gone, BOOL notFound, BOOL movedPermanently,

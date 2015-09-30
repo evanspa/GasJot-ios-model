@@ -157,8 +157,7 @@ localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler;
 
 - (void)resendVerificationEmailForUser:(FPUser *)user
                     remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
-                     addlCompletionBlk:(void(^)(void))addlCompletionBlk
-                 localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler;
+                         completionBlk:(void(^)(void))completionBlk;
 
 - (BOOL)prepareUserForEdit:(FPUser *)user
                      error:(PELMDaoErrorBlk)errorBlk;
