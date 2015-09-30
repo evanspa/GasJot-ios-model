@@ -151,9 +151,14 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
     localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler;
 
 - (void)logoutUser:(FPUser *)user
-remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)addlRemoteStoreBusyBlk
+remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
  addlCompletionBlk:(void(^)(void))addlCompletionBlk
 localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler;
+
+- (void)resendVerificationEmailForUser:(FPUser *)user
+                    remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
+                     addlCompletionBlk:(void(^)(void))addlCompletionBlk
+                 localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler;
 
 - (BOOL)prepareUserForEdit:(FPUser *)user
                      error:(PELMDaoErrorBlk)errorBlk;

@@ -37,6 +37,7 @@ NSString * const LAST_MODIFIED_HEADER = @"last-modified";
   FPFuelStationSerializer *_fuelStationSerializer;
   FPFuelPurchaseLogSerializer *_fuelPurchaseLogSerializer;
   FPEnvironmentLogSerializer *_environmentLogSerializer;
+  FPResendVerificationEmailSerializer *_resendVerificationEmailSerializer;
   dispatch_queue_t _serialQueue;
 }
 
@@ -62,6 +63,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
              userSerializer:(FPUserSerializer *)userSerializer
             loginSerializer:(FPLoginSerializer *)loginSerializer
            logoutSerializer:(FPLogoutSerializer *)logoutSerializer
+resendVerificationEmailSerializer:(FPResendVerificationEmailSerializer *)resendVerificationEmailSerializer
           vehicleSerializer:(FPVehicleSerializer *)vehicleSerializer
       fuelStationSerializer:(FPFuelStationSerializer *)fuelStationSerializer
   fuelPurchaseLogSerializer:(FPFuelPurchaseLogSerializer *)fuelPurchaseLogSerializer
@@ -92,6 +94,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
     _userSerializer = userSerializer;
     _loginSerializer = loginSerializer;
     _logoutSerializer = logoutSerializer;
+    _resendVerificationEmailSerializer = resendVerificationEmailSerializer;
     _vehicleSerializer = vehicleSerializer;
     _fuelStationSerializer = fuelStationSerializer;
     _fuelPurchaseLogSerializer = fuelPurchaseLogSerializer;
@@ -620,6 +623,20 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
   [self doPostToRelation:[[user relations] objectForKey:PELMLogoutRelation]
       resourceModelParam:user
               serializer:_logoutSerializer
+                 timeout:timeout
+         remoteStoreBusy:busyHandler
+            authRequired:nil
+       completionHandler:complHandler
+            otherHeaders:@{}];
+}
+
+- (void)resendVerificationEmailForUser:(FPUser *)user
+                               timeout:(NSInteger)timeout
+                       remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
+                     completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
+  [self doPostToRelation:[[user relations] objectForKey:PELMSendVerificationEmailRelation]
+      resourceModelParam:user
+              serializer:_resendVerificationEmailSerializer
                  timeout:timeout
          remoteStoreBusy:busyHandler
             authRequired:nil

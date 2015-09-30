@@ -56,6 +56,7 @@
 		18F23AB519A1F4730059DA22 /* FPErrorDomains.m in Sources */ = {isa = PBXBuildFile; fileRef = 18F23AB419A1F4730059DA22 /* FPErrorDomains.m */; };
 		18F5FD23198D1DC100D6BB13 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 18F5FD21198D1D6A00D6BB13 /* libsqlite3.dylib */; };
 		3A1D39AC44C9AF498E050705 /* libPods-PEFuelPurchase-ModelTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 97D994DB608A1FC554052190 /* libPods-PEFuelPurchase-ModelTests.a */; };
+		CA0520891BBB216F00075974 /* FPResendVerificationEmailSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = CA0520881BBB216F00075974 /* FPResendVerificationEmailSerializer.m */; settings = {ASSET_TAGS = (); }; };
 		CA7D5AAE1B3B07B500433581 /* PELMLoginUser.m in Sources */ = {isa = PBXBuildFile; fileRef = CA7D5AAD1B3B07B500433581 /* PELMLoginUser.m */; };
 		CADD42491B681756005E1DF8 /* FPLogoutSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = CADD42481B681756005E1DF8 /* FPLogoutSerializer.m */; };
 		CAFC844E1B98AC9500FAEB66 /* FPChangelog.m in Sources */ = {isa = PBXBuildFile; fileRef = CAFC844D1B98AC9500FAEB66 /* FPChangelog.m */; };
@@ -200,6 +201,8 @@
 		97D994DB608A1FC554052190 /* libPods-PEFuelPurchase-ModelTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-PEFuelPurchase-ModelTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		9A6BD3B0D574C7E922BFBF8D /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 		A6C811B0429F450C845608ED /* libPods-iFuelPurchase-CoreTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-iFuelPurchase-CoreTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		CA0520871BBB216F00075974 /* FPResendVerificationEmailSerializer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FPResendVerificationEmailSerializer.h; sourceTree = "<group>"; };
+		CA0520881BBB216F00075974 /* FPResendVerificationEmailSerializer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FPResendVerificationEmailSerializer.m; sourceTree = "<group>"; };
 		CA1949C21B66C7180039C83A /* Pods-PEFuelPurchase-ModelTests.debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = "Pods-PEFuelPurchase-ModelTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-PEFuelPurchase-ModelTests/Pods-PEFuelPurchase-ModelTests.debug.xcconfig"; sourceTree = "<group>"; };
 		CA1949C31B66C7180039C83A /* Pods-PEFuelPurchase-ModelTests.release.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = "Pods-PEFuelPurchase-ModelTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-PEFuelPurchase-ModelTests/Pods-PEFuelPurchase-ModelTests.release.xcconfig"; sourceTree = "<group>"; };
 		CA73FB4B1B2CF37F00451D50 /* FPCoordinatorDaoTests_11.1.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FPCoordinatorDaoTests_11.1.m; sourceTree = "<group>"; };
@@ -803,6 +806,7 @@
 		18F23AA419A152F80059DA22 /* Model JSON Serializers */ = {
 			isa = PBXGroup;
 			children = (
+				CA0520861BBB214A00075974 /* Re-send Verification Email Serializer */,
 				18F113FD19C159200013A903 /* Change Log Serializer */,
 				CADD42461B68172B005E1DF8 /* Logout Serializer */,
 				18417F3D1AA1797C007B8489 /* Login Serializer */,
@@ -840,6 +844,15 @@
 				18F23AB419A1F4730059DA22 /* FPErrorDomains.m */,
 			);
 			name = "Error Handling";
+			sourceTree = "<group>";
+		};
+		CA0520861BBB214A00075974 /* Re-send Verification Email Serializer */ = {
+			isa = PBXGroup;
+			children = (
+				CA0520871BBB216F00075974 /* FPResendVerificationEmailSerializer.h */,
+				CA0520881BBB216F00075974 /* FPResendVerificationEmailSerializer.m */,
+			);
+			name = "Re-send Verification Email Serializer";
 			sourceTree = "<group>";
 		};
 		CA7D5AAB1B3B074800433581 /* Login User */ = {
@@ -1049,6 +1062,7 @@
 				18F23AB519A1F4730059DA22 /* FPErrorDomains.m in Sources */,
 				1800C9EB19A8E75C00ECD51A /* PELMDDL.m in Sources */,
 				18EC862A19E852AC006C104A /* FPFuelPurchaseLogSerializer.m in Sources */,
+				CA0520891BBB216F00075974 /* FPResendVerificationEmailSerializer.m in Sources */,
 				1824817419B95E2700A71C97 /* FPEnvironmentLog.m in Sources */,
 				1882CAF419889B7500A00E67 /* FPVehicle.m in Sources */,
 				18417F401AA179D3007B8489 /* FPLoginSerializer.m in Sources */,

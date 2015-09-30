@@ -104,33 +104,33 @@
                                            charset:acceptCharset
                                     userSerializer:userSerializer];
     FPLogoutSerializer *logoutSerializer = [self logoutSerializerForCharset:acceptCharset];
-    _remoteMasterDao =
-      [[FPRestRemoteMasterDao alloc]
-        initWithAcceptCharset:acceptCharset
-               acceptLanguage:acceptLanguage
-           contentTypeCharset:contentTypeCharset
-                   authScheme:authScheme
-           authTokenParamName:authTokenParamName
-                    authToken:authToken
-          errorMaskHeaderName:errorMaskHeaderName
-   establishSessionHeaderName:establishHeaderSessionName
-          authTokenHeaderName:authTokenHeaderName
-    ifModifiedSinceHeaderName:ifModifiedSinceHeaderName
-  ifUnmodifiedSinceHeaderName:ifUnmodifiedSinceHeaderName
-  loginFailedReasonHeaderName:loginFailedReasonHeaderName
-accountClosedReasonHeaderName:accountClosedReasonHeaderName
- bundleHoldingApiJsonResource:bundle
-    nameOfApiJsonResourceFile:apiResourceFileName
-              apiResMtVersion:apiResMtVersion
-          changelogSerializer:changelogSerializer
-               userSerializer:userSerializer
-              loginSerializer:loginSerializer
-             logoutSerializer:logoutSerializer
-            vehicleSerializer:vehicleSerializer
-        fuelStationSerializer:fuelStationSerializer
-    fuelPurchaseLogSerializer:fuelPurchaseLogSerializer
-     environmentLogSerializer:environmentLogSerializer
-     allowInvalidCertificates:allowInvalidCertificates];
+    FPResendVerificationEmailSerializer *resendVerificationEmailSerializer = [self resendVerificationEmailSerializerForCharset:acceptCharset];
+    _remoteMasterDao = [[FPRestRemoteMasterDao alloc]  initWithAcceptCharset:acceptCharset
+                                                              acceptLanguage:acceptLanguage
+                                                          contentTypeCharset:contentTypeCharset
+                                                                  authScheme:authScheme
+                                                          authTokenParamName:authTokenParamName
+                                                                   authToken:authToken
+                                                         errorMaskHeaderName:errorMaskHeaderName
+                                                  establishSessionHeaderName:establishHeaderSessionName
+                                                         authTokenHeaderName:authTokenHeaderName
+                                                   ifModifiedSinceHeaderName:ifModifiedSinceHeaderName
+                                                 ifUnmodifiedSinceHeaderName:ifUnmodifiedSinceHeaderName
+                                                 loginFailedReasonHeaderName:loginFailedReasonHeaderName
+                                               accountClosedReasonHeaderName:accountClosedReasonHeaderName
+                                                bundleHoldingApiJsonResource:bundle
+                                                   nameOfApiJsonResourceFile:apiResourceFileName
+                                                             apiResMtVersion:apiResMtVersion
+                                                         changelogSerializer:changelogSerializer
+                                                              userSerializer:userSerializer
+                                                             loginSerializer:loginSerializer
+                                                            logoutSerializer:logoutSerializer
+                                           resendVerificationEmailSerializer:resendVerificationEmailSerializer
+                                                           vehicleSerializer:vehicleSerializer
+                                                       fuelStationSerializer:fuelStationSerializer
+                                                   fuelPurchaseLogSerializer:fuelPurchaseLogSerializer
+                                                    environmentLogSerializer:environmentLogSerializer
+                                                    allowInvalidCertificates:allowInvalidCertificates];
     _authTokenDelegate = authTokenDelegate;
   }
   return self;
@@ -184,6 +184,13 @@ accountClosedReasonHeaderName:accountClosedReasonHeaderName
                                                charset:charset
                             serializersForEmbeddedResources:@{}
                                 actionsForEmbeddedResources:@{}];
+}
+
+- (FPResendVerificationEmailSerializer *)resendVerificationEmailSerializerForCharset:(HCCharset *)charset {
+  return [[FPResendVerificationEmailSerializer alloc] initWithMediaType:[FPKnownMediaTypes userMediaTypeWithVersion:_userResMtVersion]
+                                                                charset:charset
+                                        serializersForEmbeddedResources:@{}
+                                            actionsForEmbeddedResources:@{}];
 }
 
 - (FPChangelogSerializer *)changelogSerializerForCharset:(HCCharset *)charset
@@ -637,6 +644,22 @@ localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler {
                        timeout:_timeout
                remoteStoreBusy:remoteStoreBusyBlk
              completionHandler:masterStoreComplHandler];
+}
+
+- (void)resendVerificationEmailForUser:(FPUser *)user
+                    remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
+                     addlCompletionBlk:(void(^)(void))completionBlk
+                 localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler {
+  PELMRemoteMasterCompletionHandler masterStoreComplHandler =
+  ^(NSString *newAuthTkn, NSString *globalId, id resourceModel, NSDictionary *rels,
+    NSDate *lastModified, BOOL isConflict, BOOL gone, BOOL notFound, BOOL movedPermanently,
+    BOOL notModified, NSError *err, NSHTTPURLResponse *httpResp) {
+    completionBlk();
+  };
+  [_remoteMasterDao resendVerificationEmailForUser:user
+                                           timeout:_timeout
+                                   remoteStoreBusy:remoteStoreBusyBlk
+                                 completionHandler:masterStoreComplHandler];
 }
 
 - (FPUser *)userWithError:(PELMDaoErrorBlk)errorBlk {

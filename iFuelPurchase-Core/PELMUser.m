@@ -14,6 +14,7 @@ NSString * const PELMUsersRelation = @"users";
 NSString * const PELMLoginRelation = @"login";
 NSString * const PELMLightLoginRelation = @"light-login";
 NSString * const PELMLogoutRelation = @"logout";
+NSString * const PELMSendVerificationEmailRelation = @"send-verification-email";
 
 @implementation PELMUser
 

@@ -13,6 +13,7 @@ FOUNDATION_EXPORT NSString * const PELMUsersRelation;
 FOUNDATION_EXPORT NSString * const PELMLoginRelation;
 FOUNDATION_EXPORT NSString * const PELMLightLoginRelation;
 FOUNDATION_EXPORT NSString * const PELMLogoutRelation;
+FOUNDATION_EXPORT NSString * const PELMSendVerificationEmailRelation;
 
 @interface PELMUser : PELMMainSupport <NSCopying>
 
