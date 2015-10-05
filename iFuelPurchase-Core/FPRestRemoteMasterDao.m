@@ -38,6 +38,7 @@ NSString * const LAST_MODIFIED_HEADER = @"last-modified";
   FPFuelPurchaseLogSerializer *_fuelPurchaseLogSerializer;
   FPEnvironmentLogSerializer *_environmentLogSerializer;
   FPResendVerificationEmailSerializer *_resendVerificationEmailSerializer;
+  FPPasswordResetSerializer *_passwordResetSerializer;
   dispatch_queue_t _serialQueue;
 }
 
@@ -64,6 +65,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
             loginSerializer:(FPLoginSerializer *)loginSerializer
            logoutSerializer:(FPLogoutSerializer *)logoutSerializer
 resendVerificationEmailSerializer:(FPResendVerificationEmailSerializer *)resendVerificationEmailSerializer
+passwordResetSerializer:(FPPasswordResetSerializer *)passwordResetSerializer
           vehicleSerializer:(FPVehicleSerializer *)vehicleSerializer
       fuelStationSerializer:(FPFuelStationSerializer *)fuelStationSerializer
   fuelPurchaseLogSerializer:(FPFuelPurchaseLogSerializer *)fuelPurchaseLogSerializer
@@ -95,6 +97,7 @@ resendVerificationEmailSerializer:(FPResendVerificationEmailSerializer *)resendV
     _loginSerializer = loginSerializer;
     _logoutSerializer = logoutSerializer;
     _resendVerificationEmailSerializer = resendVerificationEmailSerializer;
+    _passwordResetSerializer = passwordResetSerializer;
     _vehicleSerializer = vehicleSerializer;
     _fuelStationSerializer = fuelStationSerializer;
     _fuelPurchaseLogSerializer = fuelPurchaseLogSerializer;
@@ -637,6 +640,22 @@ resendVerificationEmailSerializer:(FPResendVerificationEmailSerializer *)resendV
   [self doPostToRelation:[[user relations] objectForKey:PELMSendVerificationEmailRelation]
       resourceModelParam:user
               serializer:_resendVerificationEmailSerializer
+                 timeout:timeout
+         remoteStoreBusy:busyHandler
+            authRequired:nil
+       completionHandler:complHandler
+            otherHeaders:@{}];
+}
+
+- (void)sendPasswordResetEmailToEmail:(NSString *)email
+                              timeout:(NSInteger)timeout
+                      remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
+                    completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
+  PELMLoginUser *unknownUser = [[PELMLoginUser alloc] init];
+  [unknownUser setEmail:email];
+  [self doPostToRelation:[_restApiRelations objectForKey:PELMSendPasswordResetEmailRelation]
+      resourceModelParam:unknownUser
+              serializer:_passwordResetSerializer
                  timeout:timeout
          remoteStoreBusy:busyHandler
             authRequired:nil

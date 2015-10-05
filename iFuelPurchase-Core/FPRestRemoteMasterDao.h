@@ -19,6 +19,7 @@
 #import "FPFuelPurchaseLogSerializer.h"
 #import "FPEnvironmentLogSerializer.h"
 #import "FPResendVerificationEmailSerializer.h"
+#import "FPPasswordResetSerializer.h"
 
 FOUNDATION_EXPORT NSString * const LAST_MODIFIED_HEADER;
 
@@ -47,6 +48,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
             loginSerializer:(FPLoginSerializer *)loginSerializer
            logoutSerializer:(FPLogoutSerializer *)logoutSerializer
 resendVerificationEmailSerializer:(FPResendVerificationEmailSerializer *)resendVerificationEmailSerializer
+    passwordResetSerializer:(FPPasswordResetSerializer *)passwordResetSerializer
           vehicleSerializer:(FPVehicleSerializer *)vehicleSerializer
       fuelStationSerializer:(FPFuelStationSerializer *)fuelStationSerializer
   fuelPurchaseLogSerializer:(FPFuelPurchaseLogSerializer *)fuelPurchaseLogSerializer

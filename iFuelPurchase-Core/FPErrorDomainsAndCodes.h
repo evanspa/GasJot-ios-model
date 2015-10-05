@@ -110,8 +110,9 @@ typedef NS_OPTIONS(NSUInteger, FPSysErrorMsg) {
  */
 typedef NS_OPTIONS(NSUInteger, FPSignInMsg) {
   FPSignInAnyIssues                  = 1 << 0,
-  FPSignInEmailNotProvided           = 1 << 1,
-  FPSignInPasswordNotProvided        = 1 << 2,
-  FPSignInInvalidCredentials         = 1 << 3
+  FPSignInInvalidEmail               = 1 << 1,
+  FPSignInEmailNotProvided           = 1 << 2,
+  FPSignInPasswordNotProvided        = 1 << 3,
+  FPSignInInvalidCredentials         = 1 << 4
 };
 

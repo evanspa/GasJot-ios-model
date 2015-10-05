@@ -146,6 +146,11 @@
                        remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                      completionHandler:(PELMRemoteMasterCompletionHandler)complHandler;
 
+- (void)sendPasswordResetEmailToEmail:(NSString *)email
+                              timeout:(NSInteger)timeout
+                      remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
+                    completionHandler:(PELMRemoteMasterCompletionHandler)complHandler;
+
 - (void)establishAccountForUser:(FPUser *)user
                         timeout:(NSInteger)timeout
                 remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler

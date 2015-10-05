@@ -105,6 +105,7 @@
                                     userSerializer:userSerializer];
     FPLogoutSerializer *logoutSerializer = [self logoutSerializerForCharset:acceptCharset];
     FPResendVerificationEmailSerializer *resendVerificationEmailSerializer = [self resendVerificationEmailSerializerForCharset:acceptCharset];
+    FPPasswordResetSerializer *passwordResetSerializer = [self passwordResetSerializerForCharset:acceptCharset];
     _remoteMasterDao = [[FPRestRemoteMasterDao alloc]  initWithAcceptCharset:acceptCharset
                                                               acceptLanguage:acceptLanguage
                                                           contentTypeCharset:contentTypeCharset
@@ -126,6 +127,7 @@
                                                              loginSerializer:loginSerializer
                                                             logoutSerializer:logoutSerializer
                                            resendVerificationEmailSerializer:resendVerificationEmailSerializer
+                                                     passwordResetSerializer:passwordResetSerializer
                                                            vehicleSerializer:vehicleSerializer
                                                        fuelStationSerializer:fuelStationSerializer
                                                    fuelPurchaseLogSerializer:fuelPurchaseLogSerializer
@@ -191,6 +193,13 @@
                                                                 charset:charset
                                         serializersForEmbeddedResources:@{}
                                             actionsForEmbeddedResources:@{}];
+}
+
+- (FPPasswordResetSerializer *)passwordResetSerializerForCharset:(HCCharset *)charset {
+  return [[FPPasswordResetSerializer alloc] initWithMediaType:[FPKnownMediaTypes userMediaTypeWithVersion:_userResMtVersion]
+                                                      charset:charset
+                              serializersForEmbeddedResources:@{}
+                                  actionsForEmbeddedResources:@{}];
 }
 
 - (FPChangelogSerializer *)changelogSerializerForCharset:(HCCharset *)charset
@@ -659,6 +668,21 @@ localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler {
                                            timeout:_timeout
                                    remoteStoreBusy:remoteStoreBusyBlk
                                  completionHandler:masterStoreComplHandler];
+}
+
+- (void)sendPasswordResetEmailToEmail:(NSString *)email
+                   remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
+                        completionBlk:(void(^)(void))completionBlk {
+  PELMRemoteMasterCompletionHandler masterStoreComplHandler =
+  ^(NSString *newAuthTkn, NSString *globalId, id resourceModel, NSDictionary *rels,
+    NSDate *lastModified, BOOL isConflict, BOOL gone, BOOL notFound, BOOL movedPermanently,
+    BOOL notModified, NSError *err, NSHTTPURLResponse *httpResp) {
+    completionBlk();
+  };
+  [_remoteMasterDao sendPasswordResetEmailToEmail:email
+                                          timeout:_timeout
+                                  remoteStoreBusy:remoteStoreBusyBlk
+                                completionHandler:masterStoreComplHandler];
 }
 
 - (FPUser *)userWithError:(PELMDaoErrorBlk)errorBlk {

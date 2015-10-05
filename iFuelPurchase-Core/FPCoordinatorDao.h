@@ -159,6 +159,10 @@ localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler;
                     remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
                          completionBlk:(void(^)(void))completionBlk;
 
+- (void)sendPasswordResetEmailToEmail:(NSString *)email
+                   remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
+                        completionBlk:(void(^)(void))completionBlk;
+
 - (BOOL)prepareUserForEdit:(FPUser *)user
                      error:(PELMDaoErrorBlk)errorBlk;
 
