@@ -657,12 +657,21 @@ localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler {
 
 - (void)resendVerificationEmailForUser:(FPUser *)user
                     remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
-                         completionBlk:(void(^)(void))completionBlk {
+                            successBlk:(void(^)(void))successBlk
+                              errorBlk:(void(^)(void))errorBlk {
   PELMRemoteMasterCompletionHandler masterStoreComplHandler =
   ^(NSString *newAuthTkn, NSString *globalId, id resourceModel, NSDictionary *rels,
     NSDate *lastModified, BOOL isConflict, BOOL gone, BOOL notFound, BOOL movedPermanently,
     BOOL notModified, NSError *err, NSHTTPURLResponse *httpResp) {
-    completionBlk();
+    if (isConflict ||
+        gone ||
+        notFound ||
+        movedPermanently ||
+        ![PEUtils isNil:err]) {
+      errorBlk();
+    } else {
+      successBlk();
+    }
   };
   [_remoteMasterDao resendVerificationEmailForUser:user
                                            timeout:_timeout
@@ -672,12 +681,27 @@ localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler {
 
 - (void)sendPasswordResetEmailToEmail:(NSString *)email
                    remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
-                        completionBlk:(void(^)(void))completionBlk {
+                           successBlk:(void(^)(void))successBlk
+                      unknownEmailBlk:(void(^)(void))unknownEmailBlk
+                             errorBlk:(void(^)(void))errorBlk {
   PELMRemoteMasterCompletionHandler masterStoreComplHandler =
   ^(NSString *newAuthTkn, NSString *globalId, id resourceModel, NSDictionary *rels,
     NSDate *lastModified, BOOL isConflict, BOOL gone, BOOL notFound, BOOL movedPermanently,
     BOOL notModified, NSError *err, NSHTTPURLResponse *httpResp) {
-    completionBlk();
+    if (isConflict ||
+        gone ||
+        notFound ||
+        movedPermanently) {
+      errorBlk();
+    } else if (![PEUtils isNil:err]) {
+      if ([err code] & FPSendPasswordResetUnknownEmail) {
+        unknownEmailBlk();
+      } else {
+        errorBlk();
+      }
+    } else {
+      successBlk();
+    }
   };
   [_remoteMasterDao sendPasswordResetEmailToEmail:email
                                           timeout:_timeout

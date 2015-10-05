@@ -29,6 +29,11 @@ FOUNDATION_EXPORT NSString * const FPConnFaultedErrorDomain;
  */
 FOUNDATION_EXPORT NSString * const FPSystemFaultedErrorDomain;
 
+typedef NS_OPTIONS(NSUInteger, FPSendPasswordResetEmailMsg) {
+  FPSendPasswordResetAnyIssues    = 1 << 0,
+  FPSendPasswordResetUnknownEmail = 1 << 1
+};
+
 /**
  Error codes for the 'Save User' use cases of the FPUserFaultedErrorDomain
  domain.
