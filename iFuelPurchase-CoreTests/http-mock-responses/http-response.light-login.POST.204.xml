@@ -4,7 +4,7 @@
               host="example.com"
               port="80"
               scheme="http"
-              uri-path="/fp/light-login"
+              uri-path="/gasjot/d/light-login"
               request-method="POST">This is the description for this mock response.</annotation>
   <headers>
     <header name="Content-Type" value="application/vnd.fp.user-v0.0.1+json" />

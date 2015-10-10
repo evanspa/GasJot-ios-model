@@ -4,10 +4,10 @@
     host="example.com"
     port="80"
     scheme="http"
-    uri-path="/fp/users/U8890209302/fplogs"
+    uri-path="/gasjot/d/users/U8890209302/fplogs"
     request-method="POST">Successful remote sync of newly-added fuel purchase log.</annotation>
   <headers>
-    <header name="Location" value="http://example.com/fp/users/U8890209302/fplogs/FPL001" />
+    <header name="Location" value="http://example.com/gasjot/d/users/U8890209302/fplogs/FPL001" />
     <header name="Cache-Control" value="no-cache" />
     <header name="Vary" value="Accept, Accept-Charset, Accept-Language" />
     <header name="fp-auth-token" value="23409582345-093284590-2345LKJDFLSDFLK" />

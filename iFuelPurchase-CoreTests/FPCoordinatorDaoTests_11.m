@@ -86,7 +86,7 @@ describe(@"FPCoordinatorDao", ^{
       
       // ok - now lets try with a connection error
       [_coordDao prepareUserForEdit:user error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
-      [PEHttpResponseSimulator simulateCannotConnectToHostForRequestUrl:[NSURL URLWithString:@"http://example.com/fp/users/U8890209302"]
+      [PEHttpResponseSimulator simulateCannotConnectToHostForRequestUrl:[NSURL URLWithString:@"http://example.com/gasjot/d/users/U8890209302"]
                                                    andRequestHttpMethod:@"PUT"];
       __block BOOL saveFailed = NO;
       [_coordDao markAsDoneEditingAndSyncUserImmediate:user

@@ -4,7 +4,7 @@
               host="example.com"
               port="80"
               scheme="http"
-              uri-path="/fp/users/U1123409100/vehicles"
+              uri-path="/gasjot/d/users/U1123409100/vehicles"
               request-method="POST">This is the description for this mock response.</annotation>
   <headers>
     <header name="WWW-Authenticate" value="FPAuthToken realm=&quot;all&quot;" />

@@ -4,7 +4,7 @@
               host="example.com"
               port="80"
               scheme="http"
-              uri-path="/fp/users"
+              uri-path="/gasjot/d/users"
               request-method="POST">This is the description for this mock response.</annotation>
   <headers>
     <header name="Content-Length" value="0" />

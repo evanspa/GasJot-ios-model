@@ -4,12 +4,12 @@
               host="example.com"
               port="80"
               scheme="http"
-              uri-path="/fp/users"
+              uri-path="/gasjot/d/users"
               request-method="POST">This is the description for this mock response.</annotation>
   <headers>
     <header name="Content-Type" value="application/vnd.fp.user-v0.0.1+json" />
     <header name="Content-Language" value="en-US" />
-    <header name="Location" value="http://example.com/fp/users/U8890209302" />
+    <header name="Location" value="http://example.com/gasjot/d/users/U8890209302" />
     <header name="fp-auth-token" value="1092348123049OLSDFJLIE001234" />
   </headers>
   <cookies />
@@ -22,14 +22,14 @@
         "user/updated-at": 1409644992000,
         "_links": {
           "vehicles": {
-            "href": "http://example.com/fp/users/U8890209302/vehicles"},
+            "href": "http://example.com/gasjot/d/users/U8890209302/vehicles"},
           "fuelstations": {
-            "href": "http://example.com/fp/users/U8890209302/fuelstations"},
+            "href": "http://example.com/gasjot/d/users/U8890209302/fuelstations"},
           "fuelpurchase-logs": {
-            "href": "http://example.com/fp/users/U8890209302/fplogs",
+            "href": "http://example.com/gasjot/d/users/U8890209302/fplogs",
             "type": "application/vnd.fp.fplog-v0.0.1+json"},
           "environment-logs": {
-            "href": "http://example.com/fp/users/U8890209302/envlogs",
+            "href": "http://example.com/gasjot/d/users/U8890209302/envlogs",
             "type": "application/vnd.fp.envlog-v0.0.1+json"}}}
     ]]>
   </body>

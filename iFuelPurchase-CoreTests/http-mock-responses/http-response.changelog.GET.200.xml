@@ -4,7 +4,7 @@
               host="example.com"
               port="80"
               scheme="http"
-              uri-path="/fp/users/U8890209302/changelog"
+              uri-path="/gasjot/d/users/U8890209302/changelog"
               request-method="GET">This is the description for this mock response.</annotation>
   <headers>
     <header name="Cache-Control" value="no-cache" />
@@ -16,7 +16,7 @@
       { "changelog/updated-at": 1433472979065,
         "_embedded": [
           { "media-type": "application/vnd.fp.user-v0.0.1+json",
-            "location": "http://example.com/fp/users/U1123409100",
+            "location": "http://example.com/gasjot/d/users/U1123409100",
             "payload": {
               "user/name": "Paul Evans",
               "user/email": "evansp2@gmail.com",
@@ -24,13 +24,13 @@
               "user/created-at": 1409644992000,
               "user/updated-at": 1433472979065}},
           { "media-type": "application/vnd.fp.vehicle-v0.0.1+json",
-            "location": "http://example.com/fp/users/U1123409100/vehicles/V429",
+            "location": "http://example.com/gasjot/d/users/U1123409100/vehicles/V429",
             "payload": {
               "fpvehicle/name": "My Mazda",
               "fpvehicle/created-at": 1409913262000,
               "fpvehicle/updated-at": 1409913262000}},
           { "media-type": "application/vnd.fp.vehicle-v0.0.1+json",
-            "location": "http://example.com/fp/users/U1123409100/vehicles/V430",
+            "location": "http://example.com/gasjot/d/users/U1123409100/vehicles/V430",
             "payload": {
               "fpvehicle/name": "My 300zx",
               "fpvehicle/created-at": 1409913262000,

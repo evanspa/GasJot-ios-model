@@ -4,12 +4,12 @@
               host="example.com"
               port="80"
               scheme="http"
-              uri-path="/fp/login"
+              uri-path="/gasjot/d/login"
               request-method="POST">This is the description for this mock response.</annotation>
   <headers>
     <header name="Content-Type" value="application/vnd.fp.user-v0.0.1+json" />
     <header name="Content-Language" value="en-US" />
-    <header name="Location" value="http://example.com/fp/users/U1123409100" />
+    <header name="Location" value="http://example.com/gasjot/d/users/U1123409100" />
     <header name="fp-auth-token" value="1092348123049OLSDFJLIE001234" />
   </headers>
   <cookies />
@@ -21,27 +21,27 @@
         "user/updated-at": 1433472979065,
         "_links": {
           "vehicles": {
-            "href": "http://example.com/fp/users/U1123409100/vehicles",
+            "href": "http://example.com/gasjot/d/users/U1123409100/vehicles",
             "type": "application/vnd.fp.vehicle-v0.0.1+json"},
           "fuelstations": {
-            "href": "http://example.com/fp/users/U1123409100/fuelstations",
+            "href": "http://example.com/gasjot/d/users/U1123409100/fuelstations",
             "type": "application/vnd.fp.fuelstation-v0.0.1+json"},
           "fuelpurchase-logs": {
-            "href": "http://example.com/fp/users/U1123409100/fplogs",
+            "href": "http://example.com/gasjot/d/users/U1123409100/fplogs",
             "type": "application/vnd.fp.fplog-v0.0.1+json"},
           "environment-logs": {
-            "href": "http://example.com/fp/users/U1123409100/envlogs",
+            "href": "http://example.com/gasjot/d/users/U1123409100/envlogs",
             "type": "application/vnd.fp.envlog-v0.0.1+json"}},
         "_embedded": [
           { "media-type": "application/vnd.fp.vehicle-v0.0.1+json",
-            "location": "http://example.com/fp/users/U1123409100/vehicles/V429",
+            "location": "http://example.com/gasjot/d/users/U1123409100/vehicles/V429",
             "payload": {
               "fpvehicle/name": "My Mazda",
               "fpvehicle/created-at": 1409913262000,
               "fpvehicle/updated-at": 1409913262000,
               "_links": {}}},
           { "media-type": "application/vnd.fp.vehicle-v0.0.1+json",
-            "location": "http://example.com/fp/users/U1123409100/vehicles/V430",
+            "location": "http://example.com/gasjot/d/users/U1123409100/vehicles/V430",
             "payload": {
               "fpvehicle/name": "My 300zx",
               "fpvehicle/created-at": 1409913262000,

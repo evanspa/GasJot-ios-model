@@ -4,12 +4,12 @@
               host="example.com"
               port="80"
               scheme="http"
-              uri-path="/fp/login"
+              uri-path="/gasjot/d/login"
               request-method="POST">This is the description for this mock response.</annotation>
   <headers>
     <header name="Content-Type" value="application/vnd.fp.user-v0.0.1+json" />
     <header name="Content-Language" value="en-US" />
-    <header name="Location" value="http://example.com/fp/users/U1123409100" />
+    <header name="Location" value="http://example.com/gasjot/d/users/U1123409100" />
     <header name="fp-auth-token" value="1092348123049OLSDFJLIE001234" />
   </headers>
   <cookies />
@@ -21,87 +21,87 @@
         "user/updated-at": 1409644992000,
         "_links": {
           "vehicles": {
-            "href": "http://example.com/fp/users/U1123409100/vehicles",
+            "href": "http://example.com/gasjot/d/users/U1123409100/vehicles",
             "type": "application/vnd.fp.vehicle-v0.0.1+json"}},
         "_embedded": [
           { "media-type": "application/vnd.fp.vehicle-v0.0.1+json",
-            "location": "http://example.com/fp/users/U1123409100/vehicles/V20",
+            "location": "http://example.com/gasjot/d/users/U1123409100/vehicles/V20",
             "payload": {
               "fpvehicle/name": "Vehicle 20"}},
           { "media-type": "application/vnd.fp.vehicle-v0.0.1+json",
-            "location": "http://example.com/fp/users/U1123409100/vehicles/V19",
+            "location": "http://example.com/gasjot/d/users/U1123409100/vehicles/V19",
             "payload": {
               "fpvehicle/name": "Vehicle 19"}},
           { "media-type": "application/vnd.fp.vehicle-v0.0.1+json",
-            "location": "http://example.com/fp/users/U1123409100/vehicles/V18",
+            "location": "http://example.com/gasjot/d/users/U1123409100/vehicles/V18",
             "payload": {
               "fpvehicle/name": "Vehicle 18"}},
           { "media-type": "application/vnd.fp.vehicle-v0.0.1+json",
-            "location": "http://example.com/fp/users/U1123409100/vehicles/V17",
+            "location": "http://example.com/gasjot/d/users/U1123409100/vehicles/V17",
             "payload": {
               "fpvehicle/name": "Vehicle 17"}},
           { "media-type": "application/vnd.fp.vehicle-v0.0.1+json",
-            "location": "http://example.com/fp/users/U1123409100/vehicles/V16",
+            "location": "http://example.com/gasjot/d/users/U1123409100/vehicles/V16",
             "payload": {
               "fpvehicle/name": "Vehicle 16"}},
           { "media-type": "application/vnd.fp.vehicle-v0.0.1+json",
-            "location": "http://example.com/fp/users/U1123409100/vehicles/V15",
+            "location": "http://example.com/gasjot/d/users/U1123409100/vehicles/V15",
             "payload": {
               "fpvehicle/name": "Vehicle 15"}},
           { "media-type": "application/vnd.fp.vehicle-v0.0.1+json",
-            "location": "http://example.com/fp/users/U1123409100/vehicles/V14",
+            "location": "http://example.com/gasjot/d/users/U1123409100/vehicles/V14",
             "payload": {
               "fpvehicle/name": "Vehicle 14"}},
           { "media-type": "application/vnd.fp.vehicle-v0.0.1+json",
-            "location": "http://example.com/fp/users/U1123409100/vehicles/V13",
+            "location": "http://example.com/gasjot/d/users/U1123409100/vehicles/V13",
             "payload": {
               "fpvehicle/name": "Vehicle 13"}},
           { "media-type": "application/vnd.fp.vehicle-v0.0.1+json",
-            "location": "http://example.com/fp/users/U1123409100/vehicles/V12",
+            "location": "http://example.com/gasjot/d/users/U1123409100/vehicles/V12",
             "payload": {
               "fpvehicle/name": "Vehicle 12"}},
           { "media-type": "application/vnd.fp.vehicle-v0.0.1+json",
-            "location": "http://example.com/fp/users/U1123409100/vehicles/V11",
+            "location": "http://example.com/gasjot/d/users/U1123409100/vehicles/V11",
             "payload": {
               "fpvehicle/name": "Vehicle 11"}},
           { "media-type": "application/vnd.fp.vehicle-v0.0.1+json",
-            "location": "http://example.com/fp/users/U1123409100/vehicles/V10",
+            "location": "http://example.com/gasjot/d/users/U1123409100/vehicles/V10",
             "payload": {
               "fpvehicle/name": "Vehicle 10"}},
           { "media-type": "application/vnd.fp.vehicle-v0.0.1+json",
-            "location": "http://example.com/fp/users/U1123409100/vehicles/V9",
+            "location": "http://example.com/gasjot/d/users/U1123409100/vehicles/V9",
             "payload": {
               "fpvehicle/name": "Vehicle 9"}},
           { "media-type": "application/vnd.fp.vehicle-v0.0.1+json",
-            "location": "http://example.com/fp/users/U1123409100/vehicles/V8",
+            "location": "http://example.com/gasjot/d/users/U1123409100/vehicles/V8",
             "payload": {
               "fpvehicle/name": "Vehicle 8"}},
           { "media-type": "application/vnd.fp.vehicle-v0.0.1+json",
-            "location": "http://example.com/fp/users/U1123409100/vehicles/V7",
+            "location": "http://example.com/gasjot/d/users/U1123409100/vehicles/V7",
             "payload": {
               "fpvehicle/name": "Vehicle 7"}},
           { "media-type": "application/vnd.fp.vehicle-v0.0.1+json",
-            "location": "http://example.com/fp/users/U1123409100/vehicles/V6",
+            "location": "http://example.com/gasjot/d/users/U1123409100/vehicles/V6",
             "payload": {
               "fpvehicle/name": "Vehicle 6"}},
           { "media-type": "application/vnd.fp.vehicle-v0.0.1+json",
-            "location": "http://example.com/fp/users/U1123409100/vehicles/V5",
+            "location": "http://example.com/gasjot/d/users/U1123409100/vehicles/V5",
             "payload": {
               "fpvehicle/name": "Vehicle 5"}},
           { "media-type": "application/vnd.fp.vehicle-v0.0.1+json",
-            "location": "http://example.com/fp/users/U1123409100/vehicles/V4",
+            "location": "http://example.com/gasjot/d/users/U1123409100/vehicles/V4",
             "payload": {
               "fpvehicle/name": "Vehicle 4"}},
           { "media-type": "application/vnd.fp.vehicle-v0.0.1+json",
-            "location": "http://example.com/fp/users/U1123409100/vehicles/V3",
+            "location": "http://example.com/gasjot/d/users/U1123409100/vehicles/V3",
             "payload": {
               "fpvehicle/name": "Vehicle 3"}},
           { "media-type": "application/vnd.fp.vehicle-v0.0.1+json",
-            "location": "http://example.com/fp/users/U1123409100/vehicles/V2",
+            "location": "http://example.com/gasjot/d/users/U1123409100/vehicles/V2",
             "payload": {
               "fpvehicle/name": "Vehicle 2"}},
           { "media-type": "application/vnd.fp.vehicle-v0.0.1+json",
-            "location": "http://example.com/fp/users/U1123409100/vehicles/V1",
+            "location": "http://example.com/gasjot/d/users/U1123409100/vehicles/V1",
             "payload": {
               "fpvehicle/name": "Vehicle 1"}}]}
     ]]>

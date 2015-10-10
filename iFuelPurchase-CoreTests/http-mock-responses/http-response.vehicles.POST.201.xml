@@ -4,12 +4,12 @@
               host="example.com"
               port="80"
               scheme="http"
-              uri-path="/fp/users/U8890209302/vehicles"
+              uri-path="/gasjot/d/users/U8890209302/vehicles"
               request-method="POST">This is the description for this mock response.</annotation>
   <headers>
     <header name="Content-Type" value="application/vnd.fp.vehicle-v0.0.1+json" />
     <header name="Content-Language" value="en-US" />
-    <header name="Location" value="http://example.com/fp/users/U8890209302/vehicles/V0191" />
+    <header name="Location" value="http://example.com/gasjot/d/users/U8890209302/vehicles/V0191" />
     <header name="fp-auth-token" value="1092348123049OLSDFJLIE001235" />
   </headers>
   <cookies />

@@ -1,5 +1,5 @@
 { "media-type": "application/vnd.fp.user-v0.0.1+json",
-  "location": "http://example.com/fp/users/U1123409100",
+  "location": "http://example.com/gasjot/d/users/U1123409100",
   "last-modified": "Tue, 02 Sep 2014 8:03:12 GMT",
   "payload": {
       "user/name": "Paul Evans",
@@ -7,23 +7,23 @@
       "user/creation-date": "Tue, 02 Sep 2014 8:03:12 GMT",
       "_links": {
           "vehicles": {
-              "href": "http://example.com/fp/users/U1123409100/vehicles",
+              "href": "http://example.com/gasjot/d/users/U1123409100/vehicles",
               "type": "application/vnd.fp.vehicle-v0.0.1+json"},
           "fuelpurchase-logs": {
-              "href": "http://example.com/fp/users/U1123409100/fplogs",
+              "href": "http://example.com/gasjot/d/users/U1123409100/fplogs",
               "type": "application/vnd.fp.fplog-v0.0.1+json"},
           "environment-logs": {
-              "href": "http://example.com/fp/users/U1123409100/envlogs",
+              "href": "http://example.com/gasjot/d/users/U1123409100/envlogs",
               "type": "application/vnd.fp.envlog-v0.0.1+json"}},
       "_embedded": [
           { "media-type": "application/vnd.fp.vehicle-v0.0.1+json",
-            "location": "http://example.com/fp/users/U1123409100/vehicles/V429",
+            "location": "http://example.com/gasjot/d/users/U1123409100/vehicles/V429",
             "last-modified": "Fri, 06 Sep 2014 10:34:22 GMT",
             "payload": {
                 "fpvehicle/name": "My Mazda",
                 "_links": {}}},
           { "media-type": "application/vnd.fp.vehicle-v0.0.1+json",
-            "location": "http://example.com/fp/users/U1123409100/vehicles/V430",
+            "location": "http://example.com/gasjot/d/users/U1123409100/vehicles/V430",
             "last-modified": "Sun, 07 Sep 2014 01:15:57 GMT",
             "payload": {
                 "fpvehicle/name": "My 300zx",

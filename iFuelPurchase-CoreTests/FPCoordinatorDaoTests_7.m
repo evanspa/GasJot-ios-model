@@ -88,33 +88,33 @@ describe(@"FPCoordinatorDao", ^{
       [[rels should] haveCountOf:4];
       assertRelation(FPVehiclesRelation,
                      [[FPKnownMediaTypes userMediaTypeWithVersion:@"0.0.1"] description],
-                     @"http://example.com/fp/users/U1123409100",
+                     @"http://example.com/gasjot/d/users/U1123409100",
                      [[FPKnownMediaTypes vehicleMediaTypeWithVersion:@"0.0.1"] description],
-                     @"http://example.com/fp/users/U1123409100/vehicles",
+                     @"http://example.com/gasjot/d/users/U1123409100/vehicles",
                      rels);
       assertRelation(FPFuelStationsRelation,
                      [[FPKnownMediaTypes userMediaTypeWithVersion:@"0.0.1"] description],
-                     @"http://example.com/fp/users/U1123409100",
+                     @"http://example.com/gasjot/d/users/U1123409100",
                      [[FPKnownMediaTypes fuelStationMediaTypeWithVersion:@"0.0.1"] description],
-                     @"http://example.com/fp/users/U1123409100/fuelstations",
+                     @"http://example.com/gasjot/d/users/U1123409100/fuelstations",
                      rels);
       assertRelation(FPFuelPurchaseLogsRelation,
                      [[FPKnownMediaTypes userMediaTypeWithVersion:@"0.0.1"] description],
-                     @"http://example.com/fp/users/U1123409100",
+                     @"http://example.com/gasjot/d/users/U1123409100",
                      [[FPKnownMediaTypes fuelPurchaseLogMediaTypeWithVersion:@"0.0.1"] description],
-                     @"http://example.com/fp/users/U1123409100/fplogs",
+                     @"http://example.com/gasjot/d/users/U1123409100/fplogs",
                      rels);
       assertRelation(FPEnvironmentLogsRelation,
                      [[FPKnownMediaTypes userMediaTypeWithVersion:@"0.0.1"] description],
-                     @"http://example.com/fp/users/U1123409100",
+                     @"http://example.com/gasjot/d/users/U1123409100",
                      [[FPKnownMediaTypes environmentLogMediaTypeWithVersion:@"0.0.1"] description],
-                     @"http://example.com/fp/users/U1123409100/envlogs",
+                     @"http://example.com/gasjot/d/users/U1123409100/envlogs",
                      rels);
       NSArray *vehicles = [_coordDao vehiclesForUser:user error:[_coordTestCtx newLocalFetchErrBlkMaker]()];
       [vehicles shouldNotBeNil];
       [[vehicles should] haveCountOf:2];
       FPVehicle *vehicle = [vehicles objectAtIndex:0];
-      [[[vehicle globalIdentifier] should] equal:@"http://example.com/fp/users/U1123409100/vehicles/V429"];
+      [[[vehicle globalIdentifier] should] equal:@"http://example.com/gasjot/d/users/U1123409100/vehicles/V429"];
       [[[vehicle mediaType] should] equal:[HCMediaType MediaTypeFromString:@"application/vnd.fp.vehicle-v0.0.1+json"]];
       [[[vehicle name] should] equal:@"My Mazda"];
       [[[vehicle updatedAt] should] equal:[HCUtils rfc7231DateFromString:@"Fri, 05 Sep 2014 10:34:22 GMT"]];
