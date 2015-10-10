@@ -10,6 +10,7 @@
 #import "FPVehicle.h"
 #import <PEObjc-Commons/NSDictionary+PEAdditions.h>
 #import <PEObjc-Commons/NSMutableDictionary+PEAdditions.h>
+#import <PEObjc-Commons/PEUtils.h>
 #import <PEHateoas-Client/HCUtils.h>
 
 NSString * const FPVehicleNameKey          = @"fpvehicle/name";
@@ -41,7 +42,7 @@ NSString * const FPVehicleDeletedAtKey     = @"fpvehicle/deleted-at";
                      lastModified:(NSDate *)lastModified {
   FPVehicle *vehicle = [FPVehicle vehicleWithName:[resDict objectForKey:FPVehicleNameKey]
                                     defaultOctane:resDict[FPVehicleDefaultOctaneKey]
-                                     fuelCapacity:resDict[FPVehicleFuelCapacityKey]
+                                     fuelCapacity:[PEUtils nullSafeDecimalNumberFromString:[resDict[FPVehicleFuelCapacityKey] description]]
                                  globalIdentifier:location
                                         mediaType:mediaType
                                         relations:relations

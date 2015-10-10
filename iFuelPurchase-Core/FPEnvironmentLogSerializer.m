@@ -49,9 +49,9 @@ NSString * const FPEnvironmentLogDeletedAtKey           = @"envlog/deleted-at";
                         mediaType:(HCMediaType *)mediaType
                          location:(NSString *)location
                      lastModified:(NSDate *)lastModified {
-  FPEnvironmentLog *envlog = [FPEnvironmentLog envLogWithOdometer:resDict[FPEnvironmentLogOdometerKey]
-                                                   reportedAvgMpg:resDict[FPEnvironmentLogReportedAvgMpgKey]
-                                                   reportedAvgMph:resDict[FPEnvironmentLogReportedAvgMphKey]
+  FPEnvironmentLog *envlog = [FPEnvironmentLog envLogWithOdometer:[PEUtils nullSafeDecimalNumberFromString:[resDict[FPEnvironmentLogOdometerKey] description]]
+                                                   reportedAvgMpg:[PEUtils nullSafeDecimalNumberFromString:[resDict[FPEnvironmentLogReportedAvgMpgKey] description]]
+                                                   reportedAvgMph:[PEUtils nullSafeDecimalNumberFromString:[resDict[FPEnvironmentLogReportedAvgMphKey] description]]
                                               reportedOutsideTemp:resDict[FPEnvironmentLogReportedOutsideTempKey]
                                                           logDate:[resDict dateSince1970ForKey:FPEnvironmentLogLogDateKey]
                                                       reportedDte:resDict[FPEnvironmentLogReportedDteKey]

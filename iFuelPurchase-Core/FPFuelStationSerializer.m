@@ -11,6 +11,7 @@
 #import <PEObjc-Commons/NSMutableDictionary+PEAdditions.h>
 #import <PEObjc-Commons/NSDictionary+PEAdditions.h>
 #import <PEHateoas-Client/HCUtils.h>
+#import <PEObjc-Commons/PEUtils.h>
 
 NSString * const FPFuelStationNameKey      = @"fpfuelstation/name";
 NSString * const FPFuelStationStreetKey    = @"fpfuelstation/street";
@@ -53,8 +54,8 @@ NSString * const FPFuelStationDeletedAtKey = @"fpfuelstation/deleted-at";
                                 city:[resDict objectForKey:FPFuelStationCityKey]
                                state:[resDict objectForKey:FPFuelStationStateKey]
                                  zip:[resDict objectForKey:FPFuelStationZipKey]
-                            latitude:[resDict objectForKey:FPFuelStationLatitudeKey]
-                           longitude:[resDict objectForKey:FPFuelStationLongitudeKey]
+                            latitude:[PEUtils nullSafeDecimalNumberFromString:[[resDict objectForKey:FPFuelStationLatitudeKey] description]]
+                           longitude:[PEUtils nullSafeDecimalNumberFromString:[[resDict objectForKey:FPFuelStationLongitudeKey] description]]
                     globalIdentifier:location
                            mediaType:mediaType
                            relations:relations

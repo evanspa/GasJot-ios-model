@@ -59,11 +59,11 @@ NSString * const FPFuelPurchaseLogDeletedAtKey                = @"fplog/deleted-
                          location:(NSString *)location
                      lastModified:(NSDate *)lastModified {
   FPFuelPurchaseLog *fplog =
-  [FPFuelPurchaseLog fuelPurchaseLogWithNumGallons:resDict[FPFuelPurchaseLogNumGallonsKey]
+  [FPFuelPurchaseLog fuelPurchaseLogWithNumGallons:[PEUtils nullSafeDecimalNumberFromString:[resDict[FPFuelPurchaseLogNumGallonsKey] description]]
                                             octane:resDict[FPFuelPurchaseLogOctaneKey]
-                                       gallonPrice:resDict[FPFuelPurchaseLogGallonPriceKey]
+                                       gallonPrice:[PEUtils nullSafeDecimalNumberFromString:[resDict[FPFuelPurchaseLogGallonPriceKey] description]]
                                         gotCarWash:[resDict[FPFuelPurchaseLogGotCarWashKey] boolValue]
-                          carWashPerGallonDiscount:resDict[FPFuelPurchaseLogCarWashPerGallonDiscountKey]
+                          carWashPerGallonDiscount:[PEUtils nullSafeDecimalNumberFromString:[resDict[FPFuelPurchaseLogCarWashPerGallonDiscountKey] description]]
                                        purchasedAt:[resDict dateSince1970ForKey:FPFuelPurchaseLogPurchasedAtKey]
                                   globalIdentifier:location
                                          mediaType:mediaType
