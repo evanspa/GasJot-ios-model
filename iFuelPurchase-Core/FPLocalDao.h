@@ -40,21 +40,15 @@
 
 #pragma mark - User
 
-- (NSDate *)mostRecentMasterUpdateForUser:(FPUser *)user
-                                    error:(PELMDaoErrorBlk)errorBlk;
+- (NSDate *)mostRecentMasterUpdateForUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk;
 
-- (FPUser *)masterUserWithId:(NSNumber *)userId
-                       error:(PELMDaoErrorBlk)errorBlk;
+- (FPUser *)masterUserWithId:(NSNumber *)userId error:(PELMDaoErrorBlk)errorBlk;
 
-- (FPUser *)masterUserWithGlobalId:(NSString *)globalId
-                             error:(PELMDaoErrorBlk)errorBlk;
+- (FPUser *)masterUserWithGlobalId:(NSString *)globalId error:(PELMDaoErrorBlk)errorBlk;
 
-- (void)deleteUser:(FPUser *)user
-             error:(PELMDaoErrorBlk)errorBlk;
+- (void)deleteUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk;
 
-- (void)deleteUser:(FPUser *)user
-                db:(FMDatabase *)db
-             error:(PELMDaoErrorBlk)errorBlk;
+- (void)deleteUser:(FPUser *)user db:(FMDatabase *)db error:(PELMDaoErrorBlk)errorBlk;
 
 - (NSInteger)numUnsyncedVehiclesForUser:(FPUser *)user;
 
@@ -90,23 +84,17 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
 
 - (FPUser *)userWithError:(PELMDaoErrorBlk)errorBlk;
 
-- (BOOL)prepareUserForEdit:(FPUser *)user
-                     error:(PELMDaoErrorBlk)errorBlk;
+- (BOOL)prepareUserForEdit:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk;
 
-- (void)saveUser:(FPUser *)user
-           error:(PELMDaoErrorBlk)errorBlk;
+- (void)saveUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk;
 
-- (void)markAsDoneEditingImmediateSyncUser:(FPUser *)user
-                                     error:(PELMDaoErrorBlk)errorBlk;
+- (void)markAsDoneEditingImmediateSyncUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk;
 
-- (void)markAsDoneEditingUser:(FPUser *)user
-                        error:(PELMDaoErrorBlk)errorBlk;
+- (void)markAsDoneEditingUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk;
 
-- (void)reloadUser:(FPUser *)user
-             error:(PELMDaoErrorBlk)errorBlk;
+- (void)reloadUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk;
 
-- (void)cancelEditOfUser:(FPUser *)user
-                   error:(PELMDaoErrorBlk)errorBlk;
+- (void)cancelEditOfUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk;
 
 - (FPUser *)markUserAsSyncInProgressWithError:(PELMDaoErrorBlk)errorBlk;
 
@@ -126,37 +114,27 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
 
 #pragma mark - Vehicle
 
-- (FPVehicle *)masterVehicleWithId:(NSNumber *)vehicleId
-                             error:(PELMDaoErrorBlk)errorBlk;
+- (FPVehicle *)masterVehicleWithId:(NSNumber *)vehicleId error:(PELMDaoErrorBlk)errorBlk;
 
-- (FPVehicle *)masterVehicleWithGlobalId:(NSString *)globalId
-                                   error:(PELMDaoErrorBlk)errorBlk;
+- (FPVehicle *)masterVehicleWithGlobalId:(NSString *)globalId error:(PELMDaoErrorBlk)errorBlk;
 
-- (void)deleteVehicle:(FPVehicle *)vehicle
-                error:(PELMDaoErrorBlk)errorBlk;
+- (void)deleteVehicle:(FPVehicle *)vehicle error:(PELMDaoErrorBlk)errorBlk;
 
-- (void)copyVehicleToMaster:(FPVehicle *)vehicle
-                      error:(PELMDaoErrorBlk)errorBlk;
+- (void)copyVehicleToMaster:(FPVehicle *)vehicle error:(PELMDaoErrorBlk)errorBlk;
 
-- (NSInteger)numVehiclesForUser:(FPUser *)user
-                          error:(PELMDaoErrorBlk)errorBlk;
+- (NSInteger)numVehiclesForUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk;
 
-- (NSArray *)vehiclesForUser:(FPUser *)user
-                       error:(PELMDaoErrorBlk)errorBlk;
+- (NSArray *)vehiclesForUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk;
 
-- (NSArray *)unsyncedVehiclesForUser:(FPUser *)user
-                               error:(PELMDaoErrorBlk)errorBlk;
+- (NSArray *)unsyncedVehiclesForUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk;
 
-- (FPUser *)userForVehicle:(FPVehicle *)vehicle
-                     error:(PELMDaoErrorBlk)errorBlk;
+- (FPUser *)userForVehicle:(FPVehicle *)vehicle error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)persistDeepVehicleFromRemoteMaster:(FPVehicle *)vehicle
                                    forUser:(FPUser *)user
                                      error:(PELMDaoErrorBlk)errorBlk;
 
-- (void)saveNewVehicle:(FPVehicle *)vehicle
-               forUser:(FPUser *)user
-                 error:(PELMDaoErrorBlk)errorBlk;
+- (void)saveNewVehicle:(FPVehicle *)vehicle forUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)saveNewAndSyncImmediateVehicle:(FPVehicle *)vehicle
                                forUser:(FPUser *)user
@@ -166,23 +144,17 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                       forUser:(FPUser *)user
                         error:(PELMDaoErrorBlk)errorBlk;
 
-- (void)saveVehicle:(FPVehicle *)vehicle
-              error:(PELMDaoErrorBlk)errorBlk;
+- (void)saveVehicle:(FPVehicle *)vehicle error:(PELMDaoErrorBlk)errorBlk;
 
-- (void)markAsDoneEditingVehicle:(FPVehicle *)vehicle
-                           error:(PELMDaoErrorBlk)errorBlk;
+- (void)markAsDoneEditingVehicle:(FPVehicle *)vehicle error:(PELMDaoErrorBlk)errorBlk;
 
-- (void)markAsDoneEditingImmediateSyncVehicle:(FPVehicle *)vehicle
-                                        error:(PELMDaoErrorBlk)errorBlk;
+- (void)markAsDoneEditingImmediateSyncVehicle:(FPVehicle *)vehicle error:(PELMDaoErrorBlk)errorBlk;
 
-- (void)reloadVehicle:(FPVehicle *)vehicle
-                error:(PELMDaoErrorBlk)errorBlk;
+- (void)reloadVehicle:(FPVehicle *)vehicle error:(PELMDaoErrorBlk)errorBlk;
 
-- (void)cancelEditOfVehicle:(FPVehicle *)vehicle
-                      error:(PELMDaoErrorBlk)errorBlk;
+- (void)cancelEditOfVehicle:(FPVehicle *)vehicle error:(PELMDaoErrorBlk)errorBlk;
 
-- (NSArray *)markVehiclesAsSyncInProgressForUser:(FPUser *)user
-                                           error:(PELMDaoErrorBlk)errorBlk;
+- (NSArray *)markVehiclesAsSyncInProgressForUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)cancelSyncForVehicle:(FPVehicle *)vehicle
                 httpRespCode:(NSNumber *)httpRespCode
@@ -202,31 +174,23 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                                 forUser:(FPUser *)user
                                   error:(PELMDaoErrorBlk)errorBlk;
 
-- (void)markAsSyncCompleteForUpdatedVehicle:(FPVehicle *)vehicle
-                                      error:(PELMDaoErrorBlk)errorBlk;
+- (void)markAsSyncCompleteForUpdatedVehicle:(FPVehicle *)vehicle error:(PELMDaoErrorBlk)errorBlk;
 
 #pragma mark - Fuel Station
 
-- (FPFuelStation *)masterFuelstationWithId:(NSNumber *)fuelstationId
-                                     error:(PELMDaoErrorBlk)errorBlk;
+- (FPFuelStation *)masterFuelstationWithId:(NSNumber *)fuelstationId error:(PELMDaoErrorBlk)errorBlk;
 
-- (FPFuelStation *)masterFuelstationWithGlobalId:(NSString *)globalId
-                                           error:(PELMDaoErrorBlk)errorBlk;
+- (FPFuelStation *)masterFuelstationWithGlobalId:(NSString *)globalId error:(PELMDaoErrorBlk)errorBlk;
 
-- (void)deleteFuelstation:(FPFuelStation *)fuelstation
-                    error:(PELMDaoErrorBlk)errorBlk;
+- (void)deleteFuelstation:(FPFuelStation *)fuelstation error:(PELMDaoErrorBlk)errorBlk;
 
-- (NSInteger)numFuelStationsForUser:(FPUser *)user
-                              error:(PELMDaoErrorBlk)errorBlk;
+- (NSInteger)numFuelStationsForUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk;
 
-- (NSArray *)fuelStationsForUser:(FPUser *)user
-                           error:(PELMDaoErrorBlk)errorBlk;
+- (NSArray *)fuelStationsForUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk;
 
-- (NSArray *)unsyncedFuelStationsForUser:(FPUser *)user
-                                   error:(PELMDaoErrorBlk)errorBlk;
+- (NSArray *)unsyncedFuelStationsForUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk;
 
-- (FPUser *)userForFuelStation:(FPFuelStation *)fuelStation
-                         error:(PELMDaoErrorBlk)errorBlk;
+- (FPUser *)userForFuelStation:(FPFuelStation *)fuelStation error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)persistDeepFuelStationFromRemoteMaster:(FPFuelStation *)fuelStation
                                        forUser:(FPUser *)user
@@ -284,6 +248,90 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                                           error:(PELMDaoErrorBlk)errorBlk;
 
 #pragma mark - Fuel Purchase Log
+
+- (NSArray *)unorderedFuelPurchaseLogsForFuelstation:(FPFuelStation *)fuelstation
+                                               error:(PELMDaoErrorBlk)errorBlk;
+
+- (NSArray *)unorderedFuelPurchaseLogsForFuelstation:(FPFuelStation *)fuelstation
+                                      onOrBeforeDate:(NSDate *)onOrBeforeDate
+                                       onOrAfterDate:(NSDate *)onOrAfterDate
+                                               error:(PELMDaoErrorBlk)errorBlk;
+
+- (NSArray *)unorderedFuelPurchaseLogsForFuelstation:(FPFuelStation *)fuelstation
+                                      onOrBeforeDate:(NSDate *)onOrBeforeDate
+                                       onOrAfterDate:(NSDate *)onOrAfterDate
+                                              octane:(NSNumber *)octane
+                                               error:(PELMDaoErrorBlk)errorBlk;
+
+- (NSArray *)unorderedFuelPurchaseLogsForFuelstation:(FPFuelStation *)fuelstation
+                                              octane:(NSNumber *)octane
+                                               error:(PELMDaoErrorBlk)errorBlk;
+
+- (FPFuelPurchaseLog *)maxGallonPriceFuelPurchaseLogForFuelstation:(FPFuelStation *)fuelstation
+                                                    onOrBeforeDate:(NSDate *)onOrBeforeDate
+                                                     onOrAfterDate:(NSDate *)onOrAfterDate
+                                                            octane:(NSNumber *)octane
+                                                             error:(PELMDaoErrorBlk)errorBlk;
+
+- (FPFuelPurchaseLog *)maxGallonPriceFuelPurchaseLogForFuelstation:(FPFuelStation *)fuelstation
+                                                            octane:(NSNumber *)octane
+                                                             error:(PELMDaoErrorBlk)errorBlk;
+
+- (NSArray *)unorderedFuelPurchaseLogsForVehicle:(FPVehicle *)vehicle
+                                           error:(PELMDaoErrorBlk)errorBlk;
+
+- (NSArray *)unorderedFuelPurchaseLogsForVehicle:(FPVehicle *)vehicle
+                                  onOrBeforeDate:(NSDate *)onOrBeforeDate
+                                   onOrAfterDate:(NSDate *)onOrAfterDate
+                                           error:(PELMDaoErrorBlk)errorBlk;
+
+- (NSArray *)unorderedFuelPurchaseLogsForVehicle:(FPVehicle *)vehicle
+                                  onOrBeforeDate:(NSDate *)onOrBeforeDate
+                                   onOrAfterDate:(NSDate *)onOrAfterDate
+                                          octane:(NSNumber *)octane
+                                           error:(PELMDaoErrorBlk)errorBlk;
+
+- (NSArray *)unorderedFuelPurchaseLogsForVehicle:(FPVehicle *)vehicle
+                                          octane:(NSNumber *)octane
+                                           error:(PELMDaoErrorBlk)errorBlk;
+
+- (FPFuelPurchaseLog *)maxGallonPriceFuelPurchaseLogForVehicle:(FPVehicle *)vehicle
+                                                onOrBeforeDate:(NSDate *)onOrBeforeDate
+                                                 onOrAfterDate:(NSDate *)onOrAfterDate
+                                                        octane:(NSNumber *)octane
+                                                         error:(PELMDaoErrorBlk)errorBlk;
+
+- (FPFuelPurchaseLog *)maxGallonPriceFuelPurchaseLogForVehicle:(FPVehicle *)vehicle
+                                                        octane:(NSNumber *)octane
+                                                         error:(PELMDaoErrorBlk)errorBlk;
+
+- (NSArray *)unorderedFuelPurchaseLogsForUser:(FPUser *)user
+                                        error:(PELMDaoErrorBlk)errorBlk;
+
+- (NSArray *)unorderedFuelPurchaseLogsForUser:(FPUser *)user
+                               onOrBeforeDate:(NSDate *)onOrBeforeDate
+                                onOrAfterDate:(NSDate *)onOrAfterDate
+                                        error:(PELMDaoErrorBlk)errorBlk;
+
+- (NSArray *)unorderedFuelPurchaseLogsForUser:(FPUser *)user
+                               onOrBeforeDate:(NSDate *)onOrBeforeDate
+                                onOrAfterDate:(NSDate *)onOrAfterDate
+                                       octane:(NSNumber *)octane
+                                        error:(PELMDaoErrorBlk)errorBlk;
+
+- (NSArray *)unorderedFuelPurchaseLogsForUser:(FPUser *)user
+                                       octane:(NSNumber *)octane
+                                        error:(PELMDaoErrorBlk)errorBlk;
+
+- (FPFuelPurchaseLog *)maxGallonPriceFuelPurchaseLogForUser:(FPUser *)user
+                                             onOrBeforeDate:(NSDate *)onOrBeforeDate
+                                              onOrAfterDate:(NSDate *)onOrAfterDate
+                                                     octane:(NSNumber *)octane
+                                                      error:(PELMDaoErrorBlk)errorBlk;
+
+- (FPFuelPurchaseLog *)maxGallonPriceFuelPurchaseLogForUser:(FPUser *)user
+                                                     octane:(NSNumber *)octane
+                                                      error:(PELMDaoErrorBlk)errorBlk;
 
 - (FPFuelPurchaseLog *)masterFplogWithId:(NSNumber *)fplogId
                                    error:(PELMDaoErrorBlk)errorBlk;

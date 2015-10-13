@@ -885,6 +885,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                         parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainUserFromResultSet:rs];}
                          parentEntityMasterIdColumn:COL_MASTER_USER_ID
                            parentEntityMainIdColumn:COL_MAIN_USER_ID
+                                           pageSize:nil
                                   entityMasterTable:TBL_MASTER_VEHICLE
                      masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterVehicleFromResultSet:rs];}
                                     entityMainTable:TBL_MAIN_VEHICLE
@@ -904,8 +905,9 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                 parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainUserFromResultSet:rs];}
                  parentEntityMasterIdColumn:COL_MASTER_USER_ID
                    parentEntityMainIdColumn:COL_MAIN_USER_ID
-                                      where:nil
-                                   whereArg:nil
+                                   pageSize:nil
+                                   whereBlk:nil
+                                  whereArgs:nil
                           entityMasterTable:TBL_MASTER_VEHICLE
              masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterVehicleFromResultSet:rs];}
                             entityMainTable:TBL_MAIN_VEHICLE
@@ -1248,8 +1250,9 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                 parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainUserFromResultSet:rs];}
                  parentEntityMasterIdColumn:COL_MASTER_USER_ID
                    parentEntityMainIdColumn:COL_MAIN_USER_ID
-                                      where:nil
-                                   whereArg:nil
+                                   pageSize:nil
+                                   whereBlk:nil
+                                  whereArgs:nil
                           entityMasterTable:TBL_MASTER_FUEL_STATION
              masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelStationFromResultSet:rs];}
                             entityMainTable:TBL_MAIN_FUEL_STATION
@@ -1278,6 +1281,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                         parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainUserFromResultSet:rs];}
                          parentEntityMasterIdColumn:COL_MASTER_USER_ID
                            parentEntityMainIdColumn:COL_MAIN_USER_ID
+                                           pageSize:nil
                                   entityMasterTable:TBL_MASTER_FUEL_STATION
                      masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelStationFromResultSet:rs];}
                                     entityMainTable:TBL_MAIN_FUEL_STATION
@@ -1297,9 +1301,15 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                 parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainUserFromResultSet:rs];}
                  parentEntityMasterIdColumn:COL_MASTER_USER_ID
                    parentEntityMainIdColumn:COL_MAIN_USER_ID
-                                      where:[NSString stringWithFormat:@"%@ IS NOT NULL AND %@ IS NOT NULL",
-                                                      COL_FUELST_LATITUDE, COL_FUELST_LONGITUDE]
-                                   whereArg:nil
+                                   pageSize:nil
+                                   whereBlk:^(NSString *colPrefix) {
+                                     return [NSString stringWithFormat:@"%@%@ IS NOT NULL AND %@%@ IS NOT NULL",
+                                             colPrefix,
+                                             COL_FUELST_LATITUDE,
+                                             colPrefix,
+                                             COL_FUELST_LONGITUDE];
+                                   }
+                                  whereArgs:nil
                           entityMasterTable:TBL_MASTER_FUEL_STATION
              masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelStationFromResultSet:rs];}
                             entityMainTable:TBL_MAIN_FUEL_STATION
@@ -1576,6 +1586,559 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
 
 #pragma mark - Fuel Purchase Log
 
+- (NSArray *)unorderedFuelPurchaseLogsForFuelstation:(FPFuelStation *)fuelstation
+                                               error:(PELMDaoErrorBlk)errorBlk {
+  __block NSArray *fplogs = nil;
+  [_databaseQueue inDatabase:^(FMDatabase *db) {
+    fplogs = [PELMUtils entitiesForParentEntity:fuelstation
+                          parentEntityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                    parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainFuelStationFromResultSet:rs];}
+                     parentEntityMasterIdColumn:COL_MASTER_FUELSTATION_ID
+                       parentEntityMainIdColumn:COL_MAIN_FUELSTATION_ID
+                                       pageSize:nil
+                                       whereBlk:nil
+                                      whereArgs:nil
+                              entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
+                 masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
+                                entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                   mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSet:rs];}
+                                             db:db
+                                          error:errorBlk];
+  }];
+  return fplogs;
+}
+
+- (NSArray *)unorderedFuelPurchaseLogsForFuelstation:(FPFuelStation *)fuelstation
+                                      onOrBeforeDate:(NSDate *)onOrBeforeDate
+                                       onOrAfterDate:(NSDate *)onOrAfterDate
+                                               error:(PELMDaoErrorBlk)errorBlk {
+  __block NSArray *fplogs = nil;
+  [_databaseQueue inDatabase:^(FMDatabase *db) {
+    fplogs = [PELMUtils entitiesForParentEntity:fuelstation
+                          parentEntityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                    parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainFuelStationFromResultSet:rs];}
+                     parentEntityMasterIdColumn:COL_MASTER_FUELSTATION_ID
+                       parentEntityMainIdColumn:COL_MAIN_FUELSTATION_ID
+                                       pageSize:nil
+                                       whereBlk:^(NSString *colPrefix) {
+                                         return [NSString stringWithFormat:@"%@%@ <= ? AND %@%@ >= ?",
+                                                 colPrefix,
+                                                 COL_FUELPL_PURCHASED_AT,
+                                                 colPrefix,
+                                                 COL_FUELPL_PURCHASED_AT];
+                                       }
+                                      whereArgs:@[onOrBeforeDate, onOrAfterDate]
+                              entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
+                 masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
+                                entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                   mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSet:rs];}
+                                             db:db
+                                          error:errorBlk];
+  }];
+  return fplogs;
+}
+
+- (NSArray *)unorderedFuelPurchaseLogsForFuelstation:(FPFuelStation *)fuelstation
+                                      onOrBeforeDate:(NSDate *)onOrBeforeDate
+                                       onOrAfterDate:(NSDate *)onOrAfterDate
+                                              octane:(NSNumber *)octane
+                                               error:(PELMDaoErrorBlk)errorBlk {
+  __block NSArray *fplogs = nil;
+  [_databaseQueue inDatabase:^(FMDatabase *db) {
+    fplogs = [PELMUtils entitiesForParentEntity:fuelstation
+                          parentEntityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                    parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainFuelStationFromResultSet:rs];}
+                     parentEntityMasterIdColumn:COL_MASTER_FUELSTATION_ID
+                       parentEntityMainIdColumn:COL_MAIN_FUELSTATION_ID
+                                       pageSize:nil
+                                       whereBlk:^(NSString *colPrefix) {
+                                         return [NSString stringWithFormat:@"%@%@ <= ? AND %@%@ >= ? AND %@%@ = ?",
+                                                 colPrefix,
+                                                 COL_FUELPL_PURCHASED_AT,
+                                                 colPrefix,
+                                                 COL_FUELPL_PURCHASED_AT,
+                                                 colPrefix,
+                                                 COL_FUELPL_OCTANE];
+                                       }
+                                      whereArgs:@[onOrBeforeDate, onOrAfterDate, octane]
+                              entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
+                 masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
+                                entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                   mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSet:rs];}
+                                             db:db
+                                          error:errorBlk];
+  }];
+  return fplogs;
+}
+
+- (NSArray *)unorderedFuelPurchaseLogsForFuelstation:(FPFuelStation *)fuelstation
+                                              octane:(NSNumber *)octane
+                                               error:(PELMDaoErrorBlk)errorBlk {
+  __block NSArray *fplogs = nil;
+  [_databaseQueue inDatabase:^(FMDatabase *db) {
+    fplogs = [PELMUtils entitiesForParentEntity:fuelstation
+                          parentEntityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                    parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainFuelStationFromResultSet:rs];}
+                     parentEntityMasterIdColumn:COL_MASTER_FUELSTATION_ID
+                       parentEntityMainIdColumn:COL_MAIN_FUELSTATION_ID
+                                       pageSize:nil
+                                       whereBlk:^(NSString *colPrefix) {
+                                         return [NSString stringWithFormat:@"%@%@ = ?",
+                                                 colPrefix,
+                                                 COL_FUELPL_OCTANE];
+                                       }
+                                      whereArgs:@[octane]
+                              entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
+                 masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
+                                entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                   mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSet:rs];}
+                                             db:db
+                                          error:errorBlk];
+  }];
+  return fplogs;
+}
+
+- (FPFuelPurchaseLog *)maxGallonPriceFuelPurchaseLogForFuelstation:(FPFuelStation *)fuelstation
+                                                    onOrBeforeDate:(NSDate *)onOrBeforeDate
+                                                     onOrAfterDate:(NSDate *)onOrAfterDate
+                                                            octane:(NSNumber *)octane
+                                                             error:(PELMDaoErrorBlk)errorBlk {
+  __block FPFuelPurchaseLog *fplog = nil;
+  [_databaseQueue inDatabase:^(FMDatabase *db) {
+    NSArray *fplogs = [PELMUtils entitiesForParentEntity:fuelstation
+                                   parentEntityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                             parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainFuelStationFromResultSet:rs];}
+                              parentEntityMasterIdColumn:COL_MASTER_FUELSTATION_ID
+                                parentEntityMainIdColumn:COL_MAIN_FUELSTATION_ID
+                                                pageSize:@(1)
+                                                whereBlk:^(NSString *colPrefix) {
+                                                  return [NSString stringWithFormat:@"%@%@ <= ? AND %@%@ >= ? AND %@%@ = ?",
+                                                          colPrefix,
+                                                          COL_FUELPL_PURCHASED_AT,
+                                                          colPrefix,
+                                                          COL_FUELPL_PURCHASED_AT,
+                                                          colPrefix,
+                                                          COL_FUELPL_OCTANE];
+                                                }
+                                               whereArgs:@[onOrBeforeDate, onOrAfterDate, octane]
+                                       entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
+                          masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
+                                         entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                            mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSet:rs];}
+                                       comparatorForSort:nil
+                                     orderByDomainColumn:COL_FUELPL_PRICE_PER_GALLON
+                            orderByDomainColumnDirection:@"DESC"
+                                                      db:db
+                                                   error:errorBlk];
+    if ([fplogs count] > 0) {
+      fplog = fplogs[0];
+    }
+  }];
+  return fplog;
+}
+
+- (FPFuelPurchaseLog *)maxGallonPriceFuelPurchaseLogForFuelstation:(FPFuelStation *)fuelstation
+                                                            octane:(NSNumber *)octane
+                                                             error:(PELMDaoErrorBlk)errorBlk {
+  __block FPFuelPurchaseLog *fplog = nil;
+  [_databaseQueue inDatabase:^(FMDatabase *db) {
+    NSArray *fplogs = [PELMUtils entitiesForParentEntity:fuelstation
+                                   parentEntityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                             parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainFuelStationFromResultSet:rs];}
+                              parentEntityMasterIdColumn:COL_MASTER_FUELSTATION_ID
+                                parentEntityMainIdColumn:COL_MAIN_FUELSTATION_ID
+                                                pageSize:@(1)
+                                                whereBlk:^(NSString *colPrefix) {
+                                                  return [NSString stringWithFormat:@"%@%@ = ?",
+                                                          colPrefix,
+                                                          COL_FUELPL_OCTANE];
+                                                }
+                                               whereArgs:@[octane]
+                                       entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
+                          masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
+                                         entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                            mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSet:rs];}
+                                       comparatorForSort:nil
+                                     orderByDomainColumn:COL_FUELPL_PRICE_PER_GALLON
+                            orderByDomainColumnDirection:@"DESC"
+                                                      db:db
+                                                   error:errorBlk];
+    if ([fplogs count] > 0) {
+      fplog = fplogs[0];
+    }
+  }];
+  return fplog;
+}
+
+- (NSArray *)unorderedFuelPurchaseLogsForVehicle:(FPVehicle *)vehicle
+                                           error:(PELMDaoErrorBlk)errorBlk {
+  __block NSArray *fplogs = nil;
+  [_databaseQueue inDatabase:^(FMDatabase *db) {
+    fplogs = [PELMUtils entitiesForParentEntity:vehicle
+                          parentEntityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                    parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainVehicleFromResultSet:rs];}
+                     parentEntityMasterIdColumn:COL_MASTER_VEHICLE_ID
+                       parentEntityMainIdColumn:COL_MAIN_VEHICLE_ID
+                                       pageSize:nil
+                                       whereBlk:nil
+                                      whereArgs:nil
+                              entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
+                 masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
+                                entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                   mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSet:rs];}
+                                             db:db
+                                          error:errorBlk];
+  }];
+  return fplogs;
+}
+
+- (NSArray *)unorderedFuelPurchaseLogsForVehicle:(FPVehicle *)vehicle
+                                  onOrBeforeDate:(NSDate *)onOrBeforeDate
+                                   onOrAfterDate:(NSDate *)onOrAfterDate
+                                           error:(PELMDaoErrorBlk)errorBlk {
+  __block NSArray *fplogs = nil;
+  [_databaseQueue inDatabase:^(FMDatabase *db) {
+    fplogs = [PELMUtils entitiesForParentEntity:vehicle
+                          parentEntityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                    parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainVehicleFromResultSet:rs];}
+                     parentEntityMasterIdColumn:COL_MASTER_VEHICLE_ID
+                       parentEntityMainIdColumn:COL_MAIN_VEHICLE_ID
+                                       pageSize:nil
+                                       whereBlk:^(NSString *colPrefix) {
+                                         return [NSString stringWithFormat:@"%@%@ <= ? AND %@%@ >= ?",
+                                                 colPrefix,
+                                                 COL_FUELPL_PURCHASED_AT,
+                                                 colPrefix,
+                                                 COL_FUELPL_PURCHASED_AT];
+                                       }
+                                      whereArgs:@[onOrBeforeDate, onOrAfterDate]
+                              entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
+                 masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
+                                entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                   mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSet:rs];}
+                                             db:db
+                                          error:errorBlk];
+  }];
+  return fplogs;
+}
+
+- (NSArray *)unorderedFuelPurchaseLogsForVehicle:(FPVehicle *)vehicle
+                                  onOrBeforeDate:(NSDate *)onOrBeforeDate
+                                   onOrAfterDate:(NSDate *)onOrAfterDate
+                                          octane:(NSNumber *)octane
+                                           error:(PELMDaoErrorBlk)errorBlk {
+  __block NSArray *fplogs = nil;
+  [_databaseQueue inDatabase:^(FMDatabase *db) {
+    fplogs = [PELMUtils entitiesForParentEntity:vehicle
+                          parentEntityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                    parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainVehicleFromResultSet:rs];}
+                     parentEntityMasterIdColumn:COL_MASTER_VEHICLE_ID
+                       parentEntityMainIdColumn:COL_MAIN_VEHICLE_ID
+                                       pageSize:nil
+                                       whereBlk:^(NSString *colPrefix) {
+                                         return [NSString stringWithFormat:@"%@%@ <= ? AND %@%@ >= ? AND %@%@ = ?",
+                                                 colPrefix,
+                                                 COL_FUELPL_PURCHASED_AT,
+                                                 colPrefix,
+                                                 COL_FUELPL_PURCHASED_AT,
+                                                 colPrefix,
+                                                 COL_FUELPL_OCTANE];
+                                       }
+                                      whereArgs:@[onOrBeforeDate, onOrAfterDate, octane]
+                              entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
+                 masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
+                                entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                   mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSet:rs];}
+                                             db:db
+                                          error:errorBlk];
+  }];
+  return fplogs;
+}
+
+- (NSArray *)unorderedFuelPurchaseLogsForVehicle:(FPVehicle *)vehicle
+                                          octane:(NSNumber *)octane
+                                           error:(PELMDaoErrorBlk)errorBlk {
+  __block NSArray *fplogs = nil;
+  [_databaseQueue inDatabase:^(FMDatabase *db) {
+    fplogs = [PELMUtils entitiesForParentEntity:vehicle
+                          parentEntityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                    parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainVehicleFromResultSet:rs];}
+                     parentEntityMasterIdColumn:COL_MASTER_VEHICLE_ID
+                       parentEntityMainIdColumn:COL_MAIN_VEHICLE_ID
+                                       pageSize:nil
+                                       whereBlk:^(NSString *colPrefix) {
+                                         return [NSString stringWithFormat:@"%@%@ = ?",
+                                                 colPrefix,
+                                                 COL_FUELPL_OCTANE];
+                                       }
+                                      whereArgs:@[octane]
+                              entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
+                 masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
+                                entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                   mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSet:rs];}
+                                             db:db
+                                          error:errorBlk];
+  }];
+  return fplogs;
+}
+
+- (FPFuelPurchaseLog *)maxGallonPriceFuelPurchaseLogForVehicle:(FPVehicle *)vehicle
+                                                onOrBeforeDate:(NSDate *)onOrBeforeDate
+                                                 onOrAfterDate:(NSDate *)onOrAfterDate
+                                                        octane:(NSNumber *)octane
+                                                         error:(PELMDaoErrorBlk)errorBlk {
+  __block FPFuelPurchaseLog *fplog = nil;
+  [_databaseQueue inDatabase:^(FMDatabase *db) {
+    NSArray *fplogs = [PELMUtils entitiesForParentEntity:vehicle
+                                   parentEntityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                             parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainVehicleFromResultSet:rs];}
+                              parentEntityMasterIdColumn:COL_MASTER_VEHICLE_ID
+                                parentEntityMainIdColumn:COL_MAIN_VEHICLE_ID
+                                                pageSize:@(1)
+                                                whereBlk:^(NSString *colPrefix) {
+                                                  return [NSString stringWithFormat:@"%@%@ <= ? AND %@%@ >= ? AND %@%@ = ?",
+                                                          colPrefix,
+                                                          COL_FUELPL_PURCHASED_AT,
+                                                          colPrefix,
+                                                          COL_FUELPL_PURCHASED_AT,
+                                                          colPrefix,
+                                                          COL_FUELPL_OCTANE];
+                                                }
+                                               whereArgs:@[onOrBeforeDate, onOrAfterDate, octane]
+                                       entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
+                          masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
+                                         entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                            mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSet:rs];}
+                                       comparatorForSort:nil
+                                     orderByDomainColumn:COL_FUELPL_PRICE_PER_GALLON
+                            orderByDomainColumnDirection:@"DESC"
+                                                      db:db
+                                                   error:errorBlk];
+    if ([fplogs count] > 0) {
+      fplog = fplogs[0];
+    }
+  }];
+  return fplog;
+}
+
+- (FPFuelPurchaseLog *)maxGallonPriceFuelPurchaseLogForVehicle:(FPVehicle *)vehicle
+                                                        octane:(NSNumber *)octane
+                                                         error:(PELMDaoErrorBlk)errorBlk {
+  __block FPFuelPurchaseLog *fplog = nil;
+  [_databaseQueue inDatabase:^(FMDatabase *db) {
+    NSArray *fplogs = [PELMUtils entitiesForParentEntity:vehicle
+                                   parentEntityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                             parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainVehicleFromResultSet:rs];}
+                              parentEntityMasterIdColumn:COL_MASTER_VEHICLE_ID
+                                parentEntityMainIdColumn:COL_MAIN_VEHICLE_ID
+                                                pageSize:@(1)
+                                                whereBlk:^(NSString *colPrefix) {
+                                                  return [NSString stringWithFormat:@"%@%@ = ?",
+                                                          colPrefix,
+                                                          COL_FUELPL_OCTANE];
+                                                }
+                                               whereArgs:@[octane]
+                                       entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
+                          masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
+                                         entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                            mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSet:rs];}
+                                       comparatorForSort:nil
+                                     orderByDomainColumn:COL_FUELPL_PRICE_PER_GALLON
+                            orderByDomainColumnDirection:@"DESC"
+                                                      db:db
+                                                   error:errorBlk];
+    if ([fplogs count] > 0) {
+      fplog = fplogs[0];
+    }
+  }];
+  return fplog;
+}
+
+- (NSArray *)unorderedFuelPurchaseLogsForUser:(FPUser *)user
+                                        error:(PELMDaoErrorBlk)errorBlk {
+  __block NSArray *fplogs = nil;
+  [_databaseQueue inDatabase:^(FMDatabase *db) {
+    fplogs = [PELMUtils entitiesForParentEntity:user
+                          parentEntityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                    parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainUserFromResultSet:rs];}
+                     parentEntityMasterIdColumn:COL_MASTER_USER_ID
+                       parentEntityMainIdColumn:COL_MAIN_USER_ID
+                                       pageSize:nil
+                                       whereBlk:nil
+                                      whereArgs:nil
+                              entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
+                 masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
+                                entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                   mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSet:rs];}
+                                             db:db
+                                          error:errorBlk];
+  }];
+  return fplogs;
+}
+
+- (NSArray *)unorderedFuelPurchaseLogsForUser:(FPUser *)user
+                               onOrBeforeDate:(NSDate *)onOrBeforeDate
+                                onOrAfterDate:(NSDate *)onOrAfterDate
+                                        error:(PELMDaoErrorBlk)errorBlk {
+  __block NSArray *fplogs = nil;
+  [_databaseQueue inDatabase:^(FMDatabase *db) {
+    fplogs = [PELMUtils entitiesForParentEntity:user
+                          parentEntityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                    parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainUserFromResultSet:rs];}
+                     parentEntityMasterIdColumn:COL_MASTER_USER_ID
+                       parentEntityMainIdColumn:COL_MAIN_USER_ID
+                                       pageSize:nil
+                                       whereBlk:^(NSString *colPrefix) {
+                                         return [NSString stringWithFormat:@"%@%@ <= ? AND %@%@ >= ?",
+                                                 colPrefix,
+                                                 COL_FUELPL_PURCHASED_AT,
+                                                 colPrefix,
+                                                 COL_FUELPL_PURCHASED_AT];
+                                       }
+                                      whereArgs:@[onOrBeforeDate, onOrAfterDate]
+                              entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
+                 masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
+                                entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                   mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSet:rs];}
+                                             db:db
+                                          error:errorBlk];
+  }];
+  return fplogs;
+}
+
+- (NSArray *)unorderedFuelPurchaseLogsForUser:(FPUser *)user
+                               onOrBeforeDate:(NSDate *)onOrBeforeDate
+                                onOrAfterDate:(NSDate *)onOrAfterDate
+                                       octane:(NSNumber *)octane
+                                        error:(PELMDaoErrorBlk)errorBlk {
+  __block NSArray *fplogs = nil;
+  [_databaseQueue inDatabase:^(FMDatabase *db) {
+    fplogs = [PELMUtils entitiesForParentEntity:user
+                          parentEntityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                    parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainUserFromResultSet:rs];}
+                     parentEntityMasterIdColumn:COL_MASTER_USER_ID
+                       parentEntityMainIdColumn:COL_MAIN_USER_ID
+                                       pageSize:nil
+                                       whereBlk:^(NSString *colPrefix) {
+                                         return [NSString stringWithFormat:@"%@%@ <= ? AND %@%@ >= ? AND %@%@ = ?",
+                                                 colPrefix,
+                                                 COL_FUELPL_PURCHASED_AT,
+                                                 colPrefix,
+                                                 COL_FUELPL_PURCHASED_AT,
+                                                 colPrefix,
+                                                 COL_FUELPL_OCTANE];
+                                       }
+                                      whereArgs:@[onOrBeforeDate, onOrAfterDate, octane]
+                              entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
+                 masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
+                                entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                   mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSet:rs];}
+                                             db:db
+                                          error:errorBlk];
+  }];
+  return fplogs;
+}
+
+- (NSArray *)unorderedFuelPurchaseLogsForUser:(FPUser *)user
+                                       octane:(NSNumber *)octane
+                                        error:(PELMDaoErrorBlk)errorBlk {
+  __block NSArray *fplogs = nil;
+  [_databaseQueue inDatabase:^(FMDatabase *db) {
+    fplogs = [PELMUtils entitiesForParentEntity:user
+                          parentEntityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                    parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainUserFromResultSet:rs];}
+                     parentEntityMasterIdColumn:COL_MASTER_USER_ID
+                       parentEntityMainIdColumn:COL_MAIN_USER_ID
+                                       pageSize:nil
+                                       whereBlk:^(NSString *colPrefix) {
+                                         return [NSString stringWithFormat:@"%@%@ = ?",
+                                                 colPrefix,
+                                                 COL_FUELPL_OCTANE];
+                                       }
+                                      whereArgs:@[octane]
+                              entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
+                 masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
+                                entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                   mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSet:rs];}
+                                             db:db
+                                          error:errorBlk];
+  }];
+  return fplogs;
+}
+
+- (FPFuelPurchaseLog *)maxGallonPriceFuelPurchaseLogForUser:(FPUser *)user
+                                             onOrBeforeDate:(NSDate *)onOrBeforeDate
+                                              onOrAfterDate:(NSDate *)onOrAfterDate
+                                                     octane:(NSNumber *)octane
+                                                      error:(PELMDaoErrorBlk)errorBlk {
+  __block FPFuelPurchaseLog *fplog = nil;
+  [_databaseQueue inDatabase:^(FMDatabase *db) {
+    NSArray *fplogs = [PELMUtils entitiesForParentEntity:user
+                                   parentEntityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                             parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainUserFromResultSet:rs];}
+                              parentEntityMasterIdColumn:COL_MASTER_USER_ID
+                                parentEntityMainIdColumn:COL_MAIN_USER_ID
+                                                pageSize:@(1)
+                                                whereBlk:^(NSString *colPrefix) {
+                                                  return [NSString stringWithFormat:@"%@%@ <= ? AND %@%@ >= ? AND %@%@ = ?",
+                                                          colPrefix,
+                                                          COL_FUELPL_PURCHASED_AT,
+                                                          colPrefix,
+                                                          COL_FUELPL_PURCHASED_AT,
+                                                          colPrefix,
+                                                          COL_FUELPL_OCTANE];
+                                                }
+                                               whereArgs:@[onOrBeforeDate, onOrAfterDate, octane]
+                                       entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
+                          masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
+                                         entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                            mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSet:rs];}
+                                       comparatorForSort:nil
+                                     orderByDomainColumn:COL_FUELPL_PRICE_PER_GALLON
+                            orderByDomainColumnDirection:@"DESC"
+                                                      db:db
+                                                   error:errorBlk];
+    
+    if ([fplogs count] > 0) {
+      fplog = fplogs[0];
+    }
+  }];
+  return fplog;
+}
+
+- (FPFuelPurchaseLog *)maxGallonPriceFuelPurchaseLogForUser:(FPUser *)user
+                                                     octane:(NSNumber *)octane
+                                                      error:(PELMDaoErrorBlk)errorBlk {
+  __block FPFuelPurchaseLog *fplog = nil;
+  [_databaseQueue inDatabase:^(FMDatabase *db) {
+    NSArray *fplogs = [PELMUtils entitiesForParentEntity:user
+                                   parentEntityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                             parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainUserFromResultSet:rs];}
+                              parentEntityMasterIdColumn:COL_MASTER_USER_ID
+                                parentEntityMainIdColumn:COL_MAIN_USER_ID
+                                                pageSize:@(1)
+                                                whereBlk:^(NSString *colPrefix) {
+                                                  return [NSString stringWithFormat:@"%@%@ = ?",
+                                                          colPrefix,
+                                                          COL_FUELPL_OCTANE];
+                                                }
+                                               whereArgs:@[octane]
+                                       entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
+                          masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
+                                         entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                            mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSet:rs];}
+                                       comparatorForSort:nil
+                                     orderByDomainColumn:COL_FUELPL_PRICE_PER_GALLON
+                            orderByDomainColumnDirection:@"DESC"
+                                                      db:db
+                                                   error:errorBlk];
+    if ([fplogs count] > 0) {
+      fplog = fplogs[0];
+    }
+  }];
+  return fplog;
+}
+
 - (FPFuelPurchaseLog *)masterFplogWithId:(NSNumber *)fplogId error:(PELMDaoErrorBlk)errorBlk {
   NSString *fplogTable = TBL_MASTER_FUELPURCHASE_LOG;
   __block FPFuelPurchaseLog *fplog = nil;
@@ -1709,6 +2272,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                         parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainUserFromResultSet:rs];}
                          parentEntityMasterIdColumn:COL_MASTER_USER_ID
                            parentEntityMainIdColumn:COL_MAIN_USER_ID
+                                           pageSize:nil
                                   entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
                      masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
                                     entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
@@ -2617,6 +3181,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                         parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainUserFromResultSet:rs];}
                          parentEntityMasterIdColumn:COL_MASTER_USER_ID
                            parentEntityMainIdColumn:COL_MAIN_USER_ID
+                                           pageSize:nil
                                   entityMasterTable:TBL_MASTER_ENV_LOG
                      masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterEnvironmentLogFromResultSet:rs];}
                                     entityMainTable:TBL_MAIN_ENV_LOG

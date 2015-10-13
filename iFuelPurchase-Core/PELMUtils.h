@@ -108,14 +108,11 @@ typedef NS_ENUM(NSInteger, PELMSaveNewOrExistingCode) {
 
 #pragma mark - Result Set Helpers
 
-+ (NSNumber *)numberFromResultSet:(FMResultSet *)rs
-                       columnName:(NSString *)columnName;
++ (NSNumber *)numberFromResultSet:(FMResultSet *)rs columnName:(NSString *)columnName;
 
-+ (NSDecimalNumber *)decimalNumberFromResultSet:(FMResultSet *)rs
-                                     columnName:(NSString *)columnName;
++ (NSDecimalNumber *)decimalNumberFromResultSet:(FMResultSet *)rs columnName:(NSString *)columnName;
 
-+ (NSDate *)dateFromResultSet:(FMResultSet *)rs
-                   columnName:(NSString *)columnName;
++ (NSDate *)dateFromResultSet:(FMResultSet *)rs columnName:(NSString *)columnName;
 
 #pragma mark - Properties
 
@@ -262,6 +259,7 @@ typedef NS_ENUM(NSInteger, PELMSaveNewOrExistingCode) {
                  parentEntityMainRsConverter:(entityFromResultSetBlk)parentEntityMainRsConverter
                   parentEntityMasterIdColumn:(NSString *)parentEntityMasterIdColumn
                     parentEntityMainIdColumn:(NSString *)parentEntityMainIdColumn
+                                    pageSize:(NSNumber *)pageSize
                            entityMasterTable:(NSString *)entityMasterTable
               masterEntityResultSetConverter:(entityFromResultSetBlk)masterEntityResultSetConverter
                              entityMainTable:(NSString *)entityMainTable
@@ -277,8 +275,9 @@ typedef NS_ENUM(NSInteger, PELMSaveNewOrExistingCode) {
          parentEntityMainRsConverter:(entityFromResultSetBlk)parentEntityMainRsConverter
           parentEntityMasterIdColumn:(NSString *)parentEntityMasterIdColumn
             parentEntityMainIdColumn:(NSString *)parentEntityMainIdColumn
-                               where:(NSString *)where
-                            whereArg:(id)whereArg
+                            pageSize:(NSNumber *)pageSize
+                            whereBlk:(NSString *(^)(NSString *))whereBlk
+                           whereArgs:(NSArray *)whereArgs
                    entityMasterTable:(NSString *)entityMasterTable
       masterEntityResultSetConverter:(entityFromResultSetBlk)masterEntityResultSetConverter
                      entityMainTable:(NSString *)entityMainTable
@@ -294,8 +293,9 @@ typedef NS_ENUM(NSInteger, PELMSaveNewOrExistingCode) {
          parentEntityMainRsConverter:(entityFromResultSetBlk)parentEntityMainRsConverter
           parentEntityMasterIdColumn:(NSString *)parentEntityMasterIdColumn
             parentEntityMainIdColumn:(NSString *)parentEntityMainIdColumn
-                               where:(NSString *)where
-                            whereArg:(id)whereArg
+                            pageSize:(NSNumber *)pageSize
+                            whereBlk:(NSString *(^)(NSString *))whereBlk
+                           whereArgs:(NSArray *)whereArgs
                    entityMasterTable:(NSString *)entityMasterTable
       masterEntityResultSetConverter:(entityFromResultSetBlk)masterEntityResultSetConverter
                      entityMainTable:(NSString *)entityMainTable

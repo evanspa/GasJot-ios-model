@@ -230,6 +230,11 @@ PELMMainSupport * (^toMainSupport)(FMResultSet *, NSString *, NSDictionary *) = 
   return [PEUtils nullSafeDecimalNumberFromString:[rs stringForColumn:columnName]];
 }
 
++ (NSDecimalNumber *)decimalNumberFromResultSet:(FMResultSet *)rs
+                                    columnIndex:(int)columnIndex {
+  return [PEUtils nullSafeDecimalNumberFromString:[rs stringForColumnIndex:columnIndex]];
+}
+
 + (NSDate *)dateFromResultSet:(FMResultSet *)rs
                     isNullBlk:(BOOL(^)(FMResultSet *))isNullBlk
            doubleForColumnBlk:(double(^)(FMResultSet *))doubleForColumnBlk {
@@ -708,8 +713,9 @@ PELMMainSupport * (^toMainSupport)(FMResultSet *, NSString *, NSDictionary *) = 
          parentEntityMainRsConverter:(entityFromResultSetBlk)parentEntityMainRsConverter
           parentEntityMasterIdColumn:(NSString *)parentEntityMasterIdColumn
             parentEntityMainIdColumn:(NSString *)parentEntityMainIdColumn
-                               where:(NSString *)where
-                            whereArg:(id)whereArg
+                            pageSize:(NSNumber *)pageSize
+                            whereBlk:(NSString *(^)(NSString *))whereBlk
+                           whereArgs:(NSArray *)whereArgs
                    entityMasterTable:(NSString *)entityMasterTable
       masterEntityResultSetConverter:(entityFromResultSetBlk)masterEntityResultSetConverter
                      entityMainTable:(NSString *)entityMainTable
@@ -721,8 +727,9 @@ PELMMainSupport * (^toMainSupport)(FMResultSet *, NSString *, NSDictionary *) = 
                 parentEntityMainRsConverter:parentEntityMainRsConverter
                  parentEntityMasterIdColumn:parentEntityMasterIdColumn
                    parentEntityMainIdColumn:parentEntityMainIdColumn
-                                      where:where
-                                   whereArg:whereArg
+                                   pageSize:pageSize
+                                   whereBlk:whereBlk
+                                  whereArgs:whereArgs
                           entityMasterTable:entityMasterTable
              masterEntityResultSetConverter:masterEntityResultSetConverter
                             entityMainTable:entityMainTable
@@ -739,6 +746,7 @@ PELMMainSupport * (^toMainSupport)(FMResultSet *, NSString *, NSDictionary *) = 
                  parentEntityMainRsConverter:(entityFromResultSetBlk)parentEntityMainRsConverter
                   parentEntityMasterIdColumn:(NSString *)parentEntityMasterIdColumn
                     parentEntityMainIdColumn:(NSString *)parentEntityMainIdColumn
+                                    pageSize:(NSNumber *)pageSize
                            entityMasterTable:(NSString *)entityMasterTable
               masterEntityResultSetConverter:(entityFromResultSetBlk)masterEntityResultSetConverter
                              entityMainTable:(NSString *)entityMainTable
@@ -770,7 +778,7 @@ PELMMainSupport * (^toMainSupport)(FMResultSet *, NSString *, NSDictionary *) = 
                               parentEntityMainTable:parentEntityMainTable
                         parentEntityMainRsConverter:parentEntityMainRsConverter
                            parentEntityMainIdColumn:parentEntityMainIdColumn
-                                           pageSize:nil
+                                           pageSize:pageSize
                                   entityMasterTable:entityMasterTable
                                     entityMainTable:entityMainTable
                        mainEntityResultSetConverter:mainEntityResultSetConverter
@@ -786,8 +794,9 @@ PELMMainSupport * (^toMainSupport)(FMResultSet *, NSString *, NSDictionary *) = 
          parentEntityMainRsConverter:(entityFromResultSetBlk)parentEntityMainRsConverter
           parentEntityMasterIdColumn:(NSString *)parentEntityMasterIdColumn
             parentEntityMainIdColumn:(NSString *)parentEntityMainIdColumn
-                               where:(NSString *)where
-                            whereArg:(id)whereArg
+                            pageSize:(NSNumber *)pageSize
+                            whereBlk:(NSString *(^)(NSString *))whereBlk
+                           whereArgs:(NSArray *)whereArgs
                    entityMasterTable:(NSString *)entityMasterTable
       masterEntityResultSetConverter:(entityFromResultSetBlk)masterEntityResultSetConverter
                      entityMainTable:(NSString *)entityMainTable
@@ -798,8 +807,8 @@ PELMMainSupport * (^toMainSupport)(FMResultSet *, NSString *, NSDictionary *) = 
                                   db:(FMDatabase *)db
                                error:(PELMDaoErrorBlk)errorBlk {
   NSString *(^masterQueryTransformer)(NSString *) = ^ NSString *(NSString *qry) {
-    if (where) {
-      qry = [qry stringByAppendingFormat:@" AND mstr.%@ ", where];
+    if (whereBlk) {
+      qry = [qry stringByAppendingFormat:@" AND %@ ", whereBlk(@"mstr.")];
     }
     if (orderByDomainColumn) {
       qry = [qry stringByAppendingFormat:@" ORDER BY mstr.%@", orderByDomainColumn];
@@ -810,14 +819,14 @@ PELMMainSupport * (^toMainSupport)(FMResultSet *, NSString *, NSDictionary *) = 
     return qry;
   };
   NSArray *(^argsArrayTransformer)(NSArray *) = ^ NSArray *(NSArray *argsArray) {
-    if (whereArg) {
-      return [argsArray arrayByAddingObject:whereArg];
+    if (whereArgs) {
+      return [argsArray arrayByAddingObjectsFromArray:whereArgs];
     }
     return argsArray;
   };
   NSString *(^mainQueryTransformer)(NSString *) = ^ NSString *(NSString *qry) {
-    if (where) {
-      qry = [qry stringByAppendingFormat:@" AND %@ ", where];
+    if (whereBlk) {
+      qry = [qry stringByAppendingFormat:@" AND %@ ", whereBlk(@"")];
     }
     if (orderByDomainColumn) {
       qry = [qry stringByAppendingFormat:@" ORDER BY %@", orderByDomainColumn];
@@ -838,7 +847,7 @@ PELMMainSupport * (^toMainSupport)(FMResultSet *, NSString *, NSDictionary *) = 
                 parentEntityMainRsConverter:parentEntityMainRsConverter
                  parentEntityMasterIdColumn:parentEntityMasterIdColumn
                    parentEntityMainIdColumn:parentEntityMainIdColumn
-                                   pageSize:nil
+                                   pageSize:pageSize
                           entityMasterTable:entityMasterTable
              masterEntityResultSetConverter:masterEntityResultSetConverter
                             entityMainTable:entityMainTable
