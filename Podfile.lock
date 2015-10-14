@@ -45,7 +45,6 @@ PODS:
   - FMDB/common (2.5)
   - FMDB/standard (2.5):
     - FMDB/common
-  - JGActionSheet (1.0.5)
   - KissXML (5.0)
   - Kiwi (2.3.1)
   - OHHTTPStubs (3.1.12):
@@ -57,9 +56,8 @@ PODS:
     - AFNetworking (~> 2.5.4)
     - CocoaLumberjack (~> 1.9)
     - PEObjc-Commons (~> 1.0.43)
-  - PEObjc-Commons (1.0.65):
+  - PEObjc-Commons (1.0.66):
     - BlocksKit (~> 2.2.5)
-    - JGActionSheet (~> 1.0.5)
   - PEWire-Control (1.0.2):
     - KissXML (~> 5.0)
     - OHHTTPStubs (~> 3.1.10)
@@ -80,7 +78,7 @@ DEPENDENCIES:
   - OHHTTPStubs (~> 3.1.12)
   - PEFuelPurchase-Common (~> 1.0.8)
   - PEHateoas-Client (~> 1.0.6)
-  - PEObjc-Commons (~> 1.0.65)
+  - PEObjc-Commons (~> 1.0.66)
   - PEWire-Control (~> 1.0.2)
   - UICKeyChainStore (~> 2.0.4)
 
@@ -89,13 +87,12 @@ SPEC CHECKSUMS:
   BlocksKit: 7f422b971407001178d181a43b99014ea2591fe6
   CocoaLumberjack: 628fca2e88ef06f7cf6817309aa405f325d9a6fa
   FMDB: 96e8f1bcc1329e269330f99770ad4285d9003e52
-  JGActionSheet: 2cfca820b57a11ec4b4a5655d45ee599fbeddc05
   KissXML: ce643413d618ad69886d0d43c3792b7dedfe476e
   Kiwi: f038a6c61f7a9e4d7766bff5717aa3b3fdb75f55
   OHHTTPStubs: 8cf0cfe6f34f13fc88fdf5b2a1b2c2536e8c0261
   PEFuelPurchase-Common: 315cd43955e69e5be94373405f1b55b6723d30b6
   PEHateoas-Client: 0a08b2f02833411ea1fab2a92d8949efd14035d8
-  PEObjc-Commons: 9c6f64cfb582db4bea2c897957dd0ce2ee4a4f2a
+  PEObjc-Commons: 2030e14322ffab0e13a8033a5ca6142b4c73f25e
   PEWire-Control: 2aeefa4014575adbc52cfbf3206395d9a7c07b22
   PEXML-Utils: f7e0759b8e4e2ec3a39c781b362d7fb233fc8421
   UICKeyChainStore: c5719c814e8bd69e74e4a0fc09daf8f4d6257a59
