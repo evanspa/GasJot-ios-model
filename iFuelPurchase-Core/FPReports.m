@@ -10,8 +10,6 @@
 #import "PEUtils.h"
 #import <PEObjc-Commons/NSDate+PEAdditions.h>
 
-NSString * const FPOdometerLogFunFactIndexDefaultsKey = @"FPOdometerLogFunFactIndex";
-
 typedef id (^FPValueBlock)(void);
 
 @implementation FPReports {
