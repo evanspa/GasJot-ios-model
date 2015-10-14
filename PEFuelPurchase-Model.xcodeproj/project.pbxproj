@@ -1241,6 +1241,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 5813A12436A5669F705ADB14 /* Pods.debug.xcconfig */;
 			buildSettings = {
+				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DSTROOT = /tmp/iFuelPurchase_Core.dst;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -1256,6 +1257,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 9A6BD3B0D574C7E922BFBF8D /* Pods.release.xcconfig */;
 			buildSettings = {
+				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DSTROOT = /tmp/iFuelPurchase_Core.dst;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -1271,6 +1273,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = CA1949C21B66C7180039C83A /* Pods-PEFuelPurchase-ModelTests.debug.xcconfig */;
 			buildSettings = {
+				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -1293,6 +1296,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = CA1949C31B66C7180039C83A /* Pods-PEFuelPurchase-ModelTests.release.xcconfig */;
 			buildSettings = {
+				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
