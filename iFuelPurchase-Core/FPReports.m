@@ -151,18 +151,27 @@ typedef id (^FPValueBlock)(void);
                                                    error:_errorBlk].gallonPrice;
 }
 
-- (NSDecimalNumber *)yearToDateMaxPricePerGallonForVehicle:(FPVehicle *)vehicle octane:(NSNumber *)octane {
+- (NSDecimalNumber *)yearToDateMinPricePerGallonForUser:(FPUser *)user octane:(NSNumber *)octane {
   NSDate *now = [NSDate date];
-  return [_localDao maxGallonPriceFuelPurchaseLogForVehicle:vehicle
-                                             onOrBeforeDate:now
-                                              onOrAfterDate:[self firstDayOfYearOfDate:now]
-                                                     octane:octane
-                                                      error:_errorBlk].gallonPrice;
+  return [_localDao minGallonPriceFuelPurchaseLogForUser:user
+                                          onOrBeforeDate:now
+                                           onOrAfterDate:[self firstDayOfYearOfDate:now]
+                                                  octane:octane
+                                                   error:_errorBlk].gallonPrice;
 }
 
 - (NSDecimalNumber *)yearToDateMaxPricePerGallonForFuelstation:(FPFuelStation *)fuelstation octane:(NSNumber *)octane {
   NSDate *now = [NSDate date];
   return [_localDao maxGallonPriceFuelPurchaseLogForFuelstation:fuelstation
+                                                 onOrBeforeDate:now
+                                                  onOrAfterDate:[self firstDayOfYearOfDate:now]
+                                                         octane:octane
+                                                          error:_errorBlk].gallonPrice;
+}
+
+- (NSDecimalNumber *)yearToDateMinPricePerGallonForFuelstation:(FPFuelStation *)fuelstation octane:(NSNumber *)octane {
+  NSDate *now = [NSDate date];
+  return [_localDao minGallonPriceFuelPurchaseLogForFuelstation:fuelstation
                                                  onOrBeforeDate:now
                                                   onOrAfterDate:[self firstDayOfYearOfDate:now]
                                                          octane:octane
@@ -175,14 +184,20 @@ typedef id (^FPValueBlock)(void);
                                                    error:_errorBlk].gallonPrice;
 }
 
-- (NSDecimalNumber *)overallMaxPricePerGallonForVehicle:(FPVehicle *)vehicle octane:(NSNumber *)octane {
-  return [_localDao maxGallonPriceFuelPurchaseLogForVehicle:vehicle
-                                                     octane:octane
-                                                      error:_errorBlk].gallonPrice;
+- (NSDecimalNumber *)overallMinPricePerGallonForUser:(FPUser *)user octane:(NSNumber *)octane {
+  return [_localDao minGallonPriceFuelPurchaseLogForUser:user
+                                                  octane:octane
+                                                   error:_errorBlk].gallonPrice;
 }
 
 - (NSDecimalNumber *)overallMaxPricePerGallonForFuelstation:(FPFuelStation *)fuelstation octane:(NSNumber *)octane {
   return [_localDao maxGallonPriceFuelPurchaseLogForFuelstation:fuelstation
+                                                         octane:octane
+                                                          error:_errorBlk].gallonPrice;
+}
+
+- (NSDecimalNumber *)overallMinPricePerGallonForFuelstation:(FPFuelStation *)fuelstation octane:(NSNumber *)octane {
+  return [_localDao minGallonPriceFuelPurchaseLogForFuelstation:fuelstation
                                                          octane:octane
                                                           error:_errorBlk].gallonPrice;
 }

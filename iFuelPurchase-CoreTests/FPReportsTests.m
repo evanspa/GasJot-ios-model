@@ -70,17 +70,13 @@ describe(@"FPReports", ^{
       [[[_reports totalSpentOnGasForFuelstation:_fs1] should] equal:[NSDecimalNumber zero]];
       // avg price per gallon
       [[_reports yearToDateAvgPricePerGallonForUser:_user octane:@(87)] shouldBeNil];
-      [[_reports yearToDateAvgPricePerGallonForVehicle:_v1 octane:@(87)] shouldBeNil];
       [[_reports yearToDateAvgPricePerGallonForFuelstation:_fs1 octane:@(87)] shouldBeNil];
       [[_reports overallAvgPricePerGallonForUser:_user octane:@(87)] shouldBeNil];
-      [[_reports overallAvgPricePerGallonForVehicle:_v1 octane:@(87)] shouldBeNil];
       [[_reports overallAvgPricePerGallonForFuelstation:_fs1 octane:@(87)] shouldBeNil];
       // max price per gallon
       [[_reports yearToDateMaxPricePerGallonForUser:_user octane:@(87)] shouldBeNil];
-      [[_reports yearToDateMaxPricePerGallonForVehicle:_v1 octane:@(87)] shouldBeNil];
       [[_reports yearToDateMaxPricePerGallonForFuelstation:_fs1 octane:@(87)] shouldBeNil];
       [[_reports overallMaxPricePerGallonForUser:_user octane:@(87)] shouldBeNil];
-      [[_reports overallMaxPricePerGallonForVehicle:_v1 octane:@(87)] shouldBeNil];
       [[_reports overallMaxPricePerGallonForFuelstation:_fs1 octane:@(87)] shouldBeNil];
     });
     
@@ -101,17 +97,13 @@ describe(@"FPReports", ^{
       [[[_reports totalSpentOnGasForFuelstation:_fs1] should] equal:[NSDecimalNumber decimalNumberWithString:@"58.52"]];
       // avg price per gallon
       [[[_reports yearToDateAvgPricePerGallonForUser:_user octane:@(87)] should] equal:[NSDecimalNumber decimalNumberWithString:@"3.85"]];
-      [[[_reports yearToDateAvgPricePerGallonForVehicle:_v1 octane:@(87)] should] equal:[NSDecimalNumber decimalNumberWithString:@"3.85"]];
       [[[_reports yearToDateAvgPricePerGallonForFuelstation:_fs1 octane:@(87)] should] equal:[NSDecimalNumber decimalNumberWithString:@"3.85"]];
       [[[_reports overallAvgPricePerGallonForUser:_user octane:@(87)] should] equal:[NSDecimalNumber decimalNumberWithString:@"3.85"]];
-      [[[_reports overallAvgPricePerGallonForVehicle:_v1 octane:@(87)] should] equal:[NSDecimalNumber decimalNumberWithString:@"3.85"]];
       [[[_reports overallAvgPricePerGallonForFuelstation:_fs1 octane:@(87)] should] equal:[NSDecimalNumber decimalNumberWithString:@"3.85"]];
       // max price per gallon
       [[[_reports yearToDateMaxPricePerGallonForUser:_user octane:@(87)] should] equal:[NSDecimalNumber decimalNumberWithString:@"3.85"]];
-      [[[_reports yearToDateMaxPricePerGallonForVehicle:_v1 octane:@(87)] should] equal:[NSDecimalNumber decimalNumberWithString:@"3.85"]];
       [[[_reports yearToDateMaxPricePerGallonForFuelstation:_fs1 octane:@(87)] should] equal:[NSDecimalNumber decimalNumberWithString:@"3.85"]];
       [[[_reports overallMaxPricePerGallonForUser:_user octane:@(87)] should] equal:[NSDecimalNumber decimalNumberWithString:@"3.85"]];
-      [[[_reports overallMaxPricePerGallonForVehicle:_v1 octane:@(87)] should] equal:[NSDecimalNumber decimalNumberWithString:@"3.85"]];
       [[[_reports overallMaxPricePerGallonForFuelstation:_fs1 octane:@(87)] should] equal:[NSDecimalNumber decimalNumberWithString:@"3.85"]];
     });
     
@@ -139,17 +131,13 @@ describe(@"FPReports", ^{
       [[[_reports totalSpentOnGasForFuelstation:_fs1] should] equal:[NSDecimalNumber decimalNumberWithString:@"97.20928"]];
       // avg price per gallon
       [[[_reports yearToDateAvgPricePerGallonForUser:_user octane:@(87)] should] equal:[NSDecimalNumber decimalNumberWithString:@"3.0045"]];
-      [[[_reports yearToDateAvgPricePerGallonForVehicle:_v1 octane:@(87)] should] equal:[NSDecimalNumber decimalNumberWithString:@"3.0045"]];
       [[[_reports yearToDateAvgPricePerGallonForFuelstation:_fs1 octane:@(87)] should] equal:[NSDecimalNumber decimalNumberWithString:@"3.0045"]];
       [[[_reports overallAvgPricePerGallonForUser:_user octane:@(87)] should] equal:[NSDecimalNumber decimalNumberWithString:@"3.0045"]];
-      [[[_reports overallAvgPricePerGallonForVehicle:_v1 octane:@(87)] should] equal:[NSDecimalNumber decimalNumberWithString:@"3.0045"]];
       [[[_reports overallAvgPricePerGallonForFuelstation:_fs1 octane:@(87)] should] equal:[NSDecimalNumber decimalNumberWithString:@"3.0045"]];
       // max price per gallon
       [[[_reports yearToDateMaxPricePerGallonForUser:_user octane:@(87)] should] equal:[NSDecimalNumber decimalNumberWithString:@"3.85"]];
-      [[[_reports yearToDateMaxPricePerGallonForVehicle:_v1 octane:@(87)] should] equal:[NSDecimalNumber decimalNumberWithString:@"3.85"]];
       [[[_reports yearToDateMaxPricePerGallonForFuelstation:_fs1 octane:@(87)] should] equal:[NSDecimalNumber decimalNumberWithString:@"3.85"]];
       [[[_reports overallMaxPricePerGallonForUser:_user octane:@(87)] should] equal:[NSDecimalNumber decimalNumberWithString:@"3.85"]];
-      [[[_reports overallMaxPricePerGallonForVehicle:_v1 octane:@(87)] should] equal:[NSDecimalNumber decimalNumberWithString:@"3.85"]];
       [[[_reports overallMaxPricePerGallonForFuelstation:_fs1 octane:@(87)] should] equal:[NSDecimalNumber decimalNumberWithString:@"3.85"]];
       
       // now, we'll create a 2nd vehicle, and 3rd fplog for that vehicle, and make sure things still work
@@ -172,17 +160,13 @@ describe(@"FPReports", ^{
       [[[_reports totalSpentOnGasForFuelstation:_fs1] should] equal:[NSDecimalNumber decimalNumberWithString:@"111.73327"]];
       // avg price per gallon
       [[[_reports yearToDateAvgPricePerGallonForUser:_user octane:@(87)] should] equal:[NSDecimalNumber decimalNumberWithString:@"2.96933333333333333333333333333333333333"]];
-      [[[_reports yearToDateAvgPricePerGallonForVehicle:_v1 octane:@(87)] should] equal:[NSDecimalNumber decimalNumberWithString:@"3.0045"]];
       [[[_reports yearToDateAvgPricePerGallonForFuelstation:_fs1 octane:@(87)] should] equal:[NSDecimalNumber decimalNumberWithString:@"2.96933333333333333333333333333333333333"]];
       [[[_reports overallAvgPricePerGallonForUser:_user octane:@(87)] should] equal:[NSDecimalNumber decimalNumberWithString:@"2.96933333333333333333333333333333333333"]];
-      [[[_reports overallAvgPricePerGallonForVehicle:_v1 octane:@(87)] should] equal:[NSDecimalNumber decimalNumberWithString:@"3.0045"]];
       [[[_reports overallAvgPricePerGallonForFuelstation:_fs1 octane:@(87)] should] equal:[NSDecimalNumber decimalNumberWithString:@"2.96933333333333333333333333333333333333"]];
       // max price per gallon
       [[[_reports yearToDateMaxPricePerGallonForUser:_user octane:@(87)] should] equal:[NSDecimalNumber decimalNumberWithString:@"3.85"]];
-      [[[_reports yearToDateMaxPricePerGallonForVehicle:_v1 octane:@(87)] should] equal:[NSDecimalNumber decimalNumberWithString:@"3.85"]];
       [[[_reports yearToDateMaxPricePerGallonForFuelstation:_fs1 octane:@(87)] should] equal:[NSDecimalNumber decimalNumberWithString:@"3.85"]];
       [[[_reports overallMaxPricePerGallonForUser:_user octane:@(87)] should] equal:[NSDecimalNumber decimalNumberWithString:@"3.85"]];
-      [[[_reports overallMaxPricePerGallonForVehicle:_v1 octane:@(87)] should] equal:[NSDecimalNumber decimalNumberWithString:@"3.85"]];
       [[[_reports overallMaxPricePerGallonForFuelstation:_fs1 octane:@(87)] should] equal:[NSDecimalNumber decimalNumberWithString:@"3.85"]];
       
       // now let's add a gas log that goes back to the previous year, for vehicle _v1
@@ -209,18 +193,16 @@ describe(@"FPReports", ^{
       [[[_reports totalSpentOnGasForFuelstation:_fs1] should] equal:[NSDecimalNumber decimalNumberWithString:@"134.97577"]];
       // avg price per gallon
       [[[_reports yearToDateAvgPricePerGallonForUser:_user octane:@(87)] should] equal:[NSDecimalNumber decimalNumberWithString:@"2.96933333333333333333333333333333333333"]];
-      [[[_reports yearToDateAvgPricePerGallonForVehicle:_v1 octane:@(87)] should] equal:[NSDecimalNumber decimalNumberWithString:@"3.0045"]];
       [[[_reports yearToDateAvgPricePerGallonForFuelstation:_fs1 octane:@(87)] should] equal:[NSDecimalNumber decimalNumberWithString:@"2.96933333333333333333333333333333333333"]];
       [[[_reports overallAvgPricePerGallonForUser:_user octane:@(87)] should] equal:[NSDecimalNumber decimalNumberWithString:@"3.00175"]];
-      [[[_reports overallAvgPricePerGallonForVehicle:_v1 octane:@(87)] should] equal:[NSDecimalNumber decimalNumberWithString:@"3.036"]];
       [[[_reports overallAvgPricePerGallonForFuelstation:_fs1 octane:@(87)] should] equal:[NSDecimalNumber decimalNumberWithString:@"3.00175"]];
       // max price per gallon
       [[[_reports yearToDateMaxPricePerGallonForUser:_user octane:@(87)] should] equal:[NSDecimalNumber decimalNumberWithString:@"3.85"]];
-      [[[_reports yearToDateMaxPricePerGallonForVehicle:_v1 octane:@(87)] should] equal:[NSDecimalNumber decimalNumberWithString:@"3.85"]];
       [[[_reports yearToDateMaxPricePerGallonForFuelstation:_fs1 octane:@(87)] should] equal:[NSDecimalNumber decimalNumberWithString:@"3.85"]];
       [[[_reports overallMaxPricePerGallonForUser:_user octane:@(87)] should] equal:[NSDecimalNumber decimalNumberWithString:@"3.85"]];
-      [[[_reports overallMaxPricePerGallonForVehicle:_v1 octane:@(87)] should] equal:[NSDecimalNumber decimalNumberWithString:@"3.85"]];
       [[[_reports overallMaxPricePerGallonForFuelstation:_fs1 octane:@(87)] should] equal:[NSDecimalNumber decimalNumberWithString:@"3.85"]];
+      [[[_reports overallMinPricePerGallonForUser:_user octane:@(87)] should] equal:[NSDecimalNumber decimalNumberWithString:@"2.159"]];
+      [[[_reports overallMinPricePerGallonForFuelstation:_fs1 octane:@(87)] should] equal:[NSDecimalNumber decimalNumberWithString:@"2.159"]];
     });
   });
 });
