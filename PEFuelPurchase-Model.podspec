@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "PEFuelPurchase-Model"
-  s.version      = "1.0.122"
+  s.version      = "1.0.123"
   s.license      = "MIT"
   s.summary      = "An iOS static library representing the core logic of the PEFuelPurchase-App application."
   s.author       = { "Paul Evans" => "evansp2@gmail.com" }
@@ -11,7 +11,7 @@ Pod::Spec.new do |s|
   s.public_header_files = '**/*.h'
   s.exclude_files = "**/*Tests/*.*"
   s.requires_arc = true
-  s.dependency 'PEObjc-Commons', '~> 1.0.61'
+  s.dependency 'PEObjc-Commons', '~> 1.0.63'
   s.dependency 'PEFuelPurchase-Common', '~> 1.0.8'
   s.dependency 'FMDB', '~> 2.5'
   s.dependency 'PEHateoas-Client', '~> 1.0.6'
