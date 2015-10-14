@@ -1443,7 +1443,7 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk {
                                               gallonPrice:gallonPrice
                                                gotCarWash:gotCarWash
                                  carWashPerGallonDiscount:carWashPerGallonDiscount
-                                                  purchasedAt:logDate
+                                              purchasedAt:logDate
                                                 mediaType:[FPKnownMediaTypes fuelPurchaseLogMediaTypeWithVersion:_fuelPurchaseLogResMtVersion]];
 }
 

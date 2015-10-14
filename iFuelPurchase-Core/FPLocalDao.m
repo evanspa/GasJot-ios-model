@@ -1627,7 +1627,8 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                                  colPrefix,
                                                  COL_FUELPL_PURCHASED_AT];
                                        }
-                                      whereArgs:@[onOrBeforeDate, onOrAfterDate]
+                                      whereArgs:@[[PEUtils millisecondsFromDate:onOrBeforeDate],
+                                                  [PEUtils millisecondsFromDate:onOrAfterDate]]
                               entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
                  masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
                                 entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
@@ -1660,7 +1661,9 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                                  colPrefix,
                                                  COL_FUELPL_OCTANE];
                                        }
-                                      whereArgs:@[onOrBeforeDate, onOrAfterDate, octane]
+                                      whereArgs:@[[PEUtils millisecondsFromDate:onOrBeforeDate],
+                                                  [PEUtils millisecondsFromDate:onOrAfterDate],
+                                                  octane]
                               entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
                  masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
                                 entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
@@ -1720,7 +1723,9 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                                           colPrefix,
                                                           COL_FUELPL_OCTANE];
                                                 }
-                                               whereArgs:@[onOrBeforeDate, onOrAfterDate, octane]
+                                               whereArgs:@[[PEUtils millisecondsFromDate:onOrBeforeDate],
+                                                           [PEUtils millisecondsFromDate:onOrAfterDate],
+                                                           octane]
                                        entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
                           masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
                                          entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
@@ -1811,7 +1816,8 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                                  colPrefix,
                                                  COL_FUELPL_PURCHASED_AT];
                                        }
-                                      whereArgs:@[onOrBeforeDate, onOrAfterDate]
+                                      whereArgs:@[[PEUtils millisecondsFromDate:onOrBeforeDate],
+                                                  [PEUtils millisecondsFromDate:onOrAfterDate]]
                               entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
                  masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
                                 entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
@@ -1844,7 +1850,9 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                                  colPrefix,
                                                  COL_FUELPL_OCTANE];
                                        }
-                                      whereArgs:@[onOrBeforeDate, onOrAfterDate, octane]
+                                      whereArgs:@[[PEUtils millisecondsFromDate:onOrBeforeDate],
+                                                  [PEUtils millisecondsFromDate:onOrAfterDate],
+                                                  octane]
                               entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
                  masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
                                 entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
@@ -1904,7 +1912,9 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                                           colPrefix,
                                                           COL_FUELPL_OCTANE];
                                                 }
-                                               whereArgs:@[onOrBeforeDate, onOrAfterDate, octane]
+                                               whereArgs:@[[PEUtils millisecondsFromDate:onOrBeforeDate],
+                                                           [PEUtils millisecondsFromDate:onOrAfterDate],
+                                                           octane]
                                        entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
                           masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
                                          entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
@@ -1995,7 +2005,8 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                                  colPrefix,
                                                  COL_FUELPL_PURCHASED_AT];
                                        }
-                                      whereArgs:@[onOrBeforeDate, onOrAfterDate]
+                                      whereArgs:@[[PEUtils millisecondsFromDate:onOrBeforeDate],
+                                                  [PEUtils millisecondsFromDate:onOrAfterDate]]
                               entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
                  masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
                                 entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
@@ -2028,7 +2039,9 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                                  colPrefix,
                                                  COL_FUELPL_OCTANE];
                                        }
-                                      whereArgs:@[onOrBeforeDate, onOrAfterDate, octane]
+                                      whereArgs:@[[PEUtils millisecondsFromDate:onOrBeforeDate],
+                                                  [PEUtils millisecondsFromDate:onOrAfterDate],
+                                                  octane]
                               entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
                  masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
                                 entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
@@ -2088,7 +2101,9 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                                           colPrefix,
                                                           COL_FUELPL_OCTANE];
                                                 }
-                                               whereArgs:@[onOrBeforeDate, onOrAfterDate, octane]
+                                               whereArgs:@[[PEUtils millisecondsFromDate:onOrBeforeDate],
+                                                           [PEUtils millisecondsFromDate:onOrAfterDate],
+                                                           octane]
                                        entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
                           masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
                                          entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
