@@ -488,6 +488,22 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
 
 #pragma mark - Environment Log
 
+- (FPEnvironmentLog *)firstOdometerLogForVehicle:(FPVehicle *)vehicle
+                                  onOrBeforeDate:(NSDate *)onOrBeforeDate
+                                   onOrAfterDate:(NSDate *)onOrAfterDate
+                                           error:(PELMDaoErrorBlk)errorBlk;
+
+- (FPEnvironmentLog *)lastOdometerLogForVehicle:(FPVehicle *)vehicle
+                                 onOrBeforeDate:(NSDate *)onOrBeforeDate
+                                  onOrAfterDate:(NSDate *)onOrAfterDate
+                                          error:(PELMDaoErrorBlk)errorBlk;
+
+- (FPEnvironmentLog *)firstOdometerLogForVehicle:(FPVehicle *)vehicle
+                                           error:(PELMDaoErrorBlk)errorBlk;
+
+- (FPEnvironmentLog *)lastOdometerLogForVehicle:(FPVehicle *)vehicle
+                                          error:(PELMDaoErrorBlk)errorBlk;
+
 - (FPEnvironmentLog *)masterEnvlogWithId:(NSNumber *)envlogId
                                    error:(PELMDaoErrorBlk)errorBlk;
 

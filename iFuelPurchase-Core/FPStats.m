@@ -1,18 +1,18 @@
 //
-//  FPReports.m
+//  FPStats.m
 //  PEFuelPurchase-Model
 //
 //  Created by Paul Evans on 10/10/15.
 //  Copyright © 2015 Paul Evans. All rights reserved.
 //
 
-#import "FPReports.h"
+#import "FPStats.h"
 #import "PEUtils.h"
 #import <PEObjc-Commons/NSDate+PEAdditions.h>
 
 typedef id (^FPValueBlock)(void);
 
-@implementation FPReports {
+@implementation FPStats {
   FPLocalDao *_localDao;
   PELMDaoErrorBlk _errorBlk;
 }
@@ -42,7 +42,9 @@ typedef id (^FPValueBlock)(void);
 - (NSDecimalNumber *)totalSpentFromFplogs:(NSArray *)fplogs {
   NSDecimalNumber *total = [NSDecimalNumber zero];
   for (FPFuelPurchaseLog *fplog in fplogs) {
-    total = [total decimalNumberByAdding:[fplog.numGallons decimalNumberByMultiplyingBy:fplog.gallonPrice]];
+    if (![PEUtils isNil:fplog.numGallons] && ![PEUtils isNil:fplog.gallonPrice]) {
+      total = [total decimalNumberByAdding:[fplog.numGallons decimalNumberByMultiplyingBy:fplog.gallonPrice]];
+    }
   }
   return total;
 }
@@ -50,16 +52,101 @@ typedef id (^FPValueBlock)(void);
 - (NSDecimalNumber *)avgGallonPriceFromFplogs:(NSArray *)fplogs {
   NSInteger numFplogs = [fplogs count];
   if (numFplogs > 0) {
+    NSInteger numRelevantLogs = 0;
     NSDecimalNumber *gallonPriceSum = [NSDecimalNumber zero];
     for (FPFuelPurchaseLog *fplog in fplogs) {
-      gallonPriceSum = [gallonPriceSum decimalNumberByAdding:fplog.gallonPrice];
+      if (![PEUtils isNil:fplog.gallonPrice]) {
+        numRelevantLogs++;
+        gallonPriceSum = [gallonPriceSum decimalNumberByAdding:fplog.gallonPrice];
+      }
     }
-    return [gallonPriceSum decimalNumberByDividingBy:[[NSDecimalNumber alloc] initWithInteger:numFplogs]];
+    return [gallonPriceSum decimalNumberByDividingBy:[[NSDecimalNumber alloc] initWithInteger:numRelevantLogs]];
   }
   return nil;
 }
 
-#pragma mark - Gas Log Fun Fact Definitions
+#pragma mark - Gas Cost Per Mile
+
+- (NSDecimalNumber *)milesRecordedForVehicle:(FPVehicle *)vehicle {
+  FPEnvironmentLog *firstOdometerLog = [_localDao firstOdometerLogForVehicle:vehicle error:_errorBlk];
+  FPEnvironmentLog *lastOdometerLog = [_localDao lastOdometerLogForVehicle:vehicle error:_errorBlk];
+  return [lastOdometerLog.odometer decimalNumberBySubtracting:firstOdometerLog.odometer];
+}
+
+- (NSDecimalNumber *)milesRecordedForVehicle:(FPVehicle *)vehicle
+                              onOrBeforeDate:(NSDate *)onOrBeforeDate
+                               onOrAfterDate:(NSDate *)onOrAfterDate {
+  FPEnvironmentLog *firstOdometerLog = [_localDao firstOdometerLogForVehicle:vehicle
+                                                              onOrBeforeDate:onOrBeforeDate
+                                                               onOrAfterDate:onOrAfterDate
+                                                                       error:_errorBlk];
+  FPEnvironmentLog *lastOdometerLog = [_localDao lastOdometerLogForVehicle:vehicle
+                                                            onOrBeforeDate:onOrBeforeDate
+                                                             onOrAfterDate:onOrAfterDate
+                                                                     error:_errorBlk];
+  return [lastOdometerLog.odometer decimalNumberBySubtracting:firstOdometerLog.odometer];
+}
+
+- (NSDecimalNumber *)costPerMileForMilesDriven:(NSDecimalNumber *)milesDriven
+                               totalSpentOnGas:(NSDecimalNumber *)totalSpentOnGas {
+  if ([milesDriven compare:[NSDecimalNumber zero]] == NSOrderedSame) {
+    // this means that the user has only 1 odometer log recorded, and thus
+    // we can't do this computation
+    return nil;
+  } else {
+    if ([totalSpentOnGas compare:[NSDecimalNumber zero]] == NSOrderedSame) {
+      // we have odometer logs, but no gas logs
+      return nil;
+    }
+  }
+  return [totalSpentOnGas decimalNumberByDividingBy:milesDriven];
+}
+
+- (NSDecimalNumber *)yearToDateGasCostPerMileForUser:(FPUser *)user {
+  NSDate *now = [NSDate date];
+  NSDate *firstDayOfCurrentYear = [self firstDayOfYearOfDate:now];
+  NSArray *vehicles = [_localDao vehiclesForUser:user error:_errorBlk];
+  NSDecimalNumber *totalMilesDriven = [NSDecimalNumber zero];
+  NSDecimalNumber *totalSpentOnGas = [NSDecimalNumber zero];
+  for (FPVehicle *vehicle in vehicles) {
+    totalMilesDriven = [totalMilesDriven decimalNumberByAdding:[self milesRecordedForVehicle:vehicle
+                                                                              onOrBeforeDate:now
+                                                                               onOrAfterDate:firstDayOfCurrentYear]];
+    totalSpentOnGas = [totalSpentOnGas decimalNumberByAdding:[self yearToDateSpentOnGasForVehicle:vehicle]];
+  }
+  return [self costPerMileForMilesDriven:totalMilesDriven totalSpentOnGas:totalSpentOnGas];
+}
+
+- (NSDecimalNumber *)overallGasCostPerMileForUser:(FPUser *)user {
+  NSArray *vehicles = [_localDao vehiclesForUser:user error:_errorBlk];
+  NSDecimalNumber *totalMilesDriven = [NSDecimalNumber zero];
+  NSDecimalNumber *totalSpentOnGas = [NSDecimalNumber zero];
+  for (FPVehicle *vehicle in vehicles) {
+    totalMilesDriven = [totalMilesDriven decimalNumberByAdding:[self milesRecordedForVehicle:vehicle]];
+    totalSpentOnGas = [totalSpentOnGas decimalNumberByAdding:[self yearToDateSpentOnGasForVehicle:vehicle]];
+  }
+  return [self costPerMileForMilesDriven:totalMilesDriven totalSpentOnGas:totalSpentOnGas];
+}
+
+- (NSDecimalNumber *)yearToDateGasCostPerMileForVehicle:(FPVehicle *)vehicle {
+  NSDate *now = [NSDate date];
+  NSDate *firstDayOfCurrentYear = [self firstDayOfYearOfDate:now];
+  NSDecimalNumber *milesDriven = [self milesRecordedForVehicle:vehicle
+                                                onOrBeforeDate:now
+                                                 onOrAfterDate:firstDayOfCurrentYear];
+  NSDecimalNumber *totalSpentOnGas = [self yearToDateSpentOnGasForVehicle:vehicle];
+  return [self costPerMileForMilesDriven:milesDriven totalSpentOnGas:totalSpentOnGas];
+}
+
+- (NSDecimalNumber *)overallGasCostPerMileForVehicle:(FPVehicle *)vehicle {
+  FPEnvironmentLog *firstOdometerLog = [_localDao firstOdometerLogForVehicle:vehicle error:_errorBlk];
+  FPEnvironmentLog *lastOdometerLog = [_localDao lastOdometerLogForVehicle:vehicle error:_errorBlk];
+  NSDecimalNumber *milesDriven = [lastOdometerLog.odometer decimalNumberBySubtracting:firstOdometerLog.odometer];
+  NSDecimalNumber *totalSpentOnGas = [self totalSpentOnGasForVehicle:vehicle];
+  return [self costPerMileForMilesDriven:milesDriven totalSpentOnGas:totalSpentOnGas];
+}
+
+#pragma mark - Amount Spent on Gas
 
 - (NSDecimalNumber *)yearToDateSpentOnGasForUser:(FPUser *)user {
   NSDate *now = [NSDate date];
@@ -96,6 +183,8 @@ typedef id (^FPValueBlock)(void);
 - (NSDecimalNumber *)totalSpentOnGasForFuelstation:(FPFuelStation *)fuelstation {
   return [self totalSpentFromFplogs:[_localDao unorderedFuelPurchaseLogsForFuelstation:fuelstation error:_errorBlk]];
 }
+
+#pragma mark - Average Price Per Gallon
 
 - (NSDecimalNumber *)yearToDateAvgPricePerGallonForUser:(FPUser *)user octane:(NSNumber *)octane {
   NSDate *now = [NSDate date];
@@ -142,18 +231,11 @@ typedef id (^FPValueBlock)(void);
                                                                                      error:_errorBlk]];
 }
 
+#pragma mark - Max Price Per Gallon
+
 - (NSDecimalNumber *)yearToDateMaxPricePerGallonForUser:(FPUser *)user octane:(NSNumber *)octane {
   NSDate *now = [NSDate date];
   return [_localDao maxGallonPriceFuelPurchaseLogForUser:user
-                                          onOrBeforeDate:now
-                                           onOrAfterDate:[self firstDayOfYearOfDate:now]
-                                                  octane:octane
-                                                   error:_errorBlk].gallonPrice;
-}
-
-- (NSDecimalNumber *)yearToDateMinPricePerGallonForUser:(FPUser *)user octane:(NSNumber *)octane {
-  NSDate *now = [NSDate date];
-  return [_localDao minGallonPriceFuelPurchaseLogForUser:user
                                           onOrBeforeDate:now
                                            onOrAfterDate:[self firstDayOfYearOfDate:now]
                                                   octane:octane
@@ -169,23 +251,8 @@ typedef id (^FPValueBlock)(void);
                                                           error:_errorBlk].gallonPrice;
 }
 
-- (NSDecimalNumber *)yearToDateMinPricePerGallonForFuelstation:(FPFuelStation *)fuelstation octane:(NSNumber *)octane {
-  NSDate *now = [NSDate date];
-  return [_localDao minGallonPriceFuelPurchaseLogForFuelstation:fuelstation
-                                                 onOrBeforeDate:now
-                                                  onOrAfterDate:[self firstDayOfYearOfDate:now]
-                                                         octane:octane
-                                                          error:_errorBlk].gallonPrice;
-}
-
 - (NSDecimalNumber *)overallMaxPricePerGallonForUser:(FPUser *)user octane:(NSNumber *)octane {
   return [_localDao maxGallonPriceFuelPurchaseLogForUser:user
-                                                  octane:octane
-                                                   error:_errorBlk].gallonPrice;
-}
-
-- (NSDecimalNumber *)overallMinPricePerGallonForUser:(FPUser *)user octane:(NSNumber *)octane {
-  return [_localDao minGallonPriceFuelPurchaseLogForUser:user
                                                   octane:octane
                                                    error:_errorBlk].gallonPrice;
 }
@@ -196,13 +263,39 @@ typedef id (^FPValueBlock)(void);
                                                           error:_errorBlk].gallonPrice;
 }
 
+#pragma mark - Min Price Per Gallon
+
+- (NSDecimalNumber *)yearToDateMinPricePerGallonForUser:(FPUser *)user octane:(NSNumber *)octane {
+  NSDate *now = [NSDate date];
+  return [_localDao minGallonPriceFuelPurchaseLogForUser:user
+                                          onOrBeforeDate:now
+                                           onOrAfterDate:[self firstDayOfYearOfDate:now]
+                                                  octane:octane
+                                                   error:_errorBlk].gallonPrice;
+}
+
+- (NSDecimalNumber *)yearToDateMinPricePerGallonForFuelstation:(FPFuelStation *)fuelstation octane:(NSNumber *)octane {
+  NSDate *now = [NSDate date];
+  return [_localDao minGallonPriceFuelPurchaseLogForFuelstation:fuelstation
+                                                 onOrBeforeDate:now
+                                                  onOrAfterDate:[self firstDayOfYearOfDate:now]
+                                                         octane:octane
+                                                          error:_errorBlk].gallonPrice;
+}
+
+- (NSDecimalNumber *)overallMinPricePerGallonForUser:(FPUser *)user octane:(NSNumber *)octane {
+  return [_localDao minGallonPriceFuelPurchaseLogForUser:user
+                                                  octane:octane
+                                                   error:_errorBlk].gallonPrice;
+}
+
 - (NSDecimalNumber *)overallMinPricePerGallonForFuelstation:(FPFuelStation *)fuelstation octane:(NSNumber *)octane {
   return [_localDao minGallonPriceFuelPurchaseLogForFuelstation:fuelstation
                                                          octane:octane
                                                           error:_errorBlk].gallonPrice;
 }
 
-#pragma mark - Odometer Log Fun Facts
+#pragma mark - Odometer Log Reports
 
 - (NSDecimalNumber *)milesDrivenSinceLastOdometerLogAndLog:(FPEnvironmentLog *)odometerLog
                                                       user:(FPUser *)user {
