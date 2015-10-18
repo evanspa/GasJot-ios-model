@@ -49,6 +49,10 @@ typedef id (^FPValueBlock)(void);
   return total;
 }
 
+- (NSDate *)oneYearAgoDate {
+  return [[NSCalendar currentCalendar] dateByAddingUnit:NSCalendarUnitYear value:-1 toDate:[NSDate date] options:0];
+}
+
 - (NSDecimalNumber *)avgGallonPriceFromFplogs:(NSArray *)fplogs {
   NSInteger numFplogs = [fplogs count];
   if (numFplogs > 0) {
@@ -66,26 +70,6 @@ typedef id (^FPValueBlock)(void);
 }
 
 #pragma mark - Gas Cost Per Mile
-
-- (NSDecimalNumber *)milesRecordedForVehicle:(FPVehicle *)vehicle {
-  FPEnvironmentLog *firstOdometerLog = [_localDao firstOdometerLogForVehicle:vehicle error:_errorBlk];
-  FPEnvironmentLog *lastOdometerLog = [_localDao lastOdometerLogForVehicle:vehicle error:_errorBlk];
-  return [lastOdometerLog.odometer decimalNumberBySubtracting:firstOdometerLog.odometer];
-}
-
-- (NSDecimalNumber *)milesRecordedForVehicle:(FPVehicle *)vehicle
-                              onOrBeforeDate:(NSDate *)onOrBeforeDate
-                               onOrAfterDate:(NSDate *)onOrAfterDate {
-  FPEnvironmentLog *firstOdometerLog = [_localDao firstOdometerLogForVehicle:vehicle
-                                                              onOrBeforeDate:onOrBeforeDate
-                                                               onOrAfterDate:onOrAfterDate
-                                                                       error:_errorBlk];
-  FPEnvironmentLog *lastOdometerLog = [_localDao lastOdometerLogForVehicle:vehicle
-                                                            onOrBeforeDate:onOrBeforeDate
-                                                             onOrAfterDate:onOrAfterDate
-                                                                     error:_errorBlk];
-  return [lastOdometerLog.odometer decimalNumberBySubtracting:firstOdometerLog.odometer];
-}
 
 - (NSDecimalNumber *)costPerMileForMilesDriven:(NSDecimalNumber *)milesDriven
                                totalSpentOnGas:(NSDecimalNumber *)totalSpentOnGas {
@@ -295,7 +279,27 @@ typedef id (^FPValueBlock)(void);
                                                           error:_errorBlk].gallonPrice;
 }
 
-#pragma mark - Odometer Log Reports
+#pragma mark - Miles Recorded
+
+- (NSDecimalNumber *)milesRecordedForVehicle:(FPVehicle *)vehicle {
+  FPEnvironmentLog *firstOdometerLog = [_localDao firstOdometerLogForVehicle:vehicle error:_errorBlk];
+  FPEnvironmentLog *lastOdometerLog = [_localDao lastOdometerLogForVehicle:vehicle error:_errorBlk];
+  return [lastOdometerLog.odometer decimalNumberBySubtracting:firstOdometerLog.odometer];
+}
+
+- (NSDecimalNumber *)milesRecordedForVehicle:(FPVehicle *)vehicle
+                              onOrBeforeDate:(NSDate *)onOrBeforeDate
+                               onOrAfterDate:(NSDate *)onOrAfterDate {
+  FPEnvironmentLog *firstOdometerLog = [_localDao firstOdometerLogForVehicle:vehicle
+                                                              onOrBeforeDate:onOrBeforeDate
+                                                               onOrAfterDate:onOrAfterDate
+                                                                       error:_errorBlk];
+  FPEnvironmentLog *lastOdometerLog = [_localDao lastOdometerLogForVehicle:vehicle
+                                                            onOrBeforeDate:onOrBeforeDate
+                                                             onOrAfterDate:onOrAfterDate
+                                                                     error:_errorBlk];
+  return [lastOdometerLog.odometer decimalNumberBySubtracting:firstOdometerLog.odometer];
+}
 
 - (NSDecimalNumber *)milesDrivenSinceLastOdometerLogAndLog:(FPEnvironmentLog *)odometerLog
                                                       user:(FPUser *)user {
@@ -313,6 +317,8 @@ typedef id (^FPValueBlock)(void);
   return nil;
 }
 
+#pragma mark - Duration Between Odometer Logs
+
 - (NSNumber *)daysSinceLastOdometerLogAndLog:(FPEnvironmentLog *)odometerLog
                                         user:(FPUser *)user {
   NSArray *odometerLogs =
@@ -326,29 +332,16 @@ typedef id (^FPValueBlock)(void);
   return nil;
 }
 
-- (NSNumber *)temperatureLastYearFromLog:(FPEnvironmentLog *)odometerLog
-                                    user:(FPUser *)user {
-  NSInteger plusMinusDays = 15;
-  NSDate *logDate = [odometerLog logDate];
-  if (logDate) {
-    NSDate *oneYearAgo = [[NSCalendar currentCalendar] dateByAddingUnit:NSCalendarUnitYear value:-1 toDate:logDate options:0];
-    NSDate *oneYearAgoMinusSome = [[NSCalendar currentCalendar] dateByAddingUnit:NSCalendarUnitDay value:plusMinusDays toDate:oneYearAgo options:0];
-    NSArray *odometerLogs =
-      [_localDao environmentLogsForUser:user pageSize:5 beforeDateLogged:oneYearAgoMinusSome error:_errorBlk];
-    if ([odometerLogs count] > 0) {
-      // so we got at most 5 hits; use the one nearest to our 1-year-ago date.
-      FPEnvironmentLog *nearestToAYearAgoLog = odometerLogs[0];
-      for (NSInteger i = 1; i < odometerLogs.count; i++) {
-        NSDate *atLeastYearAgoLogDate = [odometerLogs[i] logDate];
-        if ([atLeastYearAgoLogDate daysFromDate:oneYearAgo] < [nearestToAYearAgoLog.logDate daysFromDate:oneYearAgo]) {
-          nearestToAYearAgoLog = odometerLogs[i];
-        }
-      }
-      // so we have our odometer log that is neareset to 1-year-ago, but, is it
-      // within our plus/minus variance?
-      if ([nearestToAYearAgoLog.logDate daysFromDate:oneYearAgo] <= plusMinusDays) {
-        return [nearestToAYearAgoLog reportedOutsideTemp];
-      }
+#pragma mark - Outside Temperature
+
+- (NSNumber *)temperatureLastYearForUser:(FPUser *)user
+                      withinDaysVariance:(NSInteger)daysVariance {
+  
+  NSDate *oneYearAgo = [self oneYearAgoDate];
+  NSArray *nearestOdometerLog = [_localDao odometerLogNearestToDate:oneYearAgo forUser:user error:_errorBlk];
+  if (nearestOdometerLog) {
+    if ([nearestOdometerLog[1] integerValue] <= daysVariance) {
+      return [nearestOdometerLog[0] reportedOutsideTemp];
     }
   }
   return nil;

@@ -17,12 +17,6 @@
 
 #pragma mark - Gas Cost Per Mile
 
-- (NSDecimalNumber *)milesRecordedForVehicle:(FPVehicle *)vehicle;
-
-- (NSDecimalNumber *)milesRecordedForVehicle:(FPVehicle *)vehicle
-                              onOrBeforeDate:(NSDate *)onOrBeforeDate
-                               onOrAfterDate:(NSDate *)onOrAfterDate;
-
 - (NSDecimalNumber *)yearToDateGasCostPerMileForUser:(FPUser *)user;
 
 - (NSDecimalNumber *)overallGasCostPerMileForUser:(FPUser *)user;
@@ -75,12 +69,23 @@
 
 - (NSDecimalNumber *)overallMinPricePerGallonForFuelstation:(FPFuelStation *)fuelstation octane:(NSNumber *)octane;
 
-#pragma mark - Odometer Log Reports
+#pragma mark - Miles Recorded
+
+- (NSDecimalNumber *)milesRecordedForVehicle:(FPVehicle *)vehicle;
+
+- (NSDecimalNumber *)milesRecordedForVehicle:(FPVehicle *)vehicle
+                              onOrBeforeDate:(NSDate *)onOrBeforeDate
+                               onOrAfterDate:(NSDate *)onOrAfterDate;
 
 - (NSDecimalNumber *)milesDrivenSinceLastOdometerLogAndLog:(FPEnvironmentLog *)odometerLog user:(FPUser *)user;
 
+#pragma mark - Duration Between Odometer Logs
+
 - (NSNumber *)daysSinceLastOdometerLogAndLog:(FPEnvironmentLog *)odometerLog user:(FPUser *)user;
 
-- (NSNumber *)temperatureLastYearFromLog:(FPEnvironmentLog *)odometerLog user:(FPUser *)user;
+#pragma mark - Outside Temperature
+
+- (NSNumber *)temperatureLastYearForUser:(FPUser *)user
+                      withinDaysVariance:(NSInteger)daysVariance;
 
 @end

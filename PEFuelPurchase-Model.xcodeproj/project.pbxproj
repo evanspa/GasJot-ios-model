@@ -58,26 +58,27 @@
 		3A1D39AC44C9AF498E050705 /* libPods-PEFuelPurchase-ModelTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 97D994DB608A1FC554052190 /* libPods-PEFuelPurchase-ModelTests.a */; };
 		CA0520891BBB216F00075974 /* FPResendVerificationEmailSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = CA0520881BBB216F00075974 /* FPResendVerificationEmailSerializer.m */; settings = {ASSET_TAGS = (); }; };
 		CA27A5591BCCA50300CBD4B9 /* FPStats.m in Sources */ = {isa = PBXBuildFile; fileRef = CA27A5581BCCA50300CBD4B9 /* FPStats.m */; settings = {ASSET_TAGS = (); }; };
-		CA27A5601BCD862C00CBD4B9 /* FPStatsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CA27A55F1BCD862C00CBD4B9 /* FPStatsTests.m */; settings = {ASSET_TAGS = (); }; };
 		CA4F2DA71BC22209003887C8 /* FPPasswordResetSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = CA4F2DA61BC22209003887C8 /* FPPasswordResetSerializer.m */; settings = {ASSET_TAGS = (); }; };
 		CA7D5AAE1B3B07B500433581 /* PELMLoginUser.m in Sources */ = {isa = PBXBuildFile; fileRef = CA7D5AAD1B3B07B500433581 /* PELMLoginUser.m */; };
+		CABF515B1BD151370083B460 /* FPLocalDaoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 18156D2719918EC600C93FF4 /* FPLocalDaoTests.m */; settings = {ASSET_TAGS = (); }; };
+		CABF515C1BD32FB80083B460 /* FPStatsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CA27A55F1BCD862C00CBD4B9 /* FPStatsTests.m */; settings = {ASSET_TAGS = (); }; };
+		CABF515D1BD331B50083B460 /* FPCoordinatorDaoTests_1.m in Sources */ = {isa = PBXBuildFile; fileRef = 182267E11A5BA75200242806 /* FPCoordinatorDaoTests_1.m */; settings = {ASSET_TAGS = (); }; };
+		CABF515E1BD331B50083B460 /* FPCoordinatorDaoTests_2.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBC61A5CD98A00747936 /* FPCoordinatorDaoTests_2.m */; settings = {ASSET_TAGS = (); }; };
+		CABF515F1BD331B50083B460 /* FPCoordinatorDaoTests_4.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBC91A5CD9D800747936 /* FPCoordinatorDaoTests_4.m */; settings = {ASSET_TAGS = (); }; };
+		CABF51601BD331B50083B460 /* FPCoordinatorDaoTests_5.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBCA1A5CD9D800747936 /* FPCoordinatorDaoTests_5.m */; settings = {ASSET_TAGS = (); }; };
+		CABF51611BD331B50083B460 /* FPCoordinatorDaoTests_7.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBCC1A5CD9D800747936 /* FPCoordinatorDaoTests_7.m */; settings = {ASSET_TAGS = (); }; };
+		CABF51621BD331B50083B460 /* FPCoordinatorDaoTests_8.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBDA1A5CF12C00747936 /* FPCoordinatorDaoTests_8.m */; settings = {ASSET_TAGS = (); }; };
+		CABF51631BD331B50083B460 /* FPCoordinatorDaoTests_8_1.m in Sources */ = {isa = PBXBuildFile; fileRef = CA848CE01B2F660500411A09 /* FPCoordinatorDaoTests_8_1.m */; settings = {ASSET_TAGS = (); }; };
+		CABF51641BD331B50083B460 /* FPCoordinatorDaoTests_9.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBDB1A5CF12C00747936 /* FPCoordinatorDaoTests_9.m */; settings = {ASSET_TAGS = (); }; };
+		CABF51651BD331B50083B460 /* FPCoordinatorDaoTests_10.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBDC1A5CF12C00747936 /* FPCoordinatorDaoTests_10.m */; settings = {ASSET_TAGS = (); }; };
+		CABF51661BD331B50083B460 /* FPCoordinatorDaoTests_11.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBDD1A5CF12C00747936 /* FPCoordinatorDaoTests_11.m */; settings = {ASSET_TAGS = (); }; };
+		CABF51671BD331B50083B460 /* FPCoordinatorDaoTests_11.1.m in Sources */ = {isa = PBXBuildFile; fileRef = CA73FB4B1B2CF37F00451D50 /* FPCoordinatorDaoTests_11.1.m */; settings = {ASSET_TAGS = (); }; };
+		CABF51681BD331B50083B460 /* FPCoordinatorDaoTests_12.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBDE1A5CF12C00747936 /* FPCoordinatorDaoTests_12.m */; settings = {ASSET_TAGS = (); }; };
+		CABF51691BD331B50083B460 /* FPCoordinatorDaoTests_13.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBDF1A5CF12C00747936 /* FPCoordinatorDaoTests_13.m */; settings = {ASSET_TAGS = (); }; };
+		CABF516A1BD331B50083B460 /* FPCoordinatorDaoTests_14.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBE01A5CF12C00747936 /* FPCoordinatorDaoTests_14.m */; settings = {ASSET_TAGS = (); }; };
+		CABF516B1BD331B50083B460 /* FPCoordinatorDaoTests_15.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBF21A5D045D00747936 /* FPCoordinatorDaoTests_15.m */; settings = {ASSET_TAGS = (); }; };
 		CADD42491B681756005E1DF8 /* FPLogoutSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = CADD42481B681756005E1DF8 /* FPLogoutSerializer.m */; };
 		CAFC844E1B98AC9500FAEB66 /* FPChangelog.m in Sources */ = {isa = PBXBuildFile; fileRef = CAFC844D1B98AC9500FAEB66 /* FPChangelog.m */; };
-		CAFC84511B9A104600FAEB66 /* FPCoordinatorDaoTests_2.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBC61A5CD98A00747936 /* FPCoordinatorDaoTests_2.m */; };
-		CAFC84521B9A186B00FAEB66 /* FPCoordinatorDaoTests_1.m in Sources */ = {isa = PBXBuildFile; fileRef = 182267E11A5BA75200242806 /* FPCoordinatorDaoTests_1.m */; };
-		CAFC84531B9A186B00FAEB66 /* FPCoordinatorDaoTests_4.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBC91A5CD9D800747936 /* FPCoordinatorDaoTests_4.m */; };
-		CAFC84541B9A186B00FAEB66 /* FPCoordinatorDaoTests_5.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBCA1A5CD9D800747936 /* FPCoordinatorDaoTests_5.m */; };
-		CAFC84551B9A186B00FAEB66 /* FPCoordinatorDaoTests_7.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBCC1A5CD9D800747936 /* FPCoordinatorDaoTests_7.m */; };
-		CAFC84561B9A186B00FAEB66 /* FPCoordinatorDaoTests_8.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBDA1A5CF12C00747936 /* FPCoordinatorDaoTests_8.m */; };
-		CAFC84571B9A186B00FAEB66 /* FPCoordinatorDaoTests_8_1.m in Sources */ = {isa = PBXBuildFile; fileRef = CA848CE01B2F660500411A09 /* FPCoordinatorDaoTests_8_1.m */; };
-		CAFC84581B9A186B00FAEB66 /* FPCoordinatorDaoTests_9.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBDB1A5CF12C00747936 /* FPCoordinatorDaoTests_9.m */; };
-		CAFC84591B9A186B00FAEB66 /* FPCoordinatorDaoTests_10.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBDC1A5CF12C00747936 /* FPCoordinatorDaoTests_10.m */; };
-		CAFC845A1B9A186B00FAEB66 /* FPCoordinatorDaoTests_11.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBDD1A5CF12C00747936 /* FPCoordinatorDaoTests_11.m */; };
-		CAFC845B1B9A186B00FAEB66 /* FPCoordinatorDaoTests_11.1.m in Sources */ = {isa = PBXBuildFile; fileRef = CA73FB4B1B2CF37F00451D50 /* FPCoordinatorDaoTests_11.1.m */; };
-		CAFC845C1B9A186B00FAEB66 /* FPCoordinatorDaoTests_12.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBDE1A5CF12C00747936 /* FPCoordinatorDaoTests_12.m */; };
-		CAFC845D1B9A186B00FAEB66 /* FPCoordinatorDaoTests_13.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBDF1A5CF12C00747936 /* FPCoordinatorDaoTests_13.m */; };
-		CAFC845E1B9A186B00FAEB66 /* FPCoordinatorDaoTests_14.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBE01A5CF12C00747936 /* FPCoordinatorDaoTests_14.m */; };
-		CAFC845F1B9A186B00FAEB66 /* FPCoordinatorDaoTests_15.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBF21A5D045D00747936 /* FPCoordinatorDaoTests_15.m */; };
 		CAFC84611B9A187400FAEB66 /* FPUserSerializerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D8C11719C3EEF0006C65F9 /* FPUserSerializerTests.m */; };
 /* End PBXBuildFile section */
 
@@ -1128,30 +1129,31 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CAFC84531B9A186B00FAEB66 /* FPCoordinatorDaoTests_4.m in Sources */,
-				CAFC845D1B9A186B00FAEB66 /* FPCoordinatorDaoTests_13.m in Sources */,
+				CABF515F1BD331B50083B460 /* FPCoordinatorDaoTests_4.m in Sources */,
 				18CF89B01AAEB1E700AC42E6 /* FPLogging.m in Sources */,
-				CAFC84571B9A186B00FAEB66 /* FPCoordinatorDaoTests_8_1.m in Sources */,
-				CAFC845C1B9A186B00FAEB66 /* FPCoordinatorDaoTests_12.m in Sources */,
 				181AAAB619AD6F1000F99F23 /* FPToggler.m in Sources */,
-				CAFC84521B9A186B00FAEB66 /* FPCoordinatorDaoTests_1.m in Sources */,
-				CAFC84581B9A186B00FAEB66 /* FPCoordinatorDaoTests_9.m in Sources */,
-				CAFC84591B9A186B00FAEB66 /* FPCoordinatorDaoTests_10.m in Sources */,
-				CAFC84561B9A186B00FAEB66 /* FPCoordinatorDaoTests_8.m in Sources */,
+				CABF515E1BD331B50083B460 /* FPCoordinatorDaoTests_2.m in Sources */,
 				1800C9D019A8D80400ECD51A /* FPAuthTokenDelegateForTesting.m in Sources */,
 				182267E01A5B8E7400242806 /* FPCoordDaoTestContext.m in Sources */,
-				CAFC845E1B9A186B00FAEB66 /* FPCoordinatorDaoTests_14.m in Sources */,
-				CAFC84511B9A104600FAEB66 /* FPCoordinatorDaoTests_2.m in Sources */,
-				CAFC84541B9A186B00FAEB66 /* FPCoordinatorDaoTests_5.m in Sources */,
 				18C1E9E21A728BAE002B4A08 /* FPModelSupportTests.m in Sources */,
-				CAFC845A1B9A186B00FAEB66 /* FPCoordinatorDaoTests_11.m in Sources */,
-				CAFC845F1B9A186B00FAEB66 /* FPCoordinatorDaoTests_15.m in Sources */,
+				CABF51601BD331B50083B460 /* FPCoordinatorDaoTests_5.m in Sources */,
+				CABF515C1BD32FB80083B460 /* FPStatsTests.m in Sources */,
 				18C1E9E31A728BAE002B4A08 /* FPMasterSupportTests.m in Sources */,
-				CA27A5601BCD862C00CBD4B9 /* FPStatsTests.m in Sources */,
+				CABF51691BD331B50083B460 /* FPCoordinatorDaoTests_13.m in Sources */,
+				CABF51681BD331B50083B460 /* FPCoordinatorDaoTests_12.m in Sources */,
+				CABF515D1BD331B50083B460 /* FPCoordinatorDaoTests_1.m in Sources */,
+				CABF51661BD331B50083B460 /* FPCoordinatorDaoTests_11.m in Sources */,
+				CABF51611BD331B50083B460 /* FPCoordinatorDaoTests_7.m in Sources */,
+				CABF51631BD331B50083B460 /* FPCoordinatorDaoTests_8_1.m in Sources */,
+				CABF516B1BD331B50083B460 /* FPCoordinatorDaoTests_15.m in Sources */,
+				CABF51621BD331B50083B460 /* FPCoordinatorDaoTests_8.m in Sources */,
 				CAFC84611B9A187400FAEB66 /* FPUserSerializerTests.m in Sources */,
+				CABF516A1BD331B50083B460 /* FPCoordinatorDaoTests_14.m in Sources */,
+				CABF51671BD331B50083B460 /* FPCoordinatorDaoTests_11.1.m in Sources */,
+				CABF515B1BD151370083B460 /* FPLocalDaoTests.m in Sources */,
 				1800C9DC19A8E21B00ECD51A /* FPCoordinatorDao+AdditionsForTesting.m in Sources */,
-				CAFC845B1B9A186B00FAEB66 /* FPCoordinatorDaoTests_11.1.m in Sources */,
-				CAFC84551B9A186B00FAEB66 /* FPCoordinatorDaoTests_7.m in Sources */,
+				CABF51651BD331B50083B460 /* FPCoordinatorDaoTests_10.m in Sources */,
+				CABF51641BD331B50083B460 /* FPCoordinatorDaoTests_9.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

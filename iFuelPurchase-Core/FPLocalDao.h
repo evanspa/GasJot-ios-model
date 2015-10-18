@@ -326,6 +326,15 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                                        octane:(NSNumber *)octane
                                         error:(PELMDaoErrorBlk)errorBlk;
 
+- (NSArray *)gasLogNearestToDate:(NSDate *)date
+                      forVehicle:(FPVehicle *)vehicle
+                           error:(PELMDaoErrorBlk)errorBlk;
+
+- (NSArray *)gasLogNearestToDate:(NSDate *)date
+                         forUser:(FPUser *)user
+                          octane:(NSNumber *)octane
+                           error:(PELMDaoErrorBlk)errorBlk;
+
 - (FPFuelPurchaseLog *)maxGallonPriceFuelPurchaseLogForUser:(FPUser *)user
                                              onOrBeforeDate:(NSDate *)onOrBeforeDate
                                               onOrAfterDate:(NSDate *)onOrAfterDate
@@ -487,6 +496,18 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                                               error:(PELMDaoErrorBlk)errorBlk;
 
 #pragma mark - Environment Log
+
+- (NSArray *)odometerLogNearestToDate:(NSDate *)date
+                           forVehicle:(FPVehicle *)vehicle
+                                error:(PELMDaoErrorBlk)errorBlk;
+
+- (NSArray *)odometerLogNearestToDate:(NSDate *)date
+                              forUser:(FPUser *)user
+                                error:(PELMDaoErrorBlk)errorBlk;
+
+- (NSArray *)odometerLogWithNonNilTemperatureNearestToDate:(NSDate *)date
+                                                   forUser:(FPUser *)user
+                                                     error:(PELMDaoErrorBlk)errorBlk;
 
 - (FPEnvironmentLog *)firstOdometerLogForVehicle:(FPVehicle *)vehicle
                                   onOrBeforeDate:(NSDate *)onOrBeforeDate
