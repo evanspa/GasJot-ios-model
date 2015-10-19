@@ -19,9 +19,13 @@
 
 - (NSDecimalNumber *)yearToDateGasCostPerMileForUser:(FPUser *)user;
 
+- (NSDecimalNumber *)lastYearGasCostPerMileForUser:(FPUser *)user;
+
 - (NSDecimalNumber *)overallGasCostPerMileForUser:(FPUser *)user;
 
 - (NSDecimalNumber *)yearToDateGasCostPerMileForVehicle:(FPVehicle *)vehicle;
+
+- (NSDecimalNumber *)lastYearGasCostPerMileForVehicle:(FPVehicle *)vehicle;
 
 - (NSDecimalNumber *)overallGasCostPerMileForVehicle:(FPVehicle *)vehicle;
 
@@ -29,15 +33,15 @@
 
 - (NSDecimalNumber *)yearToDateSpentOnGasForUser:(FPUser *)user;
 
-- (NSDecimalNumber *)yearToDateSpentOnGasForVehicle:(FPVehicle *)vehicle;
-
-- (NSDecimalNumber *)yearToDateSpentOnGasForFuelstation:(FPFuelStation *)vehicle;
-
 - (NSDecimalNumber *)totalSpentOnGasForUser:(FPUser *)user;
+
+- (NSDecimalNumber *)yearToDateSpentOnGasForVehicle:(FPVehicle *)vehicle;
 
 - (NSDecimalNumber *)totalSpentOnGasForVehicle:(FPVehicle *)vehicle;
 
-- (NSDecimalNumber *)totalSpentOnGasForFuelstation:(FPFuelStation *)vehicle;
+- (NSDecimalNumber *)yearToDateSpentOnGasForFuelstation:(FPFuelStation *)fuelstation;
+
+- (NSDecimalNumber *)totalSpentOnGasForFuelstation:(FPFuelStation *)fuelstation;
 
 #pragma mark - Average Price Per Gallon
 
@@ -87,5 +91,9 @@
 
 - (NSNumber *)temperatureLastYearForUser:(FPUser *)user
                       withinDaysVariance:(NSInteger)daysVariance;
+
+- (NSNumber *)temperatureForUser:(FPUser *)user
+              oneYearAgoFromDate:(NSDate *)oneYearAgoFromDate
+              withinDaysVariance:(NSInteger)daysVariance;
 
 @end

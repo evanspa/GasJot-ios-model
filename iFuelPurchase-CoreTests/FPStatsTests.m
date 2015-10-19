@@ -24,8 +24,7 @@ SPEC_BEGIN(FPStatsSpec)
 
 __block FPCoordDaoTestContext *_coordTestCtx;
 __block FPCoordinatorDao *_coordDao;
-__block FPCoordTestingMocker _mocker;
-__block FPCoordTestingObserver _observer;
+__block NSDateFormatter *_dateFormatter;
 __block FPStats *_stats;
 __block FPUser *_user;
 __block FPVehicle *_v1;
@@ -39,9 +38,9 @@ describe(@"FPStats", ^{
     [DDLog addLogger:[DDTTYLogger sharedInstance]];
     _coordTestCtx = [[FPCoordDaoTestContext alloc] initWithTestBundle:[NSBundle bundleForClass:[self class]]];
     _coordDao = [_coordTestCtx newStoreCoord];
-    _mocker = [_coordTestCtx newMocker];
-    _observer = [_coordTestCtx newObserver];
     _stats = [[FPStats alloc] initWithLocalDao:_coordDao.localDao errorBlk:[_coordTestCtx newLocalFetchErrBlkMaker]()];
+    _dateFormatter = [[NSDateFormatter alloc] init];
+    [_dateFormatter setDateFormat:@"MM/dd/yyyy"];
   });
   
   void(^resetUser)(void) = ^{
@@ -55,6 +54,79 @@ describe(@"FPStats", ^{
     [_coordDao saveNewFuelStation:_fs1 forUser:_user error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
   };
   
+  FPEnvironmentLog *(^saveOdometerLog)(FPVehicle *, NSString *, NSString *, NSString *, NSInteger, id, NSString *reportedDte) =
+  ^(FPVehicle *vehicle, NSString *odometer, NSString *reportedAvgMpg, NSString *reportedAvgMph, NSInteger temp, id date, NSString *reportedDte) {
+    NSDate *logDate = date;
+    if ([date isKindOfClass:[NSString class]]) {
+      logDate = [_dateFormatter dateFromString:date];
+    }
+    FPEnvironmentLog *envlog = [_coordDao environmentLogWithOdometer:[NSDecimalNumber decimalNumberWithString:odometer]
+                                                      reportedAvgMpg:[PEUtils nullSafeDecimalNumberFromString:reportedAvgMpg]
+                                                      reportedAvgMph:[PEUtils nullSafeDecimalNumberFromString:reportedAvgMph]
+                                                 reportedOutsideTemp:[NSNumber numberWithInteger:temp]
+                                                             logDate:logDate
+                                                         reportedDte:[PEUtils nullSafeDecimalNumberFromString:reportedDte]];
+    [_coordDao saveNewEnvironmentLog:envlog
+                             forUser:_user
+                             vehicle:vehicle
+                               error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+    return envlog;
+  };
+  
+  FPFuelPurchaseLog *(^saveGasLog)(FPVehicle *, FPFuelStation *, NSString *, NSInteger, NSString *, BOOL, NSString *, id) =
+  ^(FPVehicle *vehicle, FPFuelStation *fs, NSString *numGallons, NSInteger octane, NSString *gallonPrice, BOOL gotCarWash, NSString *carWashDiscount, id date) {
+    NSDate *purchasedAt = date;
+    if ([date isKindOfClass:[NSString class]]) {
+      purchasedAt = [_dateFormatter dateFromString:date];
+    }
+    FPFuelPurchaseLog *fplog = [_coordDao fuelPurchaseLogWithNumGallons:[PEUtils nullSafeDecimalNumberFromString:numGallons]
+                                              octane:[NSNumber numberWithInteger:octane]
+                                         gallonPrice:[PEUtils nullSafeDecimalNumberFromString:gallonPrice]
+                                          gotCarWash:gotCarWash
+                            carWashPerGallonDiscount:[PEUtils nullSafeDecimalNumberFromString:carWashDiscount]
+                                             logDate:purchasedAt];
+    [_coordDao saveNewFuelPurchaseLog:fplog forUser:_user vehicle:vehicle fuelStation:fs error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+    return fplog;
+  };
+  
+  context(@"Various odometer logs occuring over various time ranges", ^{
+    beforeAll(^{
+      resetUser();
+      // a bunch of 2014 logs
+      saveOdometerLog(_v1, @"50",  nil, nil, 40, @"01/01/2014", nil);
+      saveOdometerLog(_v1, @"100", nil, nil, 50, @"03/01/2014", nil);
+      saveOdometerLog(_v1, @"441", nil, nil, 60, @"06/01/2014", nil);
+      saveOdometerLog(_v1, @"539", nil, nil, 62, @"09/01/2014", nil);
+      saveOdometerLog(_v1, @"720", nil, nil, 52, @"12/01/2014", nil);
+      // a few 2015 logs
+      saveOdometerLog(_v1, @"1451", nil, nil, 54, @"03/06/2015", nil);
+      saveOdometerLog(_v1, @"1658", nil, nil, 63, @"05/28/2015", nil);
+    });
+    
+    NSNumber *(^yearAgoTemp)(NSString *, NSInteger) = ^NSNumber *(NSString *fromDate, NSInteger variance) {
+      return [_stats temperatureForUser:_user
+                     oneYearAgoFromDate:[_dateFormatter dateFromString:fromDate]
+                     withinDaysVariance:variance];
+    };
+    
+    it(@"Last year temperature stat works", ^{
+      [[yearAgoTemp(@"01/01/2015", 0) should] equal:[NSNumber numberWithInteger:40]];
+      [yearAgoTemp(@"01/02/2015", 0) shouldBeNil];
+      [[yearAgoTemp(@"01/02/2015", 1) should] equal:[NSNumber numberWithInteger:40]];
+      [[yearAgoTemp(@"01/03/2015", 2) should] equal:[NSNumber numberWithInteger:40]];
+      [yearAgoTemp(@"01/04/2015", 2) shouldBeNil];
+      [[yearAgoTemp(@"01/20/2015", 19) should] equal:[NSNumber numberWithInteger:40]];
+      [[yearAgoTemp(@"01/20/2015", 20) should] equal:[NSNumber numberWithInteger:40]];
+      [[yearAgoTemp(@"01/20/2015", 500) should] equal:[NSNumber numberWithInteger:40]];
+      [yearAgoTemp(@"01/20/2015", 18) shouldBeNil];
+      
+      [yearAgoTemp(@"05/01/2015", 20) shouldBeNil];
+      [[yearAgoTemp(@"04/15/2015", 100) should] equal:[NSNumber numberWithInteger:50]];
+      [[yearAgoTemp(@"04/14/2015", 100) should] equal:[NSNumber numberWithInteger:50]];
+      [[yearAgoTemp(@"04/17/2015", 100) should] equal:[NSNumber numberWithInteger:60]];
+    });
+  });
+
   context(@"There are no gas or odometer logs", ^{
     it(@"YTD and total spend on gas stats work", ^{
       [[[_stats yearToDateSpentOnGasForUser:_user] should] equal:[NSDecimalNumber zero]];
@@ -82,42 +154,13 @@ describe(@"FPStats", ^{
   
   context(@"3 odometer logs and 1 gas log", ^{
     __block FPFuelPurchaseLog *fplog;
-    __block FPEnvironmentLog *envlog;
     __block FPEnvironmentLog *envlog2;
     beforeAll(^{
       resetUser();
-      fplog = [_coordDao fuelPurchaseLogWithNumGallons:[NSDecimalNumber decimalNumberWithString:@"15.2"]
-                                                octane:[NSNumber numberWithInt:87]
-                                           gallonPrice:[NSDecimalNumber decimalNumberWithString:@"3.85"]
-                                            gotCarWash:NO
-                              carWashPerGallonDiscount:[NSDecimalNumber decimalNumberWithString:@".08"]
-                                               logDate:[NSDate date]];
-      [_coordDao saveNewFuelPurchaseLog:fplog forUser:_user vehicle:_v1 fuelStation:_fs1 error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
-      envlog = [_coordDao environmentLogWithOdometer:[NSDecimalNumber decimalNumberWithString:@"1008"]
-                                      reportedAvgMpg:nil
-                                      reportedAvgMph:nil
-                                 reportedOutsideTemp:nil
-                                             logDate:[NSDate date]
-                                         reportedDte:nil];
-      [_coordDao saveNewEnvironmentLog:envlog forUser:_user vehicle:_v1 error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
-      envlog2 = [_coordDao environmentLogWithOdometer:[NSDecimalNumber decimalNumberWithString:@"1324"]
-                                       reportedAvgMpg:nil
-                                       reportedAvgMph:nil
-                                  reportedOutsideTemp:nil
-                                              logDate:[NSDate date]
-                                          reportedDte:[NSDecimalNumber decimalNumberWithString:@"23"]];
-      // pre-fillup log
-      [_coordDao saveNewEnvironmentLog:envlog2 forUser:_user vehicle:_v1 error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
-      // post-fillup log
-      [_coordDao saveNewEnvironmentLog:[_coordDao environmentLogWithOdometer:[NSDecimalNumber decimalNumberWithString:@"1324"]
-                                                              reportedAvgMpg:nil
-                                                              reportedAvgMph:nil
-                                                         reportedOutsideTemp:nil
-                                                                     logDate:[NSDate date]
-                                                                 reportedDte:[NSDecimalNumber decimalNumberWithString:@"485"]]
-                               forUser:_user
-                               vehicle:_v1
-                                 error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+      fplog = saveGasLog(_v1, _fs1, @"15.2", 87, @"3.85", NO, @"0.08", [NSDate date]);
+      saveOdometerLog(_v1, @"1008", nil, nil, 60, [NSDate date], nil);
+      envlog2= saveOdometerLog(_v1, @"1324", nil, nil, 60, [NSDate date], nil);
+      saveOdometerLog(_v1, @"1324", nil, nil, 60, [NSDate date], nil);
     });
 
     it(@"Miles recorded", ^{
@@ -142,33 +185,10 @@ describe(@"FPStats", ^{
     __block FPEnvironmentLog *envlog3;
     beforeAll(^{
       resetUser();
-      NSDate *now = [NSDate date];
-      envlog = [_coordDao environmentLogWithOdometer:[NSDecimalNumber decimalNumberWithString:@"1008"]
-                                      reportedAvgMpg:nil
-                                      reportedAvgMph:nil
-                                 reportedOutsideTemp:nil
-                                             logDate:now
-                                         reportedDte:nil];
+      envlog = saveOdometerLog(_v1, @"1008", nil, nil, 60, [NSDate date], nil);
       [_coordDao saveNewEnvironmentLog:envlog forUser:_user vehicle:_v1 error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
-      envlog2 = [_coordDao environmentLogWithOdometer:[NSDecimalNumber decimalNumberWithString:@"1324"]
-                                       reportedAvgMpg:nil
-                                       reportedAvgMph:nil
-                                  reportedOutsideTemp:nil
-                                              logDate:[NSDate date]
-                                          reportedDte:[NSDecimalNumber decimalNumberWithString:@"25"]];
-      // pre-fillup log
-      [_coordDao saveNewEnvironmentLog:envlog2 forUser:_user vehicle:_v1 error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
-      // post-fillup log
-      envlog3 = [_coordDao environmentLogWithOdometer:[NSDecimalNumber decimalNumberWithString:@"1324"]
-                                       reportedAvgMpg:nil
-                                       reportedAvgMph:nil
-                                  reportedOutsideTemp:nil
-                                              logDate:[NSDate date]
-                                          reportedDte:[NSDecimalNumber decimalNumberWithString:@"485"]];
-      [_coordDao saveNewEnvironmentLog:envlog3
-                               forUser:_user
-                               vehicle:_v1
-                                 error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+      envlog2 = saveOdometerLog(_v1, @"1324", nil, nil, 60, [NSDate date], nil);
+      envlog3 = saveOdometerLog(_v1, @"1324", nil, nil, 60, [NSDate date], nil);
     });
     
     it(@"Miles recorded", ^{
@@ -191,14 +211,7 @@ describe(@"FPStats", ^{
     __block FPEnvironmentLog *envlog;
     beforeAll(^{
       resetUser();
-      NSDate *now = [NSDate date];
-      envlog = [_coordDao environmentLogWithOdometer:[NSDecimalNumber decimalNumberWithString:@"1008"]
-                                      reportedAvgMpg:nil
-                                      reportedAvgMph:nil
-                                 reportedOutsideTemp:nil
-                                             logDate:now
-                                         reportedDte:nil];
-      [_coordDao saveNewEnvironmentLog:envlog forUser:_user vehicle:_v1 error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+      envlog = saveOdometerLog(_v1, @"1008", nil, nil, 60, [_dateFormatter stringFromDate:[NSDate date]], nil);
     });
     
     it(@"Miles recorded", ^{
@@ -220,13 +233,7 @@ describe(@"FPStats", ^{
       __block FPFuelPurchaseLog *fplog;
       beforeAll(^{
         resetUser();
-        fplog = [_coordDao fuelPurchaseLogWithNumGallons:[NSDecimalNumber decimalNumberWithString:@"15.2"]
-                                                  octane:[NSNumber numberWithInt:87]
-                                             gallonPrice:[NSDecimalNumber decimalNumberWithString:@"3.85"]
-                                              gotCarWash:NO
-                                carWashPerGallonDiscount:[NSDecimalNumber decimalNumberWithString:@".08"]
-                                                 logDate:[NSDate date]];
-        [_coordDao saveNewFuelPurchaseLog:fplog forUser:_user vehicle:_v1 fuelStation:_fs1 error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+        fplog = saveGasLog(_v1, _fs1, @"15.2", 87, @"3.85", NO, @"0.08", [NSDate date]);
       });
       
       it(@"YTD and total spend on gas stats work", ^{
@@ -259,20 +266,8 @@ describe(@"FPStats", ^{
       
       beforeAll(^{
         resetUser();
-        fplog = [_coordDao fuelPurchaseLogWithNumGallons:[NSDecimalNumber decimalNumberWithString:@"15.2"]
-                                                  octane:[NSNumber numberWithInt:87]
-                                             gallonPrice:[NSDecimalNumber decimalNumberWithString:@"3.85"]
-                                              gotCarWash:NO
-                                carWashPerGallonDiscount:[NSDecimalNumber decimalNumberWithString:@".08"]
-                                                 logDate:[NSDate date]];
-        [_coordDao saveNewFuelPurchaseLog:fplog forUser:_user vehicle:_v1 fuelStation:_fs1 error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
-        fplog2 = [_coordDao fuelPurchaseLogWithNumGallons:[NSDecimalNumber decimalNumberWithString:@"17.92"]
-                                                   octane:[NSNumber numberWithInt:87]
-                                              gallonPrice:[NSDecimalNumber decimalNumberWithString:@"2.159"]
-                                               gotCarWash:NO
-                                 carWashPerGallonDiscount:[NSDecimalNumber decimalNumberWithString:@".08"]
-                                                  logDate:[NSDate date]];
-        [_coordDao saveNewFuelPurchaseLog:fplog2 forUser:_user vehicle:_v1 fuelStation:_fs1 error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+        fplog  = saveGasLog(_v1, _fs1, @"15.2",  87, @"3.85",  NO, @"0.08", [NSDate date]);
+        fplog2 = saveGasLog(_v1, _fs1, @"17.92", 87, @"2.159", NO, @"0.08", [NSDate date]);
       });
       
       it(@"YTD and total spend on gas stats work", ^{
@@ -304,13 +299,7 @@ describe(@"FPStats", ^{
         beforeAll(^{
           v2 = [_coordDao vehicleWithName:@"My Mazda" defaultOctane:@87 fuelCapacity:[NSDecimalNumber decimalNumberWithString:@"18.25"]];
           [_coordDao saveNewVehicle:v2 forUser:_user error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
-          fplog3 = [_coordDao fuelPurchaseLogWithNumGallons:[NSDecimalNumber decimalNumberWithString:@"5.01"]
-                                                     octane:[NSNumber numberWithInt:87]
-                                                gallonPrice:[NSDecimalNumber decimalNumberWithString:@"2.899"]
-                                                 gotCarWash:NO
-                                   carWashPerGallonDiscount:[NSDecimalNumber decimalNumberWithString:@".08"]
-                                                    logDate:[NSDate date]];
-          [_coordDao saveNewFuelPurchaseLog:fplog3 forUser:_user vehicle:v2 fuelStation:_fs1 error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+          fplog3  = saveGasLog(v2, _fs1, @"5.01", 87, @"2.899", NO, @"0.08", [NSDate date]);
         });
         
         it(@"YTD and total spend on gas stats work", ^{
@@ -345,13 +334,7 @@ describe(@"FPStats", ^{
                                                        fromDate:now];
             [components setYear:([components year] - 1)];
             NSDate *logDate = [calendar dateFromComponents:components];
-            fplog4 = [_coordDao fuelPurchaseLogWithNumGallons:[NSDecimalNumber decimalNumberWithString:@"7.50"]
-                                                       octane:[NSNumber numberWithInt:87]
-                                                  gallonPrice:[NSDecimalNumber decimalNumberWithString:@"3.099"]
-                                                   gotCarWash:NO
-                                     carWashPerGallonDiscount:[NSDecimalNumber decimalNumberWithString:@".08"]
-                                                      logDate:logDate];
-            [_coordDao saveNewFuelPurchaseLog:fplog4 forUser:_user vehicle:_v1 fuelStation:_fs1 error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+            fplog4  = saveGasLog(_v1, _fs1, @"7.50", 87, @"3.099", NO, @"0.08", logDate);
           });
           
           it(@"YTD and total spend on gas stats work", ^{
