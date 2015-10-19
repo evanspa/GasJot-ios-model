@@ -216,7 +216,6 @@ describe(@"FPStats", ^{
       [[_stats overallGasCostPerMileForUser:_user] shouldBeNil];
     });
     
-    
     context(@"When there is only 1 gas record", ^{
       __block FPFuelPurchaseLog *fplog;
       beforeAll(^{
@@ -254,7 +253,7 @@ describe(@"FPStats", ^{
       });
     });
     
-    context(@"When there are multiple gas records", ^{      
+    context(@"When there are multiple gas records", ^{
       __block FPFuelPurchaseLog *fplog;
       __block FPFuelPurchaseLog *fplog2;
       
@@ -298,7 +297,6 @@ describe(@"FPStats", ^{
         [[[_stats overallMaxPricePerGallonForUser:_user octane:@(87)] should] equal:[NSDecimalNumber decimalNumberWithString:@"3.85"]];
         [[[_stats overallMaxPricePerGallonForFuelstation:_fs1 octane:@(87)] should] equal:[NSDecimalNumber decimalNumberWithString:@"3.85"]];
       });
-
       
       context(@"create a 2nd vehicle, and 3rd fplog for that vehicle", ^{
         __block FPVehicle *v2;
