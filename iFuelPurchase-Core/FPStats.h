@@ -33,13 +33,19 @@
 
 - (NSDecimalNumber *)yearToDateSpentOnGasForUser:(FPUser *)user;
 
+- (NSDecimalNumber *)lastYearSpentOnGasForUser:(FPUser *)user;
+
 - (NSDecimalNumber *)totalSpentOnGasForUser:(FPUser *)user;
 
 - (NSDecimalNumber *)yearToDateSpentOnGasForVehicle:(FPVehicle *)vehicle;
 
+- (NSDecimalNumber *)lastYearSpentOnGasForVehicle:(FPVehicle *)vehicle;
+
 - (NSDecimalNumber *)totalSpentOnGasForVehicle:(FPVehicle *)vehicle;
 
 - (NSDecimalNumber *)yearToDateSpentOnGasForFuelstation:(FPFuelStation *)fuelstation;
+
+- (NSDecimalNumber *)lastYearSpentOnGasForFuelstation:(FPFuelStation *)fuelstation;
 
 - (NSDecimalNumber *)totalSpentOnGasForFuelstation:(FPFuelStation *)fuelstation;
 

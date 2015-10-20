@@ -127,10 +127,10 @@ typedef id (^FPValueBlock)(void);
     totalMilesDriven = [totalMilesDriven decimalNumberByAdding:[self milesRecordedForVehicle:vehicle
                                                                               onOrBeforeDate:lastYearRange[1]
                                                                                onOrAfterDate:lastYearRange[0]]];
-    totalSpentOnGas = [self totalSpentFromFplogs:[_localDao unorderedFuelPurchaseLogsForVehicle:vehicle
-                                                                                 onOrBeforeDate:lastYearRange[1]
-                                                                                  onOrAfterDate:lastYearRange[0]
-                                                                                          error:_errorBlk]];
+    totalSpentOnGas = [totalSpentOnGas decimalNumberByAdding:[self totalSpentFromFplogs:[_localDao unorderedFuelPurchaseLogsForVehicle:vehicle
+                                                                                                                        onOrBeforeDate:lastYearRange[1]
+                                                                                                                         onOrAfterDate:lastYearRange[0]
+                                                                                                                                 error:_errorBlk]]];
   }
   return [self costPerMileForMilesDriven:totalMilesDriven totalSpentOnGas:totalSpentOnGas];
 }
@@ -141,7 +141,7 @@ typedef id (^FPValueBlock)(void);
   NSDecimalNumber *totalSpentOnGas = [NSDecimalNumber zero];
   for (FPVehicle *vehicle in vehicles) {
     totalMilesDriven = [totalMilesDriven decimalNumberByAdding:[self milesRecordedForVehicle:vehicle]];
-    totalSpentOnGas = [totalSpentOnGas decimalNumberByAdding:[self yearToDateSpentOnGasForVehicle:vehicle]];
+    totalSpentOnGas = [totalSpentOnGas decimalNumberByAdding:[self totalSpentOnGasForVehicle:vehicle]];
   }
   return [self costPerMileForMilesDriven:totalMilesDriven totalSpentOnGas:totalSpentOnGas];
 }
@@ -186,6 +186,14 @@ typedef id (^FPValueBlock)(void);
                                                                           error:_errorBlk]];
 }
 
+- (NSDecimalNumber *)lastYearSpentOnGasForUser:(FPUser *)user {
+  NSArray *lastYearRange = [self lastYearRange];
+  return [self totalSpentFromFplogs:[_localDao unorderedFuelPurchaseLogsForUser:user
+                                                                 onOrBeforeDate:lastYearRange[1]
+                                                                  onOrAfterDate:lastYearRange[0]
+                                                                          error:_errorBlk]];
+}
+
 - (NSDecimalNumber *)totalSpentOnGasForUser:(FPUser *)user {
   return [self totalSpentFromFplogs:[_localDao unorderedFuelPurchaseLogsForUser:user error:_errorBlk]];
 }
@@ -198,6 +206,14 @@ typedef id (^FPValueBlock)(void);
                                                                              error:_errorBlk]];
 }
 
+- (NSDecimalNumber *)lastYearSpentOnGasForVehicle:(FPVehicle *)vehicle {
+  NSArray *lastYearRange = [self lastYearRange];
+  return [self totalSpentFromFplogs:[_localDao unorderedFuelPurchaseLogsForVehicle:vehicle
+                                                                    onOrBeforeDate:lastYearRange[1]
+                                                                     onOrAfterDate:lastYearRange[0]
+                                                                             error:_errorBlk]];
+}
+
 - (NSDecimalNumber *)totalSpentOnGasForVehicle:(FPVehicle *)vehicle {
   return [self totalSpentFromFplogs:[_localDao unorderedFuelPurchaseLogsForVehicle:vehicle error:_errorBlk]];
 }
@@ -207,6 +223,14 @@ typedef id (^FPValueBlock)(void);
   return [self totalSpentFromFplogs:[_localDao unorderedFuelPurchaseLogsForFuelstation:fuelstation
                                                                         onOrBeforeDate:now
                                                                          onOrAfterDate:[self firstDayOfYearOfDate:now]
+                                                                                 error:_errorBlk]];
+}
+
+- (NSDecimalNumber *)lastYearSpentOnGasForFuelstation:(FPFuelStation *)fuelstation {
+  NSArray *lastYearRange = [self lastYearRange];
+  return [self totalSpentFromFplogs:[_localDao unorderedFuelPurchaseLogsForFuelstation:fuelstation
+                                                                        onOrBeforeDate:lastYearRange[1]
+                                                                         onOrAfterDate:lastYearRange[0]
                                                                                  error:_errorBlk]];
 }
 
@@ -330,7 +354,10 @@ typedef id (^FPValueBlock)(void);
 - (NSDecimalNumber *)milesRecordedForVehicle:(FPVehicle *)vehicle {
   FPEnvironmentLog *firstOdometerLog = [_localDao firstOdometerLogForVehicle:vehicle error:_errorBlk];
   FPEnvironmentLog *lastOdometerLog = [_localDao lastOdometerLogForVehicle:vehicle error:_errorBlk];
-  return [lastOdometerLog.odometer decimalNumberBySubtracting:firstOdometerLog.odometer];
+  if (firstOdometerLog && lastOdometerLog) {
+    return [lastOdometerLog.odometer decimalNumberBySubtracting:firstOdometerLog.odometer];
+  }
+  return [NSDecimalNumber zero];
 }
 
 - (NSDecimalNumber *)milesRecordedForVehicle:(FPVehicle *)vehicle
@@ -344,7 +371,10 @@ typedef id (^FPValueBlock)(void);
                                                             onOrBeforeDate:onOrBeforeDate
                                                              onOrAfterDate:onOrAfterDate
                                                                      error:_errorBlk];
-  return [lastOdometerLog.odometer decimalNumberBySubtracting:firstOdometerLog.odometer];
+  if (firstOdometerLog && lastOdometerLog) {
+    return [lastOdometerLog.odometer decimalNumberBySubtracting:firstOdometerLog.odometer];
+  }
+  return [NSDecimalNumber zero];
 }
 
 - (NSDecimalNumber *)milesDrivenSinceLastOdometerLogAndLog:(FPEnvironmentLog *)odometerLog
