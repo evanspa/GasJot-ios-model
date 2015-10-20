@@ -2019,6 +2019,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
 - (FPFuelPurchaseLog *)singleGasLogForUser:(FPUser *)user
                                   whereBlk:(NSString *(^)(NSString *))whereBlk
                                  whereArgs:(NSArray *)whereArgs
+                         comparatorForSort:(NSComparisonResult(^)(id, id))comparatorForSort
                        orderByDomainColumn:(NSString *)orderByDomainColumn
               orderByDomainColumnDirection:(NSString *)orderByDomainColumnDirection
                                      error:(PELMDaoErrorBlk)errorBlk {
@@ -2036,7 +2037,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                           masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
                                          entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
                             mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSet:rs];}
-                                       comparatorForSort:nil
+                                       comparatorForSort:comparatorForSort
                                      orderByDomainColumn:orderByDomainColumn
                             orderByDomainColumnDirection:orderByDomainColumnDirection
                                                       db:db
@@ -2052,6 +2053,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
 - (FPFuelPurchaseLog *)singleGasLogForVehicle:(FPVehicle *)vehicle
                                      whereBlk:(NSString *(^)(NSString *))whereBlk
                                     whereArgs:(NSArray *)whereArgs
+                            comparatorForSort:(NSComparisonResult(^)(id, id))comparatorForSort
                           orderByDomainColumn:(NSString *)orderByDomainColumn
                  orderByDomainColumnDirection:(NSString *)orderByDomainColumnDirection
                                         error:(PELMDaoErrorBlk)errorBlk {
@@ -2069,7 +2071,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                           masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
                                          entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
                             mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSet:rs];}
-                                       comparatorForSort:nil
+                                       comparatorForSort:comparatorForSort
                                      orderByDomainColumn:orderByDomainColumn
                             orderByDomainColumnDirection:orderByDomainColumnDirection
                                                       db:db
@@ -2134,12 +2136,14 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
   FPFuelPurchaseLog *lessThanDateGasLog = [self singleGasLogForVehicle:vehicle
                                                               whereBlk:[self gasLogDateCompareWhereBlk:@"<="]
                                                              whereArgs:@[[PEUtils millisecondsFromDate:date]]
+                                                     comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPFuelPurchaseLog *)o2 purchasedAt] compare:[(FPFuelPurchaseLog *)o1 purchasedAt]];}
                                                    orderByDomainColumn:COL_FUELPL_PURCHASED_AT
                                           orderByDomainColumnDirection:@"DESC"
                                                                  error:errorBlk];
   FPFuelPurchaseLog *greaterThanDateGasLog = [self singleGasLogForVehicle:vehicle
                                                                  whereBlk:[self gasLogDateCompareWhereBlk:@">="]
                                                                 whereArgs:@[[PEUtils millisecondsFromDate:date]]
+                                                        comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPFuelPurchaseLog *)o1 purchasedAt] compare:[(FPFuelPurchaseLog *)o2 purchasedAt]];}
                                                       orderByDomainColumn:COL_FUELPL_PURCHASED_AT
                                              orderByDomainColumnDirection:@"ASC"
                                                                     error:errorBlk];
@@ -2157,12 +2161,14 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
   FPFuelPurchaseLog *lessThanDateGasLog = [self singleGasLogForUser:user
                                                            whereBlk:[self gasLogDateAndOctaneCompareWhereBlk:@"<="]
                                                           whereArgs:@[[PEUtils millisecondsFromDate:date], octane]
+                                                  comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPFuelPurchaseLog *)o2 purchasedAt] compare:[(FPFuelPurchaseLog *)o1 purchasedAt]];}
                                                 orderByDomainColumn:COL_FUELPL_PURCHASED_AT
                                        orderByDomainColumnDirection:@"DESC"
                                                               error:errorBlk];
   FPFuelPurchaseLog *greaterThanDateGasLog = [self singleGasLogForUser:user
                                                               whereBlk:[self gasLogDateAndOctaneCompareWhereBlk:@">="]
                                                              whereArgs:@[[PEUtils millisecondsFromDate:date], octane]
+                                                     comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPFuelPurchaseLog *)o1 purchasedAt] compare:[(FPFuelPurchaseLog *)o2 purchasedAt]];}
                                                    orderByDomainColumn:COL_FUELPL_PURCHASED_AT
                                           orderByDomainColumnDirection:@"ASC"
                                                                  error:errorBlk];
@@ -2176,11 +2182,13 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
 - (FPFuelPurchaseLog *)minMaxGallonPriceFuelPurchaseLogForUser:(FPUser *)user
                                                       whereBlk:(NSString *(^)(NSString *))whereBlk
                                                      whereArgs:(NSArray *)whereArgs
+                                             comparatorForSort:(NSComparisonResult(^)(id, id))comparatorForSort
                                   orderByDomainColumnDirection:(NSString *)orderByDomainColumnDirection
                                                          error:(PELMDaoErrorBlk)errorBlk {
   return [self singleGasLogForUser:user
                           whereBlk:whereBlk
                          whereArgs:whereArgs
+                 comparatorForSort:comparatorForSort
                orderByDomainColumn:COL_FUELPL_PRICE_PER_GALLON
       orderByDomainColumnDirection:orderByDomainColumnDirection
                              error:errorBlk];
@@ -2196,6 +2204,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                              whereArgs:@[[PEUtils millisecondsFromDate:onOrBeforeDate],
                                                          [PEUtils millisecondsFromDate:onOrAfterDate],
                                                          octane]
+                                     comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPFuelPurchaseLog *)o2 gallonPrice] compare:[(FPFuelPurchaseLog *)o1 gallonPrice]];}
                           orderByDomainColumnDirection:@"DESC"
                                                  error:errorBlk];
 }
@@ -2210,6 +2219,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                              whereArgs:@[[PEUtils millisecondsFromDate:onOrBeforeDate],
                                                          [PEUtils millisecondsFromDate:onOrAfterDate],
                                                          octane]
+                                     comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPFuelPurchaseLog *)o1 gallonPrice] compare:[(FPFuelPurchaseLog *)o2 gallonPrice]];}
                           orderByDomainColumnDirection:@"ASC"
                                                  error:errorBlk];
 }
@@ -2220,6 +2230,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
   return [self minMaxGallonPriceFuelPurchaseLogForUser:user
                                               whereBlk:[self fpLogOctaneWhereBlk]
                                              whereArgs:@[octane]
+                                     comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPFuelPurchaseLog *)o2 gallonPrice] compare:[(FPFuelPurchaseLog *)o1 gallonPrice]];}
                           orderByDomainColumnDirection:@"DESC" error:errorBlk];
 }
 
@@ -2229,6 +2240,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
   return [self minMaxGallonPriceFuelPurchaseLogForUser:user
                                               whereBlk:[self fpLogOctaneWhereBlk]
                                              whereArgs:@[octane]
+                                     comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPFuelPurchaseLog *)o1 gallonPrice] compare:[(FPFuelPurchaseLog *)o2 gallonPrice]];}
                           orderByDomainColumnDirection:@"ASC" error:errorBlk];
 }
 
@@ -3144,6 +3156,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
 - (FPEnvironmentLog *)singleOdometerLogForUser:(FPUser *)user
                                       whereBlk:(NSString *(^)(NSString *))whereBlk
                                      whereArgs:(NSArray *)whereArgs
+                             comparatorForSort:(NSComparisonResult(^)(id, id))comparatorForSort
                   orderByDomainColumnDirection:(NSString *)orderByDomainColumnDirection
                                          error:(PELMDaoErrorBlk)errorBlk {
   __block FPEnvironmentLog *envlog = nil;
@@ -3160,7 +3173,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                            masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterEnvironmentLogFromResultSet:rs];}
                                           entityMainTable:TBL_MAIN_ENV_LOG
                              mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainEnvironmentLogFromResultSet:rs];}
-                                        comparatorForSort:nil
+                                        comparatorForSort:comparatorForSort
                                       orderByDomainColumn:COL_ENVL_LOG_DT
                              orderByDomainColumnDirection:orderByDomainColumnDirection
                                                        db:db
@@ -3176,6 +3189,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
 - (FPEnvironmentLog *)singleOdometerLogForVehicle:(FPVehicle *)vehicle
                                          whereBlk:(NSString *(^)(NSString *))whereBlk
                                         whereArgs:(NSArray *)whereArgs
+                                comparatorForSort:(NSComparisonResult(^)(id, id))comparatorForSort
                      orderByDomainColumnDirection:(NSString *)orderByDomainColumnDirection
                                             error:(PELMDaoErrorBlk)errorBlk {
   __block FPEnvironmentLog *envlog = nil;
@@ -3192,12 +3206,11 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                            masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterEnvironmentLogFromResultSet:rs];}
                                           entityMainTable:TBL_MAIN_ENV_LOG
                              mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainEnvironmentLogFromResultSet:rs];}
-                                        comparatorForSort:nil
+                                        comparatorForSort:comparatorForSort
                                       orderByDomainColumn:COL_ENVL_LOG_DT
                              orderByDomainColumnDirection:orderByDomainColumnDirection
                                                        db:db
                                                     error:errorBlk];
-    
     if ([envlogs count] > 0) {
       envlog = envlogs[0];
     }
@@ -3245,11 +3258,13 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
   FPEnvironmentLog *lessThanDateOdometerLog = [self singleOdometerLogForVehicle:vehicle
                                                                        whereBlk:[self odometerLogDateCompareNonNilOdometerWhereBlk:@"<="]
                                                                       whereArgs:@[[PEUtils millisecondsFromDate:date]]
+                                                              comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPEnvironmentLog *)o2 logDate] compare:[(FPEnvironmentLog *)o1 logDate]];}
                                                    orderByDomainColumnDirection:@"DESC"
                                                                           error:errorBlk];
   FPEnvironmentLog *greaterThanDateOdometerLog = [self singleOdometerLogForVehicle:vehicle
                                                                           whereBlk:[self odometerLogDateCompareNonNilOdometerWhereBlk:@">="]
                                                                          whereArgs:@[[PEUtils millisecondsFromDate:date]]
+                                                                 comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPEnvironmentLog *)o1 logDate] compare:[(FPEnvironmentLog *)o2 logDate]];}
                                                       orderByDomainColumnDirection:@"ASC"
                                                                              error:errorBlk];
   return [self logNearestToDate:date
@@ -3265,11 +3280,13 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
   FPEnvironmentLog *lessThanDateOdometerLog = [self singleOdometerLogForUser:user
                                                                     whereBlk:[self odometerLogDateCompareNonNilOdometerWhereBlk:@"<="]
                                                                    whereArgs:@[[PEUtils millisecondsFromDate:date]]
+                                                           comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPEnvironmentLog *)o2 logDate] compare:[(FPEnvironmentLog *)o1 logDate]];}
                                                 orderByDomainColumnDirection:@"DESC"
                                                                        error:errorBlk];
   FPEnvironmentLog *greaterThanDateOdometerLog = [self singleOdometerLogForUser:user
                                                                        whereBlk:[self odometerLogDateCompareNonNilOdometerWhereBlk:@">="]
                                                                       whereArgs:@[[PEUtils millisecondsFromDate:date]]
+                                                              comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPEnvironmentLog *)o1 logDate] compare:[(FPEnvironmentLog *)o2 logDate]];}
                                                    orderByDomainColumnDirection:@"ASC"
                                                                           error:errorBlk];
   return [self logNearestToDate:date
@@ -3285,11 +3302,13 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
   FPEnvironmentLog *lessThanDateOdometerLog = [self singleOdometerLogForUser:user
                                                                     whereBlk:[self odometerLogDateCompareNonNilTemperatureWhereBlk:@"<="]
                                                                    whereArgs:@[[PEUtils millisecondsFromDate:date]]
+                                                           comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPEnvironmentLog *)o2 logDate] compare:[(FPEnvironmentLog *)o1 logDate]];}
                                                 orderByDomainColumnDirection:@"DESC"
                                                                        error:errorBlk];
   FPEnvironmentLog *greaterThanDateOdometerLog = [self singleOdometerLogForUser:user
                                                                        whereBlk:[self odometerLogDateCompareNonNilTemperatureWhereBlk:@">="]
                                                                       whereArgs:@[[PEUtils millisecondsFromDate:date]]
+                                                              comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPEnvironmentLog *)o1 logDate] compare:[(FPEnvironmentLog *)o2 logDate]];}
                                                    orderByDomainColumnDirection:@"ASC"
                                                                           error:errorBlk];
   return [self logNearestToDate:date
@@ -3307,6 +3326,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                   whereBlk:[self odometerLogDateRangeNonNilOdometerWhereBlk]
                                  whereArgs:@[[PEUtils millisecondsFromDate:onOrBeforeDate],
                                              [PEUtils millisecondsFromDate:onOrAfterDate]]
+                         comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPEnvironmentLog *)o1 logDate] compare:[(FPEnvironmentLog *)o2 logDate]];}
               orderByDomainColumnDirection:@"ASC"
                                      error:errorBlk];
 }
@@ -3319,6 +3339,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                   whereBlk:[self odometerLogDateRangeNonNilOdometerWhereBlk]
                                  whereArgs:@[[PEUtils millisecondsFromDate:onOrBeforeDate],
                                              [PEUtils millisecondsFromDate:onOrAfterDate]]
+                         comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPEnvironmentLog *)o2 logDate] compare:[(FPEnvironmentLog *)o1 logDate]];}
               orderByDomainColumnDirection:@"DESC"
                                      error:errorBlk];
 }
@@ -3328,6 +3349,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
   return [self singleOdometerLogForVehicle:vehicle
                                   whereBlk:nil
                                  whereArgs:nil
+                         comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPEnvironmentLog *)o1 logDate] compare:[(FPEnvironmentLog *)o2 logDate]];}
               orderByDomainColumnDirection:@"ASC"
                                      error:errorBlk];
 }
@@ -3337,6 +3359,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
   return [self singleOdometerLogForVehicle:vehicle
                                   whereBlk:nil
                                  whereArgs:nil
+                         comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPEnvironmentLog *)o2 logDate] compare:[(FPEnvironmentLog *)o1 logDate]];}
               orderByDomainColumnDirection:@"DESC"
                                      error:errorBlk];
 }

@@ -61,6 +61,23 @@
 		CA4F2DA71BC22209003887C8 /* FPPasswordResetSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = CA4F2DA61BC22209003887C8 /* FPPasswordResetSerializer.m */; settings = {ASSET_TAGS = (); }; };
 		CA7D5AAE1B3B07B500433581 /* PELMLoginUser.m in Sources */ = {isa = PBXBuildFile; fileRef = CA7D5AAD1B3B07B500433581 /* PELMLoginUser.m */; };
 		CABF515C1BD32FB80083B460 /* FPStatsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CA27A55F1BCD862C00CBD4B9 /* FPStatsTests.m */; settings = {ASSET_TAGS = (); }; };
+		CABF51711BD602700083B460 /* FPCoordinatorDaoTests_1.m in Sources */ = {isa = PBXBuildFile; fileRef = 182267E11A5BA75200242806 /* FPCoordinatorDaoTests_1.m */; settings = {ASSET_TAGS = (); }; };
+		CABF51721BD602700083B460 /* FPCoordinatorDaoTests_2.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBC61A5CD98A00747936 /* FPCoordinatorDaoTests_2.m */; settings = {ASSET_TAGS = (); }; };
+		CABF51731BD602700083B460 /* FPCoordinatorDaoTests_4.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBC91A5CD9D800747936 /* FPCoordinatorDaoTests_4.m */; settings = {ASSET_TAGS = (); }; };
+		CABF51741BD602700083B460 /* FPCoordinatorDaoTests_5.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBCA1A5CD9D800747936 /* FPCoordinatorDaoTests_5.m */; settings = {ASSET_TAGS = (); }; };
+		CABF51751BD602700083B460 /* FPCoordinatorDaoTests_7.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBCC1A5CD9D800747936 /* FPCoordinatorDaoTests_7.m */; settings = {ASSET_TAGS = (); }; };
+		CABF51761BD602700083B460 /* FPCoordinatorDaoTests_8.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBDA1A5CF12C00747936 /* FPCoordinatorDaoTests_8.m */; settings = {ASSET_TAGS = (); }; };
+		CABF51771BD602700083B460 /* FPCoordinatorDaoTests_8_1.m in Sources */ = {isa = PBXBuildFile; fileRef = CA848CE01B2F660500411A09 /* FPCoordinatorDaoTests_8_1.m */; settings = {ASSET_TAGS = (); }; };
+		CABF51781BD602700083B460 /* FPCoordinatorDaoTests_9.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBDB1A5CF12C00747936 /* FPCoordinatorDaoTests_9.m */; settings = {ASSET_TAGS = (); }; };
+		CABF51791BD602700083B460 /* FPCoordinatorDaoTests_10.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBDC1A5CF12C00747936 /* FPCoordinatorDaoTests_10.m */; settings = {ASSET_TAGS = (); }; };
+		CABF517A1BD602700083B460 /* FPCoordinatorDaoTests_11.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBDD1A5CF12C00747936 /* FPCoordinatorDaoTests_11.m */; settings = {ASSET_TAGS = (); }; };
+		CABF517B1BD602700083B460 /* FPCoordinatorDaoTests_11.1.m in Sources */ = {isa = PBXBuildFile; fileRef = CA73FB4B1B2CF37F00451D50 /* FPCoordinatorDaoTests_11.1.m */; settings = {ASSET_TAGS = (); }; };
+		CABF517C1BD602700083B460 /* FPCoordinatorDaoTests_12.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBDE1A5CF12C00747936 /* FPCoordinatorDaoTests_12.m */; settings = {ASSET_TAGS = (); }; };
+		CABF517D1BD602700083B460 /* FPCoordinatorDaoTests_13.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBDF1A5CF12C00747936 /* FPCoordinatorDaoTests_13.m */; settings = {ASSET_TAGS = (); }; };
+		CABF517E1BD602700083B460 /* FPCoordinatorDaoTests_14.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBE01A5CF12C00747936 /* FPCoordinatorDaoTests_14.m */; settings = {ASSET_TAGS = (); }; };
+		CABF517F1BD602700083B460 /* FPCoordinatorDaoTests_15.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBF21A5D045D00747936 /* FPCoordinatorDaoTests_15.m */; settings = {ASSET_TAGS = (); }; };
+		CABF51801BD602780083B460 /* FPUserSerializerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D8C11719C3EEF0006C65F9 /* FPUserSerializerTests.m */; settings = {ASSET_TAGS = (); }; };
+		CABF51811BD6027C0083B460 /* FPLocalDaoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 18156D2719918EC600C93FF4 /* FPLocalDaoTests.m */; settings = {ASSET_TAGS = (); }; };
 		CADD42491B681756005E1DF8 /* FPLogoutSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = CADD42481B681756005E1DF8 /* FPLogoutSerializer.m */; };
 		CAFC844E1B98AC9500FAEB66 /* FPChangelog.m in Sources */ = {isa = PBXBuildFile; fileRef = CAFC844D1B98AC9500FAEB66 /* FPChangelog.m */; };
 /* End PBXBuildFile section */
@@ -1112,12 +1129,29 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CABF517E1BD602700083B460 /* FPCoordinatorDaoTests_14.m in Sources */,
 				18CF89B01AAEB1E700AC42E6 /* FPLogging.m in Sources */,
+				CABF517F1BD602700083B460 /* FPCoordinatorDaoTests_15.m in Sources */,
 				181AAAB619AD6F1000F99F23 /* FPToggler.m in Sources */,
+				CABF51711BD602700083B460 /* FPCoordinatorDaoTests_1.m in Sources */,
+				CABF517A1BD602700083B460 /* FPCoordinatorDaoTests_11.m in Sources */,
+				CABF51751BD602700083B460 /* FPCoordinatorDaoTests_7.m in Sources */,
+				CABF51771BD602700083B460 /* FPCoordinatorDaoTests_8_1.m in Sources */,
 				1800C9D019A8D80400ECD51A /* FPAuthTokenDelegateForTesting.m in Sources */,
 				182267E01A5B8E7400242806 /* FPCoordDaoTestContext.m in Sources */,
+				CABF51741BD602700083B460 /* FPCoordinatorDaoTests_5.m in Sources */,
 				18C1E9E21A728BAE002B4A08 /* FPModelSupportTests.m in Sources */,
+				CABF51761BD602700083B460 /* FPCoordinatorDaoTests_8.m in Sources */,
+				CABF51791BD602700083B460 /* FPCoordinatorDaoTests_10.m in Sources */,
+				CABF51721BD602700083B460 /* FPCoordinatorDaoTests_2.m in Sources */,
+				CABF517D1BD602700083B460 /* FPCoordinatorDaoTests_13.m in Sources */,
+				CABF51731BD602700083B460 /* FPCoordinatorDaoTests_4.m in Sources */,
 				CABF515C1BD32FB80083B460 /* FPStatsTests.m in Sources */,
+				CABF517B1BD602700083B460 /* FPCoordinatorDaoTests_11.1.m in Sources */,
+				CABF517C1BD602700083B460 /* FPCoordinatorDaoTests_12.m in Sources */,
+				CABF51801BD602780083B460 /* FPUserSerializerTests.m in Sources */,
+				CABF51811BD6027C0083B460 /* FPLocalDaoTests.m in Sources */,
+				CABF51781BD602700083B460 /* FPCoordinatorDaoTests_9.m in Sources */,
 				18C1E9E31A728BAE002B4A08 /* FPMasterSupportTests.m in Sources */,
 				1800C9DC19A8E21B00ECD51A /* FPCoordinatorDao+AdditionsForTesting.m in Sources */,
 			);

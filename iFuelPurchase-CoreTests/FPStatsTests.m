@@ -204,7 +204,7 @@ describe(@"FPStats", ^{
     });
   });
   
-  /*context(@"Various odometer logs occuring over various time ranges", ^{
+  context(@"Various odometer logs occuring over various time ranges", ^{
     beforeAll(^{
       resetUser();
       // a bunch of 2014 logs
@@ -477,7 +477,7 @@ describe(@"FPStats", ^{
         });
       });
     });
-  });*/
+  });
 });
 
 SPEC_END
