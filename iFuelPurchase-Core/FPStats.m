@@ -110,10 +110,14 @@ typedef id (^FPValueBlock)(void);
   NSDecimalNumber *totalMilesDriven = [NSDecimalNumber zero];
   NSDecimalNumber *totalSpentOnGas = [NSDecimalNumber zero];
   for (FPVehicle *vehicle in vehicles) {
+    FPEnvironmentLog *firstOdometerLog = [_localDao firstOdometerLogForVehicle:vehicle
+                                                                onOrBeforeDate:now
+                                                                 onOrAfterDate:firstDayOfCurrentYear
+                                                                         error:_errorBlk];
     totalMilesDriven = [totalMilesDriven decimalNumberByAdding:[self milesRecordedForVehicle:vehicle
                                                                               onOrBeforeDate:now
-                                                                               onOrAfterDate:firstDayOfCurrentYear]];
-    totalSpentOnGas = [totalSpentOnGas decimalNumberByAdding:[self yearToDateSpentOnGasForVehicle:vehicle]];
+                                                                               onOrAfterDate:firstOdometerLog.logDate]];
+    totalSpentOnGas = [totalSpentOnGas decimalNumberByAdding:[self yearToDateSpentOnGasForVehicle:vehicle since:firstOdometerLog.logDate]];
   }
   return [self costPerMileForMilesDriven:totalMilesDriven totalSpentOnGas:totalSpentOnGas];
 }
@@ -124,13 +128,14 @@ typedef id (^FPValueBlock)(void);
   NSDecimalNumber *totalSpentOnGas = [NSDecimalNumber zero];
   NSArray *lastYearRange = [self lastYearRange];
   for (FPVehicle *vehicle in vehicles) {
+    FPEnvironmentLog *firstOdometerLog = [_localDao firstOdometerLogForVehicle:vehicle
+                                                                onOrBeforeDate:lastYearRange[1]
+                                                                 onOrAfterDate:lastYearRange[0]
+                                                                         error:_errorBlk];
     totalMilesDriven = [totalMilesDriven decimalNumberByAdding:[self milesRecordedForVehicle:vehicle
                                                                               onOrBeforeDate:lastYearRange[1]
-                                                                               onOrAfterDate:lastYearRange[0]]];
-    totalSpentOnGas = [totalSpentOnGas decimalNumberByAdding:[self totalSpentFromFplogs:[_localDao unorderedFuelPurchaseLogsForVehicle:vehicle
-                                                                                                                        onOrBeforeDate:lastYearRange[1]
-                                                                                                                         onOrAfterDate:lastYearRange[0]
-                                                                                                                                 error:_errorBlk]]];
+                                                                               onOrAfterDate:firstOdometerLog.logDate]];
+    totalSpentOnGas = [totalSpentOnGas decimalNumberByAdding:[self lastYearSpentOnGasForVehicle:vehicle since:firstOdometerLog.logDate]];
   }
   return [self costPerMileForMilesDriven:totalMilesDriven totalSpentOnGas:totalSpentOnGas];
 }
@@ -140,8 +145,9 @@ typedef id (^FPValueBlock)(void);
   NSDecimalNumber *totalMilesDriven = [NSDecimalNumber zero];
   NSDecimalNumber *totalSpentOnGas = [NSDecimalNumber zero];
   for (FPVehicle *vehicle in vehicles) {
+    FPEnvironmentLog *firstOdometerLog = [_localDao firstOdometerLogForVehicle:vehicle error:_errorBlk];
     totalMilesDriven = [totalMilesDriven decimalNumberByAdding:[self milesRecordedForVehicle:vehicle]];
-    totalSpentOnGas = [totalSpentOnGas decimalNumberByAdding:[self totalSpentOnGasForVehicle:vehicle]];
+    totalSpentOnGas = [totalSpentOnGas decimalNumberByAdding:[self totalSpentOnGasForVehicle:vehicle since:firstOdometerLog.logDate]];
   }
   return [self costPerMileForMilesDriven:totalMilesDriven totalSpentOnGas:totalSpentOnGas];
 }
@@ -149,21 +155,29 @@ typedef id (^FPValueBlock)(void);
 - (NSDecimalNumber *)yearToDateGasCostPerMileForVehicle:(FPVehicle *)vehicle {
   NSDate *now = [NSDate date];
   NSDate *firstDayOfCurrentYear = [self firstDayOfYearOfDate:now];
+  FPEnvironmentLog *firstOdometerLog = [_localDao firstOdometerLogForVehicle:vehicle
+                                                              onOrBeforeDate:now
+                                                               onOrAfterDate:firstDayOfCurrentYear
+                                                                       error:_errorBlk];
   NSDecimalNumber *milesDriven = [self milesRecordedForVehicle:vehicle
                                                 onOrBeforeDate:now
                                                  onOrAfterDate:firstDayOfCurrentYear];
-  NSDecimalNumber *totalSpentOnGas = [self yearToDateSpentOnGasForVehicle:vehicle];
+  NSDecimalNumber *totalSpentOnGas = [self yearToDateSpentOnGasForVehicle:vehicle since:firstOdometerLog.logDate];
   return [self costPerMileForMilesDriven:milesDriven totalSpentOnGas:totalSpentOnGas];
 }
 
 - (NSDecimalNumber *)lastYearGasCostPerMileForVehicle:(FPVehicle *)vehicle {
   NSArray *lastYearRange = [self lastYearRange];
+  FPEnvironmentLog *firstOdometerLog = [_localDao firstOdometerLogForVehicle:vehicle
+                                                              onOrBeforeDate:lastYearRange[1]
+                                                               onOrAfterDate:lastYearRange[0]
+                                                                       error:_errorBlk];
   NSDecimalNumber *milesDriven = [self milesRecordedForVehicle:vehicle
                                                 onOrBeforeDate:lastYearRange[1]
                                                  onOrAfterDate:lastYearRange[0]];
   NSDecimalNumber *totalSpentOnGas = [self totalSpentFromFplogs:[_localDao unorderedFuelPurchaseLogsForVehicle:vehicle
                                                                                                 onOrBeforeDate:lastYearRange[1]
-                                                                                                 onOrAfterDate:lastYearRange[0]
+                                                                                                 onOrAfterDate:firstOdometerLog.logDate
                                                                                                          error:_errorBlk]];
   return [self costPerMileForMilesDriven:milesDriven totalSpentOnGas:totalSpentOnGas];
 }
@@ -206,11 +220,27 @@ typedef id (^FPValueBlock)(void);
                                                                              error:_errorBlk]];
 }
 
+- (NSDecimalNumber *)yearToDateSpentOnGasForVehicle:(FPVehicle *)vehicle since:(NSDate *)since {
+  NSDate *now = [NSDate date];
+  return [self totalSpentFromFplogs:[_localDao unorderedFuelPurchaseLogsForVehicle:vehicle
+                                                                    onOrBeforeDate:now
+                                                                     onOrAfterDate:since
+                                                                             error:_errorBlk]];
+}
+
 - (NSDecimalNumber *)lastYearSpentOnGasForVehicle:(FPVehicle *)vehicle {
   NSArray *lastYearRange = [self lastYearRange];
   return [self totalSpentFromFplogs:[_localDao unorderedFuelPurchaseLogsForVehicle:vehicle
                                                                     onOrBeforeDate:lastYearRange[1]
                                                                      onOrAfterDate:lastYearRange[0]
+                                                                             error:_errorBlk]];
+}
+
+- (NSDecimalNumber *)lastYearSpentOnGasForVehicle:(FPVehicle *)vehicle since:(NSDate *)since {
+  NSArray *lastYearRange = [self lastYearRange];
+  return [self totalSpentFromFplogs:[_localDao unorderedFuelPurchaseLogsForVehicle:vehicle
+                                                                    onOrBeforeDate:lastYearRange[1]
+                                                                     onOrAfterDate:since
                                                                              error:_errorBlk]];
 }
 

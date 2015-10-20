@@ -146,7 +146,7 @@ describe(@"FPStats", ^{
       saveOdometerLog(v3, @"11919", nil, nil, 40, [NSString stringWithFormat:@"12/31/%ld", (long)comps.year-2], nil);
       saveGasLog(v3, fs2, @"15.2", 87, @"4.149", NO, @"0.08", [NSString stringWithFormat:@"12/31/%ld", (long)comps.year-2]); // 63.0648
       // last year logs (grand total actual: 258.3863) (5076 miles driven/recorded)
-      saveOdometerLog(v3, @"11928", nil, nil, 40, [NSString stringWithFormat:@"11/12/%ld", (long)comps.year-1], nil);
+      saveOdometerLog(v3, @"11928", nil, nil, 40, [NSString stringWithFormat:@"01/01/%ld", (long)comps.year-1], nil);
       saveGasLog(v3, fs2, @"15.4", 87, @"3.879", NO, @"0.08", [NSString stringWithFormat:@"01/01/%ld", (long)comps.year-1]); // 59.7366
       saveGasLog(v3, fs2, @"15.3", 87, @"3.619", NO, @"0.08", [NSString stringWithFormat:@"03/15/%ld", (long)comps.year-1]); // 55.3707
       saveGasLog(v3, fs2, @"14.9", 87, @"3.009", NO, @"0.08", [NSString stringWithFormat:@"06/22/%ld", (long)comps.year-1]); // 44.8341
