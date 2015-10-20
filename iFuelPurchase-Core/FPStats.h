@@ -43,6 +43,8 @@
 
 - (NSDecimalNumber *)totalSpentOnGasForVehicle:(FPVehicle *)vehicle;
 
+- (NSDecimalNumber *)totalSpentOnGasForVehicle:(FPVehicle *)vehicle since:(NSDate *)since;
+
 - (NSDecimalNumber *)yearToDateSpentOnGasForFuelstation:(FPFuelStation *)fuelstation;
 
 - (NSDecimalNumber *)lastYearSpentOnGasForFuelstation:(FPFuelStation *)fuelstation;

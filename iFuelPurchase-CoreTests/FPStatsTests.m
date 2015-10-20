@@ -270,8 +270,8 @@ describe(@"FPStats", ^{
     __block FPEnvironmentLog *envlog2;
     beforeAll(^{
       resetUser();
+       saveOdometerLog(_v1, @"1008", nil, nil, 60, [NSDate date], nil);
       fplog = saveGasLog(_v1, _fs1, @"15.2", 87, @"3.85", NO, @"0.08", [NSDate date]);
-      saveOdometerLog(_v1, @"1008", nil, nil, 60, [NSDate date], nil);
       envlog2= saveOdometerLog(_v1, @"1324", nil, nil, 60, [NSDate date], nil);
       saveOdometerLog(_v1, @"1324", nil, nil, 60, [NSDate date], nil);
     });

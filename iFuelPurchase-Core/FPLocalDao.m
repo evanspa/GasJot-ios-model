@@ -3218,6 +3218,12 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
   return envlog;
 }
 
+- (NSString *(^)(NSString *))odometerLogNonNilOdometerWhereBlk {
+  return ^(NSString *colPrefix) {
+    return [NSString stringWithFormat:@"%@%@ is not null", colPrefix, COL_ENVL_ODOMETER_READING];
+  };
+}
+
 - (NSString *(^)(NSString *))odometerLogDateRangeNonNilOdometerWhereBlk {
   return ^(NSString *colPrefix) {
     return [NSString stringWithFormat:@"%@%@ <= ? AND %@%@ >= ? AND %@%@ is not null",
@@ -3347,7 +3353,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
 - (FPEnvironmentLog *)firstOdometerLogForVehicle:(FPVehicle *)vehicle
                                            error:(PELMDaoErrorBlk)errorBlk {
   return [self singleOdometerLogForVehicle:vehicle
-                                  whereBlk:nil
+                                  whereBlk:[self odometerLogNonNilOdometerWhereBlk]
                                  whereArgs:nil
                          comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPEnvironmentLog *)o1 logDate] compare:[(FPEnvironmentLog *)o2 logDate]];}
               orderByDomainColumnDirection:@"ASC"
@@ -3357,7 +3363,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
 - (FPEnvironmentLog *)lastOdometerLogForVehicle:(FPVehicle *)vehicle
                                           error:(PELMDaoErrorBlk)errorBlk {
   return [self singleOdometerLogForVehicle:vehicle
-                                  whereBlk:nil
+                                  whereBlk:[self odometerLogNonNilOdometerWhereBlk]
                                  whereArgs:nil
                          comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPEnvironmentLog *)o2 logDate] compare:[(FPEnvironmentLog *)o1 logDate]];}
               orderByDomainColumnDirection:@"DESC"

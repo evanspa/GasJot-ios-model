@@ -172,7 +172,7 @@ typedef id (^FPValueBlock)(void);
   FPEnvironmentLog *firstOdometerLog = [_localDao firstOdometerLogForVehicle:vehicle error:_errorBlk];
   FPEnvironmentLog *lastOdometerLog = [_localDao lastOdometerLogForVehicle:vehicle error:_errorBlk];
   NSDecimalNumber *milesDriven = [lastOdometerLog.odometer decimalNumberBySubtracting:firstOdometerLog.odometer];
-  NSDecimalNumber *totalSpentOnGas = [self totalSpentOnGasForVehicle:vehicle];
+  NSDecimalNumber *totalSpentOnGas = [self totalSpentOnGasForVehicle:vehicle since:firstOdometerLog.logDate];
   return [self costPerMileForMilesDriven:milesDriven totalSpentOnGas:totalSpentOnGas];
 }
 
@@ -216,6 +216,13 @@ typedef id (^FPValueBlock)(void);
 
 - (NSDecimalNumber *)totalSpentOnGasForVehicle:(FPVehicle *)vehicle {
   return [self totalSpentFromFplogs:[_localDao unorderedFuelPurchaseLogsForVehicle:vehicle error:_errorBlk]];
+}
+
+- (NSDecimalNumber *)totalSpentOnGasForVehicle:(FPVehicle *)vehicle since:(NSDate *)since {
+  return [self totalSpentFromFplogs:[_localDao unorderedFuelPurchaseLogsForVehicle:vehicle
+                                                                    onOrBeforeDate:[NSDate date]
+                                                                     onOrAfterDate:since
+                                                                             error:_errorBlk]];
 }
 
 - (NSDecimalNumber *)yearToDateSpentOnGasForFuelstation:(FPFuelStation *)fuelstation {
