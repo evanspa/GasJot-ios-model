@@ -281,7 +281,7 @@ describe(@"FPStats", ^{
     });
     
     it(@"Miles driven", ^{
-      [[[_stats milesDrivenSinceLastOdometerLogAndLog:envlog2 user:_user] should] equal:[NSDecimalNumber decimalNumberWithString:@"316"]];
+      [[[_stats milesDrivenSinceLastOdometerLogAndLog:envlog2 vehicle:_v1] should] equal:[NSDecimalNumber decimalNumberWithString:@"316"]];
     });
     
     it(@"YTD and overall gas cost per mile for user and vehicle", ^{
@@ -309,7 +309,7 @@ describe(@"FPStats", ^{
     });
     
     it(@"Miles driven", ^{
-      [[[_stats milesDrivenSinceLastOdometerLogAndLog:envlog2 user:_user] should] equal:[NSDecimalNumber decimalNumberWithString:@"316"]];
+      [[[_stats milesDrivenSinceLastOdometerLogAndLog:envlog2 vehicle:_v1] should] equal:[NSDecimalNumber decimalNumberWithString:@"316"]];
     });
     
     it(@"YTD and overall gas cost per mile for user and vehicle", ^{
@@ -332,7 +332,7 @@ describe(@"FPStats", ^{
     });
     
     it(@"Miles driven", ^{
-      [[_stats milesDrivenSinceLastOdometerLogAndLog:envlog user:_user] shouldBeNil];
+      [[_stats milesDrivenSinceLastOdometerLogAndLog:envlog vehicle:_v1] shouldBeNil];
     });
     
     it(@"YTD and overall gas cost per mile for user and vehicle", ^{

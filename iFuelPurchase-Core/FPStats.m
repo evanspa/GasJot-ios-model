@@ -431,11 +431,11 @@ typedef id (^FPValueBlock)(void);
 }
 
 - (NSDecimalNumber *)milesDrivenSinceLastOdometerLogAndLog:(FPEnvironmentLog *)odometerLog
-                                                      user:(FPUser *)user {
+                                                   vehicle:(FPVehicle *)vehicle {
   NSDecimalNumber *odometer = [odometerLog odometer];
   if (![PEUtils isNil:odometer]) {
     NSArray *odometerLogs =
-      [_localDao environmentLogsForUser:user pageSize:1 beforeDateLogged:[odometerLog logDate] error:_errorBlk];
+      [_localDao environmentLogsForVehicle:vehicle pageSize:1 beforeDateLogged:[odometerLog logDate] error:_errorBlk];
     if ([odometerLogs count] > 0) {
       NSDecimalNumber *lastOdometer = [odometerLogs[0] odometer];
       if (![PEUtils isNil:lastOdometer]) {
@@ -449,9 +449,9 @@ typedef id (^FPValueBlock)(void);
 #pragma mark - Duration Between Odometer Logs
 
 - (NSNumber *)daysSinceLastOdometerLogAndLog:(FPEnvironmentLog *)odometerLog
-                                        user:(FPUser *)user {
+                                     vehicle:(FPVehicle *)vehicle {
   NSArray *odometerLogs =
-    [_localDao environmentLogsForUser:user pageSize:1 beforeDateLogged:[odometerLog logDate] error:_errorBlk];
+    [_localDao environmentLogsForVehicle:vehicle pageSize:1 beforeDateLogged:[odometerLog logDate] error:_errorBlk];
   if ([odometerLogs count] > 0) {
     NSDate *dateOfLastLog = [odometerLogs[0] logDate];
     if (dateOfLastLog) {

@@ -89,11 +89,11 @@
                               onOrBeforeDate:(NSDate *)onOrBeforeDate
                                onOrAfterDate:(NSDate *)onOrAfterDate;
 
-- (NSDecimalNumber *)milesDrivenSinceLastOdometerLogAndLog:(FPEnvironmentLog *)odometerLog user:(FPUser *)user;
+- (NSDecimalNumber *)milesDrivenSinceLastOdometerLogAndLog:(FPEnvironmentLog *)odometerLog vehicle:(FPVehicle *)vehicle;
 
 #pragma mark - Duration Between Odometer Logs
 
-- (NSNumber *)daysSinceLastOdometerLogAndLog:(FPEnvironmentLog *)odometerLog user:(FPUser *)user;
+- (NSNumber *)daysSinceLastOdometerLogAndLog:(FPEnvironmentLog *)odometerLog vehicle:(FPVehicle *)vehicle;
 
 #pragma mark - Outside Temperature
 
