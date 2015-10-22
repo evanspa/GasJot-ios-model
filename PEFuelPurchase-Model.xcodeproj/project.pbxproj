@@ -206,8 +206,6 @@
 		A6C811B0429F450C845608ED /* libPods-iFuelPurchase-CoreTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-iFuelPurchase-CoreTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CA0520871BBB216F00075974 /* FPResendVerificationEmailSerializer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FPResendVerificationEmailSerializer.h; sourceTree = "<group>"; };
 		CA0520881BBB216F00075974 /* FPResendVerificationEmailSerializer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FPResendVerificationEmailSerializer.m; sourceTree = "<group>"; };
-		CA1949C21B66C7180039C83A /* Pods-PEFuelPurchase-ModelTests.debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = "Pods-PEFuelPurchase-ModelTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-PEFuelPurchase-ModelTests/Pods-PEFuelPurchase-ModelTests.debug.xcconfig"; sourceTree = "<group>"; };
-		CA1949C31B66C7180039C83A /* Pods-PEFuelPurchase-ModelTests.release.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = "Pods-PEFuelPurchase-ModelTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-PEFuelPurchase-ModelTests/Pods-PEFuelPurchase-ModelTests.release.xcconfig"; sourceTree = "<group>"; };
 		CA27A5571BCCA50300CBD4B9 /* FPStats.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FPStats.h; sourceTree = "<group>"; };
 		CA27A5581BCCA50300CBD4B9 /* FPStats.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FPStats.m; sourceTree = "<group>"; };
 		CA27A55F1BCD862C00CBD4B9 /* FPStatsTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FPStatsTests.m; sourceTree = "<group>"; };
@@ -252,8 +250,6 @@
 		0BD08702DB50114B2250D029 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				CA1949C21B66C7180039C83A /* Pods-PEFuelPurchase-ModelTests.debug.xcconfig */,
-				CA1949C31B66C7180039C83A /* Pods-PEFuelPurchase-ModelTests.release.xcconfig */,
 				5813A12436A5669F705ADB14 /* Pods.debug.xcconfig */,
 				9A6BD3B0D574C7E922BFBF8D /* Pods.release.xcconfig */,
 			);
@@ -1133,8 +1129,8 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 5813A12436A5669F705ADB14 /* Pods.debug.xcconfig */;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				ALWAYS_SEARCH_USER_PATHS = YES;
+				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -1150,6 +1146,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -1175,8 +1172,8 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 9A6BD3B0D574C7E922BFBF8D /* Pods.release.xcconfig */;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				ALWAYS_SEARCH_USER_PATHS = YES;
+				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -1192,6 +1189,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
@@ -1214,8 +1212,10 @@
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DSTROOT = /tmp/iFuelPurchase_Core.dst;
+				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "";
+				HEADER_SEARCH_PATHS = "$(inherited)";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_NAME = "PEFuelPurchase-Model";
@@ -1230,8 +1230,10 @@
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DSTROOT = /tmp/iFuelPurchase_Core.dst;
+				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "";
+				HEADER_SEARCH_PATHS = "$(inherited)";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_NAME = "PEFuelPurchase-Model";

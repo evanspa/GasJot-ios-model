@@ -8,7 +8,6 @@
 
 #import "FPStats.h"
 #import "PEUtils.h"
-#import <PEObjc-Commons/NSDate+PEAdditions.h>
 
 typedef id (^FPValueBlock)(void);
 
@@ -455,7 +454,7 @@ typedef id (^FPValueBlock)(void);
   if ([odometerLogs count] > 0) {
     NSDate *dateOfLastLog = [odometerLogs[0] logDate];
     if (dateOfLastLog) {
-      return @([[odometerLog logDate] daysFromDate:dateOfLastLog]);
+      return @([PEUtils daysFromDate:[odometerLog logDate] toDate:dateOfLastLog]);
     }
   }
   return nil;
