@@ -1,20 +1,18 @@
 source 'https://github.com/CocoaPods/Specs.git'
 
-platform :ios, '8.3'
+platform :ios, '8.4'
 
-pod 'PEObjc-Commons', '~> 1.0.72'
-pod 'PEFuelPurchase-Common', '~> 1.0.12'
-pod 'FMDB', '~> 2.5'
-pod 'PEHateoas-Client', '~> 1.0.6'
-pod 'CocoaLumberjack', '~> 1.9'
-pod 'UICKeyChainStore', '~> 2.0.4'
+pod 'PEObjc-Commons', '~> 1.0.72', :inhibit_warnings => true
+pod 'PEFuelPurchase-Common', '~> 1.0.12', :inhibit_warnings => true
+pod 'FMDB', '~> 2.5', :inhibit_warnings => true
+pod 'PEHateoas-Client', '~> 1.0.8', :inhibit_warnings => true
+pod 'CocoaLumberjack', '~> 1.9', :inhibit_warnings => true
+pod 'UICKeyChainStore', '~> 2.0.4', :inhibit_warnings => true
 
 pod 'AFNetworking', '~> 2.5.4', :inhibit_warnings => true
 pod 'BlocksKit', '~> 2.2.5', :inhibit_warnings => true
 
-target :'PEFuelPurchase-ModelTests',:exclusive => true do
-  pod 'KissXML', '~> 5.0', :inhibit_warnings => true
-  pod 'Kiwi', '~> 2.3.1', :inhibit_warnings => true
-  pod 'OHHTTPStubs', '~> 3.1.12', :inhibit_warnings => true
-  pod 'PEWire-Control', '~> 1.0.2'
-end
+pod 'KissXML', '~> 5.0', :inhibit_warnings => true
+pod 'Kiwi', '~> 2.3.1', :inhibit_warnings => true
+pod 'OHHTTPStubs', '~> 3.1.12', :inhibit_warnings => true
+pod 'PEWire-Control', '~> 1.0.4', :inhibit_warnings => true

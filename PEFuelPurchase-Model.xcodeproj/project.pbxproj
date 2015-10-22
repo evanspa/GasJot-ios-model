@@ -55,7 +55,6 @@
 		18F23AB019A1EF6D0059DA22 /* FPRestRemoteMasterDao.m in Sources */ = {isa = PBXBuildFile; fileRef = 18F23AAF19A1EF6D0059DA22 /* FPRestRemoteMasterDao.m */; };
 		18F23AB519A1F4730059DA22 /* FPErrorDomains.m in Sources */ = {isa = PBXBuildFile; fileRef = 18F23AB419A1F4730059DA22 /* FPErrorDomains.m */; };
 		18F5FD23198D1DC100D6BB13 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 18F5FD21198D1D6A00D6BB13 /* libsqlite3.dylib */; };
-		3A1D39AC44C9AF498E050705 /* libPods-PEFuelPurchase-ModelTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 97D994DB608A1FC554052190 /* libPods-PEFuelPurchase-ModelTests.a */; };
 		CA0520891BBB216F00075974 /* FPResendVerificationEmailSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = CA0520881BBB216F00075974 /* FPResendVerificationEmailSerializer.m */; settings = {ASSET_TAGS = (); }; };
 		CA27A5591BCCA50300CBD4B9 /* FPStats.m in Sources */ = {isa = PBXBuildFile; fileRef = CA27A5581BCCA50300CBD4B9 /* FPStats.m */; settings = {ASSET_TAGS = (); }; };
 		CA4F2DA71BC22209003887C8 /* FPPasswordResetSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = CA4F2DA61BC22209003887C8 /* FPPasswordResetSerializer.m */; settings = {ASSET_TAGS = (); }; };
@@ -244,7 +243,6 @@
 				1803BC83198436BF00225613 /* UIKit.framework in Frameworks */,
 				1803BC81198436BF00225613 /* Foundation.framework in Frameworks */,
 				1803BC86198436BF00225613 /* libPEFuelPurchase-Model.a in Frameworks */,
-				3A1D39AC44C9AF498E050705 /* libPods-PEFuelPurchase-ModelTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -946,12 +944,9 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1803BC94198436C000225613 /* Build configuration list for PBXNativeTarget "PEFuelPurchase-ModelTests" */;
 			buildPhases = (
-				37F7CD0B223C49BA85AC9376 /* Check Pods Manifest.lock */,
 				1803BC7A198436BF00225613 /* Sources */,
 				1803BC7B198436BF00225613 /* Frameworks */,
 				1803BC7C198436BF00225613 /* Resources */,
-				A3B9225E6343FC30612D0C6B /* Copy Pods Resources */,
-				01481D8F9395836ED5DB11CA /* Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -1006,51 +1001,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		01481D8F9395836ED5DB11CA /* Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-PEFuelPurchase-ModelTests/Pods-PEFuelPurchase-ModelTests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		37F7CD0B223C49BA85AC9376 /* Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Check Pods Manifest.lock";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
-			showEnvVarsInLog = 0;
-		};
-		A3B9225E6343FC30612D0C6B /* Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-PEFuelPurchase-ModelTests/Pods-PEFuelPurchase-ModelTests-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		E30E448E916C4E8FAFB73F08 /* Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -1266,7 +1216,7 @@
 				DSTROOT = /tmp/iFuelPurchase_Core.dst;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_NAME = "PEFuelPurchase-Model";
 				SKIP_INSTALL = YES;
@@ -1282,7 +1232,7 @@
 				DSTROOT = /tmp/iFuelPurchase_Core.dst;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_NAME = "PEFuelPurchase-Model";
 				SKIP_INSTALL = YES;
@@ -1291,7 +1241,7 @@
 		};
 		1803BC95198436C000225613 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = CA1949C21B66C7180039C83A /* Pods-PEFuelPurchase-ModelTests.debug.xcconfig */;
+			baseConfigurationReference = 5813A12436A5669F705ADB14 /* Pods.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -1303,7 +1253,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = "iFuelPurchase-CoreTests/PEFuelPurchase-ModelTests-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = "name.paulevans.${PRODUCT_NAME:rfc1034identifier}";
@@ -1314,7 +1264,7 @@
 		};
 		1803BC96198436C000225613 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = CA1949C31B66C7180039C83A /* Pods-PEFuelPurchase-ModelTests.release.xcconfig */;
+			baseConfigurationReference = 9A6BD3B0D574C7E922BFBF8D /* Pods.release.xcconfig */;
 			buildSettings = {
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -1322,7 +1272,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "";
 				INFOPLIST_FILE = "iFuelPurchase-CoreTests/PEFuelPurchase-ModelTests-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = "name.paulevans.${PRODUCT_NAME:rfc1034identifier}";

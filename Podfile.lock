@@ -51,20 +51,20 @@ PODS:
     - OHHTTPStubs/Core (= 3.1.12)
   - OHHTTPStubs/Core (3.1.12)
   - PEFuelPurchase-Common (1.0.12)
-  - PEHateoas-Client (1.0.6):
+  - PEHateoas-Client (1.0.8):
     - AFNetworking (~> 2.5.4)
     - CocoaLumberjack (~> 1.9)
-    - PEObjc-Commons (~> 1.0.43)
-  - PEObjc-Commons (1.0.72):
+    - PEObjc-Commons (~> 1.0.73)
+  - PEObjc-Commons (1.0.73):
     - BlocksKit (~> 2.2.5)
-  - PEWire-Control (1.0.2):
+  - PEWire-Control (1.0.4):
     - KissXML (~> 5.0)
     - OHHTTPStubs (~> 3.1.10)
-    - PEObjc-Commons (~> 1.0.8)
-    - PEXML-Utils (~> 1.0.1)
-  - PEXML-Utils (1.0.1):
+    - PEObjc-Commons (~> 1.0.73)
+    - PEXML-Utils (~> 1.0.3)
+  - PEXML-Utils (1.0.3):
     - KissXML (~> 5.0)
-    - PEObjc-Commons (~> 1.0.1)
+    - PEObjc-Commons (~> 1.0.73)
   - UICKeyChainStore (2.0.7)
 
 DEPENDENCIES:
@@ -76,9 +76,9 @@ DEPENDENCIES:
   - Kiwi (~> 2.3.1)
   - OHHTTPStubs (~> 3.1.12)
   - PEFuelPurchase-Common (~> 1.0.12)
-  - PEHateoas-Client (~> 1.0.6)
+  - PEHateoas-Client (~> 1.0.8)
   - PEObjc-Commons (~> 1.0.72)
-  - PEWire-Control (~> 1.0.2)
+  - PEWire-Control (~> 1.0.4)
   - UICKeyChainStore (~> 2.0.4)
 
 SPEC CHECKSUMS:
@@ -90,10 +90,10 @@ SPEC CHECKSUMS:
   Kiwi: f038a6c61f7a9e4d7766bff5717aa3b3fdb75f55
   OHHTTPStubs: 8cf0cfe6f34f13fc88fdf5b2a1b2c2536e8c0261
   PEFuelPurchase-Common: 8b4ed986a89d064914a44d8a922078c9d622f445
-  PEHateoas-Client: 0a08b2f02833411ea1fab2a92d8949efd14035d8
-  PEObjc-Commons: 265726c044dd5afb847bc5d0dd48e86ed53f38d1
-  PEWire-Control: 2aeefa4014575adbc52cfbf3206395d9a7c07b22
-  PEXML-Utils: f7e0759b8e4e2ec3a39c781b362d7fb233fc8421
+  PEHateoas-Client: 4eb23cd4a1c106ecab147abd87cd3cacac93d52f
+  PEObjc-Commons: e87d8679737960cac9a9ca1c03dd036c5d048b18
+  PEWire-Control: 68a8b1a8ea4b167c2dfc2299b9183bf38600c034
+  PEXML-Utils: 47a95ccdbf02bc2a1d69b6d8e99017df9da49f88
   UICKeyChainStore: 696cd35083f7c8fb5e201d909b7e6aea6b478575
 
 COCOAPODS: 0.39.0
