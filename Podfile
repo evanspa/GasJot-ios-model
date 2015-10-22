@@ -2,8 +2,8 @@ source 'https://github.com/CocoaPods/Specs.git'
 
 platform :ios, '8.3'
 
-pod 'PEObjc-Commons', '~> 1.0.70'
-pod 'PEFuelPurchase-Common', '~> 1.0.8'
+pod 'PEObjc-Commons', '~> 1.0.72'
+pod 'PEFuelPurchase-Common', '~> 1.0.10'
 pod 'FMDB', '~> 2.5'
 pod 'PEHateoas-Client', '~> 1.0.6'
 pod 'CocoaLumberjack', '~> 1.9'
