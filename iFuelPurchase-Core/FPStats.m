@@ -29,19 +29,53 @@ typedef id (^FPValueBlock)(void);
 
 #pragma mark - Helpers
 
-- (NSDate *)firstDayOfYearOfDate:(NSDate *)date {
-  NSCalendar *calendar = [NSCalendar currentCalendar];
+- (NSDate *)dateFromCalendar:(NSCalendar *)calendar
+                         day:(NSInteger)day
+                       month:(NSInteger)month
+              fromYearOfDate:(NSDate *)date {
   NSDateComponents *components = [calendar components:(NSCalendarUnitYear | NSCalendarUnitMonth |  NSCalendarUnitDay)
                                              fromDate:date];
-  [components setDay:1];
-  [components setMonth:1];
+  [components setDay:day];
+  [components setMonth:month];
   return [calendar dateFromComponents:components];
 }
 
-- (NSArray *)lastYearRange {
+- (NSDate *)firstDayOfYearOfDate:(NSDate *)date calendar:(NSCalendar *)calendar {
+  return [self dateFromCalendar:calendar day:1 month:1 fromYearOfDate:date];
+}
+
+- (NSDate *)firstDayOfYearOfDate:(NSDate *)date {
+  NSCalendar *calendar = [NSCalendar currentCalendar];
+  return [self firstDayOfYearOfDate:date calendar:calendar];
+}
+
+- (NSDate *)firstDayOfYear:(NSInteger)year month:(NSInteger)month calendar:(NSCalendar *)calendar {
+  NSDateComponents *components = [[NSDateComponents alloc] init];
+  [components setDay:1];
+  [components setMonth:month];
+  [components setYear:year];
+  return [calendar dateFromComponents:components];
+}
+
+- (NSDate *)firstDayOfMonth:(NSInteger)month ofYearOfDate:(NSDate *)date calendar:(NSCalendar *)calendar {
+  return [self dateFromCalendar:calendar day:1 month:month fromYearOfDate:date];
+}
+
+- (NSDate *)lastDayOfMonthForDate:(NSDate *)date month:(NSInteger)month calendar:(NSCalendar *)calendar {
+  NSRange rng = [calendar rangeOfUnit:NSCalendarUnitDay inUnit:NSCalendarUnitMonth forDate:date];
+  return [self dateFromCalendar:calendar day:rng.length month:month fromYearOfDate:date];
+}
+
+- (NSInteger)numMonthsInYear:(NSInteger)year calendar:(NSCalendar *)calendar {
+  NSDate *firstDayOfYear = [self firstDayOfYear:year month:1 calendar:calendar];
+  NSRange rng = [calendar rangeOfUnit:NSCalendarUnitMonth inUnit:NSCalendarUnitYear forDate:firstDayOfYear];
+  return rng.length;
+}
+
+- (NSArray *)lastYearRangeFromDate:(NSDate *)date {
   NSCalendar *calendar = [NSCalendar currentCalendar];
   NSDateComponents *components = [calendar components:(NSCalendarUnitYear | NSCalendarUnitMonth |  NSCalendarUnitDay)
-                                             fromDate:[NSDate date]];
+                                             fromDate:date];
   [components setMonth:1];
   [components setDay:1];
   [components setYear:components.year - 1];
@@ -85,6 +119,94 @@ typedef id (^FPValueBlock)(void);
   return nil;
 }
 
+- (NSDecimalNumber *)gasCostPerMileForVehicle:(FPVehicle *)vehicle
+                               onOrBeforeDate:(NSDate *)onOrBeforeDate
+                                onOrAfterDate:(NSDate *)onOrAfterDate {
+  FPEnvironmentLog *firstOdometerLog = [_localDao firstOdometerLogForVehicle:vehicle
+                                                              onOrBeforeDate:onOrBeforeDate
+                                                               onOrAfterDate:onOrAfterDate
+                                                                       error:_errorBlk];
+  if (firstOdometerLog) {
+    NSDecimalNumber *milesDriven = [self milesRecordedForVehicle:vehicle
+                                                  onOrBeforeDate:onOrBeforeDate
+                                                   onOrAfterDate:onOrAfterDate];
+    NSDecimalNumber *totalSpentOnGas = [self totalSpentFromFplogs:[_localDao unorderedFuelPurchaseLogsForVehicle:vehicle
+                                                                                                  onOrBeforeDate:onOrBeforeDate
+                                                                                                   onOrAfterDate:onOrAfterDate
+                                                                                                           error:_errorBlk]];
+    return [self costPerMileForMilesDriven:milesDriven totalSpentOnGas:totalSpentOnGas];
+  }
+  return nil;
+}
+
+- (NSDecimalNumber *)gasCostPerMileForUser:(FPUser *)user
+                            onOrBeforeDate:(NSDate *)onOrBeforeDate
+                             onOrAfterDate:(NSDate *)onOrAfterDate {
+  NSArray *vehicles = [_localDao vehiclesForUser:user error:_errorBlk];
+  NSDecimalNumber *totalMilesDriven = [NSDecimalNumber zero];
+  NSDecimalNumber *totalSpentOnGas = [NSDecimalNumber zero];
+  for (FPVehicle *vehicle in vehicles) {
+    FPEnvironmentLog *firstOdometerLog = [_localDao firstOdometerLogForVehicle:vehicle
+                                                                onOrBeforeDate:onOrBeforeDate
+                                                                 onOrAfterDate:onOrAfterDate
+                                                                         error:_errorBlk];
+    if (firstOdometerLog) {
+      totalMilesDriven = [totalMilesDriven decimalNumberByAdding:[self milesRecordedForVehicle:vehicle
+                                                                                onOrBeforeDate:onOrBeforeDate
+                                                                                 onOrAfterDate:firstOdometerLog.logDate]];
+      totalSpentOnGas = [totalSpentOnGas decimalNumberByAdding:[self totalSpentFromFplogs:[_localDao unorderedFuelPurchaseLogsForVehicle:vehicle
+                                                                                                                          onOrBeforeDate:onOrBeforeDate
+                                                                                                                           onOrAfterDate:onOrAfterDate
+                                                                                                                                   error:_errorBlk]]];
+    }
+  }
+  return [self costPerMileForMilesDriven:totalMilesDriven totalSpentOnGas:totalSpentOnGas];
+}
+
+- (NSArray *)gasCostPerMileDataSetForUser:(FPUser *)user
+                                     year:(NSInteger)year
+                               startMonth:(NSInteger)startMonth
+                                 endMonth:(NSInteger)endMonth
+                                 calendar:(NSCalendar *)calendar {
+  NSMutableArray *dataset = [NSMutableArray array];
+  for (NSInteger i = startMonth; i <= endMonth; i++) {
+    NSDate *firstDayOfMonth = [self firstDayOfYear:year month:i calendar:calendar];
+    NSDate *lastDayOfMonth = [self lastDayOfMonthForDate:firstDayOfMonth month:i calendar:calendar];
+    NSDecimalNumber *gasCostPerMile = [self gasCostPerMileForUser:user onOrBeforeDate:lastDayOfMonth onOrAfterDate:firstDayOfMonth];
+    if (gasCostPerMile) {
+      [dataset addObject:@[lastDayOfMonth, gasCostPerMile]];
+    }
+  }
+  return dataset;
+}
+
+- (NSArray *)gasCostPerMileDataSetForUser:(FPUser *)user
+                           onOrBeforeDate:(NSDate *)onOrBeforeDate
+                            onOrAfterDate:(NSDate *)onOrAfterDate {
+  NSMutableArray *dataset = [NSMutableArray array];
+  NSCalendar *calendar = [NSCalendar currentCalendar];
+  NSDateComponents *onOrBeforeDateComps = [calendar components:NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitDay fromDate:onOrBeforeDate];
+  NSDateComponents *onOrAfterDateComps = [calendar components:NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitDay fromDate:onOrAfterDate];
+  NSInteger startYear = onOrAfterDateComps.year;
+  NSInteger endYear = onOrBeforeDateComps.year;
+  for (NSInteger i = startYear; i <= endYear; i++) {
+    NSInteger startMonth;
+    if (i == startYear) {
+      startMonth = onOrAfterDateComps.month;
+    } else {
+      startMonth = 1;
+    }
+    NSInteger endMonth;
+    if (i == endYear) {
+      endMonth = onOrBeforeDateComps.month;
+    } else {
+      endMonth = 12;
+    }
+    [dataset addObjectsFromArray:[self gasCostPerMileDataSetForUser:user year:i startMonth:startMonth endMonth:endMonth calendar:calendar]];
+  }
+  return dataset;
+}
+
 #pragma mark - Gas Cost Per Mile
 
 - (NSDecimalNumber *)costPerMileForMilesDriven:(NSDecimalNumber *)milesDriven
@@ -105,43 +227,28 @@ typedef id (^FPValueBlock)(void);
 - (NSDecimalNumber *)yearToDateGasCostPerMileForUser:(FPUser *)user {
   NSDate *now = [NSDate date];
   NSDate *firstDayOfCurrentYear = [self firstDayOfYearOfDate:now];
-  NSArray *vehicles = [_localDao vehiclesForUser:user error:_errorBlk];
-  NSDecimalNumber *totalMilesDriven = [NSDecimalNumber zero];
-  NSDecimalNumber *totalSpentOnGas = [NSDecimalNumber zero];
-  for (FPVehicle *vehicle in vehicles) {
-    FPEnvironmentLog *firstOdometerLog = [_localDao firstOdometerLogForVehicle:vehicle
-                                                                onOrBeforeDate:now
-                                                                 onOrAfterDate:firstDayOfCurrentYear
-                                                                         error:_errorBlk];
-    if (firstOdometerLog) {
-      totalMilesDriven = [totalMilesDriven decimalNumberByAdding:[self milesRecordedForVehicle:vehicle
-                                                                                onOrBeforeDate:now
-                                                                                 onOrAfterDate:firstOdometerLog.logDate]];
-      totalSpentOnGas = [totalSpentOnGas decimalNumberByAdding:[self yearToDateSpentOnGasForVehicle:vehicle
-                                                                                              since:firstOdometerLog.logDate]];
+  return [self gasCostPerMileForUser:user onOrBeforeDate:now onOrAfterDate:firstDayOfCurrentYear];
+}
+
+- (NSArray *)yearToDateGasCostPerMileDataSetForUser:(FPUser *)user {
+  NSMutableArray *dataset = [NSMutableArray array];
+  NSCalendar *calendar = [NSCalendar currentCalendar];
+  NSDate *now = [NSDate date];
+  NSInteger currentMonth = [calendar component:NSCalendarUnitMonth fromDate:now];
+  for (NSInteger i = 1; i <= currentMonth; i++) {
+    NSDate *firstOfMonth = [self firstDayOfMonth:i ofYearOfDate:now calendar:calendar];
+    NSDate *lastDayOfMonth = [self lastDayOfMonthForDate:firstOfMonth month:i calendar:calendar];
+    NSDecimalNumber *gasCostPerMile = [self gasCostPerMileForUser:user onOrBeforeDate:lastDayOfMonth onOrAfterDate:firstOfMonth];
+    if (gasCostPerMile) {
+      [dataset addObject:@[lastDayOfMonth, gasCostPerMile]];
     }
   }
-  return [self costPerMileForMilesDriven:totalMilesDriven totalSpentOnGas:totalSpentOnGas];
+  return dataset;
 }
 
 - (NSDecimalNumber *)lastYearGasCostPerMileForUser:(FPUser *)user {
-  NSArray *vehicles = [_localDao vehiclesForUser:user error:_errorBlk];
-  NSDecimalNumber *totalMilesDriven = [NSDecimalNumber zero];
-  NSDecimalNumber *totalSpentOnGas = [NSDecimalNumber zero];
-  NSArray *lastYearRange = [self lastYearRange];
-  for (FPVehicle *vehicle in vehicles) {
-    FPEnvironmentLog *firstOdometerLog = [_localDao firstOdometerLogForVehicle:vehicle
-                                                                onOrBeforeDate:lastYearRange[1]
-                                                                 onOrAfterDate:lastYearRange[0]
-                                                                         error:_errorBlk];
-    if (firstOdometerLog) {
-      totalMilesDriven = [totalMilesDriven decimalNumberByAdding:[self milesRecordedForVehicle:vehicle
-                                                                                onOrBeforeDate:lastYearRange[1]
-                                                                                 onOrAfterDate:firstOdometerLog.logDate]];
-      totalSpentOnGas = [totalSpentOnGas decimalNumberByAdding:[self lastYearSpentOnGasForVehicle:vehicle since:firstOdometerLog.logDate]];
-    }
-  }
-  return [self costPerMileForMilesDriven:totalMilesDriven totalSpentOnGas:totalSpentOnGas];
+  NSArray *lastYearRange = [self lastYearRangeFromDate:[NSDate date]];
+  return [self gasCostPerMileForUser:user onOrBeforeDate:lastYearRange[1] onOrAfterDate:lastYearRange[0]];
 }
 
 - (NSDecimalNumber *)overallGasCostPerMileForUser:(FPUser *)user {
@@ -161,46 +268,19 @@ typedef id (^FPValueBlock)(void);
 - (NSDecimalNumber *)yearToDateGasCostPerMileForVehicle:(FPVehicle *)vehicle {
   NSDate *now = [NSDate date];
   NSDate *firstDayOfCurrentYear = [self firstDayOfYearOfDate:now];
-  FPEnvironmentLog *firstOdometerLog = [_localDao firstOdometerLogForVehicle:vehicle
-                                                              onOrBeforeDate:now
-                                                               onOrAfterDate:firstDayOfCurrentYear
-                                                                       error:_errorBlk];
-  if (firstOdometerLog) {
-    NSDecimalNumber *milesDriven = [self milesRecordedForVehicle:vehicle
-                                                  onOrBeforeDate:now
-                                                   onOrAfterDate:firstDayOfCurrentYear];
-    NSDecimalNumber *totalSpentOnGas = [self yearToDateSpentOnGasForVehicle:vehicle since:firstOdometerLog.logDate];
-    return [self costPerMileForMilesDriven:milesDriven totalSpentOnGas:totalSpentOnGas];
-  }
-  return nil;
+  return [self gasCostPerMileForVehicle:vehicle onOrBeforeDate:now onOrAfterDate:firstDayOfCurrentYear];
 }
 
 - (NSDecimalNumber *)lastYearGasCostPerMileForVehicle:(FPVehicle *)vehicle {
-  NSArray *lastYearRange = [self lastYearRange];
-  FPEnvironmentLog *firstOdometerLog = [_localDao firstOdometerLogForVehicle:vehicle
-                                                              onOrBeforeDate:lastYearRange[1]
-                                                               onOrAfterDate:lastYearRange[0]
-                                                                       error:_errorBlk];
-  if (firstOdometerLog) {
-    NSDecimalNumber *milesDriven = [self milesRecordedForVehicle:vehicle
-                                                  onOrBeforeDate:lastYearRange[1]
-                                                   onOrAfterDate:lastYearRange[0]];
-    NSDecimalNumber *totalSpentOnGas = [self totalSpentFromFplogs:[_localDao unorderedFuelPurchaseLogsForVehicle:vehicle
-                                                                                                  onOrBeforeDate:lastYearRange[1]
-                                                                                                   onOrAfterDate:firstOdometerLog.logDate
-                                                                                                           error:_errorBlk]];
-    return [self costPerMileForMilesDriven:milesDriven totalSpentOnGas:totalSpentOnGas];
-  }
-  return nil;
+  NSArray *lastYearRange = [self lastYearRangeFromDate:[NSDate date]];
+  return [self gasCostPerMileForVehicle:vehicle onOrBeforeDate:lastYearRange[1] onOrAfterDate:lastYearRange[0]];
 }
 
 - (NSDecimalNumber *)overallGasCostPerMileForVehicle:(FPVehicle *)vehicle {
   FPEnvironmentLog *firstOdometerLog = [_localDao firstOdometerLogForVehicle:vehicle error:_errorBlk];
   if (firstOdometerLog) {
-    FPEnvironmentLog *lastOdometerLog = [_localDao lastOdometerLogForVehicle:vehicle error:_errorBlk];
-    NSDecimalNumber *milesDriven = [lastOdometerLog.odometer decimalNumberBySubtracting:firstOdometerLog.odometer];
-    NSDecimalNumber *totalSpentOnGas = [self totalSpentOnGasForVehicle:vehicle since:firstOdometerLog.logDate];
-    return [self costPerMileForMilesDriven:milesDriven totalSpentOnGas:totalSpentOnGas];
+    NSDate *now = [NSDate date];
+    return [self gasCostPerMileForVehicle:vehicle onOrBeforeDate:now onOrAfterDate:firstOdometerLog.logDate];
   }
   return nil;
 }
@@ -216,7 +296,7 @@ typedef id (^FPValueBlock)(void);
 }
 
 - (NSDecimalNumber *)lastYearSpentOnGasForUser:(FPUser *)user {
-  NSArray *lastYearRange = [self lastYearRange];
+  NSArray *lastYearRange = [self lastYearRangeFromDate:[NSDate date]];
   return [self totalSpentFromFplogs:[_localDao unorderedFuelPurchaseLogsForUser:user
                                                                  onOrBeforeDate:lastYearRange[1]
                                                                   onOrAfterDate:lastYearRange[0]
@@ -244,7 +324,7 @@ typedef id (^FPValueBlock)(void);
 }
 
 - (NSDecimalNumber *)lastYearSpentOnGasForVehicle:(FPVehicle *)vehicle {
-  NSArray *lastYearRange = [self lastYearRange];
+  NSArray *lastYearRange = [self lastYearRangeFromDate:[NSDate date]];
   return [self totalSpentFromFplogs:[_localDao unorderedFuelPurchaseLogsForVehicle:vehicle
                                                                     onOrBeforeDate:lastYearRange[1]
                                                                      onOrAfterDate:lastYearRange[0]
@@ -252,7 +332,7 @@ typedef id (^FPValueBlock)(void);
 }
 
 - (NSDecimalNumber *)lastYearSpentOnGasForVehicle:(FPVehicle *)vehicle since:(NSDate *)since {
-  NSArray *lastYearRange = [self lastYearRange];
+  NSArray *lastYearRange = [self lastYearRangeFromDate:[NSDate date]];
   return [self totalSpentFromFplogs:[_localDao unorderedFuelPurchaseLogsForVehicle:vehicle
                                                                     onOrBeforeDate:lastYearRange[1]
                                                                      onOrAfterDate:since
@@ -279,7 +359,7 @@ typedef id (^FPValueBlock)(void);
 }
 
 - (NSDecimalNumber *)lastYearSpentOnGasForFuelstation:(FPFuelStation *)fuelstation {
-  NSArray *lastYearRange = [self lastYearRange];
+  NSArray *lastYearRange = [self lastYearRangeFromDate:[NSDate date]];
   return [self totalSpentFromFplogs:[_localDao unorderedFuelPurchaseLogsForFuelstation:fuelstation
                                                                         onOrBeforeDate:lastYearRange[1]
                                                                          onOrAfterDate:lastYearRange[0]

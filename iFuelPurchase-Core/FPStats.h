@@ -19,6 +19,8 @@
 
 - (NSDecimalNumber *)yearToDateGasCostPerMileForUser:(FPUser *)user;
 
+- (NSArray *)yearToDateGasCostPerMileDataSetForUser:(FPUser *)user;
+
 - (NSDecimalNumber *)lastYearGasCostPerMileForUser:(FPUser *)user;
 
 - (NSDecimalNumber *)overallGasCostPerMileForUser:(FPUser *)user;
