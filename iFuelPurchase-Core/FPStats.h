@@ -17,19 +17,21 @@
 
 #pragma mark - Gas Cost Per Mile
 
-- (NSDecimalNumber *)yearToDateGasCostPerMileForUser:(FPUser *)user;
-
-- (NSArray *)yearToDateGasCostPerMileDataSetForUser:(FPUser *)user;
-
-- (NSDecimalNumber *)lastYearGasCostPerMileForUser:(FPUser *)user;
-
-- (NSDecimalNumber *)overallGasCostPerMileForUser:(FPUser *)user;
-
 - (NSDecimalNumber *)yearToDateGasCostPerMileForVehicle:(FPVehicle *)vehicle;
+
+- (NSArray *)yearToDateGasCostPerMileDataSetForVehicle:(FPVehicle *)vehicle;
+
+- (NSDecimalNumber *)gasCostPerMileForVehicle:(FPVehicle *)vehicle year:(NSInteger)year;
+
+- (NSArray *)gasCostPerMileDataSetForVehicle:(FPVehicle *)vehicle year:(NSInteger)year;
 
 - (NSDecimalNumber *)lastYearGasCostPerMileForVehicle:(FPVehicle *)vehicle;
 
+- (NSArray *)lastYearGasCostPerMileDataSetForVehicle:(FPVehicle *)vehicle;
+
 - (NSDecimalNumber *)overallGasCostPerMileForVehicle:(FPVehicle *)vehicle;
+
+- (NSArray *)overallGasCostPerMileDataSetForVehicle:(FPVehicle *)vehicle;
 
 #pragma mark - Amount Spent on Gas
 
@@ -88,7 +90,7 @@
 - (NSDecimalNumber *)milesRecordedForVehicle:(FPVehicle *)vehicle;
 
 - (NSDecimalNumber *)milesRecordedForVehicle:(FPVehicle *)vehicle
-                              onOrBeforeDate:(NSDate *)onOrBeforeDate
+                                  beforeDate:(NSDate *)beforeDate
                                onOrAfterDate:(NSDate *)onOrAfterDate;
 
 - (NSDecimalNumber *)milesDrivenSinceLastOdometerLogAndLog:(FPEnvironmentLog *)odometerLog vehicle:(FPVehicle *)vehicle;

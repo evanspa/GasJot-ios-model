@@ -54,10 +54,9 @@ typedef NS_OPTIONS(NSUInteger, FPSaveEnvironmentLogMsg) {
   FPSaveEnvironmentLogAnyIssues                 = 1 << 0,
   FPSaveEnvironmentLogDateNotProvided           = 1 << 1,
   FPSaveEnvironmentLogOdometerNotProvided       = 1 << 2,
-  FPSaveEnvironmentLogOutsideTempNotProvided    = 1 << 3,
-  FPSaveEnvironmentLogOdometerNegative          = 1 << 4,
-  FPSaveEnvironmentLogUserDoesNotExist          = 1 << 5,
-  FPSaveEnvironmentLogVehicleDoesNotExist       = 1 << 6
+  FPSaveEnvironmentLogOdometerNegative          = 1 << 3,
+  FPSaveEnvironmentLogUserDoesNotExist          = 1 << 4,
+  FPSaveEnvironmentLogVehicleDoesNotExist       = 1 << 5
 };
 
 /**

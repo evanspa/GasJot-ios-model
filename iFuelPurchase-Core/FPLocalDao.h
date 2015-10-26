@@ -256,12 +256,12 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                                                error:(PELMDaoErrorBlk)errorBlk;
 
 - (NSArray *)unorderedFuelPurchaseLogsForFuelstation:(FPFuelStation *)fuelstation
-                                      onOrBeforeDate:(NSDate *)onOrBeforeDate
+                                          beforeDate:(NSDate *)beforeDate
                                        onOrAfterDate:(NSDate *)onOrAfterDate
                                                error:(PELMDaoErrorBlk)errorBlk;
 
 - (NSArray *)unorderedFuelPurchaseLogsForFuelstation:(FPFuelStation *)fuelstation
-                                      onOrBeforeDate:(NSDate *)onOrBeforeDate
+                                          beforeDate:(NSDate *)beforeDate
                                        onOrAfterDate:(NSDate *)onOrAfterDate
                                               octane:(NSNumber *)octane
                                                error:(PELMDaoErrorBlk)errorBlk;
@@ -271,13 +271,13 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                                                error:(PELMDaoErrorBlk)errorBlk;
 
 - (FPFuelPurchaseLog *)maxGallonPriceFuelPurchaseLogForFuelstation:(FPFuelStation *)fuelstation
-                                                    onOrBeforeDate:(NSDate *)onOrBeforeDate
+                                                        beforeDate:(NSDate *)beforeDate
                                                      onOrAfterDate:(NSDate *)onOrAfterDate
                                                             octane:(NSNumber *)octane
                                                              error:(PELMDaoErrorBlk)errorBlk;
 
 - (FPFuelPurchaseLog *)minGallonPriceFuelPurchaseLogForFuelstation:(FPFuelStation *)fuelstation
-                                                    onOrBeforeDate:(NSDate *)onOrBeforeDate
+                                                        beforeDate:(NSDate *)beforeDate
                                                      onOrAfterDate:(NSDate *)onOrAfterDate
                                                             octane:(NSNumber *)octane
                                                              error:(PELMDaoErrorBlk)errorBlk;
@@ -294,13 +294,24 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                                            error:(PELMDaoErrorBlk)errorBlk;
 
 - (NSArray *)unorderedFuelPurchaseLogsForVehicle:(FPVehicle *)vehicle
-                                  onOrBeforeDate:(NSDate *)onOrBeforeDate
+                                      beforeDate:(NSDate *)beforeDate
                                    onOrAfterDate:(NSDate *)onOrAfterDate
                                            error:(PELMDaoErrorBlk)errorBlk;
 
 - (NSArray *)unorderedFuelPurchaseLogsForVehicle:(FPVehicle *)vehicle
-                                  onOrBeforeDate:(NSDate *)onOrBeforeDate
+                                      beforeDate:(NSDate *)beforeDate
+                                       afterDate:(NSDate *)afterDate
+                                           error:(PELMDaoErrorBlk)errorBlk;
+
+- (NSArray *)unorderedFuelPurchaseLogsForVehicle:(FPVehicle *)vehicle
+                                      beforeDate:(NSDate *)beforeDate
                                    onOrAfterDate:(NSDate *)onOrAfterDate
+                                          octane:(NSNumber *)octane
+                                           error:(PELMDaoErrorBlk)errorBlk;
+
+- (NSArray *)unorderedFuelPurchaseLogsForVehicle:(FPVehicle *)vehicle
+                                      beforeDate:(NSDate *)beforeDate
+                                       afterDate:(NSDate *)afterDate
                                           octane:(NSNumber *)octane
                                            error:(PELMDaoErrorBlk)errorBlk;
 
@@ -312,12 +323,12 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                                         error:(PELMDaoErrorBlk)errorBlk;
 
 - (NSArray *)unorderedFuelPurchaseLogsForUser:(FPUser *)user
-                               onOrBeforeDate:(NSDate *)onOrBeforeDate
+                                   beforeDate:(NSDate *)beforeDate
                                 onOrAfterDate:(NSDate *)onOrAfterDate
                                         error:(PELMDaoErrorBlk)errorBlk;
 
 - (NSArray *)unorderedFuelPurchaseLogsForUser:(FPUser *)user
-                               onOrBeforeDate:(NSDate *)onOrBeforeDate
+                                   beforeDate:(NSDate *)beforeDate
                                 onOrAfterDate:(NSDate *)onOrAfterDate
                                        octane:(NSNumber *)octane
                                         error:(PELMDaoErrorBlk)errorBlk;
@@ -336,13 +347,13 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                            error:(PELMDaoErrorBlk)errorBlk;
 
 - (FPFuelPurchaseLog *)maxGallonPriceFuelPurchaseLogForUser:(FPUser *)user
-                                             onOrBeforeDate:(NSDate *)onOrBeforeDate
+                                                 beforeDate:(NSDate *)beforeDate
                                               onOrAfterDate:(NSDate *)onOrAfterDate
                                                      octane:(NSNumber *)octane
                                                       error:(PELMDaoErrorBlk)errorBlk;
 
 - (FPFuelPurchaseLog *)minGallonPriceFuelPurchaseLogForUser:(FPUser *)user
-                                             onOrBeforeDate:(NSDate *)onOrBeforeDate
+                                                 beforeDate:(NSDate *)beforeDate
                                               onOrAfterDate:(NSDate *)onOrAfterDate
                                                      octane:(NSNumber *)octane
                                                       error:(PELMDaoErrorBlk)errorBlk;
@@ -510,12 +521,12 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                                                      error:(PELMDaoErrorBlk)errorBlk;
 
 - (FPEnvironmentLog *)firstOdometerLogForVehicle:(FPVehicle *)vehicle
-                                  onOrBeforeDate:(NSDate *)onOrBeforeDate
+                                      beforeDate:(NSDate *)onOrBeforeDate
                                    onOrAfterDate:(NSDate *)onOrAfterDate
                                            error:(PELMDaoErrorBlk)errorBlk;
 
 - (FPEnvironmentLog *)lastOdometerLogForVehicle:(FPVehicle *)vehicle
-                                 onOrBeforeDate:(NSDate *)onOrBeforeDate
+                                     beforeDate:(NSDate *)beforeDate
                                   onOrAfterDate:(NSDate *)onOrAfterDate
                                           error:(PELMDaoErrorBlk)errorBlk;
 
