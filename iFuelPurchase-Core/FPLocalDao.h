@@ -337,6 +337,9 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                                        octane:(NSNumber *)octane
                                         error:(PELMDaoErrorBlk)errorBlk;
 
+- (FPFuelPurchaseLog *)firstGasLogForVehicle:(FPVehicle *)vehicle
+                                       error:(PELMDaoErrorBlk)errorBlk;
+
 - (NSArray *)gasLogNearestToDate:(NSDate *)date
                       forVehicle:(FPVehicle *)vehicle
                            error:(PELMDaoErrorBlk)errorBlk;

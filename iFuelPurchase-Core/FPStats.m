@@ -124,7 +124,10 @@ typedef id (^FPValueBlock)(void);
     } else {
       endMonth = 12;
     }
-    [dataset addObjectsFromArray:monthOfDataBlk(i, startMonth, endMonth, calendar)];
+    NSDate *startMonthDate = [PEUtils dateFromCalendar:calendar day:1 month:startMonth year:i];
+    if ([startMonthDate compare:beforeDate] == NSOrderedAscending) {
+      [dataset addObjectsFromArray:monthOfDataBlk(i, startMonth, endMonth, calendar)];
+    }
   }
   return dataset;
 }
@@ -154,7 +157,10 @@ typedef id (^FPValueBlock)(void);
                  monthOfDataBlk:^NSArray *(NSInteger year, NSInteger startMonth, NSInteger endMonth, NSCalendar *cal) {
                    return [self dataSetForEntity:vehicle
                                         valueBlk:^id(NSDate *firstDateOfNextMonth, NSDate *firstDayOfMonth) {
-                                          return [self gasCostPerMileForVehicle:vehicle beforeDate:firstDateOfNextMonth onOrAfterDate:firstDayOfMonth];
+                                          return [self totalSpentFromFplogs:[_localDao unorderedFuelPurchaseLogsForVehicle:vehicle
+                                                                                                                beforeDate:firstDateOfNextMonth
+                                                                                                             onOrAfterDate:firstDayOfMonth
+                                                                                                                     error:_errorBlk]];
                                         }
                                             year:year
                                       startMonth:startMonth
@@ -270,6 +276,8 @@ typedef id (^FPValueBlock)(void);
   return [self spentOnGasDataSetForVehicle:vehicle beforeDate:now onOrAfterDate:firstDayOfCurrentYear];
 }
 
+
+
 /*- (NSDecimalNumber *)yearToDateSpentOnGa_sForVehicle:(FPVehicle *)vehicle since:(NSDate *)since {
   NSDate *now = [NSDate date];
   return [self totalSpentFromFplogs:[_localDao unorderedFuelPurchaseLogsForVehicle:vehicle
@@ -291,6 +299,18 @@ typedef id (^FPValueBlock)(void);
                                                                              error:_errorBlk]];
 }
 
+- (NSArray *)lastYearSpentOnGasDataSetForVehicle:(FPVehicle *)vehicle {
+  NSArray *lastYearRange = [PEUtils lastYearRangeFromDate:[NSDate date] calendar:[NSCalendar currentCalendar]];
+  return [self spentOnGasDataSetForVehicle:vehicle beforeDate:lastYearRange[1] onOrAfterDate:lastYearRange[0]];
+}
+
+- (NSArray *)spentOnGasDataSetForVehicle:(FPVehicle *)vehicle year:(NSInteger)year {
+  NSCalendar *calendar = [NSCalendar currentCalendar];
+  NSDate *yearAsDate = [PEUtils firstDayOfYear:year month:1 calendar:calendar];
+  NSDate *firstDayOfNextYear = [PEUtils firstDayOfYear:year + 1 month:1 calendar:calendar];
+  return [self spentOnGasDataSetForVehicle:vehicle beforeDate:firstDayOfNextYear onOrAfterDate:yearAsDate];
+}
+
 /*- (NSDecimalNumber *)lastYearSpentOnGasForVehicle:(FPVehicle *)vehicle since:(NSDate *)since {
   NSArray *lastYearRange = [PEUtils lastYearRangeFromDate:[NSDate date] calendar:[NSCalendar currentCalendar]];
   return [self totalSpentFromFplogs:[_localDao unorderedFuelPurchaseLogsForVehicle:vehicle
@@ -303,12 +323,21 @@ typedef id (^FPValueBlock)(void);
   return [self totalSpentFromFplogs:[_localDao unorderedFuelPurchaseLogsForVehicle:vehicle error:_errorBlk]];
 }
 
-- (NSDecimalNumber *)overallSpentOnGasForVehicle:(FPVehicle *)vehicle since:(NSDate *)since {
+- (NSArray *)overallSpentOnGasDataSetForVehicle:(FPVehicle *)vehicle {
+  FPFuelPurchaseLog *firstGasLog = [_localDao firstGasLogForVehicle:vehicle error:_errorBlk];
+  if (firstGasLog) {
+    NSDate *now = [NSDate date];
+    return [self spentOnGasDataSetForVehicle:vehicle beforeDate:now onOrAfterDate:firstGasLog.purchasedAt];
+  }
+  return @[];
+}
+
+/*- (NSDecimalNumber *)overallSpentOnGasForVehicle:(FPVehicle *)vehicle since:(NSDate *)since {
   return [self totalSpentFromFplogs:[_localDao unorderedFuelPurchaseLogsForVehicle:vehicle
                                                                         beforeDate:[NSDate date]
                                                                      onOrAfterDate:since
                                                                              error:_errorBlk]];
-}
+}*/
 
 - (NSDecimalNumber *)yearToDateSpentOnGasForFuelstation:(FPFuelStation *)fuelstation {
   NSDate *now = [NSDate date];

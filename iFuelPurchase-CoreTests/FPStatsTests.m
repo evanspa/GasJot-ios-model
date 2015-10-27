@@ -125,6 +125,25 @@ describe(@"FPStats", ^{
       saveOdometerLog(_v1, @"1092",  nil, nil, 40, logDate, @"450");
     });
     
+    it(@"YTD and overall spent on gas data sets for vehicle", ^{
+      NSArray *ds = [_stats spentOnGasDataSetForVehicle:_v1 year:2012];
+      [[ds should] haveCountOf:12];
+      [[ds[0][0] should] equal:_d(@"01/01/2012")];
+      [[ds[0][1] should] equal:[NSDecimalNumber decimalNumberWithString:@"0.0"]];
+      [[ds[6][0] should] equal:_d(@"07/01/2012")];
+      [[ds[6][1] should] equal:[NSDecimalNumber decimalNumberWithString:@"0.0"]];
+      [[ds[11][0] should] equal:_d(@"12/01/2012")];
+      [[ds[11][1] should] equal:[NSDecimalNumber decimalNumberWithString:@"0.0"]];
+      ds = [_stats spentOnGasDataSetForVehicle:_v1 year:2013];
+      [[ds should] haveCountOf:12];
+      [[ds[0][0] should] equal:_d(@"01/01/2013")];
+      [[ds[0][1] should] equal:[NSDecimalNumber decimalNumberWithString:@"0.0"]];
+      [[ds[1][0] should] equal:_d(@"02/01/2013")];
+      [[ds[1][1] should] equal:[NSDecimalNumber decimalNumberWithString:@"121.9796"]];
+      [[ds[2][0] should] equal:_d(@"03/01/2013")];
+      [[ds[2][1] should] equal:[NSDecimalNumber decimalNumberWithString:@"60.0446"]];
+    });
+    
     it(@"YTD and overall gas cost per mile data sets for vehicle", ^{
       NSArray *ds = [_stats gasCostPerMileDataSetForVehicle:_v1 year:2013];
       [ds shouldNotBeNil];

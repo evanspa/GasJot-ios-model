@@ -2175,6 +2175,17 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
   };
 }
 
+- (FPFuelPurchaseLog *)firstGasLogForVehicle:(FPVehicle *)vehicle
+                                       error:(PELMDaoErrorBlk)errorBlk {
+  return [self singleGasLogForVehicle:vehicle
+                             whereBlk:nil
+                            whereArgs:nil
+                    comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPFuelPurchaseLog *)o1 purchasedAt] compare:[(FPFuelPurchaseLog *)o2 purchasedAt]];}
+                  orderByDomainColumn:COL_FUELPL_PURCHASED_AT
+         orderByDomainColumnDirection:@"ASC"
+                                error:errorBlk];
+}
+
 - (NSArray *)logNearestToDate:(NSDate *)date
                       forLog1:(id)log1
                      logdate1:(NSDate *)logdate1
