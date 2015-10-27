@@ -266,27 +266,27 @@ describe(@"FPStats", ^{
     it(@"Total, YTD and last year spend on gas stats works", ^{
       [[[_stats yearToDateSpentOnGasForUser:_user] should] equal:[NSDecimalNumber decimalNumberWithString:@"164.173"]];
       [[[_stats lastYearSpentOnGasForUser:_user] should] equal:[NSDecimalNumber decimalNumberWithString:@"767.7744"]];
-      [[[_stats totalSpentOnGasForUser:_user] should] equal:[NSDecimalNumber decimalNumberWithString:@"1119.2951"]];
+      [[[_stats overallSpentOnGasForUser:_user] should] equal:[NSDecimalNumber decimalNumberWithString:@"1119.2951"]];
       
       [[[_stats yearToDateSpentOnGasForVehicle:_v1] should] equal:[NSDecimalNumber decimalNumberWithString:@"54.9981"]];
       [[[_stats lastYearSpentOnGasForVehicle:_v1] should] equal:[NSDecimalNumber decimalNumberWithString:@"258.1513"]];
-      [[[_stats totalSpentOnGasForVehicle:_v1] should] equal:[NSDecimalNumber decimalNumberWithString:@"375.0844"]];
+      [[[_stats overallSpentOnGasForVehicle:_v1] should] equal:[NSDecimalNumber decimalNumberWithString:@"375.0844"]];
       
       [[[_stats yearToDateSpentOnGasForVehicle:v2] should] equal:[NSDecimalNumber decimalNumberWithString:@"56.944"]];
       [[[_stats lastYearSpentOnGasForVehicle:v2] should] equal:[NSDecimalNumber decimalNumberWithString:@"251.2368"]];
-      [[[_stats totalSpentOnGasForVehicle:v2] should] equal:[NSDecimalNumber decimalNumberWithString:@"370.5287"]];
+      [[[_stats overallSpentOnGasForVehicle:v2] should] equal:[NSDecimalNumber decimalNumberWithString:@"370.5287"]];
       
       [[[_stats yearToDateSpentOnGasForVehicle:v3] should] equal:[NSDecimalNumber decimalNumberWithString:@"52.2309"]];
       [[[_stats lastYearSpentOnGasForVehicle:v3] should] equal:[NSDecimalNumber decimalNumberWithString:@"258.3863"]];
-      [[[_stats totalSpentOnGasForVehicle:v3] should] equal:[NSDecimalNumber decimalNumberWithString:@"373.682"]];
+      [[[_stats overallSpentOnGasForVehicle:v3] should] equal:[NSDecimalNumber decimalNumberWithString:@"373.682"]];
       
       [[[_stats yearToDateSpentOnGasForFuelstation:_fs1] should] equal:[NSDecimalNumber decimalNumberWithString:@"111.9421"]];
       [[[_stats lastYearSpentOnGasForFuelstation:_fs1] should] equal:[NSDecimalNumber decimalNumberWithString:@"509.3881"]];
-      [[[_stats totalSpentOnGasForFuelstation:_fs1] should] equal:[NSDecimalNumber decimalNumberWithString:@"745.6131"]];
+      [[[_stats overallSpentOnGasForFuelstation:_fs1] should] equal:[NSDecimalNumber decimalNumberWithString:@"745.6131"]];
       
       [[[_stats yearToDateSpentOnGasForFuelstation:fs2] should] equal:[NSDecimalNumber decimalNumberWithString:@"52.2309"]];
       [[[_stats lastYearSpentOnGasForFuelstation:fs2] should] equal:[NSDecimalNumber decimalNumberWithString:@"258.3863"]];
-      [[[_stats totalSpentOnGasForFuelstation:fs2] should] equal:[NSDecimalNumber decimalNumberWithString:@"373.682"]];
+      [[[_stats overallSpentOnGasForFuelstation:fs2] should] equal:[NSDecimalNumber decimalNumberWithString:@"373.682"]];
     });
   });
   
@@ -343,9 +343,9 @@ describe(@"FPStats", ^{
       [[[_stats yearToDateSpentOnGasForUser:_user] should] equal:[NSDecimalNumber zero]];
       [[[_stats yearToDateSpentOnGasForVehicle:_v1] should] equal:[NSDecimalNumber zero]];
       [[[_stats yearToDateSpentOnGasForFuelstation:_fs1] should] equal:[NSDecimalNumber zero]];
-      [[[_stats totalSpentOnGasForUser:_user] should] equal:[NSDecimalNumber zero]];
-      [[[_stats totalSpentOnGasForVehicle:_v1] should] equal:[NSDecimalNumber zero]];
-      [[[_stats totalSpentOnGasForFuelstation:_fs1] should] equal:[NSDecimalNumber zero]];
+      [[[_stats overallSpentOnGasForUser:_user] should] equal:[NSDecimalNumber zero]];
+      [[[_stats overallSpentOnGasForVehicle:_v1] should] equal:[NSDecimalNumber zero]];
+      [[[_stats overallSpentOnGasForFuelstation:_fs1] should] equal:[NSDecimalNumber zero]];
     });
     
     it(@"YTD and overall average price of gas stats work", ^{
@@ -474,9 +474,9 @@ describe(@"FPStats", ^{
         [[[_stats yearToDateSpentOnGasForUser:_user] should] equal:[NSDecimalNumber decimalNumberWithString:@"58.52"]];
         [[[_stats yearToDateSpentOnGasForVehicle:_v1] should] equal:[NSDecimalNumber decimalNumberWithString:@"58.52"]];
         [[[_stats yearToDateSpentOnGasForFuelstation:_fs1] should] equal:[NSDecimalNumber decimalNumberWithString:@"58.52"]];
-        [[[_stats totalSpentOnGasForUser:_user] should] equal:[NSDecimalNumber decimalNumberWithString:@"58.52"]];
-        [[[_stats totalSpentOnGasForVehicle:_v1] should] equal:[NSDecimalNumber decimalNumberWithString:@"58.52"]];
-        [[[_stats totalSpentOnGasForFuelstation:_fs1] should] equal:[NSDecimalNumber decimalNumberWithString:@"58.52"]];
+        [[[_stats overallSpentOnGasForUser:_user] should] equal:[NSDecimalNumber decimalNumberWithString:@"58.52"]];
+        [[[_stats overallSpentOnGasForVehicle:_v1] should] equal:[NSDecimalNumber decimalNumberWithString:@"58.52"]];
+        [[[_stats overallSpentOnGasForFuelstation:_fs1] should] equal:[NSDecimalNumber decimalNumberWithString:@"58.52"]];
       });
       
       it(@"YTD and overall average price of gas stats work", ^{
@@ -518,9 +518,9 @@ describe(@"FPStats", ^{
         [[[_stats yearToDateSpentOnGasForUser:_user] should] equal:[NSDecimalNumber decimalNumberWithString:@"97.20928"]];
         [[[_stats yearToDateSpentOnGasForVehicle:_v1] should] equal:[NSDecimalNumber decimalNumberWithString:@"97.20928"]];
         [[[_stats yearToDateSpentOnGasForFuelstation:_fs1] should] equal:[NSDecimalNumber decimalNumberWithString:@"97.20928"]];
-        [[[_stats totalSpentOnGasForUser:_user] should] equal:[NSDecimalNumber decimalNumberWithString:@"97.20928"]];
-        [[[_stats totalSpentOnGasForVehicle:_v1] should] equal:[NSDecimalNumber decimalNumberWithString:@"97.20928"]];
-        [[[_stats totalSpentOnGasForFuelstation:_fs1] should] equal:[NSDecimalNumber decimalNumberWithString:@"97.20928"]];
+        [[[_stats overallSpentOnGasForUser:_user] should] equal:[NSDecimalNumber decimalNumberWithString:@"97.20928"]];
+        [[[_stats overallSpentOnGasForVehicle:_v1] should] equal:[NSDecimalNumber decimalNumberWithString:@"97.20928"]];
+        [[[_stats overallSpentOnGasForFuelstation:_fs1] should] equal:[NSDecimalNumber decimalNumberWithString:@"97.20928"]];
       });
       
       it(@"YTD and overall average price of gas stats work", ^{
@@ -560,9 +560,9 @@ describe(@"FPStats", ^{
           [[[_stats yearToDateSpentOnGasForUser:_user] should] equal:[NSDecimalNumber decimalNumberWithString:@"111.73327"]];
           [[[_stats yearToDateSpentOnGasForVehicle:_v1] should] equal:[NSDecimalNumber decimalNumberWithString:@"97.20928"]];
           [[[_stats yearToDateSpentOnGasForFuelstation:_fs1] should] equal:[NSDecimalNumber decimalNumberWithString:@"111.73327"]];
-          [[[_stats totalSpentOnGasForUser:_user] should] equal:[NSDecimalNumber decimalNumberWithString:@"111.73327"]];
-          [[[_stats totalSpentOnGasForVehicle:_v1] should] equal:[NSDecimalNumber decimalNumberWithString:@"97.20928"]];
-          [[[_stats totalSpentOnGasForFuelstation:_fs1] should] equal:[NSDecimalNumber decimalNumberWithString:@"111.73327"]];
+          [[[_stats overallSpentOnGasForUser:_user] should] equal:[NSDecimalNumber decimalNumberWithString:@"111.73327"]];
+          [[[_stats overallSpentOnGasForVehicle:_v1] should] equal:[NSDecimalNumber decimalNumberWithString:@"97.20928"]];
+          [[[_stats overallSpentOnGasForFuelstation:_fs1] should] equal:[NSDecimalNumber decimalNumberWithString:@"111.73327"]];
         });
         
         it(@"YTD and overall average price of gas stats work", ^{
@@ -605,9 +605,9 @@ describe(@"FPStats", ^{
             [[[_stats yearToDateSpentOnGasForUser:_user] should] equal:[NSDecimalNumber decimalNumberWithString:@"111.73327"]];
             [[[_stats yearToDateSpentOnGasForVehicle:_v1] should] equal:[NSDecimalNumber decimalNumberWithString:@"97.20928"]];
             [[[_stats yearToDateSpentOnGasForFuelstation:_fs1] should] equal:[NSDecimalNumber decimalNumberWithString:@"111.73327"]];
-            [[[_stats totalSpentOnGasForUser:_user] should] equal:[NSDecimalNumber decimalNumberWithString:@"134.97577"]];
-            [[[_stats totalSpentOnGasForVehicle:_v1] should] equal:[NSDecimalNumber decimalNumberWithString:@"120.45178"]];
-            [[[_stats totalSpentOnGasForFuelstation:_fs1] should] equal:[NSDecimalNumber decimalNumberWithString:@"134.97577"]];
+            [[[_stats overallSpentOnGasForUser:_user] should] equal:[NSDecimalNumber decimalNumberWithString:@"134.97577"]];
+            [[[_stats overallSpentOnGasForVehicle:_v1] should] equal:[NSDecimalNumber decimalNumberWithString:@"120.45178"]];
+            [[[_stats overallSpentOnGasForFuelstation:_fs1] should] equal:[NSDecimalNumber decimalNumberWithString:@"134.97577"]];
           });
           
           it(@"YTD and overall average price of gas stats work", ^{
