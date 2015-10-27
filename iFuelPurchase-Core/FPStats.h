@@ -37,9 +37,15 @@
 
 - (NSDecimalNumber *)yearToDateSpentOnGasForUser:(FPUser *)user;
 
+- (NSArray *)yearToDateSpentOnGasDataSetForUser:(FPUser *)user;
+
 - (NSDecimalNumber *)lastYearSpentOnGasForUser:(FPUser *)user;
 
+- (NSArray *)lastYearSpentOnGasDataSetForUser:(FPUser *)user;
+
 - (NSDecimalNumber *)overallSpentOnGasForUser:(FPUser *)user;
+
+- (NSArray *)overallSpentOnGasDataSetForUser:(FPUser *)user;
 
 - (NSDecimalNumber *)yearToDateSpentOnGasForVehicle:(FPVehicle *)vehicle;
 
@@ -57,9 +63,15 @@
 
 - (NSDecimalNumber *)yearToDateSpentOnGasForFuelstation:(FPFuelStation *)fuelstation;
 
+- (NSArray *)yearToDateSpentOnGasDataSetForFuelstation:(FPFuelStation *)fuelstation;
+
 - (NSDecimalNumber *)lastYearSpentOnGasForFuelstation:(FPFuelStation *)fuelstation;
 
+- (NSArray *)lastYearSpentOnGasDataSetForFuelstation:(FPFuelStation *)fuelstation;
+
 - (NSDecimalNumber *)overallSpentOnGasForFuelstation:(FPFuelStation *)fuelstation;
+
+- (NSArray *)overallSpentOnGasDataSetForFuelstation:(FPFuelStation *)fuelstation;
 
 #pragma mark - Average Price Per Gallon
 

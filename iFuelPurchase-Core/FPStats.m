@@ -150,6 +150,27 @@ typedef id (^FPValueBlock)(void);
                   onOrAfterDate:onOrAfterDate];
 }
 
+- (NSArray *)spentOnGasDataSetForUser:(FPUser *)user
+                           beforeDate:(NSDate *)beforeDate
+                        onOrAfterDate:(NSDate *)onOrAfterDate {
+  return [self dataSetForEntity:user
+                 monthOfDataBlk:^NSArray *(NSInteger year, NSInteger startMonth, NSInteger endMonth, NSCalendar *cal) {
+                   return [self dataSetForEntity:user
+                                        valueBlk:^id(NSDate *firstDateOfNextMonth, NSDate *firstDayOfMonth) {
+                                          return [self totalSpentFromFplogs:[_localDao unorderedFuelPurchaseLogsForUser:user
+                                                                                                             beforeDate:firstDateOfNextMonth
+                                                                                                          onOrAfterDate:firstDayOfMonth
+                                                                                                                  error:_errorBlk]];
+                                        }
+                                            year:year
+                                      startMonth:startMonth
+                                        endMonth:endMonth
+                                        calendar:cal];
+                 }
+                     beforeDate:beforeDate
+                  onOrAfterDate:onOrAfterDate];
+}
+
 - (NSArray *)spentOnGasDataSetForVehicle:(FPVehicle *)vehicle
                               beforeDate:(NSDate *)beforeDate
                            onOrAfterDate:(NSDate *)onOrAfterDate {
@@ -161,6 +182,27 @@ typedef id (^FPValueBlock)(void);
                                                                                                                 beforeDate:firstDateOfNextMonth
                                                                                                              onOrAfterDate:firstDayOfMonth
                                                                                                                      error:_errorBlk]];
+                                        }
+                                            year:year
+                                      startMonth:startMonth
+                                        endMonth:endMonth
+                                        calendar:cal];
+                 }
+                     beforeDate:beforeDate
+                  onOrAfterDate:onOrAfterDate];
+}
+
+- (NSArray *)spentOnGasDataSetForFuelstation:(FPFuelStation *)fuelstation
+                                  beforeDate:(NSDate *)beforeDate
+                               onOrAfterDate:(NSDate *)onOrAfterDate {
+  return [self dataSetForEntity:fuelstation
+                 monthOfDataBlk:^NSArray *(NSInteger year, NSInteger startMonth, NSInteger endMonth, NSCalendar *cal) {
+                   return [self dataSetForEntity:fuelstation
+                                        valueBlk:^id(NSDate *firstDateOfNextMonth, NSDate *firstDayOfMonth) {
+                                          return [self totalSpentFromFplogs:[_localDao unorderedFuelPurchaseLogsForFuelstation:fuelstation
+                                                                                                                    beforeDate:firstDateOfNextMonth
+                                                                                                                 onOrAfterDate:firstDayOfMonth
+                                                                                                                         error:_errorBlk]];
                                         }
                                             year:year
                                       startMonth:startMonth
@@ -250,6 +292,12 @@ typedef id (^FPValueBlock)(void);
                                                                           error:_errorBlk]];
 }
 
+- (NSArray *)yearToDateSpentOnGasDataSetForUser:(FPUser *)user {
+  NSDate *now = [NSDate date];
+  NSDate *firstDayOfCurrentYear = [PEUtils firstDayOfYearOfDate:now calendar:[NSCalendar currentCalendar]];
+  return [self spentOnGasDataSetForUser:user beforeDate:now onOrAfterDate:firstDayOfCurrentYear];
+}
+
 - (NSDecimalNumber *)lastYearSpentOnGasForUser:(FPUser *)user {
   NSArray *lastYearRange = [PEUtils lastYearRangeFromDate:[NSDate date] calendar:[NSCalendar currentCalendar]];
   return [self totalSpentFromFplogs:[_localDao unorderedFuelPurchaseLogsForUser:user
@@ -258,8 +306,25 @@ typedef id (^FPValueBlock)(void);
                                                                           error:_errorBlk]];
 }
 
+- (NSArray *)lastYearSpentOnGasDataSetForUser:(FPUser *)user {
+  NSArray *lastYearRange = [PEUtils lastYearRangeFromDate:[NSDate date] calendar:[NSCalendar currentCalendar]];
+  return [self spentOnGasDataSetForUser:user beforeDate:lastYearRange[1] onOrAfterDate:lastYearRange[0]];
+}
+
 - (NSDecimalNumber *)overallSpentOnGasForUser:(FPUser *)user {
   return [self totalSpentFromFplogs:[_localDao unorderedFuelPurchaseLogsForUser:user error:_errorBlk]];
+}
+
+- (NSArray *)overallSpentOnGasDataSetForUser:(FPUser *)user {
+  FPFuelPurchaseLog *firstGasLog = [_localDao firstGasLogForUser:user error:_errorBlk];
+  if (firstGasLog) {
+    FPFuelPurchaseLog *lastGasLog = [_localDao lastGasLogForUser:user error:_errorBlk];
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+    return [self spentOnGasDataSetForUser:user
+                               beforeDate:[calendar dateByAddingUnit:NSCalendarUnitMonth value:1 toDate:lastGasLog.purchasedAt options:0]
+                            onOrAfterDate:firstGasLog.purchasedAt];
+  }
+  return @[];
 }
 
 - (NSDecimalNumber *)yearToDateSpentOnGasForVehicle:(FPVehicle *)vehicle {
@@ -326,8 +391,11 @@ typedef id (^FPValueBlock)(void);
 - (NSArray *)overallSpentOnGasDataSetForVehicle:(FPVehicle *)vehicle {
   FPFuelPurchaseLog *firstGasLog = [_localDao firstGasLogForVehicle:vehicle error:_errorBlk];
   if (firstGasLog) {
-    NSDate *now = [NSDate date];
-    return [self spentOnGasDataSetForVehicle:vehicle beforeDate:now onOrAfterDate:firstGasLog.purchasedAt];
+    FPFuelPurchaseLog *lastGasLog = [_localDao lastGasLogForVehicle:vehicle error:_errorBlk];
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+    return [self spentOnGasDataSetForVehicle:vehicle
+                                  beforeDate:[calendar dateByAddingUnit:NSCalendarUnitMonth value:1 toDate:lastGasLog.purchasedAt options:0]
+                               onOrAfterDate:firstGasLog.purchasedAt];
   }
   return @[];
 }
@@ -347,6 +415,12 @@ typedef id (^FPValueBlock)(void);
                                                                                  error:_errorBlk]];
 }
 
+- (NSArray *)yearToDateSpentOnGasDataSetForFuelstation:(FPFuelStation *)fuelstation {
+  NSDate *now = [NSDate date];
+  NSDate *firstDayOfCurrentYear = [PEUtils firstDayOfYearOfDate:now calendar:[NSCalendar currentCalendar]];
+  return [self spentOnGasDataSetForFuelstation:fuelstation beforeDate:now onOrAfterDate:firstDayOfCurrentYear];
+}
+
 - (NSDecimalNumber *)lastYearSpentOnGasForFuelstation:(FPFuelStation *)fuelstation {
   NSArray *lastYearRange = [PEUtils lastYearRangeFromDate:[NSDate date] calendar:[NSCalendar currentCalendar]];
   return [self totalSpentFromFplogs:[_localDao unorderedFuelPurchaseLogsForFuelstation:fuelstation
@@ -355,8 +429,25 @@ typedef id (^FPValueBlock)(void);
                                                                                  error:_errorBlk]];
 }
 
+- (NSArray *)lastYearSpentOnGasDataSetForFuelstation:(FPFuelStation *)fuelstation {
+  NSArray *lastYearRange = [PEUtils lastYearRangeFromDate:[NSDate date] calendar:[NSCalendar currentCalendar]];
+  return [self spentOnGasDataSetForFuelstation:fuelstation beforeDate:lastYearRange[1] onOrAfterDate:lastYearRange[0]];
+}
+
 - (NSDecimalNumber *)overallSpentOnGasForFuelstation:(FPFuelStation *)fuelstation {
   return [self totalSpentFromFplogs:[_localDao unorderedFuelPurchaseLogsForFuelstation:fuelstation error:_errorBlk]];
+}
+
+- (NSArray *)overallSpentOnGasDataSetForFuelstation:(FPFuelStation *)fuelstation {
+  FPFuelPurchaseLog *firstGasLog = [_localDao firstGasLogForFuelstation:fuelstation error:_errorBlk];
+  if (firstGasLog) {
+    FPFuelPurchaseLog *lastGasLog = [_localDao lastGasLogForFuelstation:fuelstation error:_errorBlk];
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+    return [self spentOnGasDataSetForFuelstation:fuelstation
+                                      beforeDate:[calendar dateByAddingUnit:NSCalendarUnitMonth value:1 toDate:lastGasLog.purchasedAt options:0]
+                                   onOrAfterDate:firstGasLog.purchasedAt];
+  }
+  return @[];
 }
 
 #pragma mark - Average Price Per Gallon

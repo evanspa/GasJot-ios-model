@@ -337,8 +337,23 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                                        octane:(NSNumber *)octane
                                         error:(PELMDaoErrorBlk)errorBlk;
 
+- (FPFuelPurchaseLog *)firstGasLogForUser:(FPUser *)user
+                                    error:(PELMDaoErrorBlk)errorBlk;
+
 - (FPFuelPurchaseLog *)firstGasLogForVehicle:(FPVehicle *)vehicle
                                        error:(PELMDaoErrorBlk)errorBlk;
+
+- (FPFuelPurchaseLog *)firstGasLogForFuelstation:(FPFuelStation *)fuelstation
+                                           error:(PELMDaoErrorBlk)errorBlk;
+
+- (FPFuelPurchaseLog *)lastGasLogForUser:(FPUser *)user
+                                   error:(PELMDaoErrorBlk)errorBlk;
+
+- (FPFuelPurchaseLog *)lastGasLogForVehicle:(FPVehicle *)vehicle
+                                      error:(PELMDaoErrorBlk)errorBlk;
+
+- (FPFuelPurchaseLog *)lastGasLogForFuelstation:(FPFuelStation *)fuelstation
+                                          error:(PELMDaoErrorBlk)errorBlk;
 
 - (NSArray *)gasLogNearestToDate:(NSDate *)date
                       forVehicle:(FPVehicle *)vehicle

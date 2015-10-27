@@ -2158,6 +2158,40 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
   return fplog;
 }
 
+- (FPFuelPurchaseLog *)singleGasLogForFuelstation:(FPFuelStation *)fuelstation
+                                         whereBlk:(NSString *(^)(NSString *))whereBlk
+                                        whereArgs:(NSArray *)whereArgs
+                                comparatorForSort:(NSComparisonResult(^)(id, id))comparatorForSort
+                              orderByDomainColumn:(NSString *)orderByDomainColumn
+                     orderByDomainColumnDirection:(NSString *)orderByDomainColumnDirection
+                                            error:(PELMDaoErrorBlk)errorBlk {
+  __block FPFuelPurchaseLog *fplog = nil;
+  [_databaseQueue inDatabase:^(FMDatabase *db) {
+    NSArray *fplogs = [PELMUtils entitiesForParentEntity:fuelstation
+                                   parentEntityMainTable:TBL_MAIN_FUEL_STATION
+                             parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainFuelStationFromResultSet:rs];}
+                              parentEntityMasterIdColumn:COL_MASTER_FUELSTATION_ID
+                                parentEntityMainIdColumn:COL_MAIN_FUELSTATION_ID
+                                                pageSize:@(1)
+                                                whereBlk:whereBlk
+                                               whereArgs:whereArgs
+                                       entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
+                          masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
+                                         entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                            mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSet:rs];}
+                                       comparatorForSort:comparatorForSort
+                                     orderByDomainColumn:orderByDomainColumn
+                            orderByDomainColumnDirection:orderByDomainColumnDirection
+                                                      db:db
+                                                   error:errorBlk];
+    
+    if ([fplogs count] > 0) {
+      fplog = fplogs[0];
+    }
+  }];
+  return fplog;
+}
+
 - (NSString *(^)(NSString *))gasLogDateCompareWhereBlk:(NSString *)compareDirection {
   return ^(NSString *colPrefix) {
     return [NSString stringWithFormat:@"%@%@ %@ ?", colPrefix, COL_FUELPL_PURCHASED_AT, compareDirection];
@@ -2175,6 +2209,17 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
   };
 }
 
+- (FPFuelPurchaseLog *)firstGasLogForUser:(FPUser *)user
+                                    error:(PELMDaoErrorBlk)errorBlk {
+  return [self singleGasLogForUser:user
+                          whereBlk:nil
+                         whereArgs:nil
+                 comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPFuelPurchaseLog *)o1 purchasedAt] compare:[(FPFuelPurchaseLog *)o2 purchasedAt]];}
+               orderByDomainColumn:COL_FUELPL_PURCHASED_AT
+      orderByDomainColumnDirection:@"ASC"
+                             error:errorBlk];
+}
+
 - (FPFuelPurchaseLog *)firstGasLogForVehicle:(FPVehicle *)vehicle
                                        error:(PELMDaoErrorBlk)errorBlk {
   return [self singleGasLogForVehicle:vehicle
@@ -2184,6 +2229,50 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                   orderByDomainColumn:COL_FUELPL_PURCHASED_AT
          orderByDomainColumnDirection:@"ASC"
                                 error:errorBlk];
+}
+
+- (FPFuelPurchaseLog *)firstGasLogForFuelstation:(FPFuelStation *)fuelstation
+                                           error:(PELMDaoErrorBlk)errorBlk {
+  return [self singleGasLogForFuelstation:fuelstation
+                                 whereBlk:nil
+                                whereArgs:nil
+                        comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPFuelPurchaseLog *)o1 purchasedAt] compare:[(FPFuelPurchaseLog *)o2 purchasedAt]];}
+                      orderByDomainColumn:COL_FUELPL_PURCHASED_AT
+             orderByDomainColumnDirection:@"ASC"
+                                    error:errorBlk];
+}
+
+- (FPFuelPurchaseLog *)lastGasLogForUser:(FPUser *)user
+                                   error:(PELMDaoErrorBlk)errorBlk {
+  return [self singleGasLogForUser:user
+                          whereBlk:nil
+                         whereArgs:nil
+                 comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPFuelPurchaseLog *)o1 purchasedAt] compare:[(FPFuelPurchaseLog *)o2 purchasedAt]];}
+               orderByDomainColumn:COL_FUELPL_PURCHASED_AT
+      orderByDomainColumnDirection:@"DESC"
+                             error:errorBlk];
+}
+
+- (FPFuelPurchaseLog *)lastGasLogForVehicle:(FPVehicle *)vehicle
+                                      error:(PELMDaoErrorBlk)errorBlk {
+  return [self singleGasLogForVehicle:vehicle
+                             whereBlk:nil
+                            whereArgs:nil
+                    comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPFuelPurchaseLog *)o1 purchasedAt] compare:[(FPFuelPurchaseLog *)o2 purchasedAt]];}
+                  orderByDomainColumn:COL_FUELPL_PURCHASED_AT
+         orderByDomainColumnDirection:@"DESC"
+                                error:errorBlk];
+}
+
+- (FPFuelPurchaseLog *)lastGasLogForFuelstation:(FPFuelStation *)fuelstation
+                                          error:(PELMDaoErrorBlk)errorBlk {
+  return [self singleGasLogForFuelstation:fuelstation
+                                 whereBlk:nil
+                                whereArgs:nil
+                        comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPFuelPurchaseLog *)o1 purchasedAt] compare:[(FPFuelPurchaseLog *)o2 purchasedAt]];}
+                      orderByDomainColumn:COL_FUELPL_PURCHASED_AT
+             orderByDomainColumnDirection:@"DESC"
+                                    error:errorBlk];
 }
 
 - (NSArray *)logNearestToDate:(NSDate *)date
