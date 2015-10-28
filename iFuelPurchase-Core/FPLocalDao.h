@@ -340,19 +340,44 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
 - (FPFuelPurchaseLog *)firstGasLogForUser:(FPUser *)user
                                     error:(PELMDaoErrorBlk)errorBlk;
 
+- (FPFuelPurchaseLog *)firstGasLogForUser:(FPUser *)user
+                                   octane:(NSNumber *)octane
+                                    error:(PELMDaoErrorBlk)errorBlk;
+
 - (FPFuelPurchaseLog *)firstGasLogForVehicle:(FPVehicle *)vehicle
+                                       error:(PELMDaoErrorBlk)errorBlk;
+
+- (FPFuelPurchaseLog *)firstGasLogForVehicle:(FPVehicle *)vehicle
+                                      octane:(NSNumber *)octane
                                        error:(PELMDaoErrorBlk)errorBlk;
 
 - (FPFuelPurchaseLog *)firstGasLogForFuelstation:(FPFuelStation *)fuelstation
                                            error:(PELMDaoErrorBlk)errorBlk;
 
+- (FPFuelPurchaseLog *)firstGasLogForFuelstation:(FPFuelStation *)fuelstation
+                                          octane:(NSNumber *)octane
+                                           error:(PELMDaoErrorBlk)errorBlk;
+
 - (FPFuelPurchaseLog *)lastGasLogForUser:(FPUser *)user
+                                   error:(PELMDaoErrorBlk)errorBlk;
+
+- (FPFuelPurchaseLog *)lastGasLogForUser:(FPUser *)user
+                                  octane:(NSNumber *)octane
                                    error:(PELMDaoErrorBlk)errorBlk;
 
 - (FPFuelPurchaseLog *)lastGasLogForVehicle:(FPVehicle *)vehicle
                                       error:(PELMDaoErrorBlk)errorBlk;
 
+
+- (FPFuelPurchaseLog *)lastGasLogForVehicle:(FPVehicle *)vehicle
+                                     octane:(NSNumber *)octane
+                                      error:(PELMDaoErrorBlk)errorBlk;
+
 - (FPFuelPurchaseLog *)lastGasLogForFuelstation:(FPFuelStation *)fuelstation
+                                          error:(PELMDaoErrorBlk)errorBlk;
+
+- (FPFuelPurchaseLog *)lastGasLogForFuelstation:(FPFuelStation *)fuelstation
+                                         octane:(NSNumber *)octane
                                           error:(PELMDaoErrorBlk)errorBlk;
 
 - (NSArray *)gasLogNearestToDate:(NSDate *)date

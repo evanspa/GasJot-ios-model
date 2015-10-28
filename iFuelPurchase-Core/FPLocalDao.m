@@ -2209,11 +2209,31 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
   };
 }
 
+- (NSString *(^)(NSString *))gasLogOctaneWhereBlk {
+  return ^(NSString *colPrefix) {
+    return [NSString stringWithFormat:@"%@%@ = ?",
+            colPrefix,
+            COL_FUELPL_OCTANE];
+  };
+}
+
 - (FPFuelPurchaseLog *)firstGasLogForUser:(FPUser *)user
                                     error:(PELMDaoErrorBlk)errorBlk {
   return [self singleGasLogForUser:user
                           whereBlk:nil
                          whereArgs:nil
+                 comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPFuelPurchaseLog *)o1 purchasedAt] compare:[(FPFuelPurchaseLog *)o2 purchasedAt]];}
+               orderByDomainColumn:COL_FUELPL_PURCHASED_AT
+      orderByDomainColumnDirection:@"ASC"
+                             error:errorBlk];
+}
+
+- (FPFuelPurchaseLog *)firstGasLogForUser:(FPUser *)user
+                                   octane:(NSNumber *)octane
+                                    error:(PELMDaoErrorBlk)errorBlk {
+  return [self singleGasLogForUser:user
+                          whereBlk:[self gasLogOctaneWhereBlk]
+                         whereArgs:@[octane]
                  comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPFuelPurchaseLog *)o1 purchasedAt] compare:[(FPFuelPurchaseLog *)o2 purchasedAt]];}
                orderByDomainColumn:COL_FUELPL_PURCHASED_AT
       orderByDomainColumnDirection:@"ASC"
@@ -2231,11 +2251,35 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                 error:errorBlk];
 }
 
+- (FPFuelPurchaseLog *)firstGasLogForVehicle:(FPVehicle *)vehicle
+                                      octane:(NSNumber *)octane
+                                       error:(PELMDaoErrorBlk)errorBlk {
+  return [self singleGasLogForVehicle:vehicle
+                             whereBlk:[self gasLogOctaneWhereBlk]
+                            whereArgs:@[octane]
+                    comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPFuelPurchaseLog *)o1 purchasedAt] compare:[(FPFuelPurchaseLog *)o2 purchasedAt]];}
+                  orderByDomainColumn:COL_FUELPL_PURCHASED_AT
+         orderByDomainColumnDirection:@"ASC"
+                                error:errorBlk];
+}
+
 - (FPFuelPurchaseLog *)firstGasLogForFuelstation:(FPFuelStation *)fuelstation
                                            error:(PELMDaoErrorBlk)errorBlk {
   return [self singleGasLogForFuelstation:fuelstation
                                  whereBlk:nil
                                 whereArgs:nil
+                        comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPFuelPurchaseLog *)o1 purchasedAt] compare:[(FPFuelPurchaseLog *)o2 purchasedAt]];}
+                      orderByDomainColumn:COL_FUELPL_PURCHASED_AT
+             orderByDomainColumnDirection:@"ASC"
+                                    error:errorBlk];
+}
+
+- (FPFuelPurchaseLog *)firstGasLogForFuelstation:(FPFuelStation *)fuelstation
+                                          octane:(NSNumber *)octane
+                                           error:(PELMDaoErrorBlk)errorBlk {
+  return [self singleGasLogForFuelstation:fuelstation
+                                 whereBlk:[self gasLogOctaneWhereBlk]
+                                whereArgs:@[octane]
                         comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPFuelPurchaseLog *)o1 purchasedAt] compare:[(FPFuelPurchaseLog *)o2 purchasedAt]];}
                       orderByDomainColumn:COL_FUELPL_PURCHASED_AT
              orderByDomainColumnDirection:@"ASC"
@@ -2253,6 +2297,18 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                              error:errorBlk];
 }
 
+- (FPFuelPurchaseLog *)lastGasLogForUser:(FPUser *)user
+                                  octane:(NSNumber *)octane
+                                   error:(PELMDaoErrorBlk)errorBlk {
+  return [self singleGasLogForUser:user
+                          whereBlk:[self gasLogOctaneWhereBlk]
+                         whereArgs:@[octane]
+                 comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPFuelPurchaseLog *)o1 purchasedAt] compare:[(FPFuelPurchaseLog *)o2 purchasedAt]];}
+               orderByDomainColumn:COL_FUELPL_PURCHASED_AT
+      orderByDomainColumnDirection:@"DESC"
+                             error:errorBlk];
+}
+
 - (FPFuelPurchaseLog *)lastGasLogForVehicle:(FPVehicle *)vehicle
                                       error:(PELMDaoErrorBlk)errorBlk {
   return [self singleGasLogForVehicle:vehicle
@@ -2264,11 +2320,35 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                 error:errorBlk];
 }
 
+- (FPFuelPurchaseLog *)lastGasLogForVehicle:(FPVehicle *)vehicle
+                                     octane:(NSNumber *)octane
+                                      error:(PELMDaoErrorBlk)errorBlk {
+  return [self singleGasLogForVehicle:vehicle
+                             whereBlk:[self gasLogOctaneWhereBlk]
+                            whereArgs:@[octane]
+                    comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPFuelPurchaseLog *)o1 purchasedAt] compare:[(FPFuelPurchaseLog *)o2 purchasedAt]];}
+                  orderByDomainColumn:COL_FUELPL_PURCHASED_AT
+         orderByDomainColumnDirection:@"DESC"
+                                error:errorBlk];
+}
+
 - (FPFuelPurchaseLog *)lastGasLogForFuelstation:(FPFuelStation *)fuelstation
                                           error:(PELMDaoErrorBlk)errorBlk {
   return [self singleGasLogForFuelstation:fuelstation
                                  whereBlk:nil
                                 whereArgs:nil
+                        comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPFuelPurchaseLog *)o1 purchasedAt] compare:[(FPFuelPurchaseLog *)o2 purchasedAt]];}
+                      orderByDomainColumn:COL_FUELPL_PURCHASED_AT
+             orderByDomainColumnDirection:@"DESC"
+                                    error:errorBlk];
+}
+
+- (FPFuelPurchaseLog *)lastGasLogForFuelstation:(FPFuelStation *)fuelstation
+                                         octane:(NSNumber *)octane
+                                          error:(PELMDaoErrorBlk)errorBlk {
+  return [self singleGasLogForFuelstation:fuelstation
+                                 whereBlk:[self gasLogOctaneWhereBlk]
+                                whereArgs:@[octane]
                         comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPFuelPurchaseLog *)o1 purchasedAt] compare:[(FPFuelPurchaseLog *)o2 purchasedAt]];}
                       orderByDomainColumn:COL_FUELPL_PURCHASED_AT
              orderByDomainColumnDirection:@"DESC"
