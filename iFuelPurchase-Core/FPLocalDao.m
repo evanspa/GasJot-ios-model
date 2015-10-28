@@ -1594,7 +1594,10 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
       [octanes setObject:fplog.octane forKey:fplog.octane];
     }
   }
-  return [octanes allKeys];
+  NSArray *distinctOctanes = [octanes allKeys];
+  return [distinctOctanes sortedArrayUsingComparator:^NSComparisonResult(NSNumber *obj1, NSNumber *obj2) {
+    return [obj1 compare:obj2];
+  }];
 }
 
 - (NSArray *)distinctOctanesForUser:(FPUser *)user
