@@ -58,7 +58,9 @@ typedef id (^FPValueBlock)(void);
         gallonPriceSum = [gallonPriceSum decimalNumberByAdding:fplog.gallonPrice];
       }
     }
-    return [gallonPriceSum decimalNumberByDividingBy:[[NSDecimalNumber alloc] initWithInteger:numRelevantLogs]];
+    if (numRelevantLogs > 0) {
+      return [gallonPriceSum decimalNumberByDividingBy:[[NSDecimalNumber alloc] initWithInteger:numRelevantLogs]];
+    }
   }
   return nil;
 }
