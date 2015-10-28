@@ -1586,9 +1586,8 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
 
 #pragma mark - Fuel Purchase Log
 
-- (NSArray *)distinctOctanesForFuelstation:(FPFuelStation *)fuelstation
-                                     error:(PELMDaoErrorBlk)errorBlk {
-  NSArray *fplogs = [self unorderedFuelPurchaseLogsForFuelstation:fuelstation error:errorBlk];
+- (NSArray *)distinctOctanesForLogsBlk:(NSArray *(^)(void))logsBlk {
+  NSArray *fplogs = logsBlk();
   NSMutableDictionary *octanes = [NSMutableDictionary dictionary];
   for (FPFuelPurchaseLog *fplog in fplogs) {
     if (![PEUtils isNil:fplog.octane]) {
@@ -1596,6 +1595,21 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
     }
   }
   return [octanes allKeys];
+}
+
+- (NSArray *)distinctOctanesForUser:(FPUser *)user
+                              error:(PELMDaoErrorBlk)errorBlk {
+  return [self distinctOctanesForLogsBlk:^{return [self unorderedFuelPurchaseLogsForUser:user error:errorBlk];}];
+}
+
+- (NSArray *)distinctOctanesForVehicle:(FPVehicle *)vehicle
+                                 error:(PELMDaoErrorBlk)errorBlk {
+  return [self distinctOctanesForLogsBlk:^{return [self unorderedFuelPurchaseLogsForVehicle:vehicle error:errorBlk];}];
+}
+
+- (NSArray *)distinctOctanesForFuelstation:(FPFuelStation *)fuelstation
+                                     error:(PELMDaoErrorBlk)errorBlk {
+  return [self distinctOctanesForLogsBlk:^{return [self unorderedFuelPurchaseLogsForFuelstation:fuelstation error:errorBlk];}];
 }
 
 - (NSArray *)unorderedFuelPurchaseLogsForFuelstation:(FPFuelStation *)fuelstation

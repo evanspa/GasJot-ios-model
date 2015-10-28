@@ -249,6 +249,12 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
 
 #pragma mark - Fuel Purchase Log
 
+- (NSArray *)distinctOctanesForUser:(FPUser *)user
+                              error:(PELMDaoErrorBlk)errorBlk;
+
+- (NSArray *)distinctOctanesForVehicle:(FPVehicle *)vehicle
+                                 error:(PELMDaoErrorBlk)errorBlk;
+
 - (NSArray *)distinctOctanesForFuelstation:(FPFuelStation *)fuelstation
                                      error:(PELMDaoErrorBlk)errorBlk;
 
