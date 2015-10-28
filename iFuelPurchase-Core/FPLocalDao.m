@@ -1761,6 +1761,37 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
   return fplog;
 }
 
+- (FPFuelPurchaseLog *)minMaxGallonPriceFuelPurchaseLogForVehicle:(FPVehicle *)vehicle
+                                                         whereBlk:(NSString *(^)(NSString *))whereBlk
+                                                        whereArgs:(NSArray *)whereArgs
+                                     orderByDomainColumnDirection:(NSString *)orderByDomainColumnDirection
+                                                            error:(PELMDaoErrorBlk)errorBlk {
+  __block FPFuelPurchaseLog *fplog = nil;
+  [_databaseQueue inDatabase:^(FMDatabase *db) {
+    NSArray *fplogs = [PELMUtils entitiesForParentEntity:vehicle
+                                   parentEntityMainTable:TBL_MAIN_VEHICLE
+                             parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainVehicleFromResultSet:rs];}
+                              parentEntityMasterIdColumn:COL_MASTER_VEHICLE_ID
+                                parentEntityMainIdColumn:COL_MAIN_VEHICLE_ID
+                                                pageSize:@(1)
+                                                whereBlk:whereBlk
+                                               whereArgs:whereArgs
+                                       entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
+                          masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
+                                         entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                            mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSet:rs];}
+                                       comparatorForSort:nil
+                                     orderByDomainColumn:COL_FUELPL_PRICE_PER_GALLON
+                            orderByDomainColumnDirection:orderByDomainColumnDirection
+                                                      db:db
+                                                   error:errorBlk];
+    if ([fplogs count] > 0) {
+      fplog = fplogs[0];
+    }
+  }];
+  return fplog;
+}
+
 - (NSString *(^)(NSString *))fpLogDateRangeOctaneWhereBlk {
   return ^(NSString *colPrefix) {
     return [NSString stringWithFormat:@"%@%@ < ? AND %@%@ >= ? AND %@%@ = ?",
@@ -1811,6 +1842,54 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
             colPrefix,
             COL_FUELPL_OCTANE];
   };
+}
+
+- (FPFuelPurchaseLog *)maxGallonPriceFuelPurchaseLogForVehicle:(FPVehicle *)vehicle
+                                                    beforeDate:(NSDate *)beforeDate
+                                                 onOrAfterDate:(NSDate *)onOrAfterDate
+                                                        octane:(NSNumber *)octane
+                                                         error:(PELMDaoErrorBlk)errorBlk {
+  return [self minMaxGallonPriceFuelPurchaseLogForVehicle:vehicle
+                                                 whereBlk:[self fpLogDateRangeOctaneWhereBlk]
+                                                whereArgs:@[[PEUtils millisecondsFromDate:beforeDate],
+                                                            [PEUtils millisecondsFromDate:onOrAfterDate],
+                                                            octane]
+                             orderByDomainColumnDirection:@"DESC"
+                                                    error:errorBlk];
+}
+
+- (FPFuelPurchaseLog *)minGallonPriceFuelPurchaseLogForVehicle:(FPVehicle *)vehicle
+                                                    beforeDate:(NSDate *)beforeDate
+                                                 onOrAfterDate:(NSDate *)onOrAfterDate
+                                                        octane:(NSNumber *)octane
+                                                         error:(PELMDaoErrorBlk)errorBlk {
+  return [self minMaxGallonPriceFuelPurchaseLogForVehicle:vehicle
+                                                 whereBlk:[self fpLogDateRangeOctaneWhereBlk]
+                                                whereArgs:@[[PEUtils millisecondsFromDate:beforeDate],
+                                                            [PEUtils millisecondsFromDate:onOrAfterDate],
+                                                            octane]
+                             orderByDomainColumnDirection:@"ASC"
+                                                    error:errorBlk];
+}
+
+- (FPFuelPurchaseLog *)maxGallonPriceFuelPurchaseLogForVehicle:(FPVehicle *)vehicle
+                                                        octane:(NSNumber *)octane
+                                                         error:(PELMDaoErrorBlk)errorBlk {
+  return [self minMaxGallonPriceFuelPurchaseLogForVehicle:vehicle
+                                                 whereBlk:[self fpLogOctaneWhereBlk]
+                                                whereArgs:@[octane]
+                             orderByDomainColumnDirection:@"DESC"
+                                                    error:errorBlk];
+}
+
+- (FPFuelPurchaseLog *)minGallonPriceFuelPurchaseLogForVehicle:(FPVehicle *)vehicle
+                                                        octane:(NSNumber *)octane
+                                                         error:(PELMDaoErrorBlk)errorBlk {
+  return [self minMaxGallonPriceFuelPurchaseLogForVehicle:vehicle
+                                                 whereBlk:[self fpLogOctaneWhereBlk]
+                                                whereArgs:@[octane]
+                             orderByDomainColumnDirection:@"ASC"
+                                                    error:errorBlk];
 }
 
 - (FPFuelPurchaseLog *)maxGallonPriceFuelPurchaseLogForFuelstation:(FPFuelStation *)fuelstation
