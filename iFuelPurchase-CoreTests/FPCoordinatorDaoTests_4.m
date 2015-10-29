@@ -120,7 +120,7 @@ describe(@"FPCoordinatorDao", ^{
       NSArray *vehicles = [_coordDao vehiclesForUser:user error:[_coordTestCtx newLocalFetchErrBlkMaker]()];
       [[vehicles should] haveCountOf:2];
       [[theValue([_coordDao numVehiclesForUser:user error:[_coordTestCtx newLocalFetchErrBlkMaker]()]) should] equal:theValue(2)];
-      vehicle = vehicles[1];
+      vehicle = vehicles[0];
       [[[vehicle name] should] equal:@"300ZX Edit 1"];
       [[theValue([vehicle editCount]) should] equal:theValue(1)]; // canceling previous edit decrements the edit count
       [[theValue([vehicle editInProgress]) should] beNo];
@@ -155,7 +155,7 @@ describe(@"FPCoordinatorDao", ^{
       [_coordDao markAsDoneEditingVehicle:vehicle
                                     error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       // 1 more sanity check
-      vehicle = [_coordDao vehiclesForUser:user error:[_coordTestCtx newLocalFetchErrBlkMaker]()][1];
+      vehicle = [_coordDao vehiclesForUser:user error:[_coordTestCtx newLocalFetchErrBlkMaker]()][0];
       [[[vehicle name] should] equal:@"300ZX Edit 1"];
       [[theValue([vehicle editCount]) should] equal:theValue(4)];
       [[theValue([vehicle editInProgress]) should] beNo];

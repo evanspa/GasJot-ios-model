@@ -377,6 +377,11 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                                       octane:(NSNumber *)octane
                                        error:(PELMDaoErrorBlk)errorBlk;
 
+- (FPFuelPurchaseLog *)firstGasLogForVehicle:(FPVehicle *)vehicle
+                                  beforeDate:(NSDate *)beforeDate
+                               onOrAfterDate:(NSDate *)onOrAfterDate
+                                       error:(PELMDaoErrorBlk)errorBlk;
+
 - (FPFuelPurchaseLog *)firstGasLogForFuelstation:(FPFuelStation *)fuelstation
                                            error:(PELMDaoErrorBlk)errorBlk;
 
@@ -394,9 +399,13 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
 - (FPFuelPurchaseLog *)lastGasLogForVehicle:(FPVehicle *)vehicle
                                       error:(PELMDaoErrorBlk)errorBlk;
 
-
 - (FPFuelPurchaseLog *)lastGasLogForVehicle:(FPVehicle *)vehicle
                                      octane:(NSNumber *)octane
+                                      error:(PELMDaoErrorBlk)errorBlk;
+
+- (FPFuelPurchaseLog *)lastGasLogForVehicle:(FPVehicle *)vehicle
+                                 beforeDate:(NSDate *)beforeDate
+                              onOrAfterDate:(NSDate *)onOrAfterDate
                                       error:(PELMDaoErrorBlk)errorBlk;
 
 - (FPFuelPurchaseLog *)lastGasLogForFuelstation:(FPFuelStation *)fuelstation

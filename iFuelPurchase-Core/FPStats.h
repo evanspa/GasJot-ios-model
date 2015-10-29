@@ -15,6 +15,26 @@
 
 - (id)initWithLocalDao:(FPLocalDao *)localDao errorBlk:(PELMDaoErrorBlk)errorBlk;
 
+#pragma mark - Days Between Fill-ups
+
+- (NSDecimalNumber *)yearToDateAvgDaysBetweenFillupsForVehicle:(FPVehicle *)vehicle;
+
+- (NSNumber *)yearToDateMaxDaysBetweenFillupsForVehicle:(FPVehicle *)vehicle;
+
+- (NSArray *)yearToDateDaysBetweenFillupsDataSetForVehicle:(FPVehicle *)vehicle;
+
+- (NSDecimalNumber *)lastYearAvgDaysBetweenFillupsForVehicle:(FPVehicle *)vehicle;
+
+- (NSNumber *)lastYearMaxDaysBetweenFillupsForVehicle:(FPVehicle *)vehicle;
+
+- (NSArray *)lastYearDaysBetweenFillupsDataSetForVehicle:(FPVehicle *)vehicle;
+
+- (NSDecimalNumber *)overallAvgDaysBetweenFillupsForVehicle:(FPVehicle *)vehicle;
+
+- (NSNumber *)overallMaxDaysBetweenFillupsForVehicle:(FPVehicle *)vehicle;
+
+- (NSArray *)overallDaysBetweenFillupsDataSetForVehicle:(FPVehicle *)vehicle;
+
 #pragma mark - Gas Cost Per Mile
 
 - (NSDecimalNumber *)yearToDateGasCostPerMileForVehicle:(FPVehicle *)vehicle;

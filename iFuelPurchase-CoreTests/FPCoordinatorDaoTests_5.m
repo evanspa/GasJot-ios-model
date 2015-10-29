@@ -92,7 +92,7 @@ describe(@"FPCoordinatorDao", ^{
       [[_numEntitiesBlk(TBL_MAIN_USER) should] equal:[NSNumber numberWithInt:1]]; // user was rightfully not pruned either (sanity check)
       [[_numEntitiesBlk(TBL_MASTER_USER) should] equal:[NSNumber numberWithInt:1]];
       // now lets refetch the vehicle
-      newVehicle = [[_coordDao vehiclesForUser:user error:[_coordTestCtx newLocalSaveErrBlkMaker]()] objectAtIndex:0];
+      newVehicle = [[_coordDao vehiclesForUser:user error:[_coordTestCtx newLocalSaveErrBlkMaker]()] objectAtIndex:2];
       [newVehicle shouldNotBeNil];
       [[[newVehicle name] should] equal:@"My Z Car"]; // sanity check to make sure that the zeroth element is our new addition
       [[theValue([newVehicle synced]) should] beNo];
@@ -120,7 +120,7 @@ describe(@"FPCoordinatorDao", ^{
       [[expectFutureValue(theValue(allDone)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
       [[theValue(totalNumToSync) should] equal:theValue(1)];
       [[theValue(overallFlushProgress) should] equal:theValue(1.0)];
-      newVehicle = [_coordDao vehiclesForUser:user error:[_coordTestCtx newLocalSaveErrBlkMaker]()][0];
+      newVehicle = [_coordDao vehiclesForUser:user error:[_coordTestCtx newLocalSaveErrBlkMaker]()][2];
       [[[newVehicle name] should] equal:@"My Z Car"];
       [[theValue([newVehicle synced]) should] beNo];
       [[theValue([newVehicle syncInProgress]) should] beNo];
@@ -153,7 +153,7 @@ describe(@"FPCoordinatorDao", ^{
       [[expectFutureValue(theValue(allDone)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
       [[theValue(totalNumToSync) should] equal:theValue(1)];
       [[theValue(overallFlushProgress) should] equal:theValue(1.0)];
-      newVehicle = [_coordDao vehiclesForUser:user error:[_coordTestCtx newLocalSaveErrBlkMaker]()][0];
+      newVehicle = [_coordDao vehiclesForUser:user error:[_coordTestCtx newLocalSaveErrBlkMaker]()][2];
       [[[newVehicle name] should] equal:@"My Z Car"];
       [[theValue([newVehicle synced]) should] beNo];
       [[theValue([newVehicle syncInProgress]) should] beNo];
@@ -185,7 +185,7 @@ describe(@"FPCoordinatorDao", ^{
       [[expectFutureValue(theValue(allDone)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
       [[theValue(totalNumToSync) should] equal:theValue(1)];
       [[theValue(overallFlushProgress) should] equal:theValue(1.0)];
-      newVehicle = [_coordDao vehiclesForUser:user error:[_coordTestCtx newLocalSaveErrBlkMaker]()][0];
+      newVehicle = [_coordDao vehiclesForUser:user error:[_coordTestCtx newLocalSaveErrBlkMaker]()][2];
       [[[newVehicle name] should] equal:@"My Z Car"];
       [[theValue([newVehicle synced]) should] beNo];
       [[theValue([newVehicle syncInProgress]) should] beNo];

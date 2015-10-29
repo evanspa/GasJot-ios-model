@@ -113,7 +113,7 @@ describe(@"FPCoordinatorDao", ^{
       NSArray *vehicles = [_coordDao vehiclesForUser:user error:[_coordTestCtx newLocalFetchErrBlkMaker]()];
       [vehicles shouldNotBeNil];
       [[vehicles should] haveCountOf:2];
-      FPVehicle *vehicle = [vehicles objectAtIndex:0];
+      FPVehicle *vehicle = [vehicles objectAtIndex:1];
       [[[vehicle globalIdentifier] should] equal:@"http://example.com/gasjot/d/users/U1123409100/vehicles/V429"];
       [[[vehicle mediaType] should] equal:[HCMediaType MediaTypeFromString:@"application/vnd.fp.vehicle-v0.0.1+json"]];
       [[[vehicle name] should] equal:@"My Mazda"];

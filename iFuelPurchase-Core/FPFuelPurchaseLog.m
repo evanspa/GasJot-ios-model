@@ -272,7 +272,7 @@ NSString * const FPFplogFuelstationGlobalIdField = @"FPFplogFuelstationGlobalIdF
 - (NSString *)description {
   return [NSString stringWithFormat:@"%@, num gallons: [%@], octane: [%@], \
 gallon price: [%@], got car wash: [%d], car wash per gallon discount: [%@], \
-log date: [%@]", [super description],
+purchased at: [%@]", [super description],
           _numGallons,
           _octane,
           _gallonPrice,

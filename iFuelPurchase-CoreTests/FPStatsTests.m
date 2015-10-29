@@ -91,6 +91,46 @@ describe(@"FPStats", ^{
     return fplog;
   };
   
+  context(@"4 gas logs for testing days-between-fillups functions", ^{
+    beforeAll(^{
+      resetUser();
+      saveGasLog(_v1, _fs1, @"15.0", 87, @"4.129", NO, @"0.08", @"02/04/2013");
+      saveGasLog(_v1, _fs1, @"15.0", 87, @"4.129", NO, @"0.08", @"02/06/2013");
+      saveGasLog(_v1, _fs1, @"15.0", 87, @"4.129", NO, @"0.08", @"02/20/2013");
+      saveGasLog(_v1, _fs1, @"15.0", 87, @"4.129", NO, @"0.08", @"02/24/2013");
+    });
+    
+    it(@"Days between fillups stats work", ^{
+      [[[_stats overallAvgDaysBetweenFillupsForVehicle:_v1] should] equal:[NSDecimalNumber decimalNumberWithString:@"6.6666666666666666666666666666666666666"]];
+      [[[_stats overallMaxDaysBetweenFillupsForVehicle:_v1] should] equal:@(14)];
+      NSArray *dataset = [_stats overallDaysBetweenFillupsDataSetForVehicle:_v1];
+      [[dataset should] haveCountOf:3];
+      [[dataset[0][0] should] equal:_d(@"02/06/2013")];
+      [[dataset[0][1] should] equal:@(2)];
+      [[dataset[1][0] should] equal:_d(@"02/20/2013")];
+      [[dataset[1][1] should] equal:@(14)];
+      [[dataset[2][0] should] equal:_d(@"02/24/2013")];
+      [[dataset[2][1] should] equal:@(4)];
+    });
+  });
+  
+  context(@"2 gas logs for testing days-between-fillups functions", ^{
+    beforeAll(^{
+      resetUser();
+      saveGasLog(_v1, _fs1, @"15.0", 87, @"4.129", NO, @"0.08", @"02/04/2013");
+      saveGasLog(_v1, _fs1, @"15.0", 87, @"4.129", NO, @"0.08", @"02/06/2013");
+    });
+    
+    it(@"Days between fillups stats work", ^{
+      [[[_stats overallAvgDaysBetweenFillupsForVehicle:_v1] should] equal:[NSDecimalNumber decimalNumberWithString:@"2.0"]];
+      [[[_stats overallMaxDaysBetweenFillupsForVehicle:_v1] should] equal:@(2)];
+      NSArray *dataset = [_stats overallDaysBetweenFillupsDataSetForVehicle:_v1];
+      [[dataset should] haveCountOf:1];
+      [[dataset[0][0] should] equal:_d(@"02/06/2013")];
+      [[dataset[0][1] should] equal:@(2)];
+    });
+  });
+  
   context(@"Several couple gas and odometer logs over several months for data set testing", ^{
     beforeAll(^{
       resetUser();
@@ -358,6 +398,21 @@ describe(@"FPStats", ^{
   });
 
   context(@"There are no gas or odometer logs", ^{
+    
+    it(@"Days between fillups stats work", ^{
+      [[_stats yearToDateAvgDaysBetweenFillupsForVehicle:_v1] shouldBeNil];
+      [[_stats lastYearAvgDaysBetweenFillupsForVehicle:_v1] shouldBeNil];
+      [[_stats overallAvgDaysBetweenFillupsForVehicle:_v1] shouldBeNil];
+      
+      [[_stats yearToDateMaxDaysBetweenFillupsForVehicle:_v1] shouldBeNil];
+      [[_stats lastYearMaxDaysBetweenFillupsForVehicle:_v1] shouldBeNil];
+      [[_stats overallMaxDaysBetweenFillupsForVehicle:_v1] shouldBeNil];
+      
+      [[[_stats yearToDateDaysBetweenFillupsDataSetForVehicle:_v1] should] beEmpty];
+      [[[_stats lastYearDaysBetweenFillupsDataSetForVehicle:_v1] should] beEmpty];
+      [[[_stats overallDaysBetweenFillupsDataSetForVehicle:_v1] should] beEmpty];
+    });
+    
     it(@"YTD and total spend on gas stats work", ^{
       [[[_stats yearToDateSpentOnGasForUser:_user] should] equal:[NSDecimalNumber zero]];
       [[[_stats yearToDateSpentOnGasForVehicle:_v1] should] equal:[NSDecimalNumber zero]];
@@ -401,6 +456,20 @@ describe(@"FPStats", ^{
       fplog = saveGasLog(_v1, _fs1, @"15.2", 87, @"3.85", NO, @"0.08", _d(@"01/02/2015"));
       envlog2= saveOdometerLog(_v1, @"1324", nil, nil, 60, _d(@"01/03/2015"), nil);
       saveOdometerLog(_v1, @"1324", nil, nil, 60, _d(@"01/04/2015"), nil);
+    });
+    
+    it(@"Days between fillups stats work", ^{
+      [[_stats yearToDateAvgDaysBetweenFillupsForVehicle:_v1] shouldBeNil];
+      [[_stats lastYearAvgDaysBetweenFillupsForVehicle:_v1] shouldBeNil];
+      [[_stats overallAvgDaysBetweenFillupsForVehicle:_v1] shouldBeNil];
+      
+      [[_stats yearToDateMaxDaysBetweenFillupsForVehicle:_v1] shouldBeNil];
+      [[_stats lastYearMaxDaysBetweenFillupsForVehicle:_v1] shouldBeNil];
+      [[_stats overallMaxDaysBetweenFillupsForVehicle:_v1] shouldBeNil];
+      
+      [[[_stats yearToDateDaysBetweenFillupsDataSetForVehicle:_v1] should] beEmpty];
+      [[[_stats lastYearDaysBetweenFillupsDataSetForVehicle:_v1] should] beEmpty];
+      [[[_stats overallDaysBetweenFillupsDataSetForVehicle:_v1] should] beEmpty];
     });
 
     it(@"Miles recorded", ^{
