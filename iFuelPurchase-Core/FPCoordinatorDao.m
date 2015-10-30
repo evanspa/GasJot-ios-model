@@ -1545,9 +1545,8 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk {
   return [_localDao fuelStationForFuelPurchaseLog:fpLog error:errorBlk];
 }
 
-- (FPVehicle *)defaultVehicleForNewFuelPurchaseLogForUser:(FPUser *)user
-                                                    error:(PELMDaoErrorBlk)errorBlk {
-  return [_localDao defaultVehicleForNewFuelPurchaseLogForUser:user error:errorBlk];
+- (FPVehicle *)vehicleForMostRecentFuelPurchaseLogForUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk {
+  return [_localDao vehicleForMostRecentFuelPurchaseLogForUser:user error:errorBlk];
 }
 
 - (FPFuelStation *)defaultFuelStationForNewFuelPurchaseLogForUser:(FPUser *)user

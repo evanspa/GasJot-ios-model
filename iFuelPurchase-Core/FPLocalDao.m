@@ -3018,8 +3018,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
 - (FPVehicle *)vehicleForMostRecentFuelPurchaseLogForUser:(FPUser *)user
                                                        db:(FMDatabase *)db
                                                     error:(PELMDaoErrorBlk)errorBlk {
-  FPFuelPurchaseLog *mostRecentFpLog =
-  [self mostRecentFuelPurchaseLogForUser:user db:db error:errorBlk];
+  FPFuelPurchaseLog *mostRecentFpLog = [self mostRecentFuelPurchaseLogForUser:user db:db error:errorBlk];
   if (mostRecentFpLog) {
     return [self vehicleForFuelPurchaseLog:mostRecentFpLog db:db error:errorBlk];
   }
@@ -3079,8 +3078,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                                                 error:errorBlk];
 }
 
-- (FPVehicle *)defaultVehicleForNewFuelPurchaseLogForUser:(FPUser *)user
-                                                    error:(PELMDaoErrorBlk)errorBlk {
+- (FPVehicle *)vehicleForMostRecentFuelPurchaseLogForUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk {
   __block FPVehicle *vehicle = nil;
   [_databaseQueue inDatabase:^(FMDatabase *db) {
     vehicle = [self vehicleForMostRecentFuelPurchaseLogForUser:user db:db error:errorBlk];

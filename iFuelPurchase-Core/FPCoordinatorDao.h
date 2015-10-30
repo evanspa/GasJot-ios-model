@@ -500,8 +500,7 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk;
 - (FPFuelStation *)fuelStationForFuelPurchaseLog:(FPFuelPurchaseLog *)fpLog
                                            error:(PELMDaoErrorBlk)errorBlk;
 
-- (FPVehicle *)defaultVehicleForNewFuelPurchaseLogForUser:(FPUser *)user
-                                                    error:(PELMDaoErrorBlk)errorBlk;
+- (FPVehicle *)vehicleForMostRecentFuelPurchaseLogForUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk;
 
 - (FPFuelStation *)defaultFuelStationForNewFuelPurchaseLogForUser:(FPUser *)user
                                                   currentLocation:(CLLocation *)currentLocation

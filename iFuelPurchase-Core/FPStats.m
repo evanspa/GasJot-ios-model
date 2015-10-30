@@ -427,7 +427,6 @@ typedef id (^FPValueBlock)(void);
 - (NSDecimalNumber *)overallAvgDaysBetweenFillupsForVehicle:(FPVehicle *)vehicle {
   NSCalendar *calendar = [NSCalendar currentCalendar];
   FPFuelPurchaseLog *firstGasLog = [_localDao firstGasLogForVehicle:vehicle error:_errorBlk];
-  NSLog(@"firstGazLog: %@", firstGasLog);
   if (firstGasLog) {
     NSDate *now = [NSDate date];
     return [self avgDaysBetweenFillupsForVehicle:vehicle
