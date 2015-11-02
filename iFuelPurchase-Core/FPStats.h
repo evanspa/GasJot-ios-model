@@ -59,17 +59,41 @@
 
 - (NSArray *)yearToDateSpentOnGasDataSetForUser:(FPUser *)user;
 
+- (NSDecimalNumber *)yearToDateAvgSpentOnGasForUser:(FPUser *)user;
+
+- (NSDecimalNumber *)yearToDateMinSpentOnGasForUser:(FPUser *)user;
+
+- (NSDecimalNumber *)yearToDateMaxSpentOnGasForUser:(FPUser *)user;
+
 - (NSDecimalNumber *)lastYearSpentOnGasForUser:(FPUser *)user;
 
 - (NSArray *)lastYearSpentOnGasDataSetForUser:(FPUser *)user;
+
+- (NSDecimalNumber *)lastYearAvgSpentOnGasForUser:(FPUser *)user;
+
+- (NSDecimalNumber *)lastYearMinSpentOnGasForUser:(FPUser *)user;
+
+- (NSDecimalNumber *)lastYearMaxSpentOnGasForUser:(FPUser *)user;
 
 - (NSDecimalNumber *)overallSpentOnGasForUser:(FPUser *)user;
 
 - (NSArray *)overallSpentOnGasDataSetForUser:(FPUser *)user;
 
+- (NSDecimalNumber *)overallAvgSpentOnGasForUser:(FPUser *)user;
+
+- (NSDecimalNumber *)overallMinSpentOnGasForUser:(FPUser *)user;
+
+- (NSDecimalNumber *)overallMaxSpentOnGasForUser:(FPUser *)user;
+
 - (NSDecimalNumber *)yearToDateSpentOnGasForVehicle:(FPVehicle *)vehicle;
 
 - (NSArray *)yearToDateSpentOnGasDataSetForVehicle:(FPVehicle *)vehicle;
+
+- (NSDecimalNumber *)yearToDateAvgSpentOnGasForVehicle:(FPVehicle *)vehicle;
+
+- (NSDecimalNumber *)yearToDateMinSpentOnGasForVehicle:(FPVehicle *)vehicle;
+
+- (NSDecimalNumber *)yearToDateMaxSpentOnGasForVehicle:(FPVehicle *)vehicle;
 
 - (NSDecimalNumber *)lastYearSpentOnGasForVehicle:(FPVehicle *)vehicle;
 
@@ -77,21 +101,51 @@
 
 - (NSArray *)spentOnGasDataSetForVehicle:(FPVehicle *)vehicle year:(NSInteger)year;
 
+- (NSDecimalNumber *)lastYearAvgSpentOnGasForVehicle:(FPVehicle *)vehicle;
+
+- (NSDecimalNumber *)lastYearMinSpentOnGasForVehicle:(FPVehicle *)vehicle;
+
+- (NSDecimalNumber *)lastYearMaxSpentOnGasForVehicle:(FPVehicle *)vehicle;
+
 - (NSDecimalNumber *)overallSpentOnGasForVehicle:(FPVehicle *)vehicle;
 
 - (NSArray *)overallSpentOnGasDataSetForVehicle:(FPVehicle *)vehicle;
+
+- (NSDecimalNumber *)overallAvgSpentOnGasForVehicle:(FPVehicle *)vehicle;
+
+- (NSDecimalNumber *)overallMinSpentOnGasForVehicle:(FPVehicle *)vehicle;
+
+- (NSDecimalNumber *)overallMaxSpentOnGasForVehicle:(FPVehicle *)vehicle;
 
 - (NSDecimalNumber *)yearToDateSpentOnGasForFuelstation:(FPFuelStation *)fuelstation;
 
 - (NSArray *)yearToDateSpentOnGasDataSetForFuelstation:(FPFuelStation *)fuelstation;
 
+- (NSDecimalNumber *)yearToDateAvgSpentOnGasForFuelstation:(FPFuelStation *)fuelstation;
+
+- (NSDecimalNumber *)yearToDateMinSpentOnGasForFuelstation:(FPFuelStation *)fuelstation;
+
+- (NSDecimalNumber *)yearToDateMaxSpentOnGasForFuelstation:(FPFuelStation *)fuelstation;
+
 - (NSDecimalNumber *)lastYearSpentOnGasForFuelstation:(FPFuelStation *)fuelstation;
 
 - (NSArray *)lastYearSpentOnGasDataSetForFuelstation:(FPFuelStation *)fuelstation;
 
+- (NSDecimalNumber *)lastYearAvgSpentOnGasForFuelstation:(FPFuelStation *)fuelstation;
+
+- (NSDecimalNumber *)lastYearMinSpentOnGasForFuelstation:(FPFuelStation *)fuelstation;
+
+- (NSDecimalNumber *)lastYearMaxSpentOnGasForFuelstation:(FPFuelStation *)fuelstation;
+
 - (NSDecimalNumber *)overallSpentOnGasForFuelstation:(FPFuelStation *)fuelstation;
 
 - (NSArray *)overallSpentOnGasDataSetForFuelstation:(FPFuelStation *)fuelstation;
+
+- (NSDecimalNumber *)overallAvgSpentOnGasForFuelstation:(FPFuelStation *)fuelstation;
+
+- (NSDecimalNumber *)overallMinSpentOnGasForFuelstation:(FPFuelStation *)fuelstation;
+
+- (NSDecimalNumber *)overallMaxSpentOnGasForFuelstation:(FPFuelStation *)fuelstation;
 
 #pragma mark - Average Price Per Gallon
 
