@@ -91,6 +91,68 @@ describe(@"FPStats", ^{
     return fplog;
   };
   
+  context(@"Several gas logs for 2 vehicles with non-overlapping purchased-at dates for testing user-level days-between-fillups functions", ^{
+    beforeAll(^{
+      resetUser();
+      saveGasLog(_v1, _fs1, @"15.0", 87, @"4.129", NO, @"0.08", @"02/04/2013");
+      saveGasLog(_v1, _fs1, @"15.0", 87, @"4.129", NO, @"0.08", @"02/06/2013");
+      saveGasLog(_v1, _fs1, @"15.0", 87, @"4.129", NO, @"0.08", @"02/20/2013");
+      saveGasLog(_v1, _fs1, @"15.0", 87, @"4.129", NO, @"0.08", @"02/24/2013");
+      FPVehicle *v2 = [_coordDao vehicleWithName:@"300zx" defaultOctane:@93 fuelCapacity:[NSDecimalNumber decimalNumberWithString:@"19.1"]];
+      [_coordDao saveNewVehicle:v2 forUser:_user error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+      saveGasLog(v2, _fs1, @"15.2", 91, @"4.129", NO, @"0.08", @"02/01/2013");
+      saveGasLog(v2, _fs1, @"15.3", 91, @"4.129", NO, @"0.08", @"02/07/2013");
+      saveGasLog(v2, _fs1, @"15.0", 91, @"4.129", NO, @"0.08", @"02/22/2013");
+      saveGasLog(v2, _fs1, @"15.4", 91, @"4.129", NO, @"0.08", @"02/24/2013");
+    });
+    
+    it(@"Days between fillups for user stats works", ^{
+      [[[_stats overallAvgDaysBetweenFillupsForUser:_user] should] equal:[NSDecimalNumber decimalNumberWithString:@"8.0"]];
+      [[[_stats overallMaxDaysBetweenFillupsForUser:_user] should] equal:@(15)];
+      NSArray *dataset = [_stats overallDaysBetweenFillupsDataSetForUser:_user];
+      [[dataset should] haveCountOf:5];
+      [[dataset[0][0] should] equal:_d(@"02/06/2013")];
+      [[dataset[0][1] should] equal:@(2)];
+      [[dataset[1][0] should] equal:_d(@"02/07/2013")];
+      [[dataset[1][1] should] equal:@(6)];
+      [[dataset[2][0] should] equal:_d(@"02/20/2013")];
+      [[dataset[2][1] should] equal:@(14)];
+      [[dataset[3][0] should] equal:_d(@"02/22/2013")];
+      [[dataset[3][1] should] equal:@(15)];
+      [[dataset[4][0] should] equal:_d(@"02/24/2013")];
+      [[dataset[4][1] should] equal:@(3.0)];
+    });
+  });
+  
+  context(@"Several gas logs for 2 vehicles with overlapping purchased-at dates for testing user-level days-between-fillups functions", ^{
+    beforeAll(^{
+      resetUser();
+      saveGasLog(_v1, _fs1, @"15.0", 87, @"4.129", NO, @"0.08", @"02/04/2013");
+      saveGasLog(_v1, _fs1, @"15.0", 87, @"4.129", NO, @"0.08", @"02/06/2013");
+      saveGasLog(_v1, _fs1, @"15.0", 87, @"4.129", NO, @"0.08", @"02/20/2013");
+      saveGasLog(_v1, _fs1, @"15.0", 87, @"4.129", NO, @"0.08", @"02/24/2013");
+      FPVehicle *v2 = [_coordDao vehicleWithName:@"300zx" defaultOctane:@93 fuelCapacity:[NSDecimalNumber decimalNumberWithString:@"19.1"]];
+      [_coordDao saveNewVehicle:v2 forUser:_user error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+      saveGasLog(v2, _fs1, @"15.2", 91, @"4.129", NO, @"0.08", @"02/04/2013");
+      saveGasLog(v2, _fs1, @"15.3", 91, @"4.129", NO, @"0.08", @"02/06/2013");
+      saveGasLog(v2, _fs1, @"15.0", 91, @"4.129", NO, @"0.08", @"02/20/2013");
+      saveGasLog(v2, _fs1, @"15.4", 91, @"4.129", NO, @"0.08", @"02/24/2013");
+    });
+    
+    it(@"Days between fillups for user stats works", ^{
+      [[[_stats overallAvgDaysBetweenFillupsForUser:_user] should] equal:[NSDecimalNumber decimalNumberWithString:@"6.6666666666666666666666666666666666666"]];
+      [[[_stats overallMaxDaysBetweenFillupsForUser:_user] should] equal:@(14)];
+      NSArray *dataset = [_stats overallDaysBetweenFillupsDataSetForUser:_user];
+      [[dataset should] haveCountOf:3];
+      [[dataset[0][0] should] equal:_d(@"02/06/2013")];
+      [[dataset[0][1] should] equal:@(2)];
+      [[dataset[1][0] should] equal:_d(@"02/20/2013")];
+      [[dataset[1][1] should] equal:@(14)];
+      [[dataset[2][0] should] equal:_d(@"02/24/2013")];
+      [[dataset[2][1] should] equal:@(4)];
+    });
+  });
+  
   context(@"4 gas logs for testing days-between-fillups functions", ^{
     beforeAll(^{
       resetUser();
@@ -100,7 +162,20 @@ describe(@"FPStats", ^{
       saveGasLog(_v1, _fs1, @"15.0", 87, @"4.129", NO, @"0.08", @"02/24/2013");
     });
     
-    it(@"Days between fillups stats work", ^{
+    it(@"Days between fillups for user stats works", ^{
+      [[[_stats overallAvgDaysBetweenFillupsForUser:_user] should] equal:[NSDecimalNumber decimalNumberWithString:@"6.6666666666666666666666666666666666666"]];
+      [[[_stats overallMaxDaysBetweenFillupsForUser:_user] should] equal:@(14)];
+      NSArray *dataset = [_stats overallDaysBetweenFillupsDataSetForUser:_user];
+      [[dataset should] haveCountOf:3];
+      [[dataset[0][0] should] equal:_d(@"02/06/2013")];
+      [[dataset[0][1] should] equal:@(2)];
+      [[dataset[1][0] should] equal:_d(@"02/20/2013")];
+      [[dataset[1][1] should] equal:@(14)];
+      [[dataset[2][0] should] equal:_d(@"02/24/2013")];
+      [[dataset[2][1] should] equal:@(4)];
+    });
+    
+    it(@"Days between fillups for vehicle stats works", ^{
       [[[_stats overallAvgDaysBetweenFillupsForVehicle:_v1] should] equal:[NSDecimalNumber decimalNumberWithString:@"6.6666666666666666666666666666666666666"]];
       [[[_stats overallMaxDaysBetweenFillupsForVehicle:_v1] should] equal:@(14)];
       NSArray *dataset = [_stats overallDaysBetweenFillupsDataSetForVehicle:_v1];
@@ -121,7 +196,16 @@ describe(@"FPStats", ^{
       saveGasLog(_v1, _fs1, @"15.0", 87, @"4.129", NO, @"0.08", @"02/06/2013");
     });
     
-    it(@"Days between fillups stats work", ^{
+    it(@"Days between fillups stats for user works", ^{
+      [[[_stats overallAvgDaysBetweenFillupsForUser:_user] should] equal:[NSDecimalNumber decimalNumberWithString:@"2.0"]];
+      [[[_stats overallMaxDaysBetweenFillupsForUser:_user] should] equal:@(2)];
+      NSArray *dataset = [_stats overallDaysBetweenFillupsDataSetForUser:_user];
+      [[dataset should] haveCountOf:1];
+      [[dataset[0][0] should] equal:_d(@"02/06/2013")];
+      [[dataset[0][1] should] equal:@(2)];
+    });
+    
+    it(@"Days between fillups stats for vehicle works", ^{
       [[[_stats overallAvgDaysBetweenFillupsForVehicle:_v1] should] equal:[NSDecimalNumber decimalNumberWithString:@"2.0"]];
       [[[_stats overallMaxDaysBetweenFillupsForVehicle:_v1] should] equal:@(2)];
       NSArray *dataset = [_stats overallDaysBetweenFillupsDataSetForVehicle:_v1];
@@ -167,21 +251,15 @@ describe(@"FPStats", ^{
     
     it(@"YTD and overall spent on gas data sets for vehicle", ^{
       NSArray *ds = [_stats spentOnGasDataSetForVehicle:_v1 year:2012];
-      [[ds should] haveCountOf:12];
-      [[ds[0][0] should] equal:_d(@"01/01/2012")];
-      [[ds[0][1] should] equal:[NSDecimalNumber decimalNumberWithString:@"0.0"]];
-      [[ds[6][0] should] equal:_d(@"07/01/2012")];
-      [[ds[6][1] should] equal:[NSDecimalNumber decimalNumberWithString:@"0.0"]];
-      [[ds[11][0] should] equal:_d(@"12/01/2012")];
-      [[ds[11][1] should] equal:[NSDecimalNumber decimalNumberWithString:@"0.0"]];
+      [[ds should] haveCountOf:0];
       ds = [_stats spentOnGasDataSetForVehicle:_v1 year:2013];
-      [[ds should] haveCountOf:12];
-      [[ds[0][0] should] equal:_d(@"01/01/2013")];
-      [[ds[0][1] should] equal:[NSDecimalNumber decimalNumberWithString:@"0.0"]];
-      [[ds[1][0] should] equal:_d(@"02/01/2013")];
-      [[ds[1][1] should] equal:[NSDecimalNumber decimalNumberWithString:@"121.9796"]];
-      [[ds[2][0] should] equal:_d(@"03/01/2013")];
-      [[ds[2][1] should] equal:[NSDecimalNumber decimalNumberWithString:@"60.0446"]];
+      [[ds should] haveCountOf:3]; //12];
+      [[ds[0][0] should] equal:_d(@"02/01/2013")];
+      [[ds[0][1] should] equal:[NSDecimalNumber decimalNumberWithString:@"121.9796"]];
+      [[ds[1][0] should] equal:_d(@"03/01/2013")];
+      [[ds[1][1] should] equal:[NSDecimalNumber decimalNumberWithString:@"60.0446"]];
+      [[ds[2][0] should] equal:_d(@"04/01/2013")];
+      [[ds[2][1] should] equal:[NSDecimalNumber decimalNumberWithString:@"180.1338"]];
     });
     
     it(@"YTD and overall gas cost per mile data sets for vehicle", ^{
@@ -414,12 +492,12 @@ describe(@"FPStats", ^{
     });
     
     it(@"YTD and total spend on gas stats work", ^{
-      [[[_stats yearToDateSpentOnGasForUser:_user] should] equal:[NSDecimalNumber zero]];
-      [[[_stats yearToDateSpentOnGasForVehicle:_v1] should] equal:[NSDecimalNumber zero]];
-      [[[_stats yearToDateSpentOnGasForFuelstation:_fs1] should] equal:[NSDecimalNumber zero]];
-      [[[_stats overallSpentOnGasForUser:_user] should] equal:[NSDecimalNumber zero]];
-      [[[_stats overallSpentOnGasForVehicle:_v1] should] equal:[NSDecimalNumber zero]];
-      [[[_stats overallSpentOnGasForFuelstation:_fs1] should] equal:[NSDecimalNumber zero]];
+      [[_stats yearToDateSpentOnGasForUser:_user] shouldBeNil];
+      [[_stats yearToDateSpentOnGasForVehicle:_v1] shouldBeNil];
+      [[_stats yearToDateSpentOnGasForFuelstation:_fs1] shouldBeNil];
+      [[_stats overallSpentOnGasForUser:_user] shouldBeNil];
+      [[_stats overallSpentOnGasForVehicle:_v1] shouldBeNil];
+      [[_stats overallSpentOnGasForFuelstation:_fs1] shouldBeNil];
     });
     
     it(@"YTD and overall average price of gas stats work", ^{

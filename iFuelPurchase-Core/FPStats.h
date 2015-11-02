@@ -17,6 +17,24 @@
 
 #pragma mark - Days Between Fill-ups
 
+- (NSDecimalNumber *)yearToDateAvgDaysBetweenFillupsForUser:(FPUser *)user;
+
+- (NSNumber *)yearToDateMaxDaysBetweenFillupsForUser:(FPUser *)user;
+
+- (NSArray *)yearToDateDaysBetweenFillupsDataSetForUser:(FPUser *)user;
+
+- (NSDecimalNumber *)lastYearAvgDaysBetweenFillupsForUser:(FPUser *)user;
+
+- (NSNumber *)lastYearMaxDaysBetweenFillupsForUser:(FPUser *)user;
+
+- (NSArray *)lastYearDaysBetweenFillupsDataSetForUser:(FPUser *)user;
+
+- (NSDecimalNumber *)overallAvgDaysBetweenFillupsForUser:(FPUser *)user;
+
+- (NSNumber *)overallMaxDaysBetweenFillupsForUser:(FPUser *)user;
+
+- (NSArray *)overallDaysBetweenFillupsDataSetForUser:(FPUser *)user;
+
 - (NSDecimalNumber *)yearToDateAvgDaysBetweenFillupsForVehicle:(FPVehicle *)vehicle;
 
 - (NSNumber *)yearToDateMaxDaysBetweenFillupsForVehicle:(FPVehicle *)vehicle;
@@ -36,6 +54,22 @@
 - (NSArray *)overallDaysBetweenFillupsDataSetForVehicle:(FPVehicle *)vehicle;
 
 #pragma mark - Gas Cost Per Mile
+
+- (NSDecimalNumber *)yearToDateGasCostPerMileForUser:(FPUser *)user;
+
+- (NSArray *)yearToDateGasCostPerMileDataSetForUser:(FPUser *)user;
+
+- (NSDecimalNumber *)gasCostPerMileForUser:(FPUser *)user year:(NSInteger)year;
+
+- (NSArray *)gasCostPerMileDataSetForUser:(FPUser *)user year:(NSInteger)year;
+
+- (NSDecimalNumber *)lastYearGasCostPerMileForUser:(FPUser *)user;
+
+- (NSArray *)lastYearGasCostPerMileDataSetForUser:(FPUser *)user;
+
+- (NSDecimalNumber *)overallGasCostPerMileForUser:(FPUser *)user;
+
+- (NSArray *)overallGasCostPerMileDataSetForUser:(FPUser *)user;
 
 - (NSDecimalNumber *)yearToDateGasCostPerMileForVehicle:(FPVehicle *)vehicle;
 

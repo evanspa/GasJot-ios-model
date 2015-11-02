@@ -607,6 +607,9 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                                   onOrAfterDate:(NSDate *)onOrAfterDate
                                           error:(PELMDaoErrorBlk)errorBlk;
 
+- (FPEnvironmentLog *)firstOdometerLogForUser:(FPUser *)user
+                                        error:(PELMDaoErrorBlk)errorBlk;
+
 - (FPEnvironmentLog *)firstOdometerLogForVehicle:(FPVehicle *)vehicle
                                            error:(PELMDaoErrorBlk)errorBlk;
 

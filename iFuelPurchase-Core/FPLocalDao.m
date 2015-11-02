@@ -3726,6 +3726,16 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                      error:errorBlk];
 }
 
+- (FPEnvironmentLog *)firstOdometerLogForUser:(FPUser *)user
+                                        error:(PELMDaoErrorBlk)errorBlk {
+  return [self singleOdometerLogForUser:user
+                               whereBlk:[self odometerLogNonNilOdometerWhereBlk]
+                              whereArgs:nil
+                      comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPEnvironmentLog *)o1 logDate] compare:[(FPEnvironmentLog *)o2 logDate]];}
+           orderByDomainColumnDirection:@"ASC"
+                                  error:errorBlk];
+}
+
 - (FPEnvironmentLog *)firstOdometerLogForVehicle:(FPVehicle *)vehicle
                                            error:(PELMDaoErrorBlk)errorBlk {
   return [self singleOdometerLogForVehicle:vehicle
