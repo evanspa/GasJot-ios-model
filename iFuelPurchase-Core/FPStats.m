@@ -168,10 +168,18 @@ typedef id (^FPValueBlock)(void);
                                 onOrAfterDate:(NSDate *)onOrAfterDate {
   NSArray *vehicles = [_localDao vehiclesForUser:user error:_errorBlk];
   NSDecimalNumber *accumulatedAvgs = [NSDecimalNumber zero];
+  NSInteger relevantVehicleCount = 0;
   for (FPVehicle *vehicle in vehicles) {
-    accumulatedAvgs = [accumulatedAvgs decimalNumberByAdding:[self avgGasCostPerMileForVehicle:vehicle beforeDate:beforeDate onOrAfterDate:onOrAfterDate]];
+    NSDecimalNumber *avgGasCostPerMile = [self avgGasCostPerMileForVehicle:vehicle beforeDate:beforeDate onOrAfterDate:onOrAfterDate];
+    if (avgGasCostPerMile) {
+      relevantVehicleCount++;
+      accumulatedAvgs = [accumulatedAvgs decimalNumberByAdding:avgGasCostPerMile];
+    }
   }
-  return [accumulatedAvgs decimalNumberByDividingBy:[[NSDecimalNumber alloc] initWithInteger:vehicles.count]];
+  if (relevantVehicleCount > 0) {
+    return [accumulatedAvgs decimalNumberByDividingBy:[[NSDecimalNumber alloc] initWithInteger:relevantVehicleCount]];
+  }
+  return nil;
 }
 
 - (NSDecimalNumber *)avgGasCostPerMileForVehicle:(FPVehicle *)vehicle
@@ -196,7 +204,8 @@ typedef id (^FPValueBlock)(void);
 
 - (NSArray *)mergeDataSetsForUser:(FPUser *)user
                  childEntitiesBlk:(NSArray *(^)(void))childEntitiesBlk
-         datasetForChildEntityBlk:(NSArray *(^)(id))datasetForChildEntityBlk {
+         datasetForChildEntityBlk:(NSArray *(^)(id))datasetForChildEntityBlk
+          entityDatapointValueBlk:(NSDecimalNumber *(^)(id))entityDatapointValueBlk {
   NSMutableDictionary *allEntitiesDatapointsDict = [NSMutableDictionary dictionary];
   NSArray *entities = childEntitiesBlk();
   if (entities.count > 0) {
@@ -206,11 +215,11 @@ typedef id (^FPValueBlock)(void);
         NSDate *entityDatapointDate = entityDatapoint[0];
         NSDecimalNumber *allEntitiesDatapointVal = allEntitiesDatapointsDict[entityDatapointDate];
         if (allEntitiesDatapointVal != nil) {
-          NSDecimalNumber *entityDatapointVal = [[NSDecimalNumber alloc] initWithInteger:[entityDatapoint[1] integerValue]];
+          NSDecimalNumber *entityDatapointVal = entityDatapointValueBlk(entityDatapoint[1]);
           NSDecimalNumber *tmpTotalDatapointVal = [allEntitiesDatapointVal decimalNumberByAdding:entityDatapointVal];
           allEntitiesDatapointsDict[entityDatapointDate] = [tmpTotalDatapointVal decimalNumberByDividingBy:[[NSDecimalNumber alloc] initWithInteger:2]];
         } else {
-          allEntitiesDatapointsDict[entityDatapointDate] = [[NSDecimalNumber alloc] initWithInteger:[entityDatapoint[1] integerValue]];
+          allEntitiesDatapointsDict[entityDatapointDate] = entityDatapointValueBlk(entityDatapoint[1]);
         }
       }
     }
@@ -235,7 +244,8 @@ typedef id (^FPValueBlock)(void);
            datasetForChildEntityBlk:^(FPVehicle *vehicle) { return [self daysBetweenFillupsDataSetForVehicle:vehicle
                                                                                                   beforeDate:beforeDate
                                                                                                onOrAfterDate:onOrAfterDate
-                                                                                                    calendar:calendar]; }];
+                                                                                                    calendar:calendar]; }
+            entityDatapointValueBlk:^(NSNumber *numDays) {return [[NSDecimalNumber alloc] initWithInteger:numDays.integerValue];}];
 }
 
 - (NSArray *)daysBetweenFillupsDataSetForVehicle:(FPVehicle *)vehicle
@@ -270,8 +280,9 @@ typedef id (^FPValueBlock)(void);
   return [self mergeDataSetsForUser:user
                    childEntitiesBlk:^{ return [_localDao vehiclesForUser:user error:_errorBlk]; }
            datasetForChildEntityBlk:^(FPVehicle *vehicle) { return [self avgGasCostPerMileDataSetForVehicle:vehicle
-                                                                                                  beforeDate:beforeDate
-                                                                                               onOrAfterDate:onOrAfterDate]; }];
+                                                                                                 beforeDate:beforeDate
+                                                                                              onOrAfterDate:onOrAfterDate]; }
+            entityDatapointValueBlk:^(NSDecimalNumber *gasCostPerMile) {return gasCostPerMile;}];
 }
 
 - (NSArray *)avgGasCostPerMileDataSetForVehicle:(FPVehicle *)vehicle
@@ -837,7 +848,7 @@ typedef id (^FPValueBlock)(void);
   NSDate *now = [NSDate date];
   NSDate *firstDayOfCurrentYear = [PEUtils firstDayOfYearOfDate:now calendar:[NSCalendar currentCalendar]];
   return [self totalSpentFromFplogs:[_localDao unorderedFuelPurchaseLogsForVehicle:vehicle
-                                                                    beforeDate:now
+                                                                        beforeDate:now
                                                                      onOrAfterDate:firstDayOfCurrentYear
                                                                              error:_errorBlk]];
 }
