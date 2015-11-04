@@ -11,6 +11,7 @@
 
 FOUNDATION_EXPORT NSString * const FPFplogNumGallonsField;
 FOUNDATION_EXPORT NSString * const FPFplogOctaneField;
+FOUNDATION_EXPORT NSString * const FPFplogOdometerField;
 FOUNDATION_EXPORT NSString * const FPFplogGallonPriceField;
 FOUNDATION_EXPORT NSString * const FPFplogGotCarWashField;
 FOUNDATION_EXPORT NSString * const FPFplogCarWashPerGallonDiscountField;
@@ -42,6 +43,7 @@ FOUNDATION_EXPORT NSString * const FPFplogFuelstationGlobalIdField;
         fuelStationMainIdentifier:(NSNumber *)fuelStationMainIdentifier
                        numGallons:(NSDecimalNumber *)numGallons
                            octane:(NSNumber *)octane
+                         odometer:(NSDecimalNumber *)odometer
                       gallonPrice:(NSDecimalNumber *)gallonPrice
                        gotCarWash:(BOOL)gotCarWash
          carWashPerGallonDiscount:(NSDecimalNumber *)carWashPerGallonDiscount
@@ -51,6 +53,7 @@ FOUNDATION_EXPORT NSString * const FPFplogFuelstationGlobalIdField;
 
 + (FPFuelPurchaseLog *)fuelPurchaseLogWithNumGallons:(NSDecimalNumber *)numGallons
                                               octane:(NSNumber *)octane
+                                            odometer:(NSDecimalNumber *)odometer
                                          gallonPrice:(NSDecimalNumber *)gallonPrice
                                           gotCarWash:(BOOL)gotCarWash
                             carWashPerGallonDiscount:(NSDecimalNumber *)carWashPerGallonDiscount
@@ -59,6 +62,7 @@ FOUNDATION_EXPORT NSString * const FPFplogFuelstationGlobalIdField;
 
 + (FPFuelPurchaseLog *)fuelPurchaseLogWithNumGallons:(NSDecimalNumber *)numGallons
                                               octane:(NSNumber *)octane
+                                            odometer:(NSDecimalNumber *)odometer
                                          gallonPrice:(NSDecimalNumber *)gallonPrice
                                           gotCarWash:(BOOL)gotCarWash
                             carWashPerGallonDiscount:(NSDecimalNumber *)carWashPerGallonDiscount
@@ -95,6 +99,8 @@ FOUNDATION_EXPORT NSString * const FPFplogFuelstationGlobalIdField;
 @property (nonatomic) NSDecimalNumber *numGallons;
 
 @property (nonatomic) NSNumber *octane;
+
+@property (nonatomic) NSDecimalNumber *odometer;
 
 @property (nonatomic) NSDecimalNumber *gallonPrice;
 

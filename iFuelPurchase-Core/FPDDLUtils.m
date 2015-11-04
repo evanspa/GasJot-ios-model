@@ -53,6 +53,7 @@ NSString * const TBL_MAIN_FUELPURCHASE_LOG = @"main_fuelpurchase_log";
 NSString * const COL_FUELPL_NUM_GALLONS = @"num_gallons";
 NSString * const COL_FUELPL_PRICE_PER_GALLON = @"price_per_gallon";
 NSString * const COL_FUELPL_OCTANE = @"octane";
+NSString * const COL_FUELPL_ODOMETER = @"odometer";
 NSString * const COL_FUELPL_GOT_CAR_WASH = @"got_car_wash";
 NSString * const COL_FUELPL_CAR_WASH_PER_GALLON_DISCOUNT = @"car_wash_discount";
 NSString * const COL_FUELPL_PURCHASED_AT = @"purchased_at";
@@ -188,6 +189,7 @@ FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MAIN_ENV_LOG,
 %@ INTEGER, \
 %@ TEXT, \
 %@ INTEGER, \
+%@ INTEGER, \
 FOREIGN KEY (%@) REFERENCES %@(%@), \
 FOREIGN KEY (%@) REFERENCES %@(%@), \
 FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MASTER_FUELPURCHASE_LOG,
@@ -197,15 +199,16 @@ FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MASTER_FUELPURCHASE_LOG,
                    COL_MASTER_FUELSTATION_ID,               // col4
                    COL_GLOBAL_ID,                           // col5
                    COL_MEDIA_TYPE,                          // col6
-                   COL_MST_CREATED_AT,
-                   COL_MST_UPDATED_AT,                   // col7
-                   COL_MST_DELETED_DT,                      // col8
-                   COL_FUELPL_NUM_GALLONS,                  // col9
-                   COL_FUELPL_PRICE_PER_GALLON,             // col10
-                   COL_FUELPL_OCTANE,                       // col11
-                   COL_FUELPL_GOT_CAR_WASH,                 // col12
-                   COL_FUELPL_CAR_WASH_PER_GALLON_DISCOUNT, // col13
-                   COL_FUELPL_PURCHASED_AT,                       // col14
+                   COL_MST_CREATED_AT,                      // col7
+                   COL_MST_UPDATED_AT,                   // col8
+                   COL_MST_DELETED_DT,                      // col9
+                   COL_FUELPL_NUM_GALLONS,                  // col10
+                   COL_FUELPL_PRICE_PER_GALLON,             // col11
+                   COL_FUELPL_OCTANE,                       // col12
+                   COL_FUELPL_GOT_CAR_WASH,                 // col13
+                   COL_FUELPL_CAR_WASH_PER_GALLON_DISCOUNT, // col14
+                   COL_FUELPL_PURCHASED_AT,                       // col15
+                   COL_FUELPL_ODOMETER,                     // col16
                    COL_MASTER_USER_ID,                      // fk1, col1
                    TBL_MASTER_USER,                         // fk1, tbl-ref
                    COL_LOCAL_ID,                            // fk1, tbl-ref col1
@@ -240,6 +243,7 @@ FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MASTER_FUELPURCHASE_LOG,
 %@ INTEGER, \
 %@ INTEGER, \
 %@ INTEGER, \
+%@ INTEGER, \
 FOREIGN KEY (%@) REFERENCES %@(%@), \
 FOREIGN KEY (%@) REFERENCES %@(%@), \
 FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MAIN_FUELPURCHASE_LOG,
@@ -257,13 +261,14 @@ FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MAIN_FUELPURCHASE_LOG,
                    COL_FUELPL_GOT_CAR_WASH,                 // col12
                    COL_FUELPL_CAR_WASH_PER_GALLON_DISCOUNT, // col13
                    COL_FUELPL_PURCHASED_AT,                       // col14
-                   COL_MAN_EDIT_IN_PROGRESS,                // col15
-                   COL_MAN_SYNC_IN_PROGRESS,                // col16
-                   COL_MAN_SYNCED,                          // col17
-                   COL_MAN_EDIT_COUNT,                      // col20
-                   COL_MAN_SYNC_HTTP_RESP_CODE,             // col21
-                   COL_MAN_SYNC_ERR_MASK,                   // col22
-                   COL_MAN_SYNC_RETRY_AT,                   // col23
+                   COL_FUELPL_ODOMETER,                     // col15
+                   COL_MAN_EDIT_IN_PROGRESS,                // col16
+                   COL_MAN_SYNC_IN_PROGRESS,                // col17
+                   COL_MAN_SYNCED,                          // col18
+                   COL_MAN_EDIT_COUNT,                      // col19
+                   COL_MAN_SYNC_HTTP_RESP_CODE,             // col20
+                   COL_MAN_SYNC_ERR_MASK,                   // col21
+                   COL_MAN_SYNC_RETRY_AT,                   // col22
                    COL_MAIN_USER_ID,                        // fk1, col1
                    TBL_MAIN_USER,                           // fk1, tbl-ref
                    COL_LOCAL_ID,                            // fk1, tbl-ref col1

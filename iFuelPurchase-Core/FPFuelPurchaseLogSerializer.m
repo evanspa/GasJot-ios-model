@@ -17,6 +17,7 @@ NSString * const FPFuelPurchaseLogVehicleGlobalIdKey          = @"fplog/vehicle"
 NSString * const FPFuelPurchaseLogFuelStationGlobalIdKey      = @"fplog/fuelstation";
 NSString * const FPFuelPurchaseLogNumGallonsKey               = @"fplog/num-gallons";
 NSString * const FPFuelPurchaseLogOctaneKey                   = @"fplog/octane";
+NSString * const FPFuelPurchaseLogOdometerKey                 = @"fplog/odometer";
 NSString * const FPFuelPurchaseLogGallonPriceKey              = @"fplog/gallon-price";
 NSString * const FPFuelPurchaseLogGotCarWashKey               = @"fplog/got-car-wash";
 NSString * const FPFuelPurchaseLogCarWashPerGallonDiscountKey = @"fplog/car-wash-per-gal-discount";
@@ -40,6 +41,8 @@ NSString * const FPFuelPurchaseLogDeletedAtKey                = @"fplog/deleted-
                                   forKey:FPFuelPurchaseLogNumGallonsKey];
   [fuelPurchaseLogDict nullSafeSetObject:[fuelPurchaseLog octane]
                                   forKey:FPFuelPurchaseLogOctaneKey];
+  [fuelPurchaseLogDict nullSafeSetObject:[fuelPurchaseLog odometer]
+                                  forKey:FPFuelPurchaseLogOdometerKey];
   [fuelPurchaseLogDict nullSafeSetObject:[fuelPurchaseLog gallonPrice]
                                   forKey:FPFuelPurchaseLogGallonPriceKey];
   [fuelPurchaseLogDict nullSafeSetObject:[NSNumber numberWithBool:[fuelPurchaseLog gotCarWash]]
@@ -61,6 +64,7 @@ NSString * const FPFuelPurchaseLogDeletedAtKey                = @"fplog/deleted-
   FPFuelPurchaseLog *fplog =
   [FPFuelPurchaseLog fuelPurchaseLogWithNumGallons:[PEUtils nullSafeDecimalNumberFromString:[resDict[FPFuelPurchaseLogNumGallonsKey] description]]
                                             octane:resDict[FPFuelPurchaseLogOctaneKey]
+                                          odometer:resDict[FPFuelPurchaseLogOdometerKey]
                                        gallonPrice:[PEUtils nullSafeDecimalNumberFromString:[resDict[FPFuelPurchaseLogGallonPriceKey] description]]
                                         gotCarWash:[resDict[FPFuelPurchaseLogGotCarWashKey] boolValue]
                           carWashPerGallonDiscount:[PEUtils nullSafeDecimalNumberFromString:[resDict[FPFuelPurchaseLogCarWashPerGallonDiscountKey] description]]

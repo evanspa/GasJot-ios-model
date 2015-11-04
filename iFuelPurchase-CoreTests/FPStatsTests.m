@@ -75,18 +75,19 @@ describe(@"FPStats", ^{
     return envlog;
   };
   
-  FPFuelPurchaseLog *(^saveGasLog)(FPVehicle *, FPFuelStation *, NSString *, NSInteger, NSString *, BOOL, NSString *, id) =
-  ^(FPVehicle *vehicle, FPFuelStation *fs, NSString *numGallons, NSInteger octane, NSString *gallonPrice, BOOL gotCarWash, NSString *carWashDiscount, id date) {
+  FPFuelPurchaseLog *(^saveGasLog)(FPVehicle *, FPFuelStation *, NSString *, NSInteger, NSString *, NSString *, BOOL, NSString *, id) =
+  ^(FPVehicle *vehicle, FPFuelStation *fs, NSString *numGallons, NSInteger octane, NSString *odometer, NSString *gallonPrice, BOOL gotCarWash, NSString *carWashDiscount, id date) {
     NSDate *purchasedAt = date;
     if ([date isKindOfClass:[NSString class]]) {
       purchasedAt = [_dateFormatter dateFromString:date];
     }
     FPFuelPurchaseLog *fplog = [_coordDao fuelPurchaseLogWithNumGallons:[PEUtils nullSafeDecimalNumberFromString:numGallons]
-                                              octane:[NSNumber numberWithInteger:octane]
-                                         gallonPrice:[PEUtils nullSafeDecimalNumberFromString:gallonPrice]
-                                          gotCarWash:gotCarWash
-                            carWashPerGallonDiscount:[PEUtils nullSafeDecimalNumberFromString:carWashDiscount]
-                                             logDate:purchasedAt];
+                                                                 octane:[NSNumber numberWithInteger:octane]
+                                                               odometer:[NSDecimalNumber decimalNumberWithString:odometer]
+                                                            gallonPrice:[PEUtils nullSafeDecimalNumberFromString:gallonPrice]
+                                                             gotCarWash:gotCarWash
+                                               carWashPerGallonDiscount:[PEUtils nullSafeDecimalNumberFromString:carWashDiscount]
+                                                                logDate:purchasedAt];
     [_coordDao saveNewFuelPurchaseLog:fplog forUser:_user vehicle:vehicle fuelStation:fs error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
     return fplog;
   };
@@ -94,16 +95,16 @@ describe(@"FPStats", ^{
   context(@"Several gas logs for 2 vehicles with non-overlapping purchased-at dates for testing user-level days-between-fillups functions", ^{
     beforeAll(^{
       resetUser();
-      saveGasLog(_v1, _fs1, @"15.0", 87, @"4.129", NO, @"0.08", @"02/04/2013");
-      saveGasLog(_v1, _fs1, @"15.0", 87, @"4.129", NO, @"0.08", @"02/06/2013");
-      saveGasLog(_v1, _fs1, @"15.0", 87, @"4.129", NO, @"0.08", @"02/20/2013");
-      saveGasLog(_v1, _fs1, @"15.0", 87, @"4.129", NO, @"0.08", @"02/24/2013");
+      saveGasLog(_v1, _fs1, @"15.0", 87, @"10582", @"4.129", NO, @"0.08", @"02/04/2013");
+      saveGasLog(_v1, _fs1, @"15.0", 87, @"10584", @"4.129", NO, @"0.08", @"02/06/2013");
+      saveGasLog(_v1, _fs1, @"15.0", 87, @"10586", @"4.129", NO, @"0.08", @"02/20/2013");
+      saveGasLog(_v1, _fs1, @"15.0", 87, @"10588", @"4.129", NO, @"0.08", @"02/24/2013");
       FPVehicle *v2 = [_coordDao vehicleWithName:@"300zx" defaultOctane:@93 fuelCapacity:[NSDecimalNumber decimalNumberWithString:@"19.1"]];
       [_coordDao saveNewVehicle:v2 forUser:_user error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
-      saveGasLog(v2, _fs1, @"15.2", 91, @"4.129", NO, @"0.08", @"02/01/2013");
-      saveGasLog(v2, _fs1, @"15.3", 91, @"4.129", NO, @"0.08", @"02/07/2013");
-      saveGasLog(v2, _fs1, @"15.0", 91, @"4.129", NO, @"0.08", @"02/22/2013");
-      saveGasLog(v2, _fs1, @"15.4", 91, @"4.129", NO, @"0.08", @"02/24/2013");
+      saveGasLog(v2, _fs1, @"15.2", 91, @"10582", @"4.129", NO, @"0.08", @"02/01/2013");
+      saveGasLog(v2, _fs1, @"15.3", 91, @"10584", @"4.129", NO, @"0.08", @"02/07/2013");
+      saveGasLog(v2, _fs1, @"15.0", 91, @"10586", @"4.129", NO, @"0.08", @"02/22/2013");
+      saveGasLog(v2, _fs1, @"15.4", 91, @"10588", @"4.129", NO, @"0.08", @"02/24/2013");
     });
     
     it(@"Days between fillups for user stats works", ^{
@@ -132,16 +133,16 @@ describe(@"FPStats", ^{
   context(@"Several gas logs for 2 vehicles with overlapping purchased-at dates for testing user-level days-between-fillups functions", ^{
     beforeAll(^{
       resetUser();
-      saveGasLog(_v1, _fs1, @"15.0", 87, @"4.129", NO, @"0.08", @"02/04/2013");
-      saveGasLog(_v1, _fs1, @"15.0", 87, @"4.129", NO, @"0.08", @"02/06/2013");
-      saveGasLog(_v1, _fs1, @"15.0", 87, @"4.129", NO, @"0.08", @"02/20/2013");
-      saveGasLog(_v1, _fs1, @"15.0", 87, @"4.129", NO, @"0.08", @"02/24/2013");
+      saveGasLog(_v1, _fs1, @"15.0", 87, @"10582", @"4.129", NO, @"0.08", @"02/04/2013");
+      saveGasLog(_v1, _fs1, @"15.0", 87, @"10584", @"4.129", NO, @"0.08", @"02/06/2013");
+      saveGasLog(_v1, _fs1, @"15.0", 87, @"10586", @"4.129", NO, @"0.08", @"02/20/2013");
+      saveGasLog(_v1, _fs1, @"15.0", 87, @"10588", @"4.129", NO, @"0.08", @"02/24/2013");
       FPVehicle *v2 = [_coordDao vehicleWithName:@"300zx" defaultOctane:@93 fuelCapacity:[NSDecimalNumber decimalNumberWithString:@"19.1"]];
       [_coordDao saveNewVehicle:v2 forUser:_user error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
-      saveGasLog(v2, _fs1, @"15.2", 91, @"4.129", NO, @"0.08", @"02/04/2013");
-      saveGasLog(v2, _fs1, @"15.3", 91, @"4.129", NO, @"0.08", @"02/06/2013");
-      saveGasLog(v2, _fs1, @"15.0", 91, @"4.129", NO, @"0.08", @"02/20/2013");
-      saveGasLog(v2, _fs1, @"15.4", 91, @"4.129", NO, @"0.08", @"02/24/2013");
+      saveGasLog(v2, _fs1, @"15.2", 91, @"10582", @"4.129", NO, @"0.08", @"02/04/2013");
+      saveGasLog(v2, _fs1, @"15.3", 91, @"10584", @"4.129", NO, @"0.08", @"02/06/2013");
+      saveGasLog(v2, _fs1, @"15.0", 91, @"10586", @"4.129", NO, @"0.08", @"02/20/2013");
+      saveGasLog(v2, _fs1, @"15.4", 91, @"10588", @"4.129", NO, @"0.08", @"02/24/2013");
     });
     
     it(@"Days between fillups for user stats works", ^{
@@ -161,10 +162,10 @@ describe(@"FPStats", ^{
   context(@"4 gas logs for testing days-between-fillups functions", ^{
     beforeAll(^{
       resetUser();
-      saveGasLog(_v1, _fs1, @"15.0", 87, @"4.129", NO, @"0.08", @"02/04/2013");
-      saveGasLog(_v1, _fs1, @"15.0", 87, @"4.129", NO, @"0.08", @"02/06/2013");
-      saveGasLog(_v1, _fs1, @"15.0", 87, @"4.129", NO, @"0.08", @"02/20/2013");
-      saveGasLog(_v1, _fs1, @"15.0", 87, @"4.129", NO, @"0.08", @"02/24/2013");
+      saveGasLog(_v1, _fs1, @"15.0", 87, @"10582", @"4.129", NO, @"0.08", @"02/04/2013");
+      saveGasLog(_v1, _fs1, @"15.0", 87, @"10584", @"4.129", NO, @"0.08", @"02/06/2013");
+      saveGasLog(_v1, _fs1, @"15.0", 87, @"10586", @"4.129", NO, @"0.08", @"02/20/2013");
+      saveGasLog(_v1, _fs1, @"15.0", 87, @"10588", @"4.129", NO, @"0.08", @"02/24/2013");
     });
     
     it(@"Days between fillups for user stats works", ^{
@@ -197,8 +198,8 @@ describe(@"FPStats", ^{
   context(@"2 gas logs for testing days-between-fillups functions", ^{
     beforeAll(^{
       resetUser();
-      saveGasLog(_v1, _fs1, @"15.0", 87, @"4.129", NO, @"0.08", @"02/04/2013");
-      saveGasLog(_v1, _fs1, @"15.0", 87, @"4.129", NO, @"0.08", @"02/06/2013");
+      saveGasLog(_v1, _fs1, @"15.0", 87, @"10582", @"4.129", NO, @"0.08", @"02/04/2013");
+      saveGasLog(_v1, _fs1, @"15.0", 87, @"10584", @"4.129", NO, @"0.08", @"02/06/2013");
     });
     
     it(@"Days between fillups stats for user works", ^{
@@ -226,31 +227,31 @@ describe(@"FPStats", ^{
       // 2 logs in Feb so computation can be done
       NSString *logDate = @"02/04/2013";
       saveOdometerLog(_v1, @"50",  nil, nil, 40, logDate, @"20"); // pre-fillup odometer log
-      saveGasLog(_v1, _fs1, @"15.0", 87, @"4.129", NO, @"0.08", logDate); // 61.935 total spend
+      saveGasLog(_v1, _fs1, @"15.0", 87, @"10582", @"4.129", NO, @"0.08", logDate); // 61.935 total spend
       saveOdometerLog(_v1, @"50",  nil, nil, 40, logDate, @"450"); // post-fillup odometer log
       logDate = @"02/21/2013";
       saveOdometerLog(_v1, @"391",  nil, nil, 40, logDate, @"20");
-      saveGasLog(_v1, _fs1, @"15.4", 87, @"3.899", NO, nil, logDate); // 60.0446
+      saveGasLog(_v1, _fs1, @"15.4", 87, @"10584", @"3.899", NO, nil, logDate); // 60.0446
       saveOdometerLog(_v1, @"391",  nil, nil, 40, logDate, @"450");
       
       // only 1 log in Mar so computation cannot be done
       logDate = @"03/06/2013";
       saveOdometerLog(_v1, @"592",  nil, nil, 40, logDate, @"20");
-      saveGasLog(_v1, _fs1, @"15.4", 87, @"3.899", NO, nil, logDate); // 60.0446
+      saveGasLog(_v1, _fs1, @"15.4", 87, @"10586", @"3.899", NO, nil, logDate); // 60.0446
       saveOdometerLog(_v1, @"592",  nil, nil, 40, logDate, @"450");
       
       // 3 in April so computation can be done (drove 300 miles in April, and spent $120.0892 after the first recorded odo log)
       logDate = @"04/01/2013";
       saveOdometerLog(_v1, @"792",  nil, nil, 40, logDate, @"20");
-      saveGasLog(_v1, _fs1, @"15.4", 87, @"3.899", NO, nil, logDate); // 60.0446
+      saveGasLog(_v1, _fs1, @"15.4", 87, @"10588", @"3.899", NO, nil, logDate); // 60.0446
       saveOdometerLog(_v1, @"792",  nil, nil, 40, logDate, @"450");
       logDate = @"04/12/2013";
       saveOdometerLog(_v1, @"992",  nil, nil, 40, logDate, @"20");
-      saveGasLog(_v1, _fs1, @"15.4", 87, @"3.899", NO, nil, logDate); // 60.0446
+      saveGasLog(_v1, _fs1, @"15.4", 87, @"10590", @"3.899", NO, nil, logDate); // 60.0446
       saveOdometerLog(_v1, @"992",  nil, nil, 40, logDate, @"450");
       logDate = @"04/27/2013";
       saveOdometerLog(_v1, @"1092",  nil, nil, 40, logDate, @"20");
-      saveGasLog(_v1, _fs1, @"15.4", 87, @"3.899", NO, nil, logDate); // 60.0446
+      saveGasLog(_v1, _fs1, @"15.4", 87, @"10592", @"3.899", NO, nil, logDate); // 60.0446
       saveOdometerLog(_v1, @"1092",  nil, nil, 40, logDate, @"450");
     });
     
@@ -285,7 +286,7 @@ describe(@"FPStats", ^{
       resetUser();
       NSString *logDate = @"02/04/2013";
       saveOdometerLog(_v1, @"50",  nil, nil, 40, logDate, @"20"); // pre-fillup odometer log
-      saveGasLog(_v1, _fs1, @"15.0", 87, @"4.129", NO, @"0.08", logDate); // 61.935 total spend
+      saveGasLog(_v1, _fs1, @"15.0", 87, @"10582", @"4.129", NO, @"0.08", logDate); // 61.935 total spend
       saveOdometerLog(_v1, @"50",  nil, nil, 40, logDate, @"450"); // post-fillup odometer log
     });
     
@@ -301,12 +302,12 @@ describe(@"FPStats", ^{
       resetUser();
       NSString *logDate = @"02/04/2013";
       saveOdometerLog(_v1, @"50",  nil, nil, 40, logDate, @"20"); // pre-fillup odometer log
-      saveGasLog(_v1, _fs1, @"15.0", 87, @"4.129", NO, @"0.08", logDate); // 61.935 total spend
+      saveGasLog(_v1, _fs1, @"15.0", 87, @"10582", @"4.129", NO, @"0.08", logDate); // 61.935 total spend
       saveOdometerLog(_v1, @"50",  nil, nil, 40, logDate, @"450"); // post-fillup odometer log
       
       logDate = @"02/21/2013";
       saveOdometerLog(_v1, @"391",  nil, nil, 40, logDate, @"20");
-      saveGasLog(_v1, _fs1, @"15.4", 87, @"3.899", NO, nil, logDate); // 60.0446
+      saveGasLog(_v1, _fs1, @"15.4", 87, @"10584", @"3.899", NO, nil, logDate); // 60.0446
       saveOdometerLog(_v1, @"391",  nil, nil, 40, logDate, @"450");
     });
     
@@ -331,22 +332,22 @@ describe(@"FPStats", ^{
       // 2 years-ago _v1, _fs1 logs (402 miles driven/recorded)
       saveOdometerLog(_v1, @"50",  nil, nil, 40, [NSString stringWithFormat:@"11/15/%ld", (long)comps.year-2], nil);
       saveOdometerLog(_v1, @"452", nil, nil, 40, [NSString stringWithFormat:@"12/31/%ld", (long)comps.year-2], nil);
-      saveGasLog(_v1, _fs1, @"15.0", 87, @"4.129", NO, @"0.08", [NSString stringWithFormat:@"12/31/%ld", (long)comps.year-2]); // 61.935 total spend
+      saveGasLog(_v1, _fs1, @"15.0", 87, @"10582", @"4.129", NO, @"0.08", [NSString stringWithFormat:@"12/31/%ld", (long)comps.year-2]); // 61.935 total spend
       // last year logs (grand total actual: 258.1513) (977 miles driven/recorded)
       saveOdometerLog(_v1, @"475", nil, nil, 40, [NSString stringWithFormat:@"01/01/%ld", (long)comps.year-1], nil);
-      saveGasLog(_v1, _fs1, @"15.2", 87, @"3.859", NO, @"0.08", [NSString stringWithFormat:@"01/02/%ld", (long)comps.year-1]); // 58.6568
+      saveGasLog(_v1, _fs1, @"15.2", 87, @"10584", @"3.859", NO, @"0.08", [NSString stringWithFormat:@"01/02/%ld", (long)comps.year-1]); // 58.6568
       saveOdometerLog(_v1, @"683", nil, nil, 40, [NSString stringWithFormat:@"03/15/%ld", (long)comps.year-1], nil);
-      saveGasLog(_v1, _fs1, @"15.1", 87, @"3.699", NO, @"0.08", [NSString stringWithFormat:@"03/16/%ld", (long)comps.year-1]); // 55.8549
+      saveGasLog(_v1, _fs1, @"15.1", 87, @"10586", @"3.699", NO, @"0.08", [NSString stringWithFormat:@"03/16/%ld", (long)comps.year-1]); // 55.8549
       saveOdometerLog(_v1, @"879", nil, nil, 40, [NSString stringWithFormat:@"06/22/%ld", (long)comps.year-1], nil);
-      saveGasLog(_v1, _fs1, @"14.7", 87, @"3.089", NO, @"0.08", [NSString stringWithFormat:@"06/23/%ld", (long)comps.year-1]); // 45.4083
+      saveGasLog(_v1, _fs1, @"14.7", 87, @"10588", @"3.089", NO, @"0.08", [NSString stringWithFormat:@"06/23/%ld", (long)comps.year-1]); // 45.4083
       saveOdometerLog(_v1, @"1098", nil, nil, 40, [NSString stringWithFormat:@"09/08/%ld", (long)comps.year-1], nil);
-      saveGasLog(_v1, _fs1, @"16.4", 87, @"3.009", NO, @"0.08", [NSString stringWithFormat:@"09/09/%ld", (long)comps.year-1]); // 49.3476
+      saveGasLog(_v1, _fs1, @"16.4", 87, @"10590", @"3.009", NO, @"0.08", [NSString stringWithFormat:@"09/09/%ld", (long)comps.year-1]); // 49.3476
       saveOdometerLog(_v1, @"1452", nil, nil, 40, [NSString stringWithFormat:@"12/30/%ld", (long)comps.year-1], nil);
-      saveGasLog(_v1, _fs1, @"16.3", 87, @"2.999", NO, @"0.08", [NSString stringWithFormat:@"12/31/%ld", (long)comps.year-1]); // 48.8837
+      saveGasLog(_v1, _fs1, @"16.3", 87, @"10592", @"2.999", NO, @"0.08", [NSString stringWithFormat:@"12/31/%ld", (long)comps.year-1]); // 48.8837
       // current year logs (37 miles driven/recorded)
       saveOdometerLog(_v1, @"1462", nil, nil, 40, [NSString stringWithFormat:@"01/01/%ld", (long)comps.year], nil);
       saveOdometerLog(_v1, @"1499", nil, nil, 40, [NSString stringWithFormat:@"01/02/%ld", (long)comps.year], nil);
-      saveGasLog(_v1, _fs1, @"15.9", 87, @"3.459", NO, @"0.08", [NSString stringWithFormat:@"01/03/%ld", (long)comps.year]);   // 54.9981
+      saveGasLog(_v1, _fs1, @"15.9", 87, @"10594", @"3.459", NO, @"0.08", [NSString stringWithFormat:@"01/03/%ld", (long)comps.year]);   // 54.9981
       
       v2 = [_coordDao vehicleWithName:@"300zx" defaultOctane:@93 fuelCapacity:[NSDecimalNumber decimalNumberWithString:@"19.1"]];
       [_coordDao saveNewVehicle:v2 forUser:_user error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
@@ -354,19 +355,19 @@ describe(@"FPStats", ^{
       // 2 years-ago v2, _fs1 logs (404 miles driven/recorded)
       saveOdometerLog(v2, @"49", nil, nil, 40, [NSString stringWithFormat:@"11/15/%ld", (long)comps.year-2], nil);
       saveOdometerLog(v2, @"453", nil, nil, 40, [NSString stringWithFormat:@"12/30/%ld", (long)comps.year-2], nil);
-      saveGasLog(v2, _fs1, @"15.1", 87, @"4.129", NO, @"0.08", [NSString stringWithFormat:@"12/31/%ld", (long)comps.year-2]); // 62.3479
+      saveGasLog(v2, _fs1, @"15.1", 87, @"10582", @"4.129", NO, @"0.08", [NSString stringWithFormat:@"12/31/%ld", (long)comps.year-2]); // 62.3479
       // last year logs (grand total actual: 251.2368) (4559 miles driven/recorded)
       saveOdometerLog(v2, @"489", nil, nil, 40, [NSString stringWithFormat:@"01/01/%ld", (long)comps.year-1], nil);
-      saveGasLog(v2, _fs1, @"15.3", 87, @"3.959", NO, @"0.08", [NSString stringWithFormat:@"01/02/%ld", (long)comps.year-1]); // 60.5727
-      saveGasLog(v2, _fs1, @"15.2", 87, @"3.799", NO, @"0.08", [NSString stringWithFormat:@"03/15/%ld", (long)comps.year-1]); // 57.7448
-      saveGasLog(v2, _fs1, @"14.8", 87, @"3.189", NO, @"0.08", [NSString stringWithFormat:@"06/22/%ld", (long)comps.year-1]); // 47.1972
-      saveGasLog(v2, _fs1, @"16.5", 87, @"3.109", NO, @"0.08", [NSString stringWithFormat:@"09/08/%ld", (long)comps.year-1]); // 51.2985
-      saveGasLog(v2, _fs1, @"16.4", 87, @"2.099", NO, @"0.08", [NSString stringWithFormat:@"12/31/%ld", (long)comps.year-1]); // 34.4236
+      saveGasLog(v2, _fs1, @"15.3", 87, @"10584", @"3.959", NO, @"0.08", [NSString stringWithFormat:@"01/02/%ld", (long)comps.year-1]); // 60.5727
+      saveGasLog(v2, _fs1, @"15.2", 87, @"10586", @"3.799", NO, @"0.08", [NSString stringWithFormat:@"03/15/%ld", (long)comps.year-1]); // 57.7448
+      saveGasLog(v2, _fs1, @"14.8", 87, @"10588", @"3.189", NO, @"0.08", [NSString stringWithFormat:@"06/22/%ld", (long)comps.year-1]); // 47.1972
+      saveGasLog(v2, _fs1, @"16.5", 87, @"10590", @"3.109", NO, @"0.08", [NSString stringWithFormat:@"09/08/%ld", (long)comps.year-1]); // 51.2985
+      saveGasLog(v2, _fs1, @"16.4", 87, @"10592", @"2.099", NO, @"0.08", [NSString stringWithFormat:@"12/31/%ld", (long)comps.year-1]); // 34.4236
       saveOdometerLog(v2, @"5048", nil, nil, 40, [NSString stringWithFormat:@"11/22/%ld", (long)comps.year-1], nil);
       // current year logs (39 miles driven/recorded)
       saveOdometerLog(v2, @"5055", nil, nil, 40, [NSString stringWithFormat:@"01/01/%ld", (long)comps.year], nil);
       saveOdometerLog(v2, @"5094", nil, nil, 40, [NSString stringWithFormat:@"01/02/%ld", (long)comps.year], nil);
-      saveGasLog(v2, _fs1, @"16.0", 87, @"3.559", NO, @"0.08", [NSString stringWithFormat:@"01/03/%ld", (long)comps.year]);   // 56.944
+      saveGasLog(v2, _fs1, @"16.0", 87, @"10584", @"3.559", NO, @"0.08", [NSString stringWithFormat:@"01/03/%ld", (long)comps.year]);   // 56.944
       
       fs2 = [_coordDao fuelStationWithName:@"Sunoco" street:nil city:nil state:nil zip:nil latitude:nil longitude:nil];
       [_coordDao saveNewFuelStation:fs2 forUser:_user error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
@@ -376,19 +377,19 @@ describe(@"FPStats", ^{
       // 2 years-ago v3, fs2 logs (1060 miles driven/recorded)
       saveOdometerLog(v3, @"10859", nil, nil, 40, [NSString stringWithFormat:@"11/15/%ld", (long)comps.year-2], nil);
       saveOdometerLog(v3, @"11919", nil, nil, 40, [NSString stringWithFormat:@"12/30/%ld", (long)comps.year-2], nil);
-      saveGasLog(v3, fs2, @"15.2", 87, @"4.149", NO, @"0.08", [NSString stringWithFormat:@"12/31/%ld", (long)comps.year-2]); // 63.0648
+      saveGasLog(v3, fs2, @"15.2", 87, @"10582", @"4.149", NO, @"0.08", [NSString stringWithFormat:@"12/31/%ld", (long)comps.year-2]); // 63.0648
       // last year logs (grand total actual: 258.3863) (5076 miles driven/recorded)
       saveOdometerLog(v3, @"11928", nil, nil, 40, [NSString stringWithFormat:@"01/01/%ld", (long)comps.year-1], nil);
-      saveGasLog(v3, fs2, @"15.4", 87, @"3.879", NO, @"0.08", [NSString stringWithFormat:@"01/02/%ld", (long)comps.year-1]); // 59.7366
-      saveGasLog(v3, fs2, @"15.3", 87, @"3.619", NO, @"0.08", [NSString stringWithFormat:@"03/15/%ld", (long)comps.year-1]); // 55.3707
-      saveGasLog(v3, fs2, @"14.9", 87, @"3.009", NO, @"0.08", [NSString stringWithFormat:@"06/22/%ld", (long)comps.year-1]); // 44.8341
-      saveGasLog(v3, fs2, @"16.6", 87, @"3.029", NO, @"0.08", [NSString stringWithFormat:@"09/08/%ld", (long)comps.year-1]); // 50.2814
-      saveGasLog(v3, fs2, @"16.5", 87, @"2.919", NO, @"0.08", [NSString stringWithFormat:@"12/31/%ld", (long)comps.year-1]); // 48.1635
+      saveGasLog(v3, fs2, @"15.4", 87, @"10582", @"3.879", NO, @"0.08", [NSString stringWithFormat:@"01/02/%ld", (long)comps.year-1]); // 59.7366
+      saveGasLog(v3, fs2, @"15.3", 87, @"10582", @"3.619", NO, @"0.08", [NSString stringWithFormat:@"03/15/%ld", (long)comps.year-1]); // 55.3707
+      saveGasLog(v3, fs2, @"14.9", 87, @"10582", @"3.009", NO, @"0.08", [NSString stringWithFormat:@"06/22/%ld", (long)comps.year-1]); // 44.8341
+      saveGasLog(v3, fs2, @"16.6", 87, @"10582", @"3.029", NO, @"0.08", [NSString stringWithFormat:@"09/08/%ld", (long)comps.year-1]); // 50.2814
+      saveGasLog(v3, fs2, @"16.5", 87, @"10582", @"2.919", NO, @"0.08", [NSString stringWithFormat:@"12/31/%ld", (long)comps.year-1]); // 48.1635
       saveOdometerLog(v3, @"17004", nil, nil, 40, [NSString stringWithFormat:@"11/15/%ld", (long)comps.year-1], nil);
       // current year logs (727 miles driven/recorded)
       saveOdometerLog(v3, @"17102", nil, nil, 40, [NSString stringWithFormat:@"01/01/%ld", (long)comps.year], nil);
       saveOdometerLog(v3, @"17829", nil, nil, 40, [NSString stringWithFormat:@"01/02/%ld", (long)comps.year], nil);
-      saveGasLog(v3, fs2, @"15.1", 87, @"3.459", NO, @"0.08", [NSString stringWithFormat:@"01/03/%ld", (long)comps.year]);   // 52.2309
+      saveGasLog(v3, fs2, @"15.1", 87, @"10582", @"3.459", NO, @"0.08", [NSString stringWithFormat:@"01/03/%ld", (long)comps.year]);   // 52.2309
     });
     
     it(@"Overall, YTD and last year gas cost per mile stats works", ^{
@@ -536,7 +537,7 @@ describe(@"FPStats", ^{
     beforeAll(^{
       resetUser();
        saveOdometerLog(_v1, @"1008", nil, nil, 60, _d(@"01/01/2015"), nil);
-      fplog = saveGasLog(_v1, _fs1, @"15.2", 87, @"3.85", NO, @"0.08", _d(@"01/02/2015"));
+      fplog = saveGasLog(_v1, _fs1, @"15.2", 87, @"10582", @"3.85", NO, @"0.08", _d(@"01/02/2015"));
       envlog2= saveOdometerLog(_v1, @"1324", nil, nil, 60, _d(@"01/03/2015"), nil);
       saveOdometerLog(_v1, @"1324", nil, nil, 60, _d(@"01/04/2015"), nil);
     });
@@ -638,7 +639,7 @@ describe(@"FPStats", ^{
       __block FPFuelPurchaseLog *fplog;
       beforeAll(^{
         resetUser();
-        fplog = saveGasLog(_v1, _fs1, @"15.2", 87, @"3.85", NO, @"0.08", [NSDate date]);
+        fplog = saveGasLog(_v1, _fs1, @"15.2", 87, @"10582", @"3.85", NO, @"0.08", [NSDate date]);
       });
       
       it(@"YTD and total spend on gas stats work", ^{
@@ -681,8 +682,8 @@ describe(@"FPStats", ^{
       
       beforeAll(^{
         resetUser();
-        fplog  = saveGasLog(_v1, _fs1, @"15.2",  87, @"3.85",  NO, @"0.08", [NSDate date]);
-        fplog2 = saveGasLog(_v1, _fs1, @"17.92", 87, @"2.159", NO, @"0.08", [NSDate date]);
+        fplog  = saveGasLog(_v1, _fs1, @"15.2",  87, @"10582", @"3.85",  NO, @"0.08", [NSDate date]);
+        fplog2 = saveGasLog(_v1, _fs1, @"17.92", 87, @"10582", @"2.159", NO, @"0.08", [NSDate date]);
       });
       
       it(@"YTD and total spend on gas stats work", ^{
@@ -724,7 +725,7 @@ describe(@"FPStats", ^{
         beforeAll(^{
           v2 = [_coordDao vehicleWithName:@"My Mazda" defaultOctane:@87 fuelCapacity:[NSDecimalNumber decimalNumberWithString:@"18.25"]];
           [_coordDao saveNewVehicle:v2 forUser:_user error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
-          fplog3  = saveGasLog(v2, _fs1, @"5.01", 87, @"2.899", NO, @"0.08", [NSDate date]);
+          fplog3  = saveGasLog(v2, _fs1, @"5.01", 87, @"10582", @"2.899", NO, @"0.08", [NSDate date]);
         });
         
         it(@"YTD and total spend on gas stats work", ^{
@@ -769,7 +770,7 @@ describe(@"FPStats", ^{
                                                        fromDate:now];
             [components setYear:([components year] - 1)];
             NSDate *logDate = [calendar dateFromComponents:components];
-            fplog4  = saveGasLog(_v1, _fs1, @"7.50", 87, @"3.099", NO, @"0.08", logDate);
+            fplog4  = saveGasLog(_v1, _fs1, @"7.50", 87, @"10582", @"3.099", NO, @"0.08", logDate);
           });
           
           it(@"YTD and total spend on gas stats work", ^{

@@ -445,6 +445,7 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk;
 
 - (FPFuelPurchaseLog *)fuelPurchaseLogWithNumGallons:(NSDecimalNumber *)numGallons
                                               octane:(NSNumber *)octane
+                                            odometer:(NSDecimalNumber *)odometer
                                          gallonPrice:(NSDecimalNumber *)gallonPrice
                                           gotCarWash:(BOOL)gotCarWash
                             carWashPerGallonDiscount:(NSDecimalNumber *)carWashPerGallonDiscount

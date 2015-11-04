@@ -12,6 +12,7 @@
 
 NSString * const FPFplogNumGallonsField = @"FPFplogNumGallonsField";
 NSString * const FPFplogOctaneField = @"FPFplogOctaneField";
+NSString * const FPFplogOdometerField = @"FPFplogOdometerField";
 NSString * const FPFplogGallonPriceField = @"FPFplogGallonPriceField";
 NSString * const FPFplogGotCarWashField = @"FPFplogGotCarWashField";
 NSString * const FPFplogCarWashPerGallonDiscountField = @"FPFplogCarWashPerGallonDiscountField";
@@ -43,6 +44,7 @@ NSString * const FPFplogFuelstationGlobalIdField = @"FPFplogFuelstationGlobalIdF
         fuelStationMainIdentifier:(NSNumber *)fuelStationMainIdentifier
                        numGallons:(NSDecimalNumber *)numGallons
                            octane:(NSNumber *)octane
+                         odometer:(NSDecimalNumber *)odometer
                       gallonPrice:(NSDecimalNumber *)gallonPrice
                        gotCarWash:(BOOL)gotCarWash
          carWashPerGallonDiscount:(NSDecimalNumber *)carWashPerGallonDiscount
@@ -71,6 +73,7 @@ NSString * const FPFplogFuelstationGlobalIdField = @"FPFplogFuelstationGlobalIdF
     _numGallons = numGallons;
     _gallonPrice = gallonPrice;
     _octane = octane;
+    _odometer = odometer;
     _gotCarWash = gotCarWash;
     _carWashPerGallonDiscount = carWashPerGallonDiscount;
     _purchasedAt = purchasedAt;
@@ -101,6 +104,7 @@ NSString * const FPFplogFuelstationGlobalIdField = @"FPFplogFuelstationGlobalIdF
                                                        fuelStationMainIdentifier:_fuelStationMainIdentifier
                                                                         numGallons:_numGallons
                                                                             octane:_octane
+                                                                          odometer:_odometer
                                                                        gallonPrice:_gallonPrice
                                                                         gotCarWash:_gotCarWash
                                                           carWashPerGallonDiscount:_carWashPerGallonDiscount
@@ -112,6 +116,7 @@ NSString * const FPFplogFuelstationGlobalIdField = @"FPFplogFuelstationGlobalIdF
 
 + (FPFuelPurchaseLog *)fuelPurchaseLogWithNumGallons:(NSDecimalNumber *)numGallons
                                               octane:(NSNumber *)octane
+                                            odometer:(NSDecimalNumber *)odometer
                                          gallonPrice:(NSDecimalNumber *)gallonPrice
                                           gotCarWash:(BOOL)gotCarWash
                             carWashPerGallonDiscount:(NSDecimalNumber *)carWashPerGallonDiscount
@@ -119,6 +124,7 @@ NSString * const FPFplogFuelstationGlobalIdField = @"FPFplogFuelstationGlobalIdF
                                            mediaType:(HCMediaType *)mediaType {
   return [FPFuelPurchaseLog fuelPurchaseLogWithNumGallons:numGallons
                                                    octane:octane
+                                                 odometer:odometer
                                               gallonPrice:gallonPrice
                                                gotCarWash:gotCarWash
                                  carWashPerGallonDiscount:carWashPerGallonDiscount
@@ -133,6 +139,7 @@ NSString * const FPFplogFuelstationGlobalIdField = @"FPFplogFuelstationGlobalIdF
 
 + (FPFuelPurchaseLog *)fuelPurchaseLogWithNumGallons:(NSDecimalNumber *)numGallons
                                               octane:(NSNumber *)octane
+                                            odometer:(NSDecimalNumber *)odometer
                                          gallonPrice:(NSDecimalNumber *)gallonPrice
                                           gotCarWash:(BOOL)gotCarWash
                             carWashPerGallonDiscount:(NSDecimalNumber *)carWashPerGallonDiscount
@@ -163,6 +170,7 @@ NSString * const FPFplogFuelstationGlobalIdField = @"FPFplogFuelstationGlobalIdF
                                       fuelStationMainIdentifier:nil
                                                      numGallons:numGallons
                                                          octane:octane
+                                                       odometer:odometer
                                                     gallonPrice:gallonPrice
                                                      gotCarWash:gotCarWash
                                        carWashPerGallonDiscount:carWashPerGallonDiscount
@@ -187,6 +195,11 @@ NSString * const FPFplogFuelstationGlobalIdField = @"FPFplogFuelstationGlobalIdF
                                         ^(SEL getter, id obj1, id obj2) {return [PEUtils isNumProperty:getter equalFor:obj1 and:obj2];},
                                         ^(FPFuelPurchaseLog * localObject, FPFuelPurchaseLog * remoteObject) {[localObject setOctane:[remoteObject octane]];},
                                         FPFplogOctaneField],
+                                      @[[NSValue valueWithPointer:@selector(odometer)],
+                                        [NSValue valueWithPointer:@selector(setOdometer:)],
+                                        ^(SEL getter, id obj1, id obj2) {return [PEUtils isNumProperty:getter equalFor:obj1 and:obj2];},
+                                        ^(FPFuelPurchaseLog * localObject, FPFuelPurchaseLog * remoteObject) {[localObject setOdometer:[remoteObject odometer]];},
+                                        FPFplogOdometerField],
                                       @[[NSValue valueWithPointer:@selector(gallonPrice)],
                                         [NSValue valueWithPointer:@selector(setGallonPrice:)],
                                         ^(SEL getter, id obj1, id obj2) {return [PEUtils isNumProperty:getter equalFor:obj1 and:obj2];},
@@ -225,6 +238,7 @@ NSString * const FPFplogFuelstationGlobalIdField = @"FPFplogFuelstationGlobalIdF
   [super overwriteDomainProperties:fplog];
   [self setNumGallons:[fplog numGallons]];
   [self setOctane:[fplog octane]];
+  [self setOdometer:[fplog odometer]];
   [self setGallonPrice:[fplog gallonPrice]];
   [self setGotCarWash:[fplog gotCarWash]];
   [self setCarWashPerGallonDiscount:[fplog carWashPerGallonDiscount]];
@@ -243,6 +257,7 @@ NSString * const FPFplogFuelstationGlobalIdField = @"FPFplogFuelstationGlobalIdF
   if ([super isEqualToMainSupport:fuelPurchaseLog]) {
     return [PEUtils isNumProperty:@selector(numGallons) equalFor:self and:fuelPurchaseLog] &&
       [PEUtils isNumProperty:@selector(octane) equalFor:self and:fuelPurchaseLog] &&
+      [PEUtils isNumProperty:@selector(odometer) equalFor:self and:fuelPurchaseLog] &&
       [PEUtils isNumProperty:@selector(gallonPrice) equalFor:self and:fuelPurchaseLog] &&
       [PEUtils isBoolProperty:@selector(gotCarWash) equalFor:self and:fuelPurchaseLog] &&
       [PEUtils isNumProperty:@selector(carWashPerGallonDiscount) equalFor:self and:fuelPurchaseLog] &&
@@ -263,6 +278,7 @@ NSString * const FPFplogFuelstationGlobalIdField = @"FPFplogFuelstationGlobalIdF
   return [super hash] ^
     [[self numGallons] hash] ^
     [[self octane] hash] ^
+    [[self odometer] hash] ^
     [[self gallonPrice] hash] ^
     [[self gallonPrice] hash] ^
     [[self carWashPerGallonDiscount] hash] ^
@@ -270,11 +286,12 @@ NSString * const FPFplogFuelstationGlobalIdField = @"FPFplogFuelstationGlobalIdF
 }
 
 - (NSString *)description {
-  return [NSString stringWithFormat:@"%@, num gallons: [%@], octane: [%@], \
+  return [NSString stringWithFormat:@"%@, num gallons: [%@], octane: [%@], odometer: [%@], \
 gallon price: [%@], got car wash: [%d], car wash per gallon discount: [%@], \
 purchased at: [%@]", [super description],
           _numGallons,
           _octane,
+          _odometer,
           _gallonPrice,
           _gotCarWash,
           _carWashPerGallonDiscount,

@@ -4593,6 +4593,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                       fuelStationMainIdentifier:[rs objectForColumnName:COL_MAIN_FUELSTATION_ID]
                                                      numGallons:[PELMUtils decimalNumberFromResultSet:rs columnName:COL_FUELPL_NUM_GALLONS]
                                                          octane:[PELMUtils numberFromResultSet:rs columnName:COL_FUELPL_OCTANE]
+                                                       odometer:[PELMUtils decimalNumberFromResultSet:rs columnName:COL_FUELPL_ODOMETER]
                                                     gallonPrice:[PELMUtils decimalNumberFromResultSet:rs columnName:COL_FUELPL_PRICE_PER_GALLON]
                                                      gotCarWash:[rs boolForColumn:COL_FUELPL_GOT_CAR_WASH]
                                        carWashPerGallonDiscount:[PELMUtils decimalNumberFromResultSet:rs columnName:COL_FUELPL_CAR_WASH_PER_GALLON_DISCOUNT]
@@ -4620,6 +4621,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                       fuelStationMainIdentifier:nil
                                                      numGallons:[PELMUtils decimalNumberFromResultSet:rs columnName:COL_FUELPL_NUM_GALLONS]
                                                          octane:[PELMUtils numberFromResultSet:rs columnName:COL_FUELPL_OCTANE]
+                                                       odometer:[PELMUtils decimalNumberFromResultSet:rs columnName:COL_FUELPL_ODOMETER]
                                                     gallonPrice:[PELMUtils decimalNumberFromResultSet:rs columnName:COL_FUELPL_PRICE_PER_GALLON]
                                                      gotCarWash:[rs boolForColumn:COL_FUELPL_GOT_CAR_WASH]
                                        carWashPerGallonDiscount:[PELMUtils decimalNumberFromResultSet:rs columnName:COL_FUELPL_CAR_WASH_PER_GALLON_DISCOUNT]
@@ -4647,6 +4649,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                       fuelStationMainIdentifier:nil
                                                      numGallons:[PELMUtils decimalNumberFromResultSet:rs columnName:COL_FUELPL_NUM_GALLONS]
                                                          octane:[PELMUtils numberFromResultSet:rs columnName:COL_FUELPL_OCTANE]
+                                                       odometer:[PELMUtils decimalNumberFromResultSet:rs columnName:COL_FUELPL_ODOMETER]
                                                     gallonPrice:[PELMUtils decimalNumberFromResultSet:rs columnName:COL_FUELPL_PRICE_PER_GALLON]
                                                      gotCarWash:[rs boolForColumn:COL_FUELPL_GOT_CAR_WASH]
                                        carWashPerGallonDiscount:[PELMUtils decimalNumberFromResultSet:rs columnName:COL_FUELPL_CAR_WASH_PER_GALLON_DISCOUNT]
@@ -5330,7 +5333,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                            db:db
                                         error:errorBlk];
   NSString *stmt = [NSString stringWithFormat:@"INSERT INTO %@ (%@, %@, %@, \
-%@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+%@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                     TBL_MASTER_FUELPURCHASE_LOG,
                     COL_MASTER_USER_ID,
                     COL_MASTER_VEHICLE_ID,
@@ -5342,6 +5345,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                     COL_MST_DELETED_DT,
                     COL_FUELPL_NUM_GALLONS,
                     COL_FUELPL_OCTANE,
+                    COL_FUELPL_ODOMETER,
                     COL_FUELPL_PRICE_PER_GALLON,
                     COL_FUELPL_CAR_WASH_PER_GALLON_DISCOUNT,
                     COL_FUELPL_GOT_CAR_WASH,
@@ -5357,6 +5361,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                               orNil([PEUtils millisecondsFromDate:[fuelPurchaseLog deletedAt]]),
                               orNil([fuelPurchaseLog numGallons]),
                               orNil([fuelPurchaseLog octane]),
+                              orNil([fuelPurchaseLog odometer]),
                               orNil([fuelPurchaseLog gallonPrice]),
                               orNil([fuelPurchaseLog carWashPerGallonDiscount]),
                               [NSNumber numberWithBool:[fuelPurchaseLog gotCarWash]],
@@ -5373,8 +5378,8 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                    db:(FMDatabase *)db
                                 error:(PELMDaoErrorBlk)errorBlk {
   NSString *stmt = [NSString stringWithFormat:@"INSERT INTO %@ \
-(%@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@) VALUES \
-(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+(%@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@) VALUES \
+(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                     TBL_MAIN_FUELPURCHASE_LOG,
                     COL_MAIN_USER_ID,
                     COL_MAIN_VEHICLE_ID,
@@ -5385,6 +5390,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                     COL_MAN_DT_COPIED_DOWN_FROM_MASTER,
                     COL_FUELPL_NUM_GALLONS,
                     COL_FUELPL_OCTANE,
+                    COL_FUELPL_ODOMETER,
                     COL_FUELPL_PRICE_PER_GALLON,
                     COL_FUELPL_CAR_WASH_PER_GALLON_DISCOUNT,
                     COL_FUELPL_GOT_CAR_WASH,
@@ -5406,6 +5412,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                             orNil([PEUtils millisecondsFromDate:[fuelPurchaseLog dateCopiedFromMaster]]),
                             orNil([fuelPurchaseLog numGallons]),
                             orNil([fuelPurchaseLog octane]),
+                            orNil([fuelPurchaseLog odometer]),
                             orNil([fuelPurchaseLog gallonPrice]),
                             orNil([fuelPurchaseLog carWashPerGallonDiscount]),
                             [NSNumber numberWithBool:[fuelPurchaseLog gotCarWash]],
@@ -5436,6 +5443,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
 %@ = ?, \
 %@ = ?, \
 %@ = ?, \
+%@ = ?, \
 %@ = ? \
 WHERE %@ = ?",
           TBL_MASTER_FUELPURCHASE_LOG, // table
@@ -5448,6 +5456,7 @@ WHERE %@ = ?",
           COL_MST_DELETED_DT,     // col5
           COL_FUELPL_NUM_GALLONS,
           COL_FUELPL_OCTANE,
+          COL_FUELPL_ODOMETER,
           COL_FUELPL_PRICE_PER_GALLON,
           COL_FUELPL_CAR_WASH_PER_GALLON_DISCOUNT,
           COL_FUELPL_GOT_CAR_WASH,
@@ -5467,6 +5476,7 @@ WHERE %@ = ?",
 %@ = ?, \
 %@ = ?, \
 %@ = ?, \
+%@ = ?, \
 %@ = ? \
 WHERE %@ = ?",
           TBL_MASTER_FUELPURCHASE_LOG, // table
@@ -5477,6 +5487,7 @@ WHERE %@ = ?",
           COL_MST_DELETED_DT,     // col5
           COL_FUELPL_NUM_GALLONS,
           COL_FUELPL_OCTANE,
+          COL_FUELPL_ODOMETER,
           COL_FUELPL_PRICE_PER_GALLON,
           COL_FUELPL_CAR_WASH_PER_GALLON_DISCOUNT,
           COL_FUELPL_GOT_CAR_WASH,
@@ -5506,6 +5517,7 @@ WHERE %@ = ?",
     orNil([PEUtils millisecondsFromDate:[fuelPurchaseLog deletedAt]]),
     orNil([fuelPurchaseLog numGallons]),
     orNil([fuelPurchaseLog octane]),
+    orNil([fuelPurchaseLog odometer]),
     orNil([fuelPurchaseLog gallonPrice]),
     orNil([fuelPurchaseLog carWashPerGallonDiscount]),
     [NSNumber numberWithBool:[fuelPurchaseLog gotCarWash]],
@@ -5535,6 +5547,7 @@ WHERE %@ = ?",
           %@ = ?, \
           %@ = ?, \
           %@ = ?, \
+          %@ = ?, \
           %@ = ? \
           WHERE %@ = ?",
           TBL_MAIN_FUELPURCHASE_LOG,                   // table
@@ -5546,6 +5559,7 @@ WHERE %@ = ?",
           COL_MAN_DT_COPIED_DOWN_FROM_MASTER, // col4
           COL_FUELPL_NUM_GALLONS,
           COL_FUELPL_OCTANE,
+          COL_FUELPL_ODOMETER,
           COL_FUELPL_PRICE_PER_GALLON,
           COL_FUELPL_CAR_WASH_PER_GALLON_DISCOUNT,
           COL_FUELPL_GOT_CAR_WASH,
@@ -5578,6 +5592,7 @@ WHERE %@ = ?",
           %@ = ?, \
           %@ = ?, \
           %@ = ?, \
+          %@ = ?, \
           %@ = ? \
           WHERE %@ = ?",
           TBL_MAIN_FUELPURCHASE_LOG,                   // table
@@ -5587,6 +5602,7 @@ WHERE %@ = ?",
           COL_MAN_DT_COPIED_DOWN_FROM_MASTER, // col4
           COL_FUELPL_NUM_GALLONS,
           COL_FUELPL_OCTANE,
+          COL_FUELPL_ODOMETER,
           COL_FUELPL_PRICE_PER_GALLON,
           COL_FUELPL_CAR_WASH_PER_GALLON_DISCOUNT,
           COL_FUELPL_GOT_CAR_WASH,
@@ -5624,6 +5640,7 @@ WHERE %@ = ?",
     orNil([PEUtils millisecondsFromDate:[fuelPurchaseLog dateCopiedFromMaster]]),
     orNil([fuelPurchaseLog numGallons]),
     orNil([fuelPurchaseLog octane]),
+    orNil([fuelPurchaseLog odometer]),
     orNil([fuelPurchaseLog gallonPrice]),
     orNil([fuelPurchaseLog carWashPerGallonDiscount]),
     [NSNumber numberWithBool:[fuelPurchaseLog gotCarWash]],

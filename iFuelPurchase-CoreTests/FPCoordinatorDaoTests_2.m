@@ -65,6 +65,7 @@ describe(@"FPCoordinatorDao", ^{
       FPFuelPurchaseLog *fplog =
       [_coordDao fuelPurchaseLogWithNumGallons:[NSDecimalNumber decimalNumberWithString:@"15.2"]
                                         octane:[NSNumber numberWithInt:93]
+                                      odometer:[NSDecimalNumber decimalNumberWithString:@"10582"]
                                    gallonPrice:[NSDecimalNumber decimalNumberWithString:@"3.85"]
                                     gotCarWash:NO
                       carWashPerGallonDiscount:[NSDecimalNumber decimalNumberWithString:@".08"]
