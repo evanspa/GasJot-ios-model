@@ -109,7 +109,12 @@ describe(@"FPStats", ^{
     it(@"Days between fillups for user stats works", ^{
       [[[_stats overallAvgDaysBetweenFillupsForUser:_user] should] equal:[NSDecimalNumber decimalNumberWithString:@"8.0"]];
       [[[_stats overallMaxDaysBetweenFillupsForUser:_user] should] equal:@(15)];
-      NSArray *dataset = [_stats overallDaysBetweenFillupsDataSetForUser:_user];
+      NSArray *dataset = [_stats overallAvgDaysBetweenFillupsDataSetForUser:_user];
+      [[dataset should] haveCountOf:1];
+      [[dataset[0][0] should] equal:_d(@"02/01/2013")];
+      [[dataset[0][1] should] equal:[NSDecimalNumber decimalNumberWithString:@"7.1666666666666666666666666666666666666"]];
+      
+      dataset = [_stats overallDaysBetweenFillupsDataSetForUser:_user];
       [[dataset should] haveCountOf:5];
       [[dataset[0][0] should] equal:_d(@"02/06/2013")];
       [[dataset[0][1] should] equal:@(2)];

@@ -23,11 +23,15 @@
 
 - (NSArray *)yearToDateDaysBetweenFillupsDataSetForUser:(FPUser *)user;
 
+- (NSArray *)yearToDateAvgDaysBetweenFillupsDataSetForUser:(FPUser *)user;
+
 - (NSDecimalNumber *)lastYearAvgDaysBetweenFillupsForUser:(FPUser *)user;
 
 - (NSNumber *)lastYearMaxDaysBetweenFillupsForUser:(FPUser *)user;
 
 - (NSArray *)lastYearDaysBetweenFillupsDataSetForUser:(FPUser *)user;
+
+- (NSArray *)lastYearAvgDaysBetweenFillupsDataSetForUser:(FPUser *)user;
 
 - (NSDecimalNumber *)overallAvgDaysBetweenFillupsForUser:(FPUser *)user;
 
@@ -35,11 +39,15 @@
 
 - (NSArray *)overallDaysBetweenFillupsDataSetForUser:(FPUser *)user;
 
+- (NSArray *)overallAvgDaysBetweenFillupsDataSetForUser:(FPUser *)user;
+
 - (NSDecimalNumber *)yearToDateAvgDaysBetweenFillupsForVehicle:(FPVehicle *)vehicle;
 
 - (NSNumber *)yearToDateMaxDaysBetweenFillupsForVehicle:(FPVehicle *)vehicle;
 
 - (NSArray *)yearToDateDaysBetweenFillupsDataSetForVehicle:(FPVehicle *)vehicle;
+
+- (NSArray *)yearToDateAvgDaysBetweenFillupsDataSetForVehicle:(FPVehicle *)vehicle;
 
 - (NSDecimalNumber *)lastYearAvgDaysBetweenFillupsForVehicle:(FPVehicle *)vehicle;
 
@@ -47,11 +55,15 @@
 
 - (NSArray *)lastYearDaysBetweenFillupsDataSetForVehicle:(FPVehicle *)vehicle;
 
+- (NSArray *)lastYearAvgDaysBetweenFillupsDataSetForVehicle:(FPVehicle *)vehicle;
+
 - (NSDecimalNumber *)overallAvgDaysBetweenFillupsForVehicle:(FPVehicle *)vehicle;
 
 - (NSNumber *)overallMaxDaysBetweenFillupsForVehicle:(FPVehicle *)vehicle;
 
 - (NSArray *)overallDaysBetweenFillupsDataSetForVehicle:(FPVehicle *)vehicle;
+
+- (NSArray *)overallAvgDaysBetweenFillupsDataSetForVehicle:(FPVehicle *)vehicle;
 
 #pragma mark - Gas Cost Per Mile
 
