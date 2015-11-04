@@ -67,37 +67,37 @@
 
 #pragma mark - Gas Cost Per Mile
 
-- (NSDecimalNumber *)yearToDateGasCostPerMileForUser:(FPUser *)user;
+- (NSDecimalNumber *)yearToDateAvgGasCostPerMileForUser:(FPUser *)user;
 
-- (NSArray *)yearToDateGasCostPerMileDataSetForUser:(FPUser *)user;
+- (NSArray *)yearToDateAvgGasCostPerMileDataSetForUser:(FPUser *)user;
 
-- (NSDecimalNumber *)gasCostPerMileForUser:(FPUser *)user year:(NSInteger)year;
+- (NSDecimalNumber *)avgGasCostPerMileForUser:(FPUser *)user year:(NSInteger)year;
 
-- (NSArray *)gasCostPerMileDataSetForUser:(FPUser *)user year:(NSInteger)year;
+- (NSArray *)avgGasCostPerMileDataSetForUser:(FPUser *)user year:(NSInteger)year;
 
-- (NSDecimalNumber *)lastYearGasCostPerMileForUser:(FPUser *)user;
+- (NSDecimalNumber *)lastYearAvgGasCostPerMileForUser:(FPUser *)user;
 
-- (NSArray *)lastYearGasCostPerMileDataSetForUser:(FPUser *)user;
+- (NSArray *)lastYearAvgGasCostPerMileDataSetForUser:(FPUser *)user;
 
-- (NSDecimalNumber *)overallGasCostPerMileForUser:(FPUser *)user;
+- (NSDecimalNumber *)overallAvgGasCostPerMileForUser:(FPUser *)user;
 
-- (NSArray *)overallGasCostPerMileDataSetForUser:(FPUser *)user;
+- (NSArray *)overallAvgGasCostPerMileDataSetForUser:(FPUser *)user;
 
-- (NSDecimalNumber *)yearToDateGasCostPerMileForVehicle:(FPVehicle *)vehicle;
+- (NSDecimalNumber *)yearToDateAvgGasCostPerMileForVehicle:(FPVehicle *)vehicle;
 
-- (NSArray *)yearToDateGasCostPerMileDataSetForVehicle:(FPVehicle *)vehicle;
+- (NSArray *)yearToDateAvgGasCostPerMileDataSetForVehicle:(FPVehicle *)vehicle;
 
-- (NSDecimalNumber *)gasCostPerMileForVehicle:(FPVehicle *)vehicle year:(NSInteger)year;
+- (NSDecimalNumber *)avgGasCostPerMileForVehicle:(FPVehicle *)vehicle year:(NSInteger)year;
 
-- (NSArray *)gasCostPerMileDataSetForVehicle:(FPVehicle *)vehicle year:(NSInteger)year;
+- (NSArray *)avgGasCostPerMileDataSetForVehicle:(FPVehicle *)vehicle year:(NSInteger)year;
 
-- (NSDecimalNumber *)lastYearGasCostPerMileForVehicle:(FPVehicle *)vehicle;
+- (NSDecimalNumber *)lastYearAvgGasCostPerMileForVehicle:(FPVehicle *)vehicle;
 
-- (NSArray *)lastYearGasCostPerMileDataSetForVehicle:(FPVehicle *)vehicle;
+- (NSArray *)lastYearAvgGasCostPerMileDataSetForVehicle:(FPVehicle *)vehicle;
 
-- (NSDecimalNumber *)overallGasCostPerMileForVehicle:(FPVehicle *)vehicle;
+- (NSDecimalNumber *)overallAvgGasCostPerMileForVehicle:(FPVehicle *)vehicle;
 
-- (NSArray *)overallGasCostPerMileDataSetForVehicle:(FPVehicle *)vehicle;
+- (NSArray *)overallAvgGasCostPerMileDataSetForVehicle:(FPVehicle *)vehicle;
 
 #pragma mark - Amount Spent on Gas
 

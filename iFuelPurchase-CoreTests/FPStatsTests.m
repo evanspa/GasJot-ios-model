@@ -268,7 +268,7 @@ describe(@"FPStats", ^{
     });
     
     it(@"YTD and overall gas cost per mile data sets for vehicle", ^{
-      NSArray *ds = [_stats gasCostPerMileDataSetForVehicle:_v1 year:2013];
+      NSArray *ds = [_stats avgGasCostPerMileDataSetForVehicle:_v1 year:2013];
       [ds shouldNotBeNil];
       [[ds should] haveCountOf:2];
       NSArray *dp = ds[0];
@@ -291,7 +291,7 @@ describe(@"FPStats", ^{
     
     it(@"YTD and overall gas cost per mile data sets for vehicle", ^{
       // not enough odometer log data to do the calculation
-      NSArray *ds = [_stats gasCostPerMileDataSetForVehicle:_v1 year:2013];
+      NSArray *ds = [_stats avgGasCostPerMileDataSetForVehicle:_v1 year:2013];
       [[ds should] beEmpty];
     });
   });
@@ -311,7 +311,7 @@ describe(@"FPStats", ^{
     });
     
     it(@"YTD and overall gas cost per mile data sets for vehicle", ^{
-      NSArray *ds = [_stats gasCostPerMileDataSetForVehicle:_v1 year:2013];
+      NSArray *ds = [_stats avgGasCostPerMileDataSetForVehicle:_v1 year:2013];
       [ds shouldNotBeNil];
       [[ds should] haveCountOf:1];
       NSArray *dp1 = ds[0];
@@ -392,17 +392,17 @@ describe(@"FPStats", ^{
     });
     
     it(@"Overall, YTD and last year gas cost per mile stats works", ^{
-      [[[_stats yearToDateGasCostPerMileForVehicle:_v1] should] equal:[NSDecimalNumber decimalNumberWithString:@"1.48643513513513513513513513513513513513"]];
-      [[[_stats lastYearGasCostPerMileForVehicle:_v1] should] equal:[NSDecimalNumber decimalNumberWithString:@"0.264228556806550665301944728761514841351"]];
-      [[[_stats overallGasCostPerMileForVehicle:_v1] should] equal:[NSDecimalNumber decimalNumberWithString:@"0.258857418909592822636300897170462387853"]];
+      [[[_stats yearToDateAvgGasCostPerMileForVehicle:_v1] should] equal:[NSDecimalNumber decimalNumberWithString:@"1.48643513513513513513513513513513513513"]];
+      [[[_stats lastYearAvgGasCostPerMileForVehicle:_v1] should] equal:[NSDecimalNumber decimalNumberWithString:@"0.264228556806550665301944728761514841351"]];
+      [[[_stats overallAvgGasCostPerMileForVehicle:_v1] should] equal:[NSDecimalNumber decimalNumberWithString:@"0.258857418909592822636300897170462387853"]];
       
-      [[[_stats yearToDateGasCostPerMileForVehicle:v2] should] equal:[NSDecimalNumber decimalNumberWithString:@"1.46010256410256410256410256410256410256"]];
-      [[[_stats lastYearGasCostPerMileForVehicle:v2] should] equal:[NSDecimalNumber decimalNumberWithString:@"0.055107874533889010747971046282079403377"]];
-      [[[_stats overallGasCostPerMileForVehicle:v2] should] equal:[NSDecimalNumber decimalNumberWithString:@"0.07344473736372646184340931615460852329"]];
+      [[[_stats yearToDateAvgGasCostPerMileForVehicle:v2] should] equal:[NSDecimalNumber decimalNumberWithString:@"1.46010256410256410256410256410256410256"]];
+      [[[_stats lastYearAvgGasCostPerMileForVehicle:v2] should] equal:[NSDecimalNumber decimalNumberWithString:@"0.055107874533889010747971046282079403377"]];
+      [[[_stats overallAvgGasCostPerMileForVehicle:v2] should] equal:[NSDecimalNumber decimalNumberWithString:@"0.07344473736372646184340931615460852329"]];
       
-      [[[_stats yearToDateGasCostPerMileForVehicle:v3] should] equal:[NSDecimalNumber decimalNumberWithString:@"0.071844429160935350756533700137551581843"]];
-      [[[_stats lastYearGasCostPerMileForVehicle:v3] should] equal:[NSDecimalNumber decimalNumberWithString:@"0.050903526398739164696611505122143420015"]];
-      [[[_stats overallGasCostPerMileForVehicle:v3] should] equal:[NSDecimalNumber decimalNumberWithString:@"0.053612912482065997130559540889526542324"]];
+      [[[_stats yearToDateAvgGasCostPerMileForVehicle:v3] should] equal:[NSDecimalNumber decimalNumberWithString:@"0.071844429160935350756533700137551581843"]];
+      [[[_stats lastYearAvgGasCostPerMileForVehicle:v3] should] equal:[NSDecimalNumber decimalNumberWithString:@"0.050903526398739164696611505122143420015"]];
+      [[[_stats overallAvgGasCostPerMileForVehicle:v3] should] equal:[NSDecimalNumber decimalNumberWithString:@"0.053612912482065997130559540889526542324"]];
     });
     
     it(@"Total, YTD and last year spend on gas stats works", ^{
@@ -470,13 +470,13 @@ describe(@"FPStats", ^{
     });
     
     it(@"YTD and overall gas cost per mile for vehicle", ^{
-      [[_stats yearToDateGasCostPerMileForVehicle:_v1] shouldBeNil];
-      [[_stats overallGasCostPerMileForVehicle:_v1] shouldBeNil];
+      [[_stats yearToDateAvgGasCostPerMileForVehicle:_v1] shouldBeNil];
+      [[_stats overallAvgGasCostPerMileForVehicle:_v1] shouldBeNil];
     });
     
     it(@"YTD and overall gas cost per mile data sets for vehicle", ^{
-      [[[_stats yearToDateGasCostPerMileDataSetForVehicle:_v1] should] beEmpty];
-      [[[_stats overallGasCostPerMileDataSetForVehicle:_v1] should] beEmpty];
+      [[[_stats yearToDateAvgGasCostPerMileDataSetForVehicle:_v1] should] beEmpty];
+      [[[_stats overallAvgGasCostPerMileDataSetForVehicle:_v1] should] beEmpty];
     });
   });
 
@@ -520,13 +520,13 @@ describe(@"FPStats", ^{
     });
     
     it(@"YTD and overall gas cost per mile for vehicle", ^{
-      [[_stats yearToDateGasCostPerMileForVehicle:_v1] shouldBeNil];
-      [[_stats overallGasCostPerMileForVehicle:_v1] shouldBeNil];
+      [[_stats yearToDateAvgGasCostPerMileForVehicle:_v1] shouldBeNil];
+      [[_stats overallAvgGasCostPerMileForVehicle:_v1] shouldBeNil];
     });
     
     it(@"YTD and overall gas cost per mile data sets for vehicle", ^{
-      [[[_stats yearToDateGasCostPerMileDataSetForVehicle:_v1] should] beEmpty];
-      [[[_stats overallGasCostPerMileDataSetForVehicle:_v1] should] beEmpty];
+      [[[_stats yearToDateAvgGasCostPerMileDataSetForVehicle:_v1] should] beEmpty];
+      [[[_stats overallAvgGasCostPerMileDataSetForVehicle:_v1] should] beEmpty];
     });
   });
   
@@ -564,12 +564,12 @@ describe(@"FPStats", ^{
     });
     
     it(@"YTD and overall gas cost per mile for user and vehicle", ^{
-      [[[_stats yearToDateGasCostPerMileForVehicle:_v1] should] equal:[NSDecimalNumber decimalNumberWithString:@"0.185189873417721518987341772151898734177"]];
-      [[[_stats overallGasCostPerMileForVehicle:_v1] should] equal:[NSDecimalNumber decimalNumberWithString:@"0.185189873417721518987341772151898734177"]];
+      [[[_stats yearToDateAvgGasCostPerMileForVehicle:_v1] should] equal:[NSDecimalNumber decimalNumberWithString:@"0.185189873417721518987341772151898734177"]];
+      [[[_stats overallAvgGasCostPerMileForVehicle:_v1] should] equal:[NSDecimalNumber decimalNumberWithString:@"0.185189873417721518987341772151898734177"]];
     });
     
     it(@"YTD and overall gas cost per mile data sets for vehicle", ^{
-      NSArray *ds = [_stats yearToDateGasCostPerMileDataSetForVehicle:_v1];
+      NSArray *ds = [_stats yearToDateAvgGasCostPerMileDataSetForVehicle:_v1];
       [ds shouldNotBeNil];
       [[ds should] haveCountOf:1];
       NSArray *dp1 = ds[0];
@@ -599,13 +599,13 @@ describe(@"FPStats", ^{
     });
     
     it(@"YTD and overall gas cost per mile for vehicle", ^{
-      [[_stats yearToDateGasCostPerMileForVehicle:_v1] shouldBeNil];
-      [[_stats overallGasCostPerMileForVehicle:_v1] shouldBeNil];
+      [[_stats yearToDateAvgGasCostPerMileForVehicle:_v1] shouldBeNil];
+      [[_stats overallAvgGasCostPerMileForVehicle:_v1] shouldBeNil];
     });
     
     it(@"YTD and overall gas cost per mile data sets for vehicle", ^{
-      [[[_stats yearToDateGasCostPerMileDataSetForVehicle:_v1] should] beEmpty];
-      [[[_stats overallGasCostPerMileDataSetForVehicle:_v1] should] beEmpty];
+      [[[_stats yearToDateAvgGasCostPerMileDataSetForVehicle:_v1] should] beEmpty];
+      [[[_stats overallAvgGasCostPerMileDataSetForVehicle:_v1] should] beEmpty];
     });
   });
   
@@ -625,13 +625,13 @@ describe(@"FPStats", ^{
     });
     
     it(@"YTD and overall gas cost per mile for vehicle", ^{
-      [[_stats yearToDateGasCostPerMileForVehicle:_v1] shouldBeNil];
-      [[_stats overallGasCostPerMileForVehicle:_v1] shouldBeNil];
+      [[_stats yearToDateAvgGasCostPerMileForVehicle:_v1] shouldBeNil];
+      [[_stats overallAvgGasCostPerMileForVehicle:_v1] shouldBeNil];
     });
 
     it(@"YTD and overall gas cost per mile data sets for vehicle", ^{
-      [[[_stats yearToDateGasCostPerMileDataSetForVehicle:_v1] should] beEmpty];
-      [[[_stats overallGasCostPerMileDataSetForVehicle:_v1] should] beEmpty];
+      [[[_stats yearToDateAvgGasCostPerMileDataSetForVehicle:_v1] should] beEmpty];
+      [[[_stats overallAvgGasCostPerMileDataSetForVehicle:_v1] should] beEmpty];
     });
     
     context(@"When there is only 1 gas record", ^{
@@ -665,13 +665,13 @@ describe(@"FPStats", ^{
       });
       
       it(@"YTD and overall gas cost per mile for vehicle", ^{
-        [[_stats yearToDateGasCostPerMileForVehicle:_v1] shouldBeNil];
-        [[_stats overallGasCostPerMileForVehicle:_v1] shouldBeNil];
+        [[_stats yearToDateAvgGasCostPerMileForVehicle:_v1] shouldBeNil];
+        [[_stats overallAvgGasCostPerMileForVehicle:_v1] shouldBeNil];
       });
       
       it(@"YTD and overall gas cost per mile data sets for vehicle", ^{
-        [[[_stats yearToDateGasCostPerMileDataSetForVehicle:_v1] should] beEmpty];
-        [[[_stats overallGasCostPerMileDataSetForVehicle:_v1] should] beEmpty];
+        [[[_stats yearToDateAvgGasCostPerMileDataSetForVehicle:_v1] should] beEmpty];
+        [[[_stats overallAvgGasCostPerMileDataSetForVehicle:_v1] should] beEmpty];
       });
     });
     
@@ -709,13 +709,13 @@ describe(@"FPStats", ^{
       });
       
       it(@"YTD and overall gas cost per mile for vehicle", ^{
-        [[_stats yearToDateGasCostPerMileForVehicle:_v1] shouldBeNil];
-        [[_stats overallGasCostPerMileForVehicle:_v1] shouldBeNil];
+        [[_stats yearToDateAvgGasCostPerMileForVehicle:_v1] shouldBeNil];
+        [[_stats overallAvgGasCostPerMileForVehicle:_v1] shouldBeNil];
       });
       
       it(@"YTD and overall gas cost per mile data sets for vehicle", ^{
-        [[[_stats yearToDateGasCostPerMileDataSetForVehicle:_v1] should] beEmpty];
-        [[[_stats overallGasCostPerMileDataSetForVehicle:_v1] should] beEmpty];
+        [[[_stats yearToDateAvgGasCostPerMileDataSetForVehicle:_v1] should] beEmpty];
+        [[[_stats overallAvgGasCostPerMileDataSetForVehicle:_v1] should] beEmpty];
       });
       
       context(@"create a 2nd vehicle, and 3rd fplog for that vehicle", ^{
@@ -751,13 +751,13 @@ describe(@"FPStats", ^{
         });
         
         it(@"YTD and overall gas cost per mile for vehicle", ^{
-          [[_stats yearToDateGasCostPerMileForVehicle:_v1] shouldBeNil];
-          [[_stats overallGasCostPerMileForVehicle:_v1] shouldBeNil];
+          [[_stats yearToDateAvgGasCostPerMileForVehicle:_v1] shouldBeNil];
+          [[_stats overallAvgGasCostPerMileForVehicle:_v1] shouldBeNil];
         });
         
         it(@"YTD and overall gas cost per mile data sets for vehicle", ^{
-          [[[_stats yearToDateGasCostPerMileDataSetForVehicle:_v1] should] beEmpty];
-          [[[_stats overallGasCostPerMileDataSetForVehicle:_v1] should] beEmpty];
+          [[[_stats yearToDateAvgGasCostPerMileDataSetForVehicle:_v1] should] beEmpty];
+          [[[_stats overallAvgGasCostPerMileDataSetForVehicle:_v1] should] beEmpty];
         });
         
         context(@"add a gas log that goes back to the previous year, for vehicle _v1", ^{
@@ -798,13 +798,13 @@ describe(@"FPStats", ^{
           });
           
           it(@"YTD and overall gas cost per mile for vehicle", ^{
-            [[_stats yearToDateGasCostPerMileForVehicle:_v1] shouldBeNil];
-            [[_stats overallGasCostPerMileForVehicle:_v1] shouldBeNil];
+            [[_stats yearToDateAvgGasCostPerMileForVehicle:_v1] shouldBeNil];
+            [[_stats overallAvgGasCostPerMileForVehicle:_v1] shouldBeNil];
           });
           
           it(@"YTD and overall gas cost per mile data sets for vehicle", ^{
-            [[[_stats yearToDateGasCostPerMileDataSetForVehicle:_v1] should] beEmpty];
-            [[[_stats overallGasCostPerMileDataSetForVehicle:_v1] should] beEmpty];
+            [[[_stats yearToDateAvgGasCostPerMileDataSetForVehicle:_v1] should] beEmpty];
+            [[[_stats overallAvgGasCostPerMileDataSetForVehicle:_v1] should] beEmpty];
           });
         });
       });
