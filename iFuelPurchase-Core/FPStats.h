@@ -15,6 +15,60 @@
 
 - (id)initWithLocalDao:(FPLocalDao *)localDao errorBlk:(PELMDaoErrorBlk)errorBlk;
 
+#pragma mark - Average Reported MPG
+
+- (NSDecimalNumber *)yearToDateAvgReportedMpgForUser:(FPUser *)user;
+
+- (NSArray *)yearToDateAvgReportedMpgDataSetForUser:(FPUser *)user;
+
+- (NSDecimalNumber *)lastYearAvgReportedMpgForUser:(FPUser *)user;
+
+- (NSArray *)lastYearAvgReportedMpgDataSetForUser:(FPUser *)user;
+
+- (NSDecimalNumber *)overallAvgReportedMpgForUser:(FPUser *)user;
+
+- (NSArray *)overallAvgReportedMpgDataSetForUser:(FPUser *)user;
+
+- (NSDecimalNumber *)yearToDateAvgReportedMpgForVehicle:(FPVehicle *)vehicle;
+
+- (NSArray *)yearToDateAvgReportedMpgDataSetForVehicle:(FPVehicle *)vehicle;
+
+- (NSDecimalNumber *)lastYearAvgReportedMpgForVehicle:(FPVehicle *)vehicle;
+
+- (NSArray *)lastYearAvgReportedMpgDataSetForVehicle:(FPVehicle *)vehicle;
+
+- (NSDecimalNumber *)overallAvgReportedMpgForVehicle:(FPVehicle *)vehicle;
+
+- (NSArray *)overallAvgReportedMpgDataSetForVehicle:(FPVehicle *)vehicle;
+
+#pragma mark - Max Reported MPG
+
+- (NSDecimalNumber *)yearToDateMaxReportedMpgForUser:(FPUser *)user;
+
+- (NSDecimalNumber *)lastYearMaxReportedMpgForUser:(FPUser *)user;
+
+- (NSDecimalNumber *)overallMaxReportedMpgForUser:(FPUser *)user;
+
+- (NSDecimalNumber *)yearToDateMaxReportedMpgForVehicle:(FPVehicle *)vehicle;
+
+- (NSDecimalNumber *)lastYearMaxReportedMpgForVehicle:(FPVehicle *)vehicle;
+
+- (NSDecimalNumber *)overallMaxReportedMpgForVehicle:(FPVehicle *)vehicle;
+
+#pragma mark - Min Reported MPG
+
+- (NSDecimalNumber *)yearToDateMinReportedMpgForUser:(FPUser *)user;
+
+- (NSDecimalNumber *)lastYearMinReportedMpgForUser:(FPUser *)user;
+
+- (NSDecimalNumber *)overallMinReportedMpgForUser:(FPUser *)user;
+
+- (NSDecimalNumber *)yearToDateMinReportedMpgForVehicle:(FPVehicle *)vehicle;
+
+- (NSDecimalNumber *)lastYearMinReportedMpgForVehicle:(FPVehicle *)vehicle;
+
+- (NSDecimalNumber *)overallMinReportedMpgForVehicle:(FPVehicle *)vehicle;
+
 #pragma mark - Days Between Fill-ups
 
 - (NSDecimalNumber *)yearToDateAvgDaysBetweenFillupsForUser:(FPUser *)user;

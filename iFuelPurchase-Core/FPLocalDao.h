@@ -585,6 +585,59 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
 
 #pragma mark - Environment Log
 
+- (FPEnvironmentLog *)maxReportedMpgOdometerLogForUser:(FPUser *)user
+                                            beforeDate:(NSDate *)beforeDate
+                                         onOrAfterDate:(NSDate *)onOrAfterDate
+                                                 error:(PELMDaoErrorBlk)errorBlk;
+
+- (FPEnvironmentLog *)maxReportedMpgOdometerLogForVehicle:(FPVehicle *)vehicle
+                                               beforeDate:(NSDate *)beforeDate
+                                            onOrAfterDate:(NSDate *)onOrAfterDate
+                                                    error:(PELMDaoErrorBlk)errorBlk;
+
+- (FPEnvironmentLog *)minReportedMpgOdometerLogForUser:(FPUser *)user
+                                            beforeDate:(NSDate *)beforeDate
+                                         onOrAfterDate:(NSDate *)onOrAfterDate
+                                                 error:(PELMDaoErrorBlk)errorBlk;
+
+- (FPEnvironmentLog *)minReportedMpgOdometerLogForVehicle:(FPVehicle *)vehicle
+                                               beforeDate:(NSDate *)beforeDate
+                                            onOrAfterDate:(NSDate *)onOrAfterDate
+                                                    error:(PELMDaoErrorBlk)errorBlk;
+
+- (FPEnvironmentLog *)maxReportedMpgOdometerLogForUser:(FPUser *)user
+                                                 error:(PELMDaoErrorBlk)errorBlk;
+
+- (FPEnvironmentLog *)maxReportedMpgOdometerLogForVehicle:(FPVehicle *)vehicle
+                                                    error:(PELMDaoErrorBlk)errorBlk;
+
+- (FPEnvironmentLog *)minReportedMpgOdometerLogForUser:(FPUser *)user
+                                                 error:(PELMDaoErrorBlk)errorBlk;
+
+- (FPEnvironmentLog *)minReportedMpgOdometerLogForVehicle:(FPVehicle *)vehicle
+                                                    error:(PELMDaoErrorBlk)errorBlk;
+
+- (NSArray *)unorderedEnvironmentLogsForVehicle:(FPVehicle *)vehicle
+                                          error:(PELMDaoErrorBlk)errorBlk;
+
+- (NSArray *)unorderedEnvironmentLogsForVehicle:(FPVehicle *)vehicle
+                                     beforeDate:(NSDate *)beforeDate
+                                  onOrAfterDate:(NSDate *)onOrAfterDate
+                                          error:(PELMDaoErrorBlk)errorBlk;
+
+- (NSArray *)unorderedEnvironmentLogsForVehicle:(FPVehicle *)vehicle
+                                     beforeDate:(NSDate *)beforeDate
+                                      afterDate:(NSDate *)afterDate
+                                          error:(PELMDaoErrorBlk)errorBlk;
+
+- (NSArray *)unorderedEnvironmentLogsForUser:(FPUser *)user
+                                       error:(PELMDaoErrorBlk)errorBlk;
+
+- (NSArray *)unorderedEnvironmentLogsForUser:(FPUser *)user
+                                  beforeDate:(NSDate *)beforeDate
+                               onOrAfterDate:(NSDate *)onOrAfterDate
+                                       error:(PELMDaoErrorBlk)errorBlk;
+
 - (NSArray *)odometerLogNearestToDate:(NSDate *)date
                            forVehicle:(FPVehicle *)vehicle
                                 error:(PELMDaoErrorBlk)errorBlk;
@@ -612,6 +665,9 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
 
 - (FPEnvironmentLog *)firstOdometerLogForVehicle:(FPVehicle *)vehicle
                                            error:(PELMDaoErrorBlk)errorBlk;
+
+- (FPEnvironmentLog *)lastOdometerLogForUser:(FPUser *)user
+                                       error:(PELMDaoErrorBlk)errorBlk;
 
 - (FPEnvironmentLog *)lastOdometerLogForVehicle:(FPVehicle *)vehicle
                                           error:(PELMDaoErrorBlk)errorBlk;
