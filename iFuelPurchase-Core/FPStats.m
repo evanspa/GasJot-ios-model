@@ -162,6 +162,12 @@ typedef id (^FPValueBlock)(void);
   return dataset;
 }
 
+- (NSDecimalNumber *)avgReportedMphFromEnvlogs:(NSArray *)envlogs {
+  return [self avgValueForItems:envlogs
+                  itemValidator:^BOOL(FPEnvironmentLog *envlog) { return ![PEUtils isNil:envlog.reportedAvgMph]; }
+                    accumulator:^NSDecimalNumber *(FPEnvironmentLog *envlog) { return envlog.reportedAvgMph; }];
+}
+
 - (NSDecimalNumber *)avgReportedMpgFromEnvlogs:(NSArray *)envlogs {
   return [self avgValueForItems:envlogs
                   itemValidator:^BOOL(FPEnvironmentLog *envlog) { return ![PEUtils isNil:envlog.reportedAvgMpg]; }
@@ -412,17 +418,28 @@ typedef id (^FPValueBlock)(void);
                   onOrAfterDate:onOrAfterDate];
 }
 
-- (NSArray *)avgReportedMpgDataSetForUser:(FPUser *)user
+- (NSArray *)avgReportedMphDataSetForUser:(FPUser *)user
                                beforeDate:(NSDate *)beforeDate
                             onOrAfterDate:(NSDate *)onOrAfterDate {
-  return [self dataSetForEntity:user
+  return [self mergeDataSetsForUser:user
+                   childEntitiesBlk:^{ return [_localDao vehiclesForUser:user error:_errorBlk]; }
+           datasetForChildEntityBlk:^(FPVehicle *vehicle) { return [self avgReportedMphDataSetForVehicle:vehicle
+                                                                                              beforeDate:beforeDate
+                                                                                           onOrAfterDate:onOrAfterDate]; }
+            entityDatapointValueBlk:^(NSDecimalNumber *avgReportedMph) {return avgReportedMph;}];
+}
+
+- (NSArray *)avgReportedMphDataSetForVehicle:(FPVehicle *)vehicle
+                                  beforeDate:(NSDate *)beforeDate
+                               onOrAfterDate:(NSDate *)onOrAfterDate {
+  return [self dataSetForEntity:vehicle
                  monthOfDataBlk:^NSArray *(NSInteger year, NSInteger startMonth, NSInteger endMonth, NSCalendar *cal) {
-                   return [self dataSetForEntity:user
+                   return [self dataSetForEntity:vehicle
                                         valueBlk:^id(NSDate *firstDateOfNextMonth, NSDate *firstDayOfMonth) {
-                                          return [self avgReportedMpgFromEnvlogs:[_localDao unorderedEnvironmentLogsForUser:user
-                                                                                                                 beforeDate:firstDateOfNextMonth
-                                                                                                              onOrAfterDate:firstDayOfMonth
-                                                                                                                      error:_errorBlk]];
+                                          return [self avgReportedMphFromEnvlogs:[_localDao unorderedEnvironmentLogsForVehicle:vehicle
+                                                                                                                    beforeDate:firstDateOfNextMonth
+                                                                                                                 onOrAfterDate:firstDayOfMonth
+                                                                                                                         error:_errorBlk]];
                                         }
                                             year:year
                                       startMonth:startMonth
@@ -431,6 +448,17 @@ typedef id (^FPValueBlock)(void);
                  }
                      beforeDate:beforeDate
                   onOrAfterDate:onOrAfterDate];
+}
+
+- (NSArray *)avgReportedMpgDataSetForUser:(FPUser *)user
+                               beforeDate:(NSDate *)beforeDate
+                            onOrAfterDate:(NSDate *)onOrAfterDate {
+  return [self mergeDataSetsForUser:user
+                   childEntitiesBlk:^{ return [_localDao vehiclesForUser:user error:_errorBlk]; }
+           datasetForChildEntityBlk:^(FPVehicle *vehicle) { return [self avgReportedMpgDataSetForVehicle:vehicle
+                                                                                              beforeDate:beforeDate
+                                                                                           onOrAfterDate:onOrAfterDate]; }
+            entityDatapointValueBlk:^(NSDecimalNumber *avgReportedMpg) {return avgReportedMpg;}];
 }
 
 - (NSArray *)avgReportedMpgDataSetForVehicle:(FPVehicle *)vehicle
@@ -536,6 +564,192 @@ typedef id (^FPValueBlock)(void);
     }
   }
   return [totalSpentOnGas decimalNumberByDividingBy:milesDriven];
+}
+
+#pragma mark - Average Reported MPH
+
+- (NSDecimalNumber *)yearToDateAvgReportedMphForUser:(FPUser *)user {
+  NSCalendar *calendar = [NSCalendar currentCalendar];
+  NSDate *now = [NSDate date];
+  NSDate *firstDayOfCurrentYear = [PEUtils firstDayOfYearOfDate:now calendar:calendar];
+  return [self avgReportedMphFromEnvlogs:[_localDao unorderedEnvironmentLogsForUser:user
+                                                                         beforeDate:now
+                                                                      onOrAfterDate:firstDayOfCurrentYear
+                                                                              error:_errorBlk]];
+}
+
+- (NSArray *)yearToDateAvgReportedMphDataSetForUser:(FPUser *)user {
+  NSCalendar *calendar = [NSCalendar currentCalendar];
+  NSDate *now = [NSDate date];
+  NSDate *firstDayOfCurrentYear = [PEUtils firstDayOfYearOfDate:now calendar:calendar];
+  return [self avgReportedMphDataSetForUser:user beforeDate:now onOrAfterDate:firstDayOfCurrentYear];
+}
+
+- (NSDecimalNumber *)lastYearAvgReportedMphForUser:(FPUser *)user {
+  NSArray *lastYearRange = [PEUtils lastYearRangeFromDate:[NSDate date] calendar:[NSCalendar currentCalendar]];
+  return [self avgReportedMphFromEnvlogs:[_localDao unorderedEnvironmentLogsForUser:user
+                                                                         beforeDate:lastYearRange[1]
+                                                                      onOrAfterDate:lastYearRange[0]
+                                                                              error:_errorBlk]];
+}
+
+- (NSArray *)lastYearAvgReportedMphDataSetForUser:(FPUser *)user {
+  NSArray *lastYearRange = [PEUtils lastYearRangeFromDate:[NSDate date] calendar:[NSCalendar currentCalendar]];
+  return [self avgReportedMphDataSetForUser:user beforeDate:lastYearRange[1] onOrAfterDate:lastYearRange[0]];
+}
+
+- (NSDecimalNumber *)overallAvgReportedMphForUser:(FPUser *)user {
+  return [self avgReportedMphFromEnvlogs:[_localDao unorderedEnvironmentLogsForUser:user error:_errorBlk]];
+}
+
+- (NSArray *)overallAvgReportedMphDataSetForUser:(FPUser *)user {
+  FPEnvironmentLog *firstOdometerLog = [_localDao firstOdometerLogForUser:user error:_errorBlk];
+  if (firstOdometerLog) {
+    FPEnvironmentLog *lastOdometerLog = [_localDao lastOdometerLogForUser:user error:_errorBlk];
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+    return [self avgReportedMphDataSetForUser:user
+                                   beforeDate:[calendar dateByAddingUnit:NSCalendarUnitMonth value:1 toDate:lastOdometerLog.logDate options:0]
+                                onOrAfterDate:firstOdometerLog.logDate];
+  }
+  return @[];
+}
+
+- (NSDecimalNumber *)yearToDateAvgReportedMphForVehicle:(FPVehicle *)vehicle {
+  NSCalendar *calendar = [NSCalendar currentCalendar];
+  NSDate *now = [NSDate date];
+  NSDate *firstDayOfCurrentYear = [PEUtils firstDayOfYearOfDate:now calendar:calendar];
+  return [self avgReportedMphFromEnvlogs:[_localDao unorderedEnvironmentLogsForVehicle:vehicle
+                                                                            beforeDate:now
+                                                                         onOrAfterDate:firstDayOfCurrentYear
+                                                                                 error:_errorBlk]];
+}
+
+- (NSArray *)yearToDateAvgReportedMphDataSetForVehicle:(FPVehicle *)vehicle {
+  NSCalendar *calendar = [NSCalendar currentCalendar];
+  NSDate *now = [NSDate date];
+  NSDate *firstDayOfCurrentYear = [PEUtils firstDayOfYearOfDate:now calendar:calendar];
+  return [self avgReportedMphDataSetForVehicle:vehicle beforeDate:now onOrAfterDate:firstDayOfCurrentYear];
+}
+
+- (NSDecimalNumber *)lastYearAvgReportedMphForVehicle:(FPVehicle *)vehicle {
+  NSArray *lastYearRange = [PEUtils lastYearRangeFromDate:[NSDate date] calendar:[NSCalendar currentCalendar]];
+  return [self avgReportedMphFromEnvlogs:[_localDao unorderedEnvironmentLogsForVehicle:vehicle
+                                                                            beforeDate:lastYearRange[1]
+                                                                         onOrAfterDate:lastYearRange[0]
+                                                                                 error:_errorBlk]];
+}
+
+- (NSArray *)lastYearAvgReportedMphDataSetForVehicle:(FPVehicle *)vehicle {
+  NSArray *lastYearRange = [PEUtils lastYearRangeFromDate:[NSDate date] calendar:[NSCalendar currentCalendar]];
+  return [self avgReportedMphDataSetForVehicle:vehicle beforeDate:lastYearRange[1] onOrAfterDate:lastYearRange[0]];
+}
+
+- (NSDecimalNumber *)overallAvgReportedMphForVehicle:(FPVehicle *)vehicle {
+  return [self avgReportedMphFromEnvlogs:[_localDao unorderedEnvironmentLogsForVehicle:vehicle error:_errorBlk]];
+}
+
+- (NSArray *)overallAvgReportedMphDataSetForVehicle:(FPVehicle *)vehicle {
+  FPEnvironmentLog *firstOdometerLog = [_localDao firstOdometerLogForVehicle:vehicle error:_errorBlk];
+  if (firstOdometerLog) {
+    FPEnvironmentLog *lastOdometerLog = [_localDao lastOdometerLogForVehicle:vehicle error:_errorBlk];
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+    return [self avgReportedMphDataSetForVehicle:vehicle
+                                      beforeDate:[calendar dateByAddingUnit:NSCalendarUnitMonth value:1 toDate:lastOdometerLog.logDate options:0]
+                                   onOrAfterDate:firstOdometerLog.logDate];
+  }
+  return @[];
+}
+
+#pragma mark - Max Reported MPH
+
+- (NSDecimalNumber *)yearToDateMaxReportedMphForUser:(FPUser *)user {
+  NSCalendar *calendar = [NSCalendar currentCalendar];
+  NSDate *now = [NSDate date];
+  NSDate *firstDayOfCurrentYear = [PEUtils firstDayOfYearOfDate:now calendar:calendar];
+  return [_localDao maxReportedMphOdometerLogForUser:user
+                                          beforeDate:now
+                                       onOrAfterDate:firstDayOfCurrentYear
+                                               error:_errorBlk].reportedAvgMph;
+}
+
+- (NSDecimalNumber *)lastYearMaxReportedMphForUser:(FPUser *)user {
+  NSArray *lastYearRange = [PEUtils lastYearRangeFromDate:[NSDate date] calendar:[NSCalendar currentCalendar]];
+  return [_localDao maxReportedMphOdometerLogForUser:user
+                                          beforeDate:lastYearRange[1]
+                                       onOrAfterDate:lastYearRange[0]
+                                               error:_errorBlk].reportedAvgMph;
+}
+
+- (NSDecimalNumber *)overallMaxReportedMphForUser:(FPUser *)user {
+  return [_localDao maxReportedMphOdometerLogForUser:user error:_errorBlk].reportedAvgMph;
+}
+
+- (NSDecimalNumber *)yearToDateMaxReportedMphForVehicle:(FPVehicle *)vehicle {
+  NSCalendar *calendar = [NSCalendar currentCalendar];
+  NSDate *now = [NSDate date];
+  NSDate *firstDayOfCurrentYear = [PEUtils firstDayOfYearOfDate:now calendar:calendar];
+  return [_localDao maxReportedMphOdometerLogForVehicle:vehicle
+                                             beforeDate:now
+                                          onOrAfterDate:firstDayOfCurrentYear
+                                                  error:_errorBlk].reportedAvgMph;
+}
+
+- (NSDecimalNumber *)lastYearMaxReportedMphForVehicle:(FPVehicle *)vehicle {
+  NSArray *lastYearRange = [PEUtils lastYearRangeFromDate:[NSDate date] calendar:[NSCalendar currentCalendar]];
+  return [_localDao maxReportedMphOdometerLogForVehicle:vehicle
+                                             beforeDate:lastYearRange[1]
+                                          onOrAfterDate:lastYearRange[0]
+                                                  error:_errorBlk].reportedAvgMph;
+}
+
+- (NSDecimalNumber *)overallMaxReportedMphForVehicle:(FPVehicle *)vehicle {
+  return [_localDao maxReportedMphOdometerLogForVehicle:vehicle error:_errorBlk].reportedAvgMph;
+}
+
+#pragma mark - Min Reported MPH
+
+- (NSDecimalNumber *)yearToDateMinReportedMphForUser:(FPUser *)user {
+  NSCalendar *calendar = [NSCalendar currentCalendar];
+  NSDate *now = [NSDate date];
+  NSDate *firstDayOfCurrentYear = [PEUtils firstDayOfYearOfDate:now calendar:calendar];
+  return [_localDao minReportedMphOdometerLogForUser:user
+                                          beforeDate:now
+                                       onOrAfterDate:firstDayOfCurrentYear
+                                               error:_errorBlk].reportedAvgMph;
+}
+
+- (NSDecimalNumber *)lastYearMinReportedMphForUser:(FPUser *)user {
+  NSArray *lastYearRange = [PEUtils lastYearRangeFromDate:[NSDate date] calendar:[NSCalendar currentCalendar]];
+  return [_localDao minReportedMphOdometerLogForUser:user
+                                          beforeDate:lastYearRange[1]
+                                       onOrAfterDate:lastYearRange[0]
+                                               error:_errorBlk].reportedAvgMph;
+}
+
+- (NSDecimalNumber *)overallMinReportedMphForUser:(FPUser *)user {
+  return [_localDao minReportedMphOdometerLogForUser:user error:_errorBlk].reportedAvgMph;
+}
+
+- (NSDecimalNumber *)yearToDateMinReportedMphForVehicle:(FPVehicle *)vehicle {
+  NSCalendar *calendar = [NSCalendar currentCalendar];
+  NSDate *now = [NSDate date];
+  NSDate *firstDayOfCurrentYear = [PEUtils firstDayOfYearOfDate:now calendar:calendar];
+  return [_localDao minReportedMphOdometerLogForVehicle:vehicle
+                                             beforeDate:now
+                                          onOrAfterDate:firstDayOfCurrentYear
+                                                  error:_errorBlk].reportedAvgMph;
+}
+
+- (NSDecimalNumber *)lastYearMinReportedMphForVehicle:(FPVehicle *)vehicle {
+  NSArray *lastYearRange = [PEUtils lastYearRangeFromDate:[NSDate date] calendar:[NSCalendar currentCalendar]];
+  return [_localDao minReportedMphOdometerLogForVehicle:vehicle
+                                             beforeDate:lastYearRange[1]
+                                          onOrAfterDate:lastYearRange[0]
+                                                  error:_errorBlk].reportedAvgMph;
+}
+
+- (NSDecimalNumber *)overallMinReportedMphForVehicle:(FPVehicle *)vehicle {
+  return [_localDao minReportedMphOdometerLogForVehicle:vehicle error:_errorBlk].reportedAvgMph;
 }
 
 #pragma mark - Average Reported MPG

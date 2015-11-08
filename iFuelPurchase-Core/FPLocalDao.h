@@ -585,6 +585,38 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
 
 #pragma mark - Environment Log
 
+- (FPEnvironmentLog *)maxReportedMphOdometerLogForUser:(FPUser *)user
+                                            beforeDate:(NSDate *)beforeDate
+                                         onOrAfterDate:(NSDate *)onOrAfterDate
+                                                 error:(PELMDaoErrorBlk)errorBlk;
+
+- (FPEnvironmentLog *)maxReportedMphOdometerLogForVehicle:(FPVehicle *)vehicle
+                                               beforeDate:(NSDate *)beforeDate
+                                            onOrAfterDate:(NSDate *)onOrAfterDate
+                                                    error:(PELMDaoErrorBlk)errorBlk;
+
+- (FPEnvironmentLog *)minReportedMphOdometerLogForUser:(FPUser *)user
+                                            beforeDate:(NSDate *)beforeDate
+                                         onOrAfterDate:(NSDate *)onOrAfterDate
+                                                 error:(PELMDaoErrorBlk)errorBlk;
+
+- (FPEnvironmentLog *)minReportedMphOdometerLogForVehicle:(FPVehicle *)vehicle
+                                               beforeDate:(NSDate *)beforeDate
+                                            onOrAfterDate:(NSDate *)onOrAfterDate
+                                                    error:(PELMDaoErrorBlk)errorBlk;
+
+- (FPEnvironmentLog *)maxReportedMphOdometerLogForUser:(FPUser *)user
+                                                 error:(PELMDaoErrorBlk)errorBlk;
+
+- (FPEnvironmentLog *)maxReportedMphOdometerLogForVehicle:(FPVehicle *)vehicle
+                                                    error:(PELMDaoErrorBlk)errorBlk;
+
+- (FPEnvironmentLog *)minReportedMphOdometerLogForUser:(FPUser *)user
+                                                 error:(PELMDaoErrorBlk)errorBlk;
+
+- (FPEnvironmentLog *)minReportedMphOdometerLogForVehicle:(FPVehicle *)vehicle
+                                                    error:(PELMDaoErrorBlk)errorBlk;
+
 - (FPEnvironmentLog *)maxReportedMpgOdometerLogForUser:(FPUser *)user
                                             beforeDate:(NSDate *)beforeDate
                                          onOrAfterDate:(NSDate *)onOrAfterDate

@@ -3531,6 +3531,144 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
 
 #pragma mark - Environment Log
 
+- (FPEnvironmentLog *)minMaxReportedMphOdometerLogForUser:(FPUser *)user
+                                                 whereBlk:(NSString *(^)(NSString *))whereBlk
+                                                whereArgs:(NSArray *)whereArgs
+                                        comparatorForSort:(NSComparisonResult(^)(id, id))comparatorForSort
+                             orderByDomainColumnDirection:(NSString *)orderByDomainColumnDirection
+                                                    error:(PELMDaoErrorBlk)errorBlk {
+  return [self singleOdometerLogForUser:user
+                               whereBlk:whereBlk
+                              whereArgs:whereArgs
+                      comparatorForSort:comparatorForSort
+                    orderByDomainColumn:COL_ENVL_MPH_READING
+           orderByDomainColumnDirection:orderByDomainColumnDirection
+                                  error:errorBlk];
+}
+
+- (FPEnvironmentLog *)minMaxReportedMphOdometerLogForVehicle:(FPVehicle *)vehicle
+                                                    whereBlk:(NSString *(^)(NSString *))whereBlk
+                                                   whereArgs:(NSArray *)whereArgs
+                                           comparatorForSort:(NSComparisonResult(^)(id, id))comparatorForSort
+                                orderByDomainColumnDirection:(NSString *)orderByDomainColumnDirection
+                                                       error:(PELMDaoErrorBlk)errorBlk {
+  return [self singleOdometerLogForVehicle:vehicle
+                                  whereBlk:whereBlk
+                                 whereArgs:whereArgs
+                         comparatorForSort:comparatorForSort
+                       orderByDomainColumn:COL_ENVL_MPH_READING
+              orderByDomainColumnDirection:orderByDomainColumnDirection
+                                     error:errorBlk];
+}
+
+- (NSString *(^)(NSString *))envlogDateRangeNonNilReportedMphWhereBlk {
+  return ^(NSString *colPrefix) {
+    return [NSString stringWithFormat:@"%@%@ < ? AND %@%@ >= ? AND %@%@ is not null",
+            colPrefix,
+            COL_ENVL_LOG_DT,
+            colPrefix,
+            COL_ENVL_LOG_DT,
+            colPrefix,
+            COL_ENVL_MPH_READING];
+  };
+}
+
+- (NSString *(^)(NSString *))envlogNonNilReportedMphWhereBlk {
+  return ^(NSString *colPrefix) {
+    return [NSString stringWithFormat:@"%@%@ is not null",
+            colPrefix,
+            COL_ENVL_MPH_READING];
+  };
+}
+
+- (FPEnvironmentLog *)maxReportedMphOdometerLogForUser:(FPUser *)user
+                                            beforeDate:(NSDate *)beforeDate
+                                         onOrAfterDate:(NSDate *)onOrAfterDate
+                                                 error:(PELMDaoErrorBlk)errorBlk {
+  return [self minMaxReportedMphOdometerLogForUser:user
+                                          whereBlk:[self envlogDateRangeNonNilReportedMphWhereBlk]
+                                         whereArgs:@[[PEUtils millisecondsFromDate:beforeDate],
+                                                     [PEUtils millisecondsFromDate:onOrAfterDate]]
+                                 comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPEnvironmentLog *)o2 reportedAvgMph] compare:[(FPEnvironmentLog *)o1 reportedAvgMph]];}
+                      orderByDomainColumnDirection:@"DESC"
+                                             error:errorBlk];
+}
+
+- (FPEnvironmentLog *)maxReportedMphOdometerLogForVehicle:(FPVehicle *)vehicle
+                                               beforeDate:(NSDate *)beforeDate
+                                            onOrAfterDate:(NSDate *)onOrAfterDate
+                                                    error:(PELMDaoErrorBlk)errorBlk {
+  return [self minMaxReportedMphOdometerLogForVehicle:vehicle
+                                             whereBlk:[self envlogDateRangeNonNilReportedMphWhereBlk]
+                                            whereArgs:@[[PEUtils millisecondsFromDate:beforeDate],
+                                                        [PEUtils millisecondsFromDate:onOrAfterDate]]
+                                    comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPEnvironmentLog *)o2 reportedAvgMph] compare:[(FPEnvironmentLog *)o1 reportedAvgMph]];}
+                         orderByDomainColumnDirection:@"DESC"
+                                                error:errorBlk];
+}
+
+- (FPEnvironmentLog *)minReportedMphOdometerLogForUser:(FPUser *)user
+                                            beforeDate:(NSDate *)beforeDate
+                                         onOrAfterDate:(NSDate *)onOrAfterDate
+                                                 error:(PELMDaoErrorBlk)errorBlk {
+  return [self minMaxReportedMphOdometerLogForUser:user
+                                          whereBlk:[self envlogDateRangeNonNilReportedMphWhereBlk]
+                                         whereArgs:@[[PEUtils millisecondsFromDate:beforeDate],
+                                                     [PEUtils millisecondsFromDate:onOrAfterDate]]
+                                 comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPEnvironmentLog *)o1 reportedAvgMph] compare:[(FPEnvironmentLog *)o2 reportedAvgMph]];}
+                      orderByDomainColumnDirection:@"ASC"
+                                             error:errorBlk];
+}
+
+- (FPEnvironmentLog *)minReportedMphOdometerLogForVehicle:(FPVehicle *)vehicle
+                                               beforeDate:(NSDate *)beforeDate
+                                            onOrAfterDate:(NSDate *)onOrAfterDate
+                                                    error:(PELMDaoErrorBlk)errorBlk {
+  return [self minMaxReportedMphOdometerLogForVehicle:vehicle
+                                             whereBlk:[self envlogDateRangeNonNilReportedMphWhereBlk]
+                                            whereArgs:@[[PEUtils millisecondsFromDate:beforeDate],
+                                                        [PEUtils millisecondsFromDate:onOrAfterDate]]
+                                    comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPEnvironmentLog *)o1 reportedAvgMph] compare:[(FPEnvironmentLog *)o2 reportedAvgMph]];}
+                         orderByDomainColumnDirection:@"ASC"
+                                                error:errorBlk];
+}
+
+- (FPEnvironmentLog *)maxReportedMphOdometerLogForUser:(FPUser *)user
+                                                 error:(PELMDaoErrorBlk)errorBlk {
+  return [self minMaxReportedMphOdometerLogForUser:user
+                                          whereBlk:[self envlogNonNilReportedMphWhereBlk]
+                                         whereArgs:nil
+                                 comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPEnvironmentLog *)o2 reportedAvgMph] compare:[(FPEnvironmentLog *)o1 reportedAvgMph]];}
+                      orderByDomainColumnDirection:@"DESC" error:errorBlk];
+}
+
+- (FPEnvironmentLog *)maxReportedMphOdometerLogForVehicle:(FPVehicle *)vehicle
+                                                    error:(PELMDaoErrorBlk)errorBlk {
+  return [self minMaxReportedMphOdometerLogForVehicle:vehicle
+                                             whereBlk:[self envlogNonNilReportedMphWhereBlk]
+                                            whereArgs:nil
+                                    comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPEnvironmentLog *)o2 reportedAvgMph] compare:[(FPEnvironmentLog *)o1 reportedAvgMph]];}
+                         orderByDomainColumnDirection:@"DESC" error:errorBlk];
+}
+
+- (FPEnvironmentLog *)minReportedMphOdometerLogForUser:(FPUser *)user
+                                                 error:(PELMDaoErrorBlk)errorBlk {
+  return [self minMaxReportedMphOdometerLogForUser:user
+                                          whereBlk:[self envlogNonNilReportedMphWhereBlk]
+                                         whereArgs:nil
+                                 comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPEnvironmentLog *)o1 reportedAvgMph] compare:[(FPEnvironmentLog *)o2 reportedAvgMph]];}
+                      orderByDomainColumnDirection:@"ASC" error:errorBlk];
+}
+
+- (FPEnvironmentLog *)minReportedMphOdometerLogForVehicle:(FPVehicle *)vehicle
+                                                    error:(PELMDaoErrorBlk)errorBlk {
+  return [self minMaxReportedMphOdometerLogForVehicle:vehicle
+                                             whereBlk:[self envlogNonNilReportedMphWhereBlk]
+                                            whereArgs:nil
+                                    comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPEnvironmentLog *)o1 reportedAvgMph] compare:[(FPEnvironmentLog *)o2 reportedAvgMph]];}
+                         orderByDomainColumnDirection:@"ASC" error:errorBlk];
+}
+
 - (FPEnvironmentLog *)minMaxReportedMpgOdometerLogForUser:(FPUser *)user
                                                  whereBlk:(NSString *(^)(NSString *))whereBlk
                                                 whereArgs:(NSArray *)whereArgs
@@ -3669,21 +3807,6 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                          orderByDomainColumnDirection:@"ASC" error:errorBlk];
 }
 
-- (FPEnvironmentLog *)minMaxReportedMphOdometerLogForUser:(FPUser *)user
-                                                 whereBlk:(NSString *(^)(NSString *))whereBlk
-                                                whereArgs:(NSArray *)whereArgs
-                                        comparatorForSort:(NSComparisonResult(^)(id, id))comparatorForSort
-                             orderByDomainColumnDirection:(NSString *)orderByDomainColumnDirection
-                                                    error:(PELMDaoErrorBlk)errorBlk {
-  return [self singleOdometerLogForUser:user
-                               whereBlk:whereBlk
-                              whereArgs:whereArgs
-                      comparatorForSort:comparatorForSort
-                    orderByDomainColumn:COL_ENVL_MPH_READING
-           orderByDomainColumnDirection:orderByDomainColumnDirection
-                                  error:errorBlk];
-}
-
 - (NSString *(^)(NSString *))envlogDateRangeWhereBlk {
   return ^(NSString *colPrefix) {
     return [NSString stringWithFormat:@"%@%@ < ? AND %@%@ >= ?",
@@ -3811,8 +3934,9 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                       parentEntityMasterIdColumn:COL_MASTER_USER_ID
                         parentEntityMainIdColumn:COL_MAIN_USER_ID
                                         pageSize:nil
-                                        whereBlk:nil
-                                       whereArgs:nil
+                                        whereBlk:[self envlogDateRangeWhereBlk]
+                                       whereArgs:@[[PEUtils millisecondsFromDate:beforeDate],
+                                                   [PEUtils millisecondsFromDate:onOrAfterDate]]
                                entityMasterTable:TBL_MASTER_ENV_LOG
                   masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterEnvironmentLogFromResultSet:rs];}
                                  entityMainTable:TBL_MAIN_ENV_LOG
@@ -3820,7 +3944,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                               db:db
                                            error:errorBlk];
   }];
-  return envlogs;   
+  return envlogs;
 }
 
 - (FPEnvironmentLog *)singleOdometerLogForUser:(FPUser *)user

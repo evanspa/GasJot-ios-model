@@ -15,6 +15,60 @@
 
 - (id)initWithLocalDao:(FPLocalDao *)localDao errorBlk:(PELMDaoErrorBlk)errorBlk;
 
+#pragma mark - Average Reported MPH
+
+- (NSDecimalNumber *)yearToDateAvgReportedMphForUser:(FPUser *)user;
+
+- (NSArray *)yearToDateAvgReportedMphDataSetForUser:(FPUser *)user;
+
+- (NSDecimalNumber *)lastYearAvgReportedMphForUser:(FPUser *)user;
+
+- (NSArray *)lastYearAvgReportedMphDataSetForUser:(FPUser *)user;
+
+- (NSDecimalNumber *)overallAvgReportedMphForUser:(FPUser *)user;
+
+- (NSArray *)overallAvgReportedMphDataSetForUser:(FPUser *)user;
+
+- (NSDecimalNumber *)yearToDateAvgReportedMphForVehicle:(FPVehicle *)vehicle;
+
+- (NSArray *)yearToDateAvgReportedMphDataSetForVehicle:(FPVehicle *)vehicle;
+
+- (NSDecimalNumber *)lastYearAvgReportedMphForVehicle:(FPVehicle *)vehicle;
+
+- (NSArray *)lastYearAvgReportedMphDataSetForVehicle:(FPVehicle *)vehicle;
+
+- (NSDecimalNumber *)overallAvgReportedMphForVehicle:(FPVehicle *)vehicle;
+
+- (NSArray *)overallAvgReportedMphDataSetForVehicle:(FPVehicle *)vehicle;
+
+#pragma mark - Max Reported MPH
+
+- (NSDecimalNumber *)yearToDateMaxReportedMphForUser:(FPUser *)user;
+
+- (NSDecimalNumber *)lastYearMaxReportedMphForUser:(FPUser *)user;
+
+- (NSDecimalNumber *)overallMaxReportedMphForUser:(FPUser *)user;
+
+- (NSDecimalNumber *)yearToDateMaxReportedMphForVehicle:(FPVehicle *)vehicle;
+
+- (NSDecimalNumber *)lastYearMaxReportedMphForVehicle:(FPVehicle *)vehicle;
+
+- (NSDecimalNumber *)overallMaxReportedMphForVehicle:(FPVehicle *)vehicle;
+
+#pragma mark - Min Reported MPH
+
+- (NSDecimalNumber *)yearToDateMinReportedMphForUser:(FPUser *)user;
+
+- (NSDecimalNumber *)lastYearMinReportedMphForUser:(FPUser *)user;
+
+- (NSDecimalNumber *)overallMinReportedMphForUser:(FPUser *)user;
+
+- (NSDecimalNumber *)yearToDateMinReportedMphForVehicle:(FPVehicle *)vehicle;
+
+- (NSDecimalNumber *)lastYearMinReportedMphForVehicle:(FPVehicle *)vehicle;
+
+- (NSDecimalNumber *)overallMinReportedMphForVehicle:(FPVehicle *)vehicle;
+
 #pragma mark - Average Reported MPG
 
 - (NSDecimalNumber *)yearToDateAvgReportedMpgForUser:(FPUser *)user;
