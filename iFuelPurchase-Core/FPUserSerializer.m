@@ -29,7 +29,7 @@ NSString * const FPUserDeletedAtKey    = @"user/deleted-at";
   NSMutableDictionary *userDict = [NSMutableDictionary dictionary];
   [userDict nullSafeSetObject:[user name] forKey:FPUserFullnameKey];
   [userDict nullSafeSetObject:[user email] forKey:FPUserEmailKey];
-  [userDict setObjectIfNotNull:[user password] forKey:FPUserPasswordKey];
+  [userDict setStringIfNotBlank:[user password] forKey:FPUserPasswordKey];
   return userDict;
 }
 
