@@ -71,6 +71,8 @@ FOUNDATION_EXPORT NSString * const PELMSendPasswordResetEmailRelation;
 
 @property (nonatomic) NSString *password;
 
+@property (nonatomic) NSString *confirmPassword;
+
 @property (nonatomic) NSDate *verifiedAt;
 
 #pragma mark - Equality
