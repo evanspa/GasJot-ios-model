@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "PEFuelPurchase-Model"
-  s.version      = "1.0.164"
+  s.version      = "1.0.165"
   s.license      = "MIT"
   s.summary      = "An iOS static library representing the core logic of the PEFuelPurchase-App application."
   s.author       = { "Paul Evans" => "evansp2@gmail.com" }
@@ -17,5 +17,6 @@ Pod::Spec.new do |s|
   s.dependency 'PEHateoas-Client', '~> 1.0.8'
   s.dependency 'CocoaLumberjack', '~> 1.9'
   s.dependency 'UICKeyChainStore', '~> 2.0.4'
+  s.dependency 'CHCSVParser', '~> 2.1.0'
   s.library = 'sqlite3'
 end

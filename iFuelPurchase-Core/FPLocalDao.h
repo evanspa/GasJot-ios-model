@@ -38,6 +38,15 @@
 
 - (void)globalCancelSyncInProgressWithError:(PELMDaoErrorBlk)error;
 
+#pragma mark - Export
+
+- (void)exportWithPathToVehiclesFile:(NSString *)vehiclesPath
+                     gasStationsFile:(NSString *)gasStationsFile
+                         gasLogsFile:(NSString *)gasLogsFile
+                    odometerLogsFile:(NSString *)odometerLogsFile
+                                user:(FPUser *)user
+                               error:(PELMDaoErrorBlk)errorBlk;
+
 #pragma mark - User
 
 - (NSDate *)mostRecentMasterUpdateForUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk;

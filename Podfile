@@ -8,6 +8,7 @@ pod 'FMDB', '~> 2.5', :inhibit_warnings => true
 pod 'PEHateoas-Client', '~> 1.0.8', :inhibit_warnings => true
 pod 'CocoaLumberjack', '~> 1.9', :inhibit_warnings => true
 pod 'UICKeyChainStore', '~> 2.0.4', :inhibit_warnings => true
+pod 'CHCSVParser', '~> 2.1.0', :inhibit_warnings => true
 
 pod 'AFNetworking', '~> 2.5.4', :inhibit_warnings => true
 pod 'BlocksKit', '~> 2.2.5', :inhibit_warnings => true

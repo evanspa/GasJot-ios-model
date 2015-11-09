@@ -17,6 +17,7 @@
 #import <PEObjc-Commons/NSString+PEAdditions.h>
 #import "PELMNotificationUtils.h"
 #import "FPLogging.h"
+#import <CHCSVParser/CHCSVParser.h>
 
 uint32_t const FP_REQUIRED_SCHEMA_VERSION = 2;
 
@@ -170,6 +171,37 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
     [PELMUtils cancelSyncInProgressForEntityTable:TBL_MAIN_FUEL_STATION db:db error:error];
     [PELMUtils cancelSyncInProgressForEntityTable:TBL_MAIN_FUELPURCHASE_LOG db:db error:error];
     [PELMUtils cancelSyncInProgressForEntityTable:TBL_MAIN_ENV_LOG db:db error:error];
+  }];
+}
+
+#pragma mark - Export
+
+- (void)exportWithPathToVehiclesFile:(NSString *)vehiclesPath
+                     gasStationsFile:(NSString *)gasStationsFile
+                         gasLogsFile:(NSString *)gasLogsFile
+                    odometerLogsFile:(NSString *)odometerLogsFile
+                                user:(FPUser *)user
+                               error:(PELMDaoErrorBlk)errorBlk {
+  NSString *(^emptyIfNil)(id) = ^NSString *(id val) {
+    if ([PEUtils isNil:val]) {
+      return @"";
+    }
+    return val;
+  };
+  [_databaseQueue inDatabase:^(FMDatabase *db) {
+    NSArray *records = [self vehiclesForUser:user db:db error:errorBlk];
+    CHCSVWriter *csvWriter = [[CHCSVWriter alloc] initForWritingToCSVFile:vehiclesPath];
+    [csvWriter writeField:@"Vehicle Name"];
+    [csvWriter writeField:@"Default Octane"];
+    [csvWriter writeField:@"Fuel Capacity"];
+    [csvWriter finishLine];
+    for (FPVehicle *vehicle in records) {
+      [csvWriter writeField:emptyIfNil(vehicle.name)];
+      [csvWriter writeField:emptyIfNil(vehicle.defaultOctane)];
+      [csvWriter writeField:emptyIfNil(vehicle.fuelCapacity)];
+      [csvWriter finishLine];
+    }
+    [csvWriter closeStream];
   }];
 }
 
