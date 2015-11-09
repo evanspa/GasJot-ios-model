@@ -189,6 +189,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
     return val;
   };
   [_databaseQueue inDatabase:^(FMDatabase *db) {
+    // First export the vehicles
     NSArray *records = [self vehiclesForUser:user db:db error:errorBlk];
     CHCSVWriter *csvWriter = [[CHCSVWriter alloc] initForWritingToCSVFile:vehiclesPath];
     [csvWriter writeField:@"Vehicle Name"];
@@ -199,6 +200,82 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
       [csvWriter writeField:emptyIfNil(vehicle.name)];
       [csvWriter writeField:emptyIfNil(vehicle.defaultOctane)];
       [csvWriter writeField:emptyIfNil(vehicle.fuelCapacity)];
+      [csvWriter finishLine];
+    }
+    [csvWriter closeStream];
+    
+    // Export the gas stations
+    csvWriter = [[CHCSVWriter alloc] initForWritingToCSVFile:gasStationsFile];
+    [csvWriter writeField:@"Gas Station Name"];
+    [csvWriter writeField:@"Street"];
+    [csvWriter writeField:@"City"];
+    [csvWriter writeField:@"State"];
+    [csvWriter writeField:@"ZIP"];
+    [csvWriter writeField:@"Latitude"];
+    [csvWriter writeField:@"Longitude"];
+    [csvWriter finishLine];
+    records = [self fuelStationsForUser:user db:db error:errorBlk];
+    for (FPFuelStation *gasStation in records) {
+      [csvWriter writeField:emptyIfNil(gasStation.name)];
+      [csvWriter writeField:emptyIfNil(gasStation.street)];
+      [csvWriter writeField:emptyIfNil(gasStation.city)];
+      [csvWriter writeField:emptyIfNil(gasStation.state)];
+      [csvWriter writeField:emptyIfNil(gasStation.zip)];
+      [csvWriter writeField:emptyIfNil(gasStation.latitude)];
+      [csvWriter writeField:emptyIfNil(gasStation.longitude)];
+      [csvWriter finishLine];
+    }
+    [csvWriter closeStream];
+    
+    // Export gas logs
+    csvWriter = [[CHCSVWriter alloc] initForWritingToCSVFile:gasLogsFile];
+    [csvWriter writeField:@"Vehicle"];
+    [csvWriter writeField:@"Gas Station"];
+    [csvWriter writeField:@"Number of Gallons"];
+    [csvWriter writeField:@"Octane"];
+    [csvWriter writeField:@"Odometer"];
+    [csvWriter writeField:@"Gallon Price"];
+    [csvWriter writeField:@"Got Car Wash?"];
+    [csvWriter writeField:@"Car Wash per-gallon Discount"];
+    [csvWriter writeField:@"Purchase Date"];
+    [csvWriter finishLine];
+    records = [self fuelPurchaseLogsForUser:user db:db error:errorBlk];
+    for (FPFuelPurchaseLog *gasLog in records) {
+      FPVehicle *vehicle = [self vehicleForFuelPurchaseLog:gasLog db:db error:errorBlk];
+      FPFuelStation *gasStation = [self fuelStationForFuelPurchaseLog:gasLog db:db error:errorBlk];
+      [csvWriter writeField:emptyIfNil(vehicle.name)];
+      [csvWriter writeField:emptyIfNil(gasStation.name)];
+      [csvWriter writeField:emptyIfNil(gasLog.numGallons)];
+      [csvWriter writeField:emptyIfNil(gasLog.octane)];
+      [csvWriter writeField:emptyIfNil(gasLog.odometer)];
+      [csvWriter writeField:emptyIfNil(gasLog.gallonPrice)];
+      [csvWriter writeField:emptyIfNil([PEUtils yesNoFromBool:gasLog.gotCarWash])];
+      [csvWriter writeField:emptyIfNil(gasLog.carWashPerGallonDiscount)];
+      [csvWriter writeField:emptyIfNil(gasLog.purchasedAt)];
+      [csvWriter finishLine];
+    }
+    [csvWriter closeStream];
+    
+    // Export odometer logs
+    csvWriter = [[CHCSVWriter alloc] initForWritingToCSVFile:odometerLogsFile];
+    [csvWriter writeField:@"Vehicle"];
+    [csvWriter writeField:@"Odometer"];
+    [csvWriter writeField:@"Reported Average MPG"];
+    [csvWriter writeField:@"Reported Average MPH"];
+    [csvWriter writeField:@"Outside Temperature"];
+    [csvWriter writeField:@"Reported Distance-to-Empty"];
+    [csvWriter writeField:@"Log Date"];
+    [csvWriter finishLine];
+    records = [self environmentLogsForUser:user db:db error:errorBlk];
+    for (FPEnvironmentLog *odometerLog in records) {
+      FPVehicle *vehicle = [self vehicleForEnvironmentLog:odometerLog db:db error:errorBlk];
+      [csvWriter writeField:emptyIfNil(vehicle.name)];
+      [csvWriter writeField:emptyIfNil(odometerLog.odometer)];
+      [csvWriter writeField:emptyIfNil(odometerLog.reportedAvgMpg)];
+      [csvWriter writeField:emptyIfNil(odometerLog.reportedAvgMph)];
+      [csvWriter writeField:emptyIfNil(odometerLog.reportedOutsideTemp)];
+      [csvWriter writeField:emptyIfNil(odometerLog.reportedDte)];
+      [csvWriter writeField:emptyIfNil(odometerLog.logDate)];
       [csvWriter finishLine];
     }
     [csvWriter closeStream];
