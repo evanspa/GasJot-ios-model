@@ -39,11 +39,14 @@ typedef NS_OPTIONS(NSUInteger, FPSendPasswordResetEmailMsg) {
  domain.
  */
 typedef NS_OPTIONS(NSUInteger, FPSaveUserMsg) {
-  FPSaveUsrAnyIssues                   = 1 << 0,
-  FPSaveUsrInvalidEmail                = 1 << 1,
-  FPSaveUsrEmailNotProvided            = 1 << 2,
-  FPSaveUsrPasswordNotProvided         = 1 << 3,
-  FPSaveUsrEmailAlreadyRegistered      = 1 << 4
+  FPSaveUsrAnyIssues                        = 1 << 0,
+  FPSaveUsrInvalidEmail                     = 1 << 1,
+  FPSaveUsrEmailNotProvided                 = 1 << 2,
+  FPSaveUsrPasswordNotProvided              = 1 << 3,
+  FPSaveUsrEmailAlreadyRegistered           = 1 << 4,
+  FPSaveUsrConfirmPasswordOnlyProvided      = 1 << 5,
+  FPSaveUsrConfirmPasswordNotProvided       = 1 << 6,
+  FPSaveUsrPasswordConfirmPasswordDontMatch = 1 << 7
 };
 
 /**
