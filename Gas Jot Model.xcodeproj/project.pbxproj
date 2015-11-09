@@ -20,7 +20,7 @@
 		1803BC80198436BF00225613 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1803BC7F198436BF00225613 /* XCTest.framework */; };
 		1803BC81198436BF00225613 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1803BC71198436BF00225613 /* Foundation.framework */; };
 		1803BC83198436BF00225613 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1803BC82198436BF00225613 /* UIKit.framework */; };
-		1803BC86198436BF00225613 /* libPEFuelPurchase-Model.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1803BC6E198436BF00225613 /* libPEFuelPurchase-Model.a */; };
+		1803BC86198436BF00225613 /* libGas Jot Model.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1803BC6E198436BF00225613 /* libGas Jot Model.a */; };
 		1803BC8C198436BF00225613 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 1803BC8A198436BF00225613 /* InfoPlist.strings */; };
 		1806530019E2EBBC00770642 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 180652FF19E2EBBC00770642 /* CoreLocation.framework */; };
 		181AAAB619AD6F1000F99F23 /* FPToggler.m in Sources */ = {isa = PBXBuildFile; fileRef = 181AAAB519AD6F1000F99F23 /* FPToggler.m */; };
@@ -117,12 +117,12 @@
 		1800C9EC19A9974800ECD51A /* http-mock-responses */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "http-mock-responses"; sourceTree = "<group>"; };
 		1800F3C119D5222B004DCEC1 /* PELMNotificationUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PELMNotificationUtils.h; sourceTree = "<group>"; };
 		1800F3C219D5222B004DCEC1 /* PELMNotificationUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PELMNotificationUtils.m; sourceTree = "<group>"; };
-		1803BC6E198436BF00225613 /* libPEFuelPurchase-Model.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPEFuelPurchase-Model.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1803BC6E198436BF00225613 /* libGas Jot Model.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libGas Jot Model.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1803BC71198436BF00225613 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		1803BC7E198436BF00225613 /* PEFuelPurchase-ModelTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "PEFuelPurchase-ModelTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1803BC7E198436BF00225613 /* Gas Jot Model.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Gas Jot Model.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1803BC7F198436BF00225613 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		1803BC82198436BF00225613 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
-		1803BC89198436BF00225613 /* PEFuelPurchase-ModelTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "PEFuelPurchase-ModelTests-Info.plist"; sourceTree = "<group>"; };
+		1803BC89198436BF00225613 /* Gas Jot ModelTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Gas Jot ModelTests-Info.plist"; sourceTree = "<group>"; };
 		1803BC8B198436BF00225613 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		180652FF19E2EBBC00770642 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		18156D2719918EC600C93FF4 /* FPLocalDaoTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FPLocalDaoTests.m; sourceTree = "<group>"; };
@@ -240,7 +240,7 @@
 				1803BC80198436BF00225613 /* XCTest.framework in Frameworks */,
 				1803BC83198436BF00225613 /* UIKit.framework in Frameworks */,
 				1803BC81198436BF00225613 /* Foundation.framework in Frameworks */,
-				1803BC86198436BF00225613 /* libPEFuelPurchase-Model.a in Frameworks */,
+				1803BC86198436BF00225613 /* libGas Jot Model.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -336,8 +336,8 @@
 		1803BC65198436BF00225613 = {
 			isa = PBXGroup;
 			children = (
-				1803BC73198436BF00225613 /* PEFuelPurchase-Model */,
-				1803BC87198436BF00225613 /* PEFuelPurchase-ModelTests */,
+				1803BC73198436BF00225613 /* Gas Jot Model */,
+				1803BC87198436BF00225613 /* Gas Jot Model Tests */,
 				1803BC70198436BF00225613 /* Frameworks */,
 				1803BC6F198436BF00225613 /* Products */,
 				0BD08702DB50114B2250D029 /* Pods */,
@@ -347,8 +347,8 @@
 		1803BC6F198436BF00225613 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				1803BC6E198436BF00225613 /* libPEFuelPurchase-Model.a */,
-				1803BC7E198436BF00225613 /* PEFuelPurchase-ModelTests.xctest */,
+				1803BC6E198436BF00225613 /* libGas Jot Model.a */,
+				1803BC7E198436BF00225613 /* Gas Jot Model.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -368,7 +368,7 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		1803BC73198436BF00225613 /* PEFuelPurchase-Model */ = {
+		1803BC73198436BF00225613 /* Gas Jot Model */ = {
 			isa = PBXGroup;
 			children = (
 				1800C9E219A8E4AE00ECD51A /* PE Local Model */,
@@ -379,11 +379,11 @@
 				CA27A5561BCCA4B600CBD4B9 /* Stats */,
 				18CF89AC1AAEB1C700AC42E6 /* Logging */,
 			);
-			name = "PEFuelPurchase-Model";
+			name = "Gas Jot Model";
 			path = "iFuelPurchase-Core";
 			sourceTree = "<group>";
 		};
-		1803BC87198436BF00225613 /* PEFuelPurchase-ModelTests */ = {
+		1803BC87198436BF00225613 /* Gas Jot Model Tests */ = {
 			isa = PBXGroup;
 			children = (
 				181AAAB319AD6EF400F99F23 /* Toggler */,
@@ -394,7 +394,7 @@
 				CA27A55E1BCD85FA00CBD4B9 /* Stats */,
 				1803BC88198436BF00225613 /* Supporting Files */,
 			);
-			name = "PEFuelPurchase-ModelTests";
+			name = "Gas Jot Model Tests";
 			path = "iFuelPurchase-CoreTests";
 			sourceTree = "<group>";
 		};
@@ -403,7 +403,7 @@
 			children = (
 				18D8C11919C3EF90006C65F9 /* json-strings */,
 				1800C9EC19A9974800ECD51A /* http-mock-responses */,
-				1803BC89198436BF00225613 /* PEFuelPurchase-ModelTests-Info.plist */,
+				1803BC89198436BF00225613 /* Gas Jot ModelTests-Info.plist */,
 				1803BC8A198436BF00225613 /* InfoPlist.strings */,
 				1800C9C519A83F7900ECD51A /* fpapi-resource.json */,
 				1800C9D519A8DF7400ECD51A /* sqlite-datafile-for-testing.data */,
@@ -917,9 +917,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		1803BC6D198436BF00225613 /* PEFuelPurchase-Model */ = {
+		1803BC6D198436BF00225613 /* Gas Jot Model */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 1803BC91198436C000225613 /* Build configuration list for PBXNativeTarget "PEFuelPurchase-Model" */;
+			buildConfigurationList = 1803BC91198436C000225613 /* Build configuration list for PBXNativeTarget "Gas Jot Model" */;
 			buildPhases = (
 				E30E448E916C4E8FAFB73F08 /* Check Pods Manifest.lock */,
 				1803BC6A198436BF00225613 /* Sources */,
@@ -931,14 +931,14 @@
 			);
 			dependencies = (
 			);
-			name = "PEFuelPurchase-Model";
+			name = "Gas Jot Model";
 			productName = "iFuelPurchase-Core";
-			productReference = 1803BC6E198436BF00225613 /* libPEFuelPurchase-Model.a */;
+			productReference = 1803BC6E198436BF00225613 /* libGas Jot Model.a */;
 			productType = "com.apple.product-type.library.static";
 		};
-		1803BC7D198436BF00225613 /* PEFuelPurchase-ModelTests */ = {
+		1803BC7D198436BF00225613 /* Gas Jot ModelTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 1803BC94198436C000225613 /* Build configuration list for PBXNativeTarget "PEFuelPurchase-ModelTests" */;
+			buildConfigurationList = 1803BC94198436C000225613 /* Build configuration list for PBXNativeTarget "Gas Jot ModelTests" */;
 			buildPhases = (
 				1803BC7A198436BF00225613 /* Sources */,
 				1803BC7B198436BF00225613 /* Frameworks */,
@@ -949,9 +949,9 @@
 			dependencies = (
 				1803BC85198436BF00225613 /* PBXTargetDependency */,
 			);
-			name = "PEFuelPurchase-ModelTests";
+			name = "Gas Jot ModelTests";
 			productName = "iFuelPurchase-CoreTests";
-			productReference = 1803BC7E198436BF00225613 /* PEFuelPurchase-ModelTests.xctest */;
+			productReference = 1803BC7E198436BF00225613 /* Gas Jot Model.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
@@ -963,7 +963,7 @@
 				LastUpgradeCheck = 0700;
 				ORGANIZATIONNAME = "Paul Evans";
 			};
-			buildConfigurationList = 1803BC69198436BF00225613 /* Build configuration list for PBXProject "PEFuelPurchase-Model" */;
+			buildConfigurationList = 1803BC69198436BF00225613 /* Build configuration list for PBXProject "Gas Jot Model" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -975,8 +975,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				1803BC6D198436BF00225613 /* PEFuelPurchase-Model */,
-				1803BC7D198436BF00225613 /* PEFuelPurchase-ModelTests */,
+				1803BC6D198436BF00225613 /* Gas Jot Model */,
+				1803BC7D198436BF00225613 /* Gas Jot ModelTests */,
 			);
 		};
 /* End PBXProject section */
@@ -1108,7 +1108,7 @@
 /* Begin PBXTargetDependency section */
 		1803BC85198436BF00225613 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 1803BC6D198436BF00225613 /* PEFuelPurchase-Model */;
+			target = 1803BC6D198436BF00225613 /* Gas Jot Model */;
 			targetProxy = 1803BC84198436BF00225613 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -1218,7 +1218,7 @@
 				HEADER_SEARCH_PATHS = "$(inherited)";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
 				OTHER_LDFLAGS = "$(inherited)";
-				PRODUCT_NAME = "PEFuelPurchase-Model";
+				PRODUCT_NAME = "Gas Jot Model";
 				SKIP_INSTALL = YES;
 			};
 			name = Debug;
@@ -1236,7 +1236,7 @@
 				HEADER_SEARCH_PATHS = "$(inherited)";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
 				OTHER_LDFLAGS = "$(inherited)";
-				PRODUCT_NAME = "PEFuelPurchase-Model";
+				PRODUCT_NAME = "Gas Jot Model";
 				SKIP_INSTALL = YES;
 			};
 			name = Release;
@@ -1254,12 +1254,12 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = "iFuelPurchase-CoreTests/PEFuelPurchase-ModelTests-Info.plist";
+				INFOPLIST_FILE = "iFuelPurchase-CoreTests/Gas Jot ModelTests-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = "name.paulevans.${PRODUCT_NAME:rfc1034identifier}";
-				PRODUCT_NAME = "PEFuelPurchase-ModelTests";
+				PRODUCT_NAME = "Gas Jot Model";
 				WRAPPER_EXTENSION = xctest;
 			};
 			name = Debug;
@@ -1273,12 +1273,12 @@
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "";
-				INFOPLIST_FILE = "iFuelPurchase-CoreTests/PEFuelPurchase-ModelTests-Info.plist";
+				INFOPLIST_FILE = "iFuelPurchase-CoreTests/Gas Jot ModelTests-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = "name.paulevans.${PRODUCT_NAME:rfc1034identifier}";
-				PRODUCT_NAME = "PEFuelPurchase-ModelTests";
+				PRODUCT_NAME = "Gas Jot Model";
 				WRAPPER_EXTENSION = xctest;
 			};
 			name = Release;
@@ -1286,7 +1286,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		1803BC69198436BF00225613 /* Build configuration list for PBXProject "PEFuelPurchase-Model" */ = {
+		1803BC69198436BF00225613 /* Build configuration list for PBXProject "Gas Jot Model" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1803BC8F198436BF00225613 /* Debug */,
@@ -1295,7 +1295,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		1803BC91198436C000225613 /* Build configuration list for PBXNativeTarget "PEFuelPurchase-Model" */ = {
+		1803BC91198436C000225613 /* Build configuration list for PBXNativeTarget "Gas Jot Model" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1803BC92198436C000225613 /* Debug */,
@@ -1304,7 +1304,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		1803BC94198436C000225613 /* Build configuration list for PBXNativeTarget "PEFuelPurchase-ModelTests" */ = {
+		1803BC94198436C000225613 /* Build configuration list for PBXNativeTarget "Gas Jot ModelTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1803BC95198436C000225613 /* Debug */,

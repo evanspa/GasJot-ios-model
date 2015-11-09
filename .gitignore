@@ -16,6 +16,7 @@ DerivedData
 .idea/
 *.hmap
 *.xccheckout
+build/
 
 #OCLint
 compile_commands.json
@@ -24,7 +25,7 @@ oclint_result.html
 
 #CocoaPods
 Pods
-iFuelPurchase-Core.xcworkspace
+Gas Jot Model.xcworkspace
 
 # Misc
 generated-docs/*.bak

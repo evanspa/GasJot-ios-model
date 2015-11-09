@@ -9,15 +9,29 @@
          <BuildActionEntry
             buildForTesting = "YES"
             buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "1803BC6D198436BF00225613"
+               BuildableName = "libGas Jot Model.a"
+               BlueprintName = "Gas Jot Model"
+               ReferencedContainer = "container:Gas Jot Model.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
             buildForProfiling = "NO"
             buildForArchiving = "NO"
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "1803BC7D198436BF00225613"
-               BuildableName = "PEFuelPurchase-ModelTests.xctest"
-               BlueprintName = "PEFuelPurchase-ModelTests"
-               ReferencedContainer = "container:PEFuelPurchase-Model.xcodeproj">
+               BuildableName = "Gas Jot Model.xctest"
+               BlueprintName = "Gas Jot ModelTests"
+               ReferencedContainer = "container:Gas Jot Model.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,19 +47,19 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "1803BC7D198436BF00225613"
-               BuildableName = "PEFuelPurchase-ModelTests.xctest"
-               BlueprintName = "PEFuelPurchase-ModelTests"
-               ReferencedContainer = "container:PEFuelPurchase-Model.xcodeproj">
+               BuildableName = "Gas Jot Model.xctest"
+               BlueprintName = "Gas Jot ModelTests"
+               ReferencedContainer = "container:Gas Jot Model.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "1803BC7D198436BF00225613"
-            BuildableName = "PEFuelPurchase-ModelTests.xctest"
-            BlueprintName = "PEFuelPurchase-ModelTests"
-            ReferencedContainer = "container:PEFuelPurchase-Model.xcodeproj">
+            BlueprintIdentifier = "1803BC6D198436BF00225613"
+            BuildableName = "libGas Jot Model.a"
+            BlueprintName = "Gas Jot Model"
+            ReferencedContainer = "container:Gas Jot Model.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -64,10 +78,10 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "1803BC7D198436BF00225613"
-            BuildableName = "PEFuelPurchase-ModelTests.xctest"
-            BlueprintName = "PEFuelPurchase-ModelTests"
-            ReferencedContainer = "container:PEFuelPurchase-Model.xcodeproj">
+            BlueprintIdentifier = "1803BC6D198436BF00225613"
+            BuildableName = "libGas Jot Model.a"
+            BlueprintName = "Gas Jot Model"
+            ReferencedContainer = "container:Gas Jot Model.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -82,10 +96,10 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "1803BC7D198436BF00225613"
-            BuildableName = "PEFuelPurchase-ModelTests.xctest"
-            BlueprintName = "PEFuelPurchase-ModelTests"
-            ReferencedContainer = "container:PEFuelPurchase-Model.xcodeproj">
+            BlueprintIdentifier = "1803BC6D198436BF00225613"
+            BuildableName = "libGas Jot Model.a"
+            BlueprintName = "Gas Jot Model"
+            ReferencedContainer = "container:Gas Jot Model.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </ProfileAction>
