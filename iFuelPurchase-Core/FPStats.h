@@ -223,6 +223,8 @@
 
 - (NSDecimalNumber *)thisMonthSpentOnGasForUser:(FPUser *)user;
 
+- (NSDecimalNumber *)lastMonthSpentOnGasForUser:(FPUser *)user;
+
 - (NSDecimalNumber *)yearToDateSpentOnGasForUser:(FPUser *)user;
 
 - (NSArray *)yearToDateSpentOnGasDataSetForUser:(FPUser *)user;
@@ -254,6 +256,8 @@
 - (NSDecimalNumber *)overallMaxSpentOnGasForUser:(FPUser *)user;
 
 - (NSDecimalNumber *)thisMonthSpentOnGasForVehicle:(FPVehicle *)vehicle;
+
+- (NSDecimalNumber *)lastMonthSpentOnGasForVehicle:(FPVehicle *)vehicle;
 
 - (NSDecimalNumber *)yearToDateSpentOnGasForVehicle:(FPVehicle *)vehicle;
 
@@ -288,6 +292,8 @@
 - (NSDecimalNumber *)overallMaxSpentOnGasForVehicle:(FPVehicle *)vehicle;
 
 - (NSDecimalNumber *)thisMonthSpentOnGasForFuelstation:(FPFuelStation *)fuelstation;
+
+- (NSDecimalNumber *)lastMonthSpentOnGasForFuelstation:(FPFuelStation *)fuelstation;
 
 - (NSDecimalNumber *)yearToDateSpentOnGasForFuelstation:(FPFuelStation *)fuelstation;
 

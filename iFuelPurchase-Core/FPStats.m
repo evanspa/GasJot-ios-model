@@ -1367,6 +1367,20 @@ typedef id (^FPValueBlock)(void);
                                                                           error:_errorBlk]];
 }
 
+- (NSDecimalNumber *)lastMonthSpentOnGasForUser:(FPUser *)user {
+  NSCalendar *calendar = [NSCalendar currentCalendar];
+  NSDate *now = [NSDate date];
+  NSDateComponents *components = [calendar components:NSCalendarUnitDay|NSCalendarUnitMonth|NSCalendarUnitYear fromDate:now];
+  [components setDay:1];
+  NSDate *firstDayOfCurrentMonth = [calendar dateFromComponents:components];
+  [components setMonth:-1];
+  NSDate *firstDayOfPreviousMonth = [calendar dateFromComponents:components];
+  return [self totalSpentFromFplogs:[_localDao unorderedFuelPurchaseLogsForUser:user
+                                                                     beforeDate:firstDayOfCurrentMonth
+                                                                  onOrAfterDate:firstDayOfPreviousMonth
+                                                                          error:_errorBlk]];
+}
+
 - (NSDecimalNumber *)yearToDateSpentOnGasForUser:(FPUser *)user {
   NSDate *now = [NSDate date];
   NSDate *firstDayOfCurrentYear = [PEUtils firstDayOfYearOfDate:now calendar:[NSCalendar currentCalendar]];
@@ -1457,6 +1471,20 @@ typedef id (^FPValueBlock)(void);
                                                                         beforeDate:now
                                                                      onOrAfterDate:firstDayOfCurrentMonth
                                                                              error:_errorBlk]];
+}
+
+- (NSDecimalNumber *)lastMonthSpentOnGasForVehicle:(FPVehicle *)vehicle {
+  NSCalendar *calendar = [NSCalendar currentCalendar];
+  NSDate *now = [NSDate date];
+  NSDateComponents *components = [calendar components:NSCalendarUnitDay|NSCalendarUnitMonth|NSCalendarUnitYear fromDate:now];
+  [components setDay:1];
+  NSDate *firstDayOfCurrentMonth = [calendar dateFromComponents:components];
+  [components setMonth:-1];
+  NSDate *firstDayOfPreviousMonth = [calendar dateFromComponents:components];
+  return [self totalSpentFromFplogs:[_localDao unorderedFuelPurchaseLogsForVehicle:vehicle
+                                                                     beforeDate:firstDayOfCurrentMonth
+                                                                  onOrAfterDate:firstDayOfPreviousMonth
+                                                                          error:_errorBlk]];
 }
 
 - (NSDecimalNumber *)yearToDateSpentOnGasForVehicle:(FPVehicle *)vehicle {
@@ -1556,6 +1584,20 @@ typedef id (^FPValueBlock)(void);
                                                                             beforeDate:now
                                                                          onOrAfterDate:firstDayOfCurrentMonth
                                                                                  error:_errorBlk]];
+}
+
+- (NSDecimalNumber *)lastMonthSpentOnGasForFuelstation:(FPFuelStation *)fuelstation {
+  NSCalendar *calendar = [NSCalendar currentCalendar];
+  NSDate *now = [NSDate date];
+  NSDateComponents *components = [calendar components:NSCalendarUnitDay|NSCalendarUnitMonth|NSCalendarUnitYear fromDate:now];
+  [components setDay:1];
+  NSDate *firstDayOfCurrentMonth = [calendar dateFromComponents:components];
+  [components setMonth:-1];
+  NSDate *firstDayOfPreviousMonth = [calendar dateFromComponents:components];
+  return [self totalSpentFromFplogs:[_localDao unorderedFuelPurchaseLogsForFuelstation:fuelstation
+                                                                        beforeDate:firstDayOfCurrentMonth
+                                                                     onOrAfterDate:firstDayOfPreviousMonth
+                                                                             error:_errorBlk]];
 }
 
 - (NSDecimalNumber *)yearToDateSpentOnGasForFuelstation:(FPFuelStation *)fuelstation {
