@@ -15,6 +15,12 @@
 
 - (id)initWithLocalDao:(FPLocalDao *)localDao errorBlk:(PELMDaoErrorBlk)errorBlk;
 
+#pragma mark - Sinces since last odometer log
+
+- (NSNumber *)daysSinceLastOdometerLogForUser:(FPUser *)user;
+
+- (NSNumber *)daysSinceLastOdometerLogForVehicle:(FPVehicle *)vehicle;
+
 #pragma mark - Average Reported MPH
 
 - (NSDecimalNumber *)yearToDateAvgReportedMphForUser:(FPUser *)user;
@@ -124,6 +130,12 @@
 - (NSDecimalNumber *)overallMinReportedMpgForVehicle:(FPVehicle *)vehicle;
 
 #pragma mark - Days Between Fill-ups
+
+- (NSNumber *)daysSinceLastGasLogForUser:(FPUser *)user;
+
+- (NSNumber *)daysSinceLastGasLogForVehicle:(FPVehicle *)vehicle;
+
+- (NSNumber *)daysSinceLastGasLogForGasStation:(FPFuelStation *)gasStation;
 
 - (NSDecimalNumber *)yearToDateAvgDaysBetweenFillupsForUser:(FPUser *)user;
 

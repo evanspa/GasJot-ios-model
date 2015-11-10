@@ -566,6 +566,33 @@ typedef id (^FPValueBlock)(void);
   return [totalSpentOnGas decimalNumberByDividingBy:milesDriven];
 }
 
+- (NSNumber *)daysSinceDate:(NSDate *)date {
+  if (date) {
+    NSDate *now = [NSDate date];
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+    return @([calendar components:NSCalendarUnitDay fromDate:date toDate:now options:0].day);
+  }
+  return nil;
+}
+
+- (NSNumber *)daysSinceGasLog:(FPFuelPurchaseLog *)gasLog {
+  return [self daysSinceDate:gasLog.purchasedAt];
+}
+
+- (NSNumber *)daysSinceOdometerLog:(FPEnvironmentLog *)odometerLog {
+  return [self daysSinceDate:odometerLog.logDate];
+}
+
+#pragma mark - Sinces since last odometer log
+
+- (NSNumber *)daysSinceLastOdometerLogForUser:(FPUser *)user {
+  return [self daysSinceOdometerLog:[_localDao lastOdometerLogForUser:user error:_errorBlk]];
+}
+
+- (NSNumber *)daysSinceLastOdometerLogForVehicle:(FPVehicle *)vehicle {
+  return [self daysSinceOdometerLog:[_localDao lastOdometerLogForVehicle:vehicle error:_errorBlk]];
+}
+
 #pragma mark - Average Reported MPH
 
 - (NSDecimalNumber *)yearToDateAvgReportedMphForUser:(FPUser *)user {
@@ -939,6 +966,18 @@ typedef id (^FPValueBlock)(void);
 }
 
 #pragma mark - Days Between Fill-ups
+
+- (NSNumber *)daysSinceLastGasLogForUser:(FPUser *)user {
+  return [self daysSinceGasLog:[_localDao lastGasLogForUser:user error:_errorBlk]];
+}
+
+- (NSNumber *)daysSinceLastGasLogForVehicle:(FPVehicle *)vehicle {
+  return [self daysSinceGasLog:[_localDao lastGasLogForVehicle:vehicle error:_errorBlk]];
+}
+
+- (NSNumber *)daysSinceLastGasLogForGasStation:(FPFuelStation *)gasStation {
+  return [self daysSinceGasLog:[_localDao lastGasLogForFuelstation:gasStation error:_errorBlk]];
+}
 
 - (NSDecimalNumber *)yearToDateAvgDaysBetweenFillupsForUser:(FPUser *)user {
   NSCalendar *calendar = [NSCalendar currentCalendar];
