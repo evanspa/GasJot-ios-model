@@ -118,14 +118,17 @@ typedef id (^FPValueBlock)(void);
                          year:(NSInteger)year
                    startMonth:(NSInteger)startMonth
                      endMonth:(NSInteger)endMonth
-                     calendar:(NSCalendar *)calendar {
+                     calendar:(NSCalendar *)calendar
+                   beforeDate:(NSDate *)beforeDate {
   NSMutableArray *dataset = [NSMutableArray array];
   for (NSInteger i = startMonth; i <= endMonth; i++) {
     NSDate *firstDayOfMonth = [PEUtils firstDayOfYear:year month:i calendar:calendar];
-    NSDate *firstDateOfNextMonth = [calendar dateByAddingUnit:NSCalendarUnitMonth value:1 toDate:firstDayOfMonth options:0];
-    id value = valueBlk(firstDateOfNextMonth, firstDayOfMonth);
-    if (value) {
-      [dataset addObject:@[firstDayOfMonth, value]];
+    if ([firstDayOfMonth compare:beforeDate] == NSOrderedAscending) {
+      NSDate *firstDateOfNextMonth = [calendar dateByAddingUnit:NSCalendarUnitMonth value:1 toDate:firstDayOfMonth options:0];
+      id value = valueBlk(firstDateOfNextMonth, firstDayOfMonth);
+      if (value) {
+        [dataset addObject:@[firstDayOfMonth, value]];
+      }
     }
   }
   return dataset;
@@ -349,7 +352,8 @@ typedef id (^FPValueBlock)(void);
                                             year:year
                                       startMonth:startMonth
                                         endMonth:endMonth
-                                        calendar:cal];
+                                        calendar:cal
+                                      beforeDate:beforeDate];
                  }
                      beforeDate:beforeDate
                   onOrAfterDate:onOrAfterDate];
@@ -370,7 +374,8 @@ typedef id (^FPValueBlock)(void);
                                             year:year
                                       startMonth:startMonth
                                         endMonth:endMonth
-                                        calendar:cal];
+                                        calendar:cal
+                                      beforeDate:beforeDate];
                  }
                      beforeDate:beforeDate
                   onOrAfterDate:onOrAfterDate];
@@ -391,7 +396,8 @@ typedef id (^FPValueBlock)(void);
                                             year:year
                                       startMonth:startMonth
                                         endMonth:endMonth
-                                        calendar:cal];
+                                        calendar:cal
+                                      beforeDate:beforeDate];
                  }
                      beforeDate:beforeDate
                   onOrAfterDate:onOrAfterDate];
@@ -412,7 +418,8 @@ typedef id (^FPValueBlock)(void);
                                             year:year
                                       startMonth:startMonth
                                         endMonth:endMonth
-                                        calendar:cal];
+                                        calendar:cal
+                                      beforeDate:beforeDate];
                  }
                      beforeDate:beforeDate
                   onOrAfterDate:onOrAfterDate];
@@ -444,7 +451,8 @@ typedef id (^FPValueBlock)(void);
                                             year:year
                                       startMonth:startMonth
                                         endMonth:endMonth
-                                        calendar:cal];
+                                        calendar:cal
+                                      beforeDate:beforeDate];
                  }
                      beforeDate:beforeDate
                   onOrAfterDate:onOrAfterDate];
@@ -476,7 +484,8 @@ typedef id (^FPValueBlock)(void);
                                             year:year
                                       startMonth:startMonth
                                         endMonth:endMonth
-                                        calendar:cal];
+                                        calendar:cal
+                                      beforeDate:beforeDate];
                  }
                      beforeDate:beforeDate
                   onOrAfterDate:onOrAfterDate];
@@ -499,7 +508,8 @@ typedef id (^FPValueBlock)(void);
                                             year:year
                                       startMonth:startMonth
                                         endMonth:endMonth
-                                        calendar:cal];
+                                        calendar:cal
+                                      beforeDate:beforeDate];
                  }
                      beforeDate:beforeDate
                   onOrAfterDate:onOrAfterDate];
@@ -522,7 +532,8 @@ typedef id (^FPValueBlock)(void);
                                             year:year
                                       startMonth:startMonth
                                         endMonth:endMonth
-                                        calendar:cal];
+                                        calendar:cal
+                                      beforeDate:beforeDate];
                  }
                      beforeDate:beforeDate
                   onOrAfterDate:onOrAfterDate];
@@ -545,7 +556,8 @@ typedef id (^FPValueBlock)(void);
                                             year:year
                                       startMonth:startMonth
                                         endMonth:endMonth
-                                        calendar:cal];
+                                        calendar:cal
+                                      beforeDate:beforeDate];
                  }
                      beforeDate:beforeDate
                   onOrAfterDate:onOrAfterDate];
@@ -581,6 +593,29 @@ typedef id (^FPValueBlock)(void);
 
 - (NSNumber *)daysSinceOdometerLog:(FPEnvironmentLog *)odometerLog {
   return [self daysSinceDate:odometerLog.logDate];
+}
+
+- (NSArray *)spentOnGasExcludingPartialMonthsDataSetWithStartDate:(NSDate *)startDate
+                                                       datasetBlk:(NSArray *(^)(NSDate *, NSDate *))datasetBlk {
+  if (startDate) {
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+    NSDate *now = [NSDate date];
+    NSDateComponents *components = [calendar components:NSCalendarUnitDay|NSCalendarUnitMonth|NSCalendarUnitYear fromDate:now];
+    [components setDay:1];
+    NSDate *firstDayOfCurrentMonth = [calendar dateFromComponents:components];
+    
+    NSDate *startMonth;
+    components = [calendar components:NSCalendarUnitDay|NSCalendarUnitMonth|NSCalendarUnitYear fromDate:startDate];
+    if (components.day < 10) {
+      startMonth = startDate;
+    } else {
+      [components setDay:1];
+      [components setMonth:(components.month + 1)];
+      startMonth = [calendar dateFromComponents:components];
+    }
+    return datasetBlk(startMonth, firstDayOfCurrentMonth);
+  }
+  return @[];
 }
 
 #pragma mark - Sinces since last odometer log
@@ -1396,6 +1431,17 @@ typedef id (^FPValueBlock)(void);
   return [self spentOnGasDataSetForUser:user beforeDate:now onOrAfterDate:firstDayOfCurrentYear];
 }
 
+- (NSArray *)yearToDateSpentOnGasExcludingPartialMonthsDataSetForUser:(FPUser *)user {
+  NSDate *now = [NSDate date];
+  NSDate *firstDayOfCurrentYear = [PEUtils firstDayOfYearOfDate:now calendar:[NSCalendar currentCalendar]];
+  return [self spentOnGasExcludingPartialMonthsDataSetWithStartDate:firstDayOfCurrentYear
+                                                         datasetBlk:^(NSDate *startMonth, NSDate *firstDayOfCurrentMonth) {
+                                                           return [self spentOnGasDataSetForUser:user
+                                                                                      beforeDate:firstDayOfCurrentMonth
+                                                                                   onOrAfterDate:startMonth];
+                                                         }];
+}
+
 - (NSDecimalNumber *)lastYearSpentOnGasForUser:(FPUser *)user {
   NSArray *lastYearRange = [PEUtils lastYearRangeFromDate:[NSDate date] calendar:[NSCalendar currentCalendar]];
   return [self totalSpentFromFplogs:[_localDao unorderedFuelPurchaseLogsForUser:user
@@ -1405,11 +1451,11 @@ typedef id (^FPValueBlock)(void);
 }
 
 - (NSDecimalNumber *)yearToDateAvgSpentOnGasForUser:(FPUser *)user {
-  return [self avgValueForDecimalDataset:[self yearToDateSpentOnGasDataSetForUser:user]];
+  return [self avgValueForDecimalDataset:[self yearToDateSpentOnGasExcludingPartialMonthsDataSetForUser:user]];
 }
 
 - (NSDecimalNumber *)yearToDateMinSpentOnGasForUser:(FPUser *)user {
-  return [self minValueForDataset:[self yearToDateSpentOnGasDataSetForUser:user]];
+  return [self minValueForDataset:[self yearToDateSpentOnGasExcludingPartialMonthsDataSetForUser:user]];
 }
 
 - (NSDecimalNumber *)yearToDateMaxSpentOnGasForUser:(FPUser *)user {
@@ -1449,12 +1495,22 @@ typedef id (^FPValueBlock)(void);
   return @[];
 }
 
+- (NSArray *)overallSpentOnGasExcludingPartialMonthsDataSetForUser:(FPUser *)user {
+  FPFuelPurchaseLog *firstGasLog = [_localDao firstGasLogForUser:user error:_errorBlk];
+  return [self spentOnGasExcludingPartialMonthsDataSetWithStartDate:firstGasLog.purchasedAt
+                                                         datasetBlk:^(NSDate *startMonth, NSDate *firstDayOfCurrentMonth) {
+                                                           return [self spentOnGasDataSetForUser:user
+                                                                                      beforeDate:firstDayOfCurrentMonth
+                                                                                   onOrAfterDate:startMonth];
+                                                         }];
+}
+
 - (NSDecimalNumber *)overallAvgSpentOnGasForUser:(FPUser *)user {
-  return [self avgValueForDecimalDataset:[self overallSpentOnGasDataSetForUser:user]];
+  return [self avgValueForDecimalDataset:[self overallSpentOnGasExcludingPartialMonthsDataSetForUser:user]];
 }
 
 - (NSDecimalNumber *)overallMinSpentOnGasForUser:(FPUser *)user {
-  return [self minValueForDataset:[self overallSpentOnGasDataSetForUser:user]];
+  return [self minValueForDataset:[self overallSpentOnGasExcludingPartialMonthsDataSetForUser:user]];
 }
 
 - (NSDecimalNumber *)overallMaxSpentOnGasForUser:(FPUser *)user {
@@ -1482,9 +1538,9 @@ typedef id (^FPValueBlock)(void);
   [components setMonth:(components.month - 1)];
   NSDate *firstDayOfPreviousMonth = [calendar dateFromComponents:components];
   return [self totalSpentFromFplogs:[_localDao unorderedFuelPurchaseLogsForVehicle:vehicle
-                                                                     beforeDate:firstDayOfCurrentMonth
-                                                                  onOrAfterDate:firstDayOfPreviousMonth
-                                                                          error:_errorBlk]];
+                                                                        beforeDate:firstDayOfCurrentMonth
+                                                                     onOrAfterDate:firstDayOfPreviousMonth
+                                                                             error:_errorBlk]];
 }
 
 - (NSDecimalNumber *)yearToDateSpentOnGasForVehicle:(FPVehicle *)vehicle {
@@ -1502,12 +1558,23 @@ typedef id (^FPValueBlock)(void);
   return [self spentOnGasDataSetForVehicle:vehicle beforeDate:now onOrAfterDate:firstDayOfCurrentYear];
 }
 
+- (NSArray *)yearToDateSpentOnGasExcludingPartialMonthsDataSetForVehicle:(FPVehicle *)vehicle {
+  NSDate *now = [NSDate date];
+  NSDate *firstDayOfCurrentYear = [PEUtils firstDayOfYearOfDate:now calendar:[NSCalendar currentCalendar]];
+  return [self spentOnGasExcludingPartialMonthsDataSetWithStartDate:firstDayOfCurrentYear
+                                                         datasetBlk:^(NSDate *startMonth, NSDate *firstDayOfCurrentMonth) {
+                                                           return [self spentOnGasDataSetForVehicle:vehicle
+                                                                                         beforeDate:firstDayOfCurrentMonth
+                                                                                      onOrAfterDate:startMonth];
+                                                         }];
+}
+
 - (NSDecimalNumber *)yearToDateAvgSpentOnGasForVehicle:(FPVehicle *)vehicle {
-  return [self avgValueForDecimalDataset:[self yearToDateSpentOnGasDataSetForVehicle:vehicle]];
+  return [self avgValueForDecimalDataset:[self yearToDateSpentOnGasExcludingPartialMonthsDataSetForVehicle:vehicle]];
 }
 
 - (NSDecimalNumber *)yearToDateMinSpentOnGasForVehicle:(FPVehicle *)vehicle {
-  return [self minValueForDataset:[self yearToDateSpentOnGasDataSetForVehicle:vehicle]];
+  return [self minValueForDataset:[self yearToDateSpentOnGasExcludingPartialMonthsDataSetForVehicle:vehicle]];
 }
 
 - (NSDecimalNumber *)yearToDateMaxSpentOnGasForVehicle:(FPVehicle *)vehicle {
@@ -1562,12 +1629,22 @@ typedef id (^FPValueBlock)(void);
   return @[];
 }
 
+- (NSArray *)overallSpentOnGasExcludingPartialMonthsDataSetForVehicle:(FPVehicle *)vehicle {
+  FPFuelPurchaseLog *firstGasLog = [_localDao firstGasLogForVehicle:vehicle error:_errorBlk];
+  return [self spentOnGasExcludingPartialMonthsDataSetWithStartDate:firstGasLog.purchasedAt
+                                                         datasetBlk:^(NSDate *startMonth, NSDate *firstDayOfCurrentMonth) {
+                                                           return [self spentOnGasDataSetForVehicle:vehicle
+                                                                                         beforeDate:firstDayOfCurrentMonth
+                                                                                      onOrAfterDate:startMonth];
+                                                         }];
+}
+
 - (NSDecimalNumber *)overallAvgSpentOnGasForVehicle:(FPVehicle *)vehicle {
-  return [self avgValueForDecimalDataset:[self overallSpentOnGasDataSetForVehicle:vehicle]];
+  return [self avgValueForDecimalDataset:[self overallSpentOnGasExcludingPartialMonthsDataSetForVehicle:vehicle]];
 }
 
 - (NSDecimalNumber *)overallMinSpentOnGasForVehicle:(FPVehicle *)vehicle {
-  return [self minValueForDataset:[self overallSpentOnGasDataSetForVehicle:vehicle]];
+  return [self minValueForDataset:[self overallSpentOnGasExcludingPartialMonthsDataSetForVehicle:vehicle]];
 }
 
 - (NSDecimalNumber *)overallMaxSpentOnGasForVehicle:(FPVehicle *)vehicle {
@@ -1595,9 +1672,9 @@ typedef id (^FPValueBlock)(void);
   [components setMonth:(components.month - 1)];
   NSDate *firstDayOfPreviousMonth = [calendar dateFromComponents:components];
   return [self totalSpentFromFplogs:[_localDao unorderedFuelPurchaseLogsForFuelstation:fuelstation
-                                                                        beforeDate:firstDayOfCurrentMonth
-                                                                     onOrAfterDate:firstDayOfPreviousMonth
-                                                                             error:_errorBlk]];
+                                                                            beforeDate:firstDayOfCurrentMonth
+                                                                         onOrAfterDate:firstDayOfPreviousMonth
+                                                                                 error:_errorBlk]];
 }
 
 - (NSDecimalNumber *)yearToDateSpentOnGasForFuelstation:(FPFuelStation *)fuelstation {
@@ -1614,12 +1691,23 @@ typedef id (^FPValueBlock)(void);
   return [self spentOnGasDataSetForFuelstation:fuelstation beforeDate:now onOrAfterDate:firstDayOfCurrentYear];
 }
 
+- (NSArray *)yearToDateSpentOnGasExcludingPartialMonthsDataSetForFuelstation:(FPFuelStation *)fuelstation {
+  NSDate *now = [NSDate date];
+  NSDate *firstDayOfCurrentYear = [PEUtils firstDayOfYearOfDate:now calendar:[NSCalendar currentCalendar]];
+  return [self spentOnGasExcludingPartialMonthsDataSetWithStartDate:firstDayOfCurrentYear
+                                                         datasetBlk:^(NSDate *startMonth, NSDate *firstDayOfCurrentMonth) {
+                                                           return [self spentOnGasDataSetForFuelstation:fuelstation
+                                                                                             beforeDate:firstDayOfCurrentMonth
+                                                                                          onOrAfterDate:startMonth];
+                                                         }];
+}
+
 - (NSDecimalNumber *)yearToDateAvgSpentOnGasForFuelstation:(FPFuelStation *)fuelstation {
-  return [self avgValueForDecimalDataset:[self yearToDateSpentOnGasDataSetForFuelstation:fuelstation]];
+  return [self avgValueForDecimalDataset:[self yearToDateSpentOnGasExcludingPartialMonthsDataSetForFuelstation:fuelstation]];
 }
 
 - (NSDecimalNumber *)yearToDateMinSpentOnGasForFuelstation:(FPFuelStation *)fuelstation {
-  return [self minValueForDataset:[self yearToDateSpentOnGasDataSetForFuelstation:fuelstation]];
+  return [self minValueForDataset:[self yearToDateSpentOnGasExcludingPartialMonthsDataSetForFuelstation:fuelstation]];
 }
 
 - (NSDecimalNumber *)yearToDateMaxSpentOnGasForFuelstation:(FPFuelStation *)fuelstation {
@@ -1667,12 +1755,22 @@ typedef id (^FPValueBlock)(void);
   return @[];
 }
 
+- (NSArray *)overallSpentOnGasExcludingPartialMonthsDataSetForFuelstation:(FPFuelStation *)fuelstation {
+  FPFuelPurchaseLog *firstGasLog = [_localDao firstGasLogForFuelstation:fuelstation error:_errorBlk];
+  return [self spentOnGasExcludingPartialMonthsDataSetWithStartDate:firstGasLog.purchasedAt
+                                                         datasetBlk:^(NSDate *startMonth, NSDate *firstDayOfCurrentMonth) {
+                                                           return [self spentOnGasDataSetForFuelstation:fuelstation
+                                                                                             beforeDate:firstDayOfCurrentMonth
+                                                                                          onOrAfterDate:startMonth];
+                                                         }];
+}
+
 - (NSDecimalNumber *)overallAvgSpentOnGasForFuelstation:(FPFuelStation *)fuelstation {
-  return [self avgValueForDecimalDataset:[self overallSpentOnGasDataSetForFuelstation:fuelstation]];
+  return [self avgValueForDecimalDataset:[self overallSpentOnGasExcludingPartialMonthsDataSetForFuelstation:fuelstation]];
 }
 
 - (NSDecimalNumber *)overallMinSpentOnGasForFuelstation:(FPFuelStation *)fuelstation {
-  return [self minValueForDataset:[self overallSpentOnGasDataSetForFuelstation:fuelstation]];
+  return [self minValueForDataset:[self overallSpentOnGasExcludingPartialMonthsDataSetForFuelstation:fuelstation]];
 }
 
 - (NSDecimalNumber *)overallMaxSpentOnGasForFuelstation:(FPFuelStation *)fuelstation {
