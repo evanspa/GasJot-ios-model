@@ -1373,7 +1373,7 @@ typedef id (^FPValueBlock)(void);
   NSDateComponents *components = [calendar components:NSCalendarUnitDay|NSCalendarUnitMonth|NSCalendarUnitYear fromDate:now];
   [components setDay:1];
   NSDate *firstDayOfCurrentMonth = [calendar dateFromComponents:components];
-  [components setMonth:-1];
+  [components setMonth:(components.month - 1)];
   NSDate *firstDayOfPreviousMonth = [calendar dateFromComponents:components];
   return [self totalSpentFromFplogs:[_localDao unorderedFuelPurchaseLogsForUser:user
                                                                      beforeDate:firstDayOfCurrentMonth
@@ -1479,7 +1479,7 @@ typedef id (^FPValueBlock)(void);
   NSDateComponents *components = [calendar components:NSCalendarUnitDay|NSCalendarUnitMonth|NSCalendarUnitYear fromDate:now];
   [components setDay:1];
   NSDate *firstDayOfCurrentMonth = [calendar dateFromComponents:components];
-  [components setMonth:-1];
+  [components setMonth:(components.month - 1)];
   NSDate *firstDayOfPreviousMonth = [calendar dateFromComponents:components];
   return [self totalSpentFromFplogs:[_localDao unorderedFuelPurchaseLogsForVehicle:vehicle
                                                                      beforeDate:firstDayOfCurrentMonth
@@ -1592,7 +1592,7 @@ typedef id (^FPValueBlock)(void);
   NSDateComponents *components = [calendar components:NSCalendarUnitDay|NSCalendarUnitMonth|NSCalendarUnitYear fromDate:now];
   [components setDay:1];
   NSDate *firstDayOfCurrentMonth = [calendar dateFromComponents:components];
-  [components setMonth:-1];
+  [components setMonth:(components.month - 1)];
   NSDate *firstDayOfPreviousMonth = [calendar dateFromComponents:components];
   return [self totalSpentFromFplogs:[_localDao unorderedFuelPurchaseLogsForFuelstation:fuelstation
                                                                         beforeDate:firstDayOfCurrentMonth
