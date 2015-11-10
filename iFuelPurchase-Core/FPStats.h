@@ -221,6 +221,8 @@
 
 #pragma mark - Amount Spent on Gas
 
+- (NSDecimalNumber *)thisMonthSpentOnGasForUser:(FPUser *)user;
+
 - (NSDecimalNumber *)yearToDateSpentOnGasForUser:(FPUser *)user;
 
 - (NSArray *)yearToDateSpentOnGasDataSetForUser:(FPUser *)user;
@@ -250,6 +252,8 @@
 - (NSDecimalNumber *)overallMinSpentOnGasForUser:(FPUser *)user;
 
 - (NSDecimalNumber *)overallMaxSpentOnGasForUser:(FPUser *)user;
+
+- (NSDecimalNumber *)thisMonthSpentOnGasForVehicle:(FPVehicle *)vehicle;
 
 - (NSDecimalNumber *)yearToDateSpentOnGasForVehicle:(FPVehicle *)vehicle;
 
@@ -282,6 +286,8 @@
 - (NSDecimalNumber *)overallMinSpentOnGasForVehicle:(FPVehicle *)vehicle;
 
 - (NSDecimalNumber *)overallMaxSpentOnGasForVehicle:(FPVehicle *)vehicle;
+
+- (NSDecimalNumber *)thisMonthSpentOnGasForFuelstation:(FPFuelStation *)fuelstation;
 
 - (NSDecimalNumber *)yearToDateSpentOnGasForFuelstation:(FPFuelStation *)fuelstation;
 
