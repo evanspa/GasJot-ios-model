@@ -2137,12 +2137,14 @@ typedef id (^FPValueBlock)(void);
 
 - (NSNumber *)daysSinceLastOdometerLogAndLog:(FPEnvironmentLog *)odometerLog
                                      vehicle:(FPVehicle *)vehicle {
-  NSArray *odometerLogs =
-  [_localDao environmentLogsForVehicle:vehicle pageSize:1 beforeDateLogged:[odometerLog logDate] error:_errorBlk];
+  NSArray *odometerLogs = [_localDao environmentLogsForVehicle:vehicle
+                                                      pageSize:1
+                                              beforeDateLogged:[odometerLog logDate]
+                                                         error:_errorBlk];
   if ([odometerLogs count] > 0) {
     NSDate *dateOfLastLog = [odometerLogs[0] logDate];
     if (dateOfLastLog) {
-      return @([PEUtils daysFromDate:[odometerLog logDate] toDate:dateOfLastLog]);
+      return @([PEUtils daysFromDate:dateOfLastLog toDate:[odometerLog logDate]]);
     }
   }
   return nil;

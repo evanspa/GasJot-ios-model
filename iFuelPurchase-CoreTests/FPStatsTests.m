@@ -92,6 +92,22 @@ describe(@"FPStats", ^{
     return fplog;
   };
   
+  context(@"A couple of odometer logs", ^{
+    __block FPEnvironmentLog *envlog1;
+    __block FPEnvironmentLog *envlog2;
+    beforeAll(^{
+      resetUser();
+      envlog1 = saveOdometerLog(_v1, @"50",  nil, nil, 40, @"02/04/2013", @"450");
+      envlog2 = saveOdometerLog(_v1, @"50",  nil, nil, 40, @"02/08/2013", @"450");
+    });
+    
+    it(@"Days between odometer logs works", ^{
+      NSNumber *numDays = [_stats daysSinceLastOdometerLogAndLog:envlog2 vehicle:_v1];
+      [numDays shouldNotBeNil];
+      [[numDays should] equal:@(4)];
+    });
+  });
+  
   context(@"Several gas logs for 2 vehicles with non-overlapping purchased-at dates for testing user-level days-between-fillups functions", ^{
     beforeAll(^{
       resetUser();
