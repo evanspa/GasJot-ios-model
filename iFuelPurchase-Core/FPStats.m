@@ -313,7 +313,9 @@ typedef id (^FPValueBlock)(void);
     }
     [avgDaysBetweenFillups addObject:@[startOfMonth, [total decimalNumberByDividingBy:[[NSDecimalNumber alloc] initWithInteger:numDaysValues.count]]]];
   }
-  return avgDaysBetweenFillups;
+  return [avgDaysBetweenFillups sortedArrayUsingComparator:^NSComparisonResult(NSArray *obj1, NSArray *obj2) {
+    return [obj1[0] compare:obj2[0]];
+  }];
 }
 
 - (NSArray *)avgDaysBetweenFillupsDataSetForUser:(FPUser *)user
