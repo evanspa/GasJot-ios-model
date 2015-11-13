@@ -114,7 +114,7 @@ passwordResetSerializer:(FPPasswordResetSerializer *)passwordResetSerializer
                                    value:(NSDate *)value {
   if (value) {
     NSMutableDictionary *newHeaders = [headers mutableCopy];
-    [newHeaders setObject:[[NSNumber numberWithInteger:([value timeIntervalSince1970] * 1000)] description]
+    [newHeaders setObject:[[NSNumber numberWithDouble:([value timeIntervalSince1970] * 1000)] description]
                    forKey:headerName];
     return newHeaders;
   } else {
