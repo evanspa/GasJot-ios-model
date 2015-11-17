@@ -16,6 +16,7 @@
 NSString * const FPVehicleNameKey          = @"fpvehicle/name";
 NSString * const FPVehicleDefaultOctaneKey = @"fpvehicle/default-octane";
 NSString * const FPVehicleFuelCapacityKey  = @"fpvehicle/fuel-capacity";
+NSString * const FPVehicleIsDieselKey      = @"fpvehicle/is-diesel";
 NSString * const FPVehicleCreatedAtKey     = @"fpvehicle/created-at";
 NSString * const FPVehicleUpdatedAtKey     = @"fpvehicle/updated-at";
 NSString * const FPVehicleDeletedAtKey     = @"fpvehicle/deleted-at";
@@ -30,6 +31,7 @@ NSString * const FPVehicleDeletedAtKey     = @"fpvehicle/deleted-at";
   [vehicleDict nullSafeSetObject:[vehicle name] forKey:FPVehicleNameKey];
   [vehicleDict nullSafeSetObject:[vehicle defaultOctane] forKey:FPVehicleDefaultOctaneKey];
   [vehicleDict nullSafeSetObject:[vehicle fuelCapacity] forKey:FPVehicleFuelCapacityKey];
+  [vehicleDict nullSafeSetObject:[NSNumber numberWithBool:[vehicle isDiesel]] forKey:FPVehicleIsDieselKey];
   return vehicleDict;
 }
 
@@ -43,6 +45,7 @@ NSString * const FPVehicleDeletedAtKey     = @"fpvehicle/deleted-at";
   FPVehicle *vehicle = [FPVehicle vehicleWithName:[resDict objectForKey:FPVehicleNameKey]
                                     defaultOctane:resDict[FPVehicleDefaultOctaneKey]
                                      fuelCapacity:[PEUtils nullSafeDecimalNumberFromString:[resDict[FPVehicleFuelCapacityKey] description]]
+                                         isDiesel:[resDict[FPVehicleIsDieselKey] boolValue]
                                  globalIdentifier:location
                                         mediaType:mediaType
                                         relations:relations

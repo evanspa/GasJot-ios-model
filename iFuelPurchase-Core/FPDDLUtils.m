@@ -27,6 +27,7 @@ NSString * const TBL_MAIN_VEHICLE = @"main_vehicle";
 NSString * const COL_VEH_NAME = @"name";
 NSString * const COL_VEH_DEFAULT_OCTANE = @"default_octane";
 NSString * const COL_VEH_FUEL_CAPACITY = @"fuel_capacity";
+NSString * const COL_VEH_IS_DIESEL = @"is_diesel";
 
 //##############################################################################
 // Fuel Station Entity (main and master)
@@ -57,6 +58,7 @@ NSString * const COL_FUELPL_ODOMETER = @"odometer";
 NSString * const COL_FUELPL_GOT_CAR_WASH = @"got_car_wash";
 NSString * const COL_FUELPL_CAR_WASH_PER_GALLON_DISCOUNT = @"car_wash_discount";
 NSString * const COL_FUELPL_PURCHASED_AT = @"purchased_at";
+NSString * const COL_FUELPL_IS_DIESEL = @"is_diesel";
 
 //##############################################################################
 // Environment Log Entity (main and master)

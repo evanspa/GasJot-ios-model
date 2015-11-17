@@ -70,7 +70,10 @@ describe(@"FPCoordinatorDao", ^{
                                        addlAuthRequiredBlk:nil
                                                  error:nil];
       [[expectFutureValue(theValue(syncUserSuccess)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
-      FPVehicle *vehicle = [_coordDao vehicleWithName:@"My Bimmer" defaultOctane:@87 fuelCapacity:[NSDecimalNumber decimalNumberWithString:@"20.5"]];
+      FPVehicle *vehicle = [_coordDao vehicleWithName:@"My Bimmer"
+                                        defaultOctane:@87
+                                         fuelCapacity:[NSDecimalNumber decimalNumberWithString:@"20.5"]
+                                             isDiesel:NO];
       [_coordDao saveNewVehicle:vehicle forUser:user error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       // the following will prevent syncing w/remote master on subsquent sync-attempt
       prepareForEditSuccess =

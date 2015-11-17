@@ -16,6 +16,7 @@ FOUNDATION_EXPORT NSString * const FPFplogGallonPriceField;
 FOUNDATION_EXPORT NSString * const FPFplogGotCarWashField;
 FOUNDATION_EXPORT NSString * const FPFplogCarWashPerGallonDiscountField;
 FOUNDATION_EXPORT NSString * const FPFplogPurchasedAtField;
+FOUNDATION_EXPORT NSString * const FPFplogIsDieselField;
 FOUNDATION_EXPORT NSString * const FPFplogVehicleGlobalIdField;
 FOUNDATION_EXPORT NSString * const FPFplogFuelstationGlobalIdField;
 
@@ -47,7 +48,8 @@ FOUNDATION_EXPORT NSString * const FPFplogFuelstationGlobalIdField;
                       gallonPrice:(NSDecimalNumber *)gallonPrice
                        gotCarWash:(BOOL)gotCarWash
          carWashPerGallonDiscount:(NSDecimalNumber *)carWashPerGallonDiscount
-                      purchasedAt:(NSDate *)purchasedAt;
+                      purchasedAt:(NSDate *)purchasedAt
+                         isDiesel:(BOOL)isDiesel;
 
 #pragma mark - Creation Functions
 
@@ -58,6 +60,7 @@ FOUNDATION_EXPORT NSString * const FPFplogFuelstationGlobalIdField;
                                           gotCarWash:(BOOL)gotCarWash
                             carWashPerGallonDiscount:(NSDecimalNumber *)carWashPerGallonDiscount
                                          purchasedAt:(NSDate *)purchasedAt
+                                            isDiesel:(BOOL)isDiesel
                                            mediaType:(HCMediaType *)mediaType;
 
 + (FPFuelPurchaseLog *)fuelPurchaseLogWithNumGallons:(NSDecimalNumber *)numGallons
@@ -67,6 +70,7 @@ FOUNDATION_EXPORT NSString * const FPFplogFuelstationGlobalIdField;
                                           gotCarWash:(BOOL)gotCarWash
                             carWashPerGallonDiscount:(NSDecimalNumber *)carWashPerGallonDiscount
                                          purchasedAt:(NSDate *)purchasedAt
+                                            isDiesel:(BOOL)isDiesel
                                     globalIdentifier:(NSString *)globalIdentifier
                                            mediaType:(HCMediaType *)mediaType
                                            relations:(NSDictionary *)relations
@@ -109,6 +113,8 @@ FOUNDATION_EXPORT NSString * const FPFplogFuelstationGlobalIdField;
 @property (nonatomic) NSDecimalNumber *carWashPerGallonDiscount;
 
 @property (nonatomic) NSDate *purchasedAt;
+
+@property (nonatomic) BOOL isDiesel;
 
 #pragma mark - Equality
 

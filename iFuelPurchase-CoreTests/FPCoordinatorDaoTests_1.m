@@ -53,7 +53,8 @@ describe(@"FPCoordinatorDao", ^{
       // First we need to create a vehicle.
       FPVehicle *vehicle = [_coordDao vehicleWithName:@"Volkswagen CC"
                                         defaultOctane:@87
-                                         fuelCapacity:[NSDecimalNumber decimalNumberWithString:@"19.0"]];
+                                         fuelCapacity:[NSDecimalNumber decimalNumberWithString:@"19.0"]
+                                             isDiesel:NO];
       [_coordDao saveNewVehicle:vehicle
                         forUser:user
                           error:[_coordTestCtx newLocalSaveErrBlkMaker]()];

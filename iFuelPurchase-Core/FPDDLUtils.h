@@ -28,6 +28,7 @@ FOUNDATION_EXPORT NSString * const TBL_MAIN_VEHICLE;
 FOUNDATION_EXPORT NSString * const COL_VEH_NAME;
 FOUNDATION_EXPORT NSString * const COL_VEH_DEFAULT_OCTANE;
 FOUNDATION_EXPORT NSString * const COL_VEH_FUEL_CAPACITY;
+FOUNDATION_EXPORT NSString * const COL_VEH_IS_DIESEL;
 
 //##############################################################################
 // Fuel Station Entity (main and master)
@@ -58,6 +59,7 @@ FOUNDATION_EXPORT NSString * const COL_FUELPL_ODOMETER;
 FOUNDATION_EXPORT NSString * const COL_FUELPL_GOT_CAR_WASH;
 FOUNDATION_EXPORT NSString * const COL_FUELPL_CAR_WASH_PER_GALLON_DISCOUNT;
 FOUNDATION_EXPORT NSString * const COL_FUELPL_PURCHASED_AT;
+FOUNDATION_EXPORT NSString * const COL_FUELPL_IS_DIESEL;
 
 //##############################################################################
 // Environment Log Entity (main and master)

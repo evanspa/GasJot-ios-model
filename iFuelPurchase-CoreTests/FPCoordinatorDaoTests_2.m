@@ -51,7 +51,7 @@ describe(@"FPCoordinatorDao", ^{
       });
       // First we need to create a vehicle and fuel station.
       FPVehicle *vehicle =
-        [_coordDao vehicleWithName:@"My Bimmer" defaultOctane:@87 fuelCapacity:[NSDecimalNumber decimalNumberWithString:@"20.5"]];
+        [_coordDao vehicleWithName:@"My Bimmer" defaultOctane:@87 fuelCapacity:[NSDecimalNumber decimalNumberWithString:@"20.5"] isDiesel:NO];
       [_coordDao saveNewVehicle:vehicle forUser:user error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       FPFuelStation *fuelStation =
         [_coordDao fuelStationWithName:@"Exxon Mobile"
@@ -69,7 +69,8 @@ describe(@"FPCoordinatorDao", ^{
                                    gallonPrice:[NSDecimalNumber decimalNumberWithString:@"3.85"]
                                     gotCarWash:NO
                       carWashPerGallonDiscount:[NSDecimalNumber decimalNumberWithString:@".08"]
-                                       logDate:[NSDate date]];
+                                       logDate:[NSDate date]
+                                      isDiesel:NO];
       [_coordDao saveNewFuelPurchaseLog:fplog
                                 forUser:user
                                 vehicle:vehicle

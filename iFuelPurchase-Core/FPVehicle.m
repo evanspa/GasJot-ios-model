@@ -13,6 +13,7 @@
 NSString * const FPVehicleNameField = @"FPVehicleNameField";
 NSString * const FPVehicleDefaultOctaneField = @"FPVehicleDefaultOctaneField";
 NSString * const FPVehicleFuelCapacityField = @"FPVehicleFuelCapacityField";
+NSString * const FPVehicleIsDieselField = @"FPVehicleIsDieselField";
 
 @implementation FPVehicle
 
@@ -36,7 +37,8 @@ NSString * const FPVehicleFuelCapacityField = @"FPVehicleFuelCapacityField";
                       syncRetryAt:(NSDate *)syncRetryAt
                              name:(NSString *)name
                     defaultOctane:(NSNumber *)defaultOctane
-                     fuelCapacity:(NSDecimalNumber *)fuelCapacity {
+                     fuelCapacity:(NSDecimalNumber *)fuelCapacity
+                         isDiesel:(BOOL)isDiesel {
   self = [super initWithLocalMainIdentifier:localMainIdentifier
                       localMasterIdentifier:localMasterIdentifier
                            globalIdentifier:globalIdentifier
@@ -59,6 +61,7 @@ NSString * const FPVehicleFuelCapacityField = @"FPVehicleFuelCapacityField";
     _name = name;
     _defaultOctane = defaultOctane;
     _fuelCapacity = fuelCapacity;
+    _isDiesel = isDiesel;
   }
   return self;
 }
@@ -84,7 +87,8 @@ NSString * const FPVehicleFuelCapacityField = @"FPVehicleFuelCapacityField";
                                                        syncRetryAt:[self syncRetryAt]
                                                               name:_name
                                                      defaultOctane:_defaultOctane
-                                                      fuelCapacity:_fuelCapacity];
+                                                      fuelCapacity:_fuelCapacity
+                                                          isDiesel:_isDiesel];
   return copy;
 }
 
@@ -93,10 +97,12 @@ NSString * const FPVehicleFuelCapacityField = @"FPVehicleFuelCapacityField";
 + (FPVehicle *)vehicleWithName:(NSString *)name
                  defaultOctane:(NSNumber *)defaultOctane
                   fuelCapacity:(NSDecimalNumber *)fuelCapacity
+                      isDiesel:(BOOL)isDiesel
                      mediaType:(HCMediaType *)mediaType {
   return [FPVehicle vehicleWithName:name
                       defaultOctane:defaultOctane
                        fuelCapacity:fuelCapacity
+                           isDiesel:isDiesel
                    globalIdentifier:nil
                           mediaType:mediaType
                           relations:nil
@@ -108,6 +114,7 @@ NSString * const FPVehicleFuelCapacityField = @"FPVehicleFuelCapacityField";
 + (FPVehicle *)vehicleWithName:(NSString *)name
                  defaultOctane:(NSNumber *)defaultOctane
                   fuelCapacity:(NSDecimalNumber *)fuelCapacity
+                      isDiesel:(BOOL)isDiesel
               globalIdentifier:(NSString *)globalIdentifier
                      mediaType:(HCMediaType *)mediaType
                      relations:(NSDictionary *)relations
@@ -132,7 +139,8 @@ NSString * const FPVehicleFuelCapacityField = @"FPVehicleFuelCapacityField";
                                             syncRetryAt:nil
                                                    name:name
                                           defaultOctane:defaultOctane
-                                           fuelCapacity:fuelCapacity];
+                                           fuelCapacity:fuelCapacity
+                                               isDiesel:isDiesel];
 }
 
 + (FPVehicle *)vehicleWithLocalMasterIdentifier:(NSNumber *)localMasterIdentifier {
@@ -154,7 +162,8 @@ NSString * const FPVehicleFuelCapacityField = @"FPVehicleFuelCapacityField";
                                             syncRetryAt:nil
                                                    name:nil
                                           defaultOctane:nil
-                                           fuelCapacity:nil];
+                                           fuelCapacity:nil
+                                               isDiesel:NO];
 }
 
 #pragma mark - Merging
@@ -179,7 +188,12 @@ NSString * const FPVehicleFuelCapacityField = @"FPVehicleFuelCapacityField";
                                         [NSValue valueWithPointer:@selector(setFuelCapacity:)],
                                         ^(SEL getter, id obj1, id obj2) {return [PEUtils isNumProperty:getter equalFor:obj1 and:obj2];},
                                         ^(FPVehicle * localObject, FPVehicle * remoteObject) { [localObject setFuelCapacity:[remoteObject fuelCapacity]];},
-                                        FPVehicleFuelCapacityField]]];
+                                        FPVehicleFuelCapacityField],
+                                      @[[NSValue valueWithPointer:@selector(isDiesel)],
+                                        [NSValue valueWithPointer:@selector(setIsDiesel:)],
+                                        ^(SEL getter, id obj1, id obj2) {return [PEUtils isBoolProperty:getter equalFor:obj1 and:obj2];},
+                                        ^(FPVehicle * localObject, FPVehicle * remoteObject) { [localObject setIsDiesel:[remoteObject isDiesel]];},
+                                        FPVehicleIsDieselField]]];
 }
 
 #pragma mark - Overwriting
@@ -189,6 +203,7 @@ NSString * const FPVehicleFuelCapacityField = @"FPVehicleFuelCapacityField";
   [self setName:[vehicle name]];
   [self setDefaultOctane:[vehicle defaultOctane]];
   [self setFuelCapacity:[vehicle fuelCapacity]];
+  [self setIsDiesel:[vehicle isDiesel]];
 }
 
 - (void)overwrite:(FPVehicle *)vehicle {
@@ -203,7 +218,8 @@ NSString * const FPVehicleFuelCapacityField = @"FPVehicleFuelCapacityField";
   if ([super isEqualToMainSupport:vehicle]) {
     return [PEUtils isString:[self name] equalTo:[vehicle name]] &&
       [PEUtils isNumProperty:@selector(defaultOctane) equalFor:self and:vehicle] &&
-      [PEUtils isNumProperty:@selector(fuelCapacity) equalFor:self and:vehicle];
+      [PEUtils isNumProperty:@selector(fuelCapacity) equalFor:self and:vehicle] &&
+      [PEUtils isBoolProperty:@selector(isDiesel) equalFor:self and:vehicle];
   }
   return NO;
 }
@@ -224,9 +240,12 @@ NSString * const FPVehicleFuelCapacityField = @"FPVehicleFuelCapacityField";
 }
 
 - (NSString *)description {
-  return [NSString stringWithFormat:@"%@, name: [%@], default octane: [%@], fuel capacity: [%@]",
-          [super description], _name,
-          _defaultOctane, _fuelCapacity];
+  return [NSString stringWithFormat:@"%@, name: [%@], default octane: [%@], fuel capacity: [%@], is diesel? [%d]",
+          [super description],
+          _name,
+          _defaultOctane,
+          _fuelCapacity,
+          _isDiesel];
 }
 
 @end

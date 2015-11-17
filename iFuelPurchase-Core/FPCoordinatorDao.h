@@ -239,7 +239,8 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk;
 
 - (FPVehicle *)vehicleWithName:(NSString *)name
                  defaultOctane:(NSNumber *)defaultOctane
-                  fuelCapacity:(NSDecimalNumber *)fuelCapacity;
+                  fuelCapacity:(NSDecimalNumber *)fuelCapacity
+                      isDiesel:(BOOL)isDiesel;
 
 - (NSArray *)vehiclesForUser:(FPUser *)user
                        error:(PELMDaoErrorBlk)errorBlk;
@@ -449,7 +450,8 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk;
                                          gallonPrice:(NSDecimalNumber *)gallonPrice
                                           gotCarWash:(BOOL)gotCarWash
                             carWashPerGallonDiscount:(NSDecimalNumber *)carWashPerGallonDiscount
-                                             logDate:(NSDate *)logDate;
+                                             logDate:(NSDate *)logDate
+                                            isDiesel:(BOOL)isDiesel;
 
 - (NSArray *)fuelPurchaseLogsForUser:(FPUser *)user
                             pageSize:(NSInteger)pageSize

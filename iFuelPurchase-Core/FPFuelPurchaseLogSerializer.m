@@ -22,6 +22,7 @@ NSString * const FPFuelPurchaseLogGallonPriceKey              = @"fplog/gallon-p
 NSString * const FPFuelPurchaseLogGotCarWashKey               = @"fplog/got-car-wash";
 NSString * const FPFuelPurchaseLogCarWashPerGallonDiscountKey = @"fplog/car-wash-per-gal-discount";
 NSString * const FPFuelPurchaseLogPurchasedAtKey              = @"fplog/purchased-at";
+NSString * const FPFuelPurchaseLogIsDieselKey                 = @"fplog/is-diesel";
 NSString * const FPFuelPurchaseLogCreatedAtKey                = @"fplog/created-at";
 NSString * const FPFuelPurchaseLogUpdatedAtKey                = @"fplog/updated-at";
 NSString * const FPFuelPurchaseLogDeletedAtKey                = @"fplog/deleted-at";
@@ -51,6 +52,8 @@ NSString * const FPFuelPurchaseLogDeletedAtKey                = @"fplog/deleted-
                                   forKey:FPFuelPurchaseLogCarWashPerGallonDiscountKey];
   [fuelPurchaseLogDict setMillisecondsSince1970FromDate:[fuelPurchaseLog purchasedAt]
                                                  forKey:FPFuelPurchaseLogPurchasedAtKey];
+  [fuelPurchaseLogDict nullSafeSetObject:[NSNumber numberWithBool:[fuelPurchaseLog isDiesel]]
+                                  forKey:FPFuelPurchaseLogIsDieselKey];
   return fuelPurchaseLogDict;
 }
 
@@ -69,6 +72,7 @@ NSString * const FPFuelPurchaseLogDeletedAtKey                = @"fplog/deleted-
                                         gotCarWash:[resDict[FPFuelPurchaseLogGotCarWashKey] boolValue]
                           carWashPerGallonDiscount:[PEUtils nullSafeDecimalNumberFromString:[resDict[FPFuelPurchaseLogCarWashPerGallonDiscountKey] description]]
                                        purchasedAt:[resDict dateSince1970ForKey:FPFuelPurchaseLogPurchasedAtKey]
+                                          isDiesel:[resDict[FPFuelPurchaseLogIsDieselKey] boolValue]
                                   globalIdentifier:location
                                          mediaType:mediaType
                                          relations:relations

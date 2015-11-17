@@ -12,6 +12,7 @@
 FOUNDATION_EXPORT NSString * const FPVehicleNameField;
 FOUNDATION_EXPORT NSString * const FPVehicleDefaultOctaneField;
 FOUNDATION_EXPORT NSString * const FPVehicleFuelCapacityField;
+FOUNDATION_EXPORT NSString * const FPVehicleIsDieselField;
 
 @interface FPVehicle : PELMMainSupport <NSCopying>
 
@@ -35,18 +36,21 @@ FOUNDATION_EXPORT NSString * const FPVehicleFuelCapacityField;
                       syncRetryAt:(NSDate *)syncRetryAt
                              name:(NSString *)name
                     defaultOctane:(NSNumber *)defaultOctane
-                     fuelCapacity:(NSDecimalNumber *)fuelCapacity;
+                     fuelCapacity:(NSDecimalNumber *)fuelCapacity
+                         isDiesel:(BOOL)isDiesel;
 
 #pragma mark - Creation Functions
 
 + (FPVehicle *)vehicleWithName:(NSString *)name
                  defaultOctane:(NSNumber *)defaultOctane
                   fuelCapacity:(NSDecimalNumber *)fuelCapacity
+                      isDiesel:(BOOL)isDiesel
                      mediaType:(HCMediaType *)mediaType;
 
 + (FPVehicle *)vehicleWithName:(NSString *)name
                  defaultOctane:(NSNumber *)defaultOctane
                   fuelCapacity:(NSDecimalNumber *)fuelCapacity
+                      isDiesel:(BOOL)isDiesel
               globalIdentifier:(NSString *)globalIdentifier
                      mediaType:(HCMediaType *)mediaType
                      relations:(NSDictionary *)relations
@@ -75,6 +79,8 @@ FOUNDATION_EXPORT NSString * const FPVehicleFuelCapacityField;
 @property (nonatomic) NSNumber *defaultOctane;
 
 @property (nonatomic) NSDecimalNumber *fuelCapacity;
+
+@property (nonatomic) BOOL isDiesel;
 
 #pragma mark - Equality
 

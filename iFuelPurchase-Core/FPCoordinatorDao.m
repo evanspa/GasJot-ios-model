@@ -904,10 +904,12 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk {
 
 - (FPVehicle *)vehicleWithName:(NSString *)name
                  defaultOctane:(NSNumber *)defaultOctane
-                  fuelCapacity:(NSDecimalNumber *)fuelCapacity {
+                  fuelCapacity:(NSDecimalNumber *)fuelCapacity
+                      isDiesel:(BOOL)isDiesel {
   return [FPVehicle vehicleWithName:name
                       defaultOctane:defaultOctane
                        fuelCapacity:fuelCapacity
+                           isDiesel:isDiesel
                           mediaType:[FPKnownMediaTypes vehicleMediaTypeWithVersion:_vehicleResMtVersion]];
 }
 
@@ -1438,7 +1440,8 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk {
                                          gallonPrice:(NSDecimalNumber *)gallonPrice
                                           gotCarWash:(BOOL)gotCarWash
                             carWashPerGallonDiscount:(NSDecimalNumber *)carWashPerGallonDiscount
-                                             logDate:(NSDate *)logDate {
+                                             logDate:(NSDate *)logDate
+                                            isDiesel:(BOOL)isDiesel {
   return [FPFuelPurchaseLog fuelPurchaseLogWithNumGallons:numGallons
                                                    octane:octane
                                                  odometer:odometer
@@ -1446,6 +1449,7 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk {
                                                gotCarWash:gotCarWash
                                  carWashPerGallonDiscount:carWashPerGallonDiscount
                                               purchasedAt:logDate
+                                                 isDiesel:isDiesel
                                                 mediaType:[FPKnownMediaTypes fuelPurchaseLogMediaTypeWithVersion:_fuelPurchaseLogResMtVersion]];
 }
 
