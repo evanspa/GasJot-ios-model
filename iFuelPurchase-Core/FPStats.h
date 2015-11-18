@@ -339,6 +339,18 @@
 
 - (NSArray *)overallAvgPricePerGallonDataSetForUser:(FPUser *)user octane:(NSNumber *)octane;
 
+- (NSDecimalNumber *)yearToDateAvgPricePerGallonForUser:(FPUser *)user;
+
+- (NSArray *)yearToDateAvgPricePerGallonDataSetForUser:(FPUser *)user;
+
+- (NSDecimalNumber *)lastYearAvgPricePerGallonForUser:(FPUser *)user;
+
+- (NSArray *)lastYearAvgPricePerGallonDataSetForUser:(FPUser *)user;
+
+- (NSDecimalNumber *)overallAvgPricePerGallonForUser:(FPUser *)user;
+
+- (NSArray *)overallAvgPricePerGallonDataSetForUser:(FPUser *)user;
+
 - (NSDecimalNumber *)yearToDateAvgPricePerDieselGallonForUser:(FPUser *)user;
 
 - (NSArray *)yearToDateAvgPricePerDieselGallonDataSetForUser:(FPUser *)user;
