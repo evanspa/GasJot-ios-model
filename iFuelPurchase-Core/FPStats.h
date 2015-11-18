@@ -339,6 +339,18 @@
 
 - (NSArray *)overallAvgPricePerGallonDataSetForUser:(FPUser *)user octane:(NSNumber *)octane;
 
+- (NSDecimalNumber *)yearToDateAvgPricePerDieselGallonForUser:(FPUser *)user;
+
+- (NSArray *)yearToDateAvgPricePerDieselGallonDataSetForUser:(FPUser *)user;
+
+- (NSDecimalNumber *)lastYearAvgPricePerDieselGallonForUser:(FPUser *)user;
+
+- (NSArray *)lastYearAvgPricePerDieselGallonDataSetForUser:(FPUser *)user;
+
+- (NSDecimalNumber *)overallAvgPricePerDieselGallonForUser:(FPUser *)user;
+
+- (NSArray *)overallAvgPricePerDieselGallonDataSetForUser:(FPUser *)user;
+
 - (NSDecimalNumber *)yearToDateAvgPricePerGallonForVehicle:(FPVehicle *)vehicle octane:(NSNumber *)octane;
 
 - (NSArray *)yearToDateAvgPricePerGallonDataSetForVehicle:(FPVehicle *)vehicle octane:(NSNumber *)octane;
@@ -350,6 +362,18 @@
 - (NSDecimalNumber *)overallAvgPricePerGallonForVehicle:(FPVehicle *)vehicle octane:(NSNumber *)octane;
 
 - (NSArray *)overallAvgPricePerGallonDataSetForVehicle:(FPVehicle *)vehicle octane:(NSNumber *)octane;
+
+- (NSDecimalNumber *)yearToDateAvgPricePerDieselGallonForVehicle:(FPVehicle *)vehicle;
+
+- (NSArray *)yearToDateAvgPricePerDieselGallonDataSetForVehicle:(FPVehicle *)vehicle;
+
+- (NSDecimalNumber *)lastYearAvgPricePerDieselGallonForVehicle:(FPVehicle *)vehicle;
+
+- (NSArray *)lastYearAvgPricePerDieselGallonDataSetForVehicle:(FPVehicle *)vehicle;
+
+- (NSDecimalNumber *)overallAvgPricePerDieselGallonForVehicle:(FPVehicle *)vehicle;
+
+- (NSArray *)overallAvgPricePerDieselGallonDataSetForVehicle:(FPVehicle *)vehicle;
 
 - (NSDecimalNumber *)yearToDateAvgPricePerGallonForFuelstation:(FPFuelStation *)fuelstation octane:(NSNumber *)octane;
 
@@ -363,6 +387,18 @@
 
 - (NSArray *)overallAvgPricePerGallonDataSetForFuelstation:(FPFuelStation *)fuelstation octane:(NSNumber *)octane;
 
+- (NSDecimalNumber *)yearToDateAvgPricePerDieselGallonForFuelstation:(FPFuelStation *)fuelstation;
+
+- (NSArray *)yearToDateAvgPricePerDieselGallonDataSetForFuelstation:(FPFuelStation *)fuelstation;
+
+- (NSDecimalNumber *)lastYearAvgPricePerDieselGallonForFuelstation:(FPFuelStation *)fuelstation;
+
+- (NSArray *)lastYearAvgPricePerDieselGallonDataSetForFuelstation:(FPFuelStation *)fuelstation;
+
+- (NSDecimalNumber *)overallAvgPricePerDieselGallonForFuelstation:(FPFuelStation *)fuelstation;
+
+- (NSArray *)overallAvgPricePerDieselGallonDataSetForFuelstation:(FPFuelStation *)fuelstation;
+
 #pragma mark - Max Price Per Gallon
 
 - (NSDecimalNumber *)yearToDateMaxPricePerGallonForUser:(FPUser *)user octane:(NSNumber *)octane;
@@ -371,17 +407,35 @@
 
 - (NSDecimalNumber *)overallMaxPricePerGallonForUser:(FPUser *)user octane:(NSNumber *)octane;
 
+- (NSDecimalNumber *)yearToDateMaxPricePerDieselGallonForUser:(FPUser *)user;
+
+- (NSDecimalNumber *)lastYearMaxPricePerDieselGallonForUser:(FPUser *)user;
+
+- (NSDecimalNumber *)overallMaxPricePerDieselGallonForUser:(FPUser *)user;
+
 - (NSDecimalNumber *)yearToDateMaxPricePerGallonForVehicle:(FPVehicle *)vehicle octane:(NSNumber *)octane;
 
 - (NSDecimalNumber *)lastYearMaxPricePerGallonForVehicle:(FPVehicle *)vehicle octane:(NSNumber *)octane;
 
 - (NSDecimalNumber *)overallMaxPricePerGallonForVehicle:(FPVehicle *)vehicle octane:(NSNumber *)octane;
 
+- (NSDecimalNumber *)yearToDateMaxPricePerDieselGallonForVehicle:(FPVehicle *)vehicle;
+
+- (NSDecimalNumber *)lastYearMaxPricePerDieselGallonForVehicle:(FPVehicle *)vehicle;
+
+- (NSDecimalNumber *)overallMaxPricePerDieselGallonForVehicle:(FPVehicle *)vehicle;
+
 - (NSDecimalNumber *)yearToDateMaxPricePerGallonForFuelstation:(FPFuelStation *)fuelstation octane:(NSNumber *)octane;
 
 - (NSDecimalNumber *)lastYearMaxPricePerGallonForFuelstation:(FPFuelStation *)fuelstation octane:(NSNumber *)octane;
 
 - (NSDecimalNumber *)overallMaxPricePerGallonForFuelstation:(FPFuelStation *)fuelstation octane:(NSNumber *)octane;
+
+- (NSDecimalNumber *)yearToDateMaxPricePerDieselGallonForFuelstation:(FPFuelStation *)fuelstation;
+
+- (NSDecimalNumber *)lastYearMaxPricePerDieselGallonForFuelstation:(FPFuelStation *)fuelstation;
+
+- (NSDecimalNumber *)overallMaxPricePerDieselGallonForFuelstation:(FPFuelStation *)fuelstation;
 
 #pragma mark - Min Price Per Gallon
 
@@ -391,17 +445,35 @@
 
 - (NSDecimalNumber *)overallMinPricePerGallonForUser:(FPUser *)user octane:(NSNumber *)octane;
 
+- (NSDecimalNumber *)yearToDateMinPricePerDieselGallonForUser:(FPUser *)user;
+
+- (NSDecimalNumber *)lastYearMinPricePerDieselGallonForUser:(FPUser *)user;
+
+- (NSDecimalNumber *)overallMinPricePerDieselGallonForUser:(FPUser *)user;
+
 - (NSDecimalNumber *)yearToDateMinPricePerGallonForVehicle:(FPVehicle *)vehicle octane:(NSNumber *)octane;
 
 - (NSDecimalNumber *)lastYearMinPricePerGallonForVehicle:(FPVehicle *)vehicle octane:(NSNumber *)octane;
 
 - (NSDecimalNumber *)overallMinPricePerGallonForVehicle:(FPVehicle *)vehicle octane:(NSNumber *)octane;
 
+- (NSDecimalNumber *)yearToDateMinPricePerDieselGallonForVehicle:(FPVehicle *)vehicle;
+
+- (NSDecimalNumber *)lastYearMinPricePerDieselGallonForVehicle:(FPVehicle *)vehicle;
+
+- (NSDecimalNumber *)overallMinPricePerDieselGallonForVehicle:(FPVehicle *)vehicle;
+
 - (NSDecimalNumber *)yearToDateMinPricePerGallonForFuelstation:(FPFuelStation *)fuelstation octane:(NSNumber *)octane;
 
 - (NSDecimalNumber *)lastYearMinPricePerGallonForFuelstation:(FPFuelStation *)fuelstation octane:(NSNumber *)octane;
 
 - (NSDecimalNumber *)overallMinPricePerGallonForFuelstation:(FPFuelStation *)fuelstation octane:(NSNumber *)octane;
+
+- (NSDecimalNumber *)yearToDateMinPricePerDieselGallonForFuelstation:(FPFuelStation *)fuelstation;
+
+- (NSDecimalNumber *)lastYearMinPricePerDieselGallonForFuelstation:(FPFuelStation *)fuelstation;
+
+- (NSDecimalNumber *)overallMinPricePerDieselGallonForFuelstation:(FPFuelStation *)fuelstation;
 
 #pragma mark - Miles Recorded
 

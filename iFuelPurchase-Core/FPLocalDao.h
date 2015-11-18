@@ -261,11 +261,20 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
 - (NSArray *)distinctOctanesForUser:(FPUser *)user
                               error:(PELMDaoErrorBlk)errorBlk;
 
+- (BOOL)hasDieselLogsForUser:(FPUser *)user
+                       error:(PELMDaoErrorBlk)errorBlk;
+
 - (NSArray *)distinctOctanesForVehicle:(FPVehicle *)vehicle
                                  error:(PELMDaoErrorBlk)errorBlk;
 
+- (BOOL)hasDieselLogsForVehicle:(FPVehicle *)vehicle
+                          error:(PELMDaoErrorBlk)errorBlk;
+
 - (NSArray *)distinctOctanesForFuelstation:(FPFuelStation *)fuelstation
                                      error:(PELMDaoErrorBlk)errorBlk;
+
+- (BOOL)hasDieselLogsForFuelstation:(FPFuelStation *)fuelstation
+                              error:(PELMDaoErrorBlk)errorBlk;
 
 - (NSArray *)unorderedFuelPurchaseLogsForFuelstation:(FPFuelStation *)fuelstation
                                                error:(PELMDaoErrorBlk)errorBlk;
