@@ -2120,6 +2120,11 @@ typedef id (^FPValueBlock)(void);
                                                                                      error:_errorBlk]];
 }
 
+- (NSDecimalNumber *)overallAvgPricePerGallonForFuelstation:(FPFuelStation *)fuelstation {
+  return [self avgGallonPriceFromFplogs:[_localDao unorderedFuelPurchaseLogsForFuelstation:fuelstation
+                                                                                     error:_errorBlk]];
+}
+
 - (NSArray *)overallAvgPricePerGallonDataSetForFuelstation:(FPFuelStation *)fuelstation octane:(NSNumber *)octane {
   FPFuelPurchaseLog *firstGasLog = [_localDao firstGasLogForFuelstation:fuelstation octane:octane error:_errorBlk];
   if (firstGasLog) {
