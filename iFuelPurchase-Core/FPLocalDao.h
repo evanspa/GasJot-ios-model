@@ -308,6 +308,11 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                                                         octane:(NSNumber *)octane
                                                          error:(PELMDaoErrorBlk)errorBlk;
 
+- (FPFuelPurchaseLog *)maxGallonPriceFuelPurchaseLogForVehicle:(FPVehicle *)vehicle
+                                                    beforeDate:(NSDate *)beforeDate
+                                                 onOrAfterDate:(NSDate *)onOrAfterDate
+                                                         error:(PELMDaoErrorBlk)errorBlk;
+
 - (FPFuelPurchaseLog *)maxGallonPriceDieselFuelPurchaseLogForVehicle:(FPVehicle *)vehicle
                                                           beforeDate:(NSDate *)beforeDate
                                                        onOrAfterDate:(NSDate *)onOrAfterDate
@@ -319,6 +324,11 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                                                         octane:(NSNumber *)octane
                                                          error:(PELMDaoErrorBlk)errorBlk;
 
+- (FPFuelPurchaseLog *)minGallonPriceFuelPurchaseLogForVehicle:(FPVehicle *)vehicle
+                                                    beforeDate:(NSDate *)beforeDate
+                                                 onOrAfterDate:(NSDate *)onOrAfterDate
+                                                         error:(PELMDaoErrorBlk)errorBlk;
+
 - (FPFuelPurchaseLog *)minGallonPriceDieselFuelPurchaseLogForVehicle:(FPVehicle *)vehicle
                                                           beforeDate:(NSDate *)beforeDate
                                                        onOrAfterDate:(NSDate *)onOrAfterDate
@@ -328,11 +338,17 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                                                         octane:(NSNumber *)octane
                                                          error:(PELMDaoErrorBlk)errorBlk;
 
+- (FPFuelPurchaseLog *)maxGallonPriceFuelPurchaseLogForVehicle:(FPVehicle *)vehicle
+                                                         error:(PELMDaoErrorBlk)errorBlk;
+
 - (FPFuelPurchaseLog *)maxGallonPriceDieselFuelPurchaseLogForVehicle:(FPVehicle *)vehicle
                                                                error:(PELMDaoErrorBlk)errorBlk;
 
 - (FPFuelPurchaseLog *)minGallonPriceFuelPurchaseLogForVehicle:(FPVehicle *)vehicle
                                                         octane:(NSNumber *)octane
+                                                         error:(PELMDaoErrorBlk)errorBlk;
+
+- (FPFuelPurchaseLog *)minGallonPriceFuelPurchaseLogForVehicle:(FPVehicle *)vehicle
                                                          error:(PELMDaoErrorBlk)errorBlk;
 
 - (FPFuelPurchaseLog *)minGallonPriceDieselFuelPurchaseLogForVehicle:(FPVehicle *)vehicle
@@ -344,6 +360,11 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                                                             octane:(NSNumber *)octane
                                                              error:(PELMDaoErrorBlk)errorBlk;
 
+- (FPFuelPurchaseLog *)maxGallonPriceFuelPurchaseLogForFuelstation:(FPFuelStation *)fuelstation
+                                                        beforeDate:(NSDate *)beforeDate
+                                                     onOrAfterDate:(NSDate *)onOrAfterDate
+                                                             error:(PELMDaoErrorBlk)errorBlk;
+
 - (FPFuelPurchaseLog *)maxGallonPriceDieselFuelPurchaseLogForFuelstation:(FPFuelStation *)fuelstation
                                                               beforeDate:(NSDate *)beforeDate
                                                            onOrAfterDate:(NSDate *)onOrAfterDate
@@ -353,6 +374,11 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                                                         beforeDate:(NSDate *)beforeDate
                                                      onOrAfterDate:(NSDate *)onOrAfterDate
                                                             octane:(NSNumber *)octane
+                                                             error:(PELMDaoErrorBlk)errorBlk;
+
+- (FPFuelPurchaseLog *)minGallonPriceFuelPurchaseLogForFuelstation:(FPFuelStation *)fuelstation
+                                                        beforeDate:(NSDate *)beforeDate
+                                                     onOrAfterDate:(NSDate *)onOrAfterDate
                                                              error:(PELMDaoErrorBlk)errorBlk;
 
 - (FPFuelPurchaseLog *)minGallonPriceDieselFuelPurchaseLogForFuelstation:(FPFuelStation *)fuelstation
@@ -364,11 +390,17 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                                                             octane:(NSNumber *)octane
                                                              error:(PELMDaoErrorBlk)errorBlk;
 
+- (FPFuelPurchaseLog *)maxGallonPriceFuelPurchaseLogForFuelstation:(FPFuelStation *)fuelstation
+                                                             error:(PELMDaoErrorBlk)errorBlk;
+
 - (FPFuelPurchaseLog *)maxGallonPriceDieselFuelPurchaseLogForFuelstation:(FPFuelStation *)fuelstation
                                                                    error:(PELMDaoErrorBlk)errorBlk;
 
 - (FPFuelPurchaseLog *)minGallonPriceFuelPurchaseLogForFuelstation:(FPFuelStation *)fuelstation
                                                             octane:(NSNumber *)octane
+                                                             error:(PELMDaoErrorBlk)errorBlk;
+
+- (FPFuelPurchaseLog *)minGallonPriceFuelPurchaseLogForFuelstation:(FPFuelStation *)fuelstation
                                                              error:(PELMDaoErrorBlk)errorBlk;
 
 - (FPFuelPurchaseLog *)minGallonPriceDieselFuelPurchaseLogForFuelstation:(FPFuelStation *)fuelstation
@@ -531,6 +563,11 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                                                      octane:(NSNumber *)octane
                                                       error:(PELMDaoErrorBlk)errorBlk;
 
+- (FPFuelPurchaseLog *)maxGallonPriceFuelPurchaseLogForUser:(FPUser *)user
+                                                 beforeDate:(NSDate *)beforeDate
+                                              onOrAfterDate:(NSDate *)onOrAfterDate
+                                                      error:(PELMDaoErrorBlk)errorBlk;
+
 - (FPFuelPurchaseLog *)maxGallonPriceDieselFuelPurchaseLogForUser:(FPUser *)user
                                                        beforeDate:(NSDate *)beforeDate
                                                     onOrAfterDate:(NSDate *)onOrAfterDate
@@ -542,6 +579,11 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                                                      octane:(NSNumber *)octane
                                                       error:(PELMDaoErrorBlk)errorBlk;
 
+- (FPFuelPurchaseLog *)minGallonPriceFuelPurchaseLogForUser:(FPUser *)user
+                                                 beforeDate:(NSDate *)beforeDate
+                                              onOrAfterDate:(NSDate *)onOrAfterDate
+                                                      error:(PELMDaoErrorBlk)errorBlk;
+
 - (FPFuelPurchaseLog *)minGallonPriceDieselFuelPurchaseLogForUser:(FPUser *)user
                                                        beforeDate:(NSDate *)beforeDate
                                                     onOrAfterDate:(NSDate *)onOrAfterDate
@@ -551,11 +593,17 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                                                      octane:(NSNumber *)octane
                                                       error:(PELMDaoErrorBlk)errorBlk;
 
+- (FPFuelPurchaseLog *)maxGallonPriceFuelPurchaseLogForUser:(FPUser *)user
+                                                      error:(PELMDaoErrorBlk)errorBlk;
+
 - (FPFuelPurchaseLog *)maxGallonPriceDieselFuelPurchaseLogForUser:(FPUser *)user
                                                             error:(PELMDaoErrorBlk)errorBlk;
 
 - (FPFuelPurchaseLog *)minGallonPriceFuelPurchaseLogForUser:(FPUser *)user
                                                      octane:(NSNumber *)octane
+                                                      error:(PELMDaoErrorBlk)errorBlk;
+
+- (FPFuelPurchaseLog *)minGallonPriceFuelPurchaseLogForUser:(FPUser *)user
                                                       error:(PELMDaoErrorBlk)errorBlk;
 
 - (FPFuelPurchaseLog *)minGallonPriceDieselFuelPurchaseLogForUser:(FPUser *)user

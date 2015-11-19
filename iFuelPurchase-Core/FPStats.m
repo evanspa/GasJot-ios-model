@@ -559,6 +559,20 @@ typedef id (^FPValueBlock)(void);
                                      }];
 }
 
+- (NSArray *)avgPricePerGallonDataSetForVehicle:(FPVehicle *)vehicle
+                                     beforeDate:(NSDate *)beforeDate
+                                  onOrAfterDate:(NSDate *)onOrAfterDate {
+  return [self avgPricePerGallonDataSetWithEntity:vehicle
+                                       beforeDate:beforeDate
+                                    onOrAfterDate:onOrAfterDate
+                                     logsFetchBlk:^NSArray *(NSDate *firstDateOfNextMonth, NSDate *firstDayOfMonth) {
+                                       return [_localDao unorderedFuelPurchaseLogsForVehicle:vehicle
+                                                                                  beforeDate:firstDateOfNextMonth
+                                                                               onOrAfterDate:firstDayOfMonth
+                                                                                       error:_errorBlk];
+                                     }];
+}
+
 - (NSArray *)avgPricePerGallonDataSetForFuelstation:(FPFuelStation *)fuelstation
                                          beforeDate:(NSDate *)beforeDate
                                       onOrAfterDate:(NSDate *)onOrAfterDate
@@ -571,6 +585,20 @@ typedef id (^FPValueBlock)(void);
                                                                                       beforeDate:firstDateOfNextMonth
                                                                                    onOrAfterDate:firstDayOfMonth
                                                                                           octane:octane
+                                                                                           error:_errorBlk];
+                                     }];
+}
+
+- (NSArray *)avgPricePerGallonDataSetForFuelstation:(FPFuelStation *)fuelstation
+                                         beforeDate:(NSDate *)beforeDate
+                                      onOrAfterDate:(NSDate *)onOrAfterDate {
+  return [self avgPricePerGallonDataSetWithEntity:fuelstation
+                                       beforeDate:beforeDate
+                                    onOrAfterDate:onOrAfterDate
+                                     logsFetchBlk:^NSArray *(NSDate *firstDateOfNextMonth, NSDate *firstDayOfMonth) {
+                                       return [_localDao unorderedFuelPurchaseLogsForFuelstation:fuelstation
+                                                                                      beforeDate:firstDateOfNextMonth
+                                                                                   onOrAfterDate:firstDayOfMonth
                                                                                            error:_errorBlk];
                                      }];
 }
@@ -2032,6 +2060,55 @@ typedef id (^FPValueBlock)(void);
   return @[];
 }
 
+- (NSDecimalNumber *)yearToDateAvgPricePerGallonForVehicle:(FPVehicle *)vehicle {
+  NSDate *now = [NSDate date];
+  NSDate *firstDayOfCurrentYear = [PEUtils firstDayOfYearOfDate:now calendar:[NSCalendar currentCalendar]];
+  return [self avgGallonPriceFromFplogs:[_localDao unorderedFuelPurchaseLogsForVehicle:vehicle
+                                                                            beforeDate:now
+                                                                         onOrAfterDate:firstDayOfCurrentYear
+                                                                                 error:_errorBlk]];
+}
+
+- (NSArray *)yearToDateAvgPricePerGallonDataSetForVehicle:(FPVehicle *)vehicle {
+  NSDate *now = [NSDate date];
+  NSDate *firstDayOfCurrentYear = [PEUtils firstDayOfYearOfDate:now calendar:[NSCalendar currentCalendar]];
+  return [self avgPricePerGallonDataSetForVehicle:vehicle
+                                       beforeDate:now
+                                    onOrAfterDate:firstDayOfCurrentYear];
+}
+
+- (NSDecimalNumber *)lastYearAvgPricePerGallonForVehicle:(FPVehicle *)vehicle {
+  NSArray *lastYearRange = [PEUtils lastYearRangeFromDate:[NSDate date] calendar:[NSCalendar currentCalendar]];
+  return [self avgGallonPriceFromFplogs:[_localDao unorderedFuelPurchaseLogsForVehicle:vehicle
+                                                                            beforeDate:lastYearRange[1]
+                                                                         onOrAfterDate:lastYearRange[0]
+                                                                                 error:_errorBlk]];
+}
+
+- (NSArray *)lastYearAvgPricePerGallonDataSetForVehicle:(FPVehicle *)vehicle {
+  NSArray *lastYearRange = [PEUtils lastYearRangeFromDate:[NSDate date] calendar:[NSCalendar currentCalendar]];
+  return [self avgPricePerGallonDataSetForVehicle:vehicle
+                                       beforeDate:lastYearRange[1]
+                                    onOrAfterDate:lastYearRange[0]];
+}
+
+- (NSDecimalNumber *)overallAvgPricePerGallonForVehicle:(FPVehicle *)vehicle {
+  return [self avgGallonPriceFromFplogs:[_localDao unorderedFuelPurchaseLogsForVehicle:vehicle
+                                                                                 error:_errorBlk]];
+}
+
+- (NSArray *)overallAvgPricePerGallonDataSetForVehicle:(FPVehicle *)vehicle {
+  FPFuelPurchaseLog *firstGasLog = [_localDao firstGasLogForVehicle:vehicle error:_errorBlk];
+  if (firstGasLog) {
+    FPFuelPurchaseLog *lastGasLog = [_localDao lastGasLogForVehicle:vehicle error:_errorBlk];
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+    return [self avgPricePerGallonDataSetForVehicle:vehicle
+                                         beforeDate:[calendar dateByAddingUnit:NSCalendarUnitMonth value:1 toDate:lastGasLog.purchasedAt options:0]
+                                      onOrAfterDate:firstGasLog.purchasedAt];
+  }
+  return @[];
+}
+
 - (NSDecimalNumber *)yearToDateAvgPricePerDieselGallonForVehicle:(FPVehicle *)vehicle {
   NSDate *now = [NSDate date];
   NSDate *firstDayOfCurrentYear = [PEUtils firstDayOfYearOfDate:now calendar:[NSCalendar currentCalendar]];
@@ -2120,11 +2197,6 @@ typedef id (^FPValueBlock)(void);
                                                                                      error:_errorBlk]];
 }
 
-- (NSDecimalNumber *)overallAvgPricePerGallonForFuelstation:(FPFuelStation *)fuelstation {
-  return [self avgGallonPriceFromFplogs:[_localDao unorderedFuelPurchaseLogsForFuelstation:fuelstation
-                                                                                     error:_errorBlk]];
-}
-
 - (NSArray *)overallAvgPricePerGallonDataSetForFuelstation:(FPFuelStation *)fuelstation octane:(NSNumber *)octane {
   FPFuelPurchaseLog *firstGasLog = [_localDao firstGasLogForFuelstation:fuelstation octane:octane error:_errorBlk];
   if (firstGasLog) {
@@ -2134,6 +2206,53 @@ typedef id (^FPValueBlock)(void);
                                              beforeDate:[calendar dateByAddingUnit:NSCalendarUnitMonth value:1 toDate:lastGasLog.purchasedAt options:0]
                                           onOrAfterDate:firstGasLog.purchasedAt
                                                  octane:octane];
+  }
+  return @[];
+}
+
+- (NSDecimalNumber *)yearToDateAvgPricePerGallonForFuelstation:(FPFuelStation *)fuelstation {
+  NSDate *now = [NSDate date];
+  NSDate *firstDayOfCurrentYear = [PEUtils firstDayOfYearOfDate:now calendar:[NSCalendar currentCalendar]];
+  return [self avgGallonPriceFromFplogs:[_localDao unorderedFuelPurchaseLogsForFuelstation:fuelstation
+                                                                                beforeDate:now
+                                                                             onOrAfterDate:firstDayOfCurrentYear
+                                                                                     error:_errorBlk]];
+}
+
+- (NSArray *)yearToDateAvgPricePerGallonDataSetForFuelstation:(FPFuelStation *)fuelstation {
+  NSDate *now = [NSDate date];
+  NSDate *firstDayOfCurrentYear = [PEUtils firstDayOfYearOfDate:now calendar:[NSCalendar currentCalendar]];
+  return [self avgPricePerGallonDataSetForFuelstation:fuelstation beforeDate:now onOrAfterDate:firstDayOfCurrentYear];
+}
+
+- (NSDecimalNumber *)lastYearAvgPricePerGallonForFuelstation:(FPFuelStation *)fuelstation {
+  NSArray *lastYearRange = [PEUtils lastYearRangeFromDate:[NSDate date] calendar:[NSCalendar currentCalendar]];
+  return [self avgGallonPriceFromFplogs:[_localDao unorderedFuelPurchaseLogsForFuelstation:fuelstation
+                                                                                beforeDate:lastYearRange[1]
+                                                                             onOrAfterDate:lastYearRange[0]
+                                                                                     error:_errorBlk]];
+}
+
+- (NSArray *)lastYearAvgPricePerGallonDataSetForFuelstation:(FPFuelStation *)fuelstation {
+  NSArray *lastYearRange = [PEUtils lastYearRangeFromDate:[NSDate date] calendar:[NSCalendar currentCalendar]];
+  return [self avgPricePerGallonDataSetForFuelstation:fuelstation
+                                           beforeDate:lastYearRange[1]
+                                        onOrAfterDate:lastYearRange[0]];
+}
+
+- (NSDecimalNumber *)overallAvgPricePerGallonForFuelstation:(FPFuelStation *)fuelstation {
+  return [self avgGallonPriceFromFplogs:[_localDao unorderedFuelPurchaseLogsForFuelstation:fuelstation
+                                                                                     error:_errorBlk]];
+}
+
+- (NSArray *)overallAvgPricePerGallonDataSetForFuelstation:(FPFuelStation *)fuelstation {
+  FPFuelPurchaseLog *firstGasLog = [_localDao firstGasLogForFuelstation:fuelstation error:_errorBlk];
+  if (firstGasLog) {
+    FPFuelPurchaseLog *lastGasLog = [_localDao lastGasLogForFuelstation:fuelstation error:_errorBlk];
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+    return [self avgPricePerGallonDataSetForFuelstation:fuelstation
+                                             beforeDate:[calendar dateByAddingUnit:NSCalendarUnitMonth value:1 toDate:lastGasLog.purchasedAt options:0]
+                                          onOrAfterDate:firstGasLog.purchasedAt];
   }
   return @[];
 }
@@ -2212,6 +2331,28 @@ typedef id (^FPValueBlock)(void);
                                                    error:_errorBlk].gallonPrice;
 }
 
+- (NSDecimalNumber *)yearToDateMaxPricePerGallonForUser:(FPUser *)user {
+  NSDate *now = [NSDate date];
+  NSDate *firstDayOfCurrentYear = [PEUtils firstDayOfYearOfDate:now calendar:[NSCalendar currentCalendar]];
+  return [_localDao maxGallonPriceFuelPurchaseLogForUser:user
+                                              beforeDate:now
+                                           onOrAfterDate:firstDayOfCurrentYear
+                                                   error:_errorBlk].gallonPrice;
+}
+
+- (NSDecimalNumber *)lastYearMaxPricePerGallonForUser:(FPUser *)user {
+  NSArray *lastYearRange = [PEUtils lastYearRangeFromDate:[NSDate date] calendar:[NSCalendar currentCalendar]];
+  return [_localDao maxGallonPriceFuelPurchaseLogForUser:user
+                                              beforeDate:lastYearRange[1]
+                                           onOrAfterDate:lastYearRange[0]
+                                                   error:_errorBlk].gallonPrice;
+}
+
+- (NSDecimalNumber *)overallMaxPricePerGallonForUser:(FPUser *)user {
+  return [_localDao maxGallonPriceFuelPurchaseLogForUser:user
+                                                   error:_errorBlk].gallonPrice;
+}
+
 - (NSDecimalNumber *)yearToDateMaxPricePerDieselGallonForUser:(FPUser *)user {
   NSDate *now = [NSDate date];
   NSDate *firstDayOfCurrentYear = [PEUtils firstDayOfYearOfDate:now calendar:[NSCalendar currentCalendar]];
@@ -2259,6 +2400,28 @@ typedef id (^FPValueBlock)(void);
                                                       error:_errorBlk].gallonPrice;
 }
 
+- (NSDecimalNumber *)yearToDateMaxPricePerGallonForVehicle:(FPVehicle *)vehicle {
+  NSDate *now = [NSDate date];
+  NSDate *firstDayOfCurrentYear = [PEUtils firstDayOfYearOfDate:now calendar:[NSCalendar currentCalendar]];
+  return [_localDao maxGallonPriceFuelPurchaseLogForVehicle:vehicle
+                                                 beforeDate:now
+                                              onOrAfterDate:firstDayOfCurrentYear
+                                                      error:_errorBlk].gallonPrice;
+}
+
+- (NSDecimalNumber *)lastYearMaxPricePerGallonForVehicle:(FPVehicle *)vehicle {
+  NSArray *lastYearRange = [PEUtils lastYearRangeFromDate:[NSDate date] calendar:[NSCalendar currentCalendar]];
+  return [_localDao maxGallonPriceFuelPurchaseLogForVehicle:vehicle
+                                                 beforeDate:lastYearRange[1]
+                                              onOrAfterDate:lastYearRange[0]
+                                                      error:_errorBlk].gallonPrice;
+}
+
+- (NSDecimalNumber *)overallMaxPricePerGallonForVehicle:(FPVehicle *)vehicle {
+  return [_localDao maxGallonPriceFuelPurchaseLogForVehicle:vehicle
+                                                      error:_errorBlk].gallonPrice;
+}
+
 - (NSDecimalNumber *)yearToDateMaxPricePerDieselGallonForVehicle:(FPVehicle *)vehicle {
   NSDate *now = [NSDate date];
   NSDate *firstDayOfCurrentYear = [PEUtils firstDayOfYearOfDate:now calendar:[NSCalendar currentCalendar]];
@@ -2303,6 +2466,28 @@ typedef id (^FPValueBlock)(void);
 - (NSDecimalNumber *)overallMaxPricePerGallonForFuelstation:(FPFuelStation *)fuelstation octane:(NSNumber *)octane {
   return [_localDao maxGallonPriceFuelPurchaseLogForFuelstation:fuelstation
                                                          octane:octane
+                                                          error:_errorBlk].gallonPrice;
+}
+
+- (NSDecimalNumber *)yearToDateMaxPricePerGallonForFuelstation:(FPFuelStation *)fuelstation {
+  NSDate *now = [NSDate date];
+  NSDate *firstDayOfCurrentYear = [PEUtils firstDayOfYearOfDate:now calendar:[NSCalendar currentCalendar]];
+  return [_localDao maxGallonPriceFuelPurchaseLogForFuelstation:fuelstation
+                                                     beforeDate:now
+                                                  onOrAfterDate:firstDayOfCurrentYear
+                                                          error:_errorBlk].gallonPrice;
+}
+
+- (NSDecimalNumber *)lastYearMaxPricePerGallonForFuelstation:(FPFuelStation *)fuelstation {
+  NSArray *lastYearRange = [PEUtils lastYearRangeFromDate:[NSDate date] calendar:[NSCalendar currentCalendar]];
+  return [_localDao maxGallonPriceFuelPurchaseLogForFuelstation:fuelstation
+                                                     beforeDate:lastYearRange[1]
+                                                  onOrAfterDate:lastYearRange[0]
+                                                          error:_errorBlk].gallonPrice;
+}
+
+- (NSDecimalNumber *)overallMaxPricePerGallonForFuelstation:(FPFuelStation *)fuelstation {
+  return [_localDao maxGallonPriceFuelPurchaseLogForFuelstation:fuelstation
                                                           error:_errorBlk].gallonPrice;
 }
 
@@ -2355,6 +2540,28 @@ typedef id (^FPValueBlock)(void);
                                                    error:_errorBlk].gallonPrice;
 }
 
+- (NSDecimalNumber *)yearToDateMinPricePerGallonForUser:(FPUser *)user {
+  NSDate *now = [NSDate date];
+  NSDate *firstDayOfCurrentYear = [PEUtils firstDayOfYearOfDate:now calendar:[NSCalendar currentCalendar]];
+  return [_localDao minGallonPriceFuelPurchaseLogForUser:user
+                                              beforeDate:now
+                                           onOrAfterDate:firstDayOfCurrentYear
+                                                   error:_errorBlk].gallonPrice;
+}
+
+- (NSDecimalNumber *)lastYearMinPricePerGallonForUser:(FPUser *)user {
+  NSArray *lastYearRange = [PEUtils lastYearRangeFromDate:[NSDate date] calendar:[NSCalendar currentCalendar]];
+  return [_localDao minGallonPriceFuelPurchaseLogForUser:user
+                                              beforeDate:lastYearRange[1]
+                                           onOrAfterDate:lastYearRange[0]
+                                                   error:_errorBlk].gallonPrice;
+}
+
+- (NSDecimalNumber *)overallMinPricePerGallonForUser:(FPUser *)user {
+  return [_localDao minGallonPriceFuelPurchaseLogForUser:user
+                                                   error:_errorBlk].gallonPrice;
+}
+
 - (NSDecimalNumber *)yearToDateMinPricePerDieselGallonForUser:(FPUser *)user {
   NSDate *now = [NSDate date];
   NSDate *firstDayOfCurrentYear = [PEUtils firstDayOfYearOfDate:now calendar:[NSCalendar currentCalendar]];
@@ -2402,6 +2609,28 @@ typedef id (^FPValueBlock)(void);
                                                       error:_errorBlk].gallonPrice;
 }
 
+- (NSDecimalNumber *)yearToDateMinPricePerGallonForVehicle:(FPVehicle *)vehicle {
+  NSDate *now = [NSDate date];
+  NSDate *firstDayOfCurrentYear = [PEUtils firstDayOfYearOfDate:now calendar:[NSCalendar currentCalendar]];
+  return [_localDao minGallonPriceFuelPurchaseLogForVehicle:vehicle
+                                                 beforeDate:now
+                                              onOrAfterDate:firstDayOfCurrentYear
+                                                      error:_errorBlk].gallonPrice;
+}
+
+- (NSDecimalNumber *)lastYearMinPricePerGallonForVehicle:(FPVehicle *)vehicle {
+  NSArray *lastYearRange = [PEUtils lastYearRangeFromDate:[NSDate date] calendar:[NSCalendar currentCalendar]];
+  return [_localDao minGallonPriceFuelPurchaseLogForVehicle:vehicle
+                                                 beforeDate:lastYearRange[1]
+                                              onOrAfterDate:lastYearRange[0]
+                                                      error:_errorBlk].gallonPrice;
+}
+
+- (NSDecimalNumber *)overallMinPricePerGallonForVehicle:(FPVehicle *)vehicle {
+  return [_localDao minGallonPriceFuelPurchaseLogForVehicle:vehicle
+                                                      error:_errorBlk].gallonPrice;
+}
+
 - (NSDecimalNumber *)yearToDateMinPricePerDieselGallonForVehicle:(FPVehicle *)vehicle {
   NSDate *now = [NSDate date];
   NSDate *firstDayOfCurrentYear = [PEUtils firstDayOfYearOfDate:now calendar:[NSCalendar currentCalendar]];
@@ -2446,6 +2675,28 @@ typedef id (^FPValueBlock)(void);
 - (NSDecimalNumber *)overallMinPricePerGallonForFuelstation:(FPFuelStation *)fuelstation octane:(NSNumber *)octane {
   return [_localDao minGallonPriceFuelPurchaseLogForFuelstation:fuelstation
                                                          octane:octane
+                                                          error:_errorBlk].gallonPrice;
+}
+
+- (NSDecimalNumber *)yearToDateMinPricePerGallonForFuelstation:(FPFuelStation *)fuelstation {
+  NSDate *now = [NSDate date];
+  NSDate *firstDayOfCurrentYear = [PEUtils firstDayOfYearOfDate:now calendar:[NSCalendar currentCalendar]];
+  return [_localDao minGallonPriceFuelPurchaseLogForFuelstation:fuelstation
+                                                     beforeDate:now
+                                                  onOrAfterDate:firstDayOfCurrentYear
+                                                          error:_errorBlk].gallonPrice;
+}
+
+- (NSDecimalNumber *)lastYearMinPricePerGallonForFuelstation:(FPFuelStation *)fuelstation {
+  NSArray *lastYearRange = [PEUtils lastYearRangeFromDate:[NSDate date] calendar:[NSCalendar currentCalendar]];
+  return [_localDao minGallonPriceFuelPurchaseLogForFuelstation:fuelstation
+                                                     beforeDate:lastYearRange[1]
+                                                  onOrAfterDate:lastYearRange[0]
+                                                          error:_errorBlk].gallonPrice;
+}
+
+- (NSDecimalNumber *)overallMinPricePerGallonForFuelstation:(FPFuelStation *)fuelstation {
+  return [_localDao minGallonPriceFuelPurchaseLogForFuelstation:fuelstation
                                                           error:_errorBlk].gallonPrice;
 }
 
