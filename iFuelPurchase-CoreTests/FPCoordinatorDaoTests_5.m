@@ -62,7 +62,11 @@ describe(@"FPCoordinatorDao", ^{
       [user shouldNotBeNil]; // sanity check
       [[[user updatedAt] should] equal:[NSDate dateWithTimeIntervalSince1970:1433472979.065]];
       [[theValue([_coordDao numVehiclesForUser:user error:[_coordTestCtx newLocalFetchErrBlkMaker]()]) should] equal:theValue(2)];
-      FPVehicle *newVehicle = [_coordDao vehicleWithName:@"My Z Car" defaultOctane:@87 fuelCapacity:[NSDecimalNumber decimalNumberWithString:@"20.5"] isDiesel:NO];
+      FPVehicle *newVehicle = [_coordDao vehicleWithName:@"My Z Car"
+                                           defaultOctane:@87
+                                            fuelCapacity:[NSDecimalNumber decimalNumberWithString:@"20.5"]
+                                                isDiesel:NO
+                                            fieldsetMask:nil];
       [_coordDao saveNewVehicle:newVehicle forUser:user error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[theValue([_coordDao numVehiclesForUser:user error:[_coordTestCtx newLocalFetchErrBlkMaker]()]) should] equal:theValue(3)];
       _mocker(@"http-response.vehicles.POST.500", 0, 0);

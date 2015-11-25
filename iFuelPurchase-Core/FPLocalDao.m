@@ -83,6 +83,12 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                 error:errorBlk];
   [PELMUtils doUpdate:[NSString stringWithFormat:@"ALTER TABLE %@ ADD COLUMN %@ INTEGER", TBL_MASTER_FUELPURCHASE_LOG, COL_FUELPL_IS_DIESEL]
                    db:db
+                error:errorBlk];  
+  [PELMUtils doUpdate:[NSString stringWithFormat:@"ALTER TABLE %@ ADD COLUMN %@ INTEGER", TBL_MAIN_VEHICLE, COL_VEH_FIELDSET_MASK]
+                   db:db
+                error:errorBlk];
+  [PELMUtils doUpdate:[NSString stringWithFormat:@"ALTER TABLE %@ ADD COLUMN %@ INTEGER", TBL_MASTER_VEHICLE, COL_VEH_FIELDSET_MASK]
+                   db:db
                 error:errorBlk];
 }
 
@@ -5731,7 +5737,8 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                                    name:[rs stringForColumn:COL_VEH_NAME]
                                           defaultOctane:[PELMUtils numberFromResultSet:rs columnName:COL_VEH_DEFAULT_OCTANE]
                                            fuelCapacity:[PELMUtils decimalNumberFromResultSet:rs columnName:COL_VEH_FUEL_CAPACITY]
-                                               isDiesel:[rs boolForColumn:COL_VEH_IS_DIESEL]];
+                                               isDiesel:[rs boolForColumn:COL_VEH_IS_DIESEL]
+                                           fieldsetMask:[PELMUtils numberFromResultSet:rs columnName:COL_VEH_FIELDSET_MASK]];
 }
 
 - (FPVehicle *)masterVehicleFromResultSet:(FMResultSet *)rs {
@@ -5754,7 +5761,8 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                                    name:[rs stringForColumn:COL_VEH_NAME]
                                           defaultOctane:[PELMUtils numberFromResultSet:rs columnName:COL_VEH_DEFAULT_OCTANE]
                                            fuelCapacity:[PELMUtils decimalNumberFromResultSet:rs columnName:COL_VEH_FUEL_CAPACITY]
-                                               isDiesel:[rs boolForColumn:COL_VEH_IS_DIESEL]];
+                                               isDiesel:[rs boolForColumn:COL_VEH_IS_DIESEL]
+                                           fieldsetMask:[PELMUtils numberFromResultSet:rs columnName:COL_VEH_FIELDSET_MASK]];
 }
 
 - (FPFuelStation *)mainFuelStationFromResultSet:(FMResultSet *)rs {
@@ -6160,7 +6168,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                              db:(FMDatabase *)db
                           error:(PELMDaoErrorBlk)errorBlk {
   NSString *stmt = [NSString stringWithFormat:@"INSERT INTO %@ (%@, %@, %@, \
-%@, %@, %@, %@, %@, %@, %@) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+%@, %@, %@, %@, %@, %@, %@, %@) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                     TBL_MASTER_VEHICLE,
                     COL_MASTER_USER_ID,
                     COL_GLOBAL_ID,
@@ -6171,7 +6179,8 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                     COL_VEH_NAME,
                     COL_VEH_DEFAULT_OCTANE,
                     COL_VEH_FUEL_CAPACITY,
-                    COL_VEH_IS_DIESEL];
+                    COL_VEH_IS_DIESEL,
+                    COL_VEH_FIELDSET_MASK];
   [PELMUtils doMasterInsert:stmt
                   argsArray:@[orNil([user localMasterIdentifier]),
                               orNil([vehicle globalIdentifier]),
@@ -6182,7 +6191,8 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                               orNil([vehicle name]),
                               orNil([vehicle defaultOctane]),
                               orNil([vehicle fuelCapacity]),
-                              [NSNumber numberWithBool:[vehicle isDiesel]]]
+                              [NSNumber numberWithBool:[vehicle isDiesel]],
+                              orNil([vehicle fieldsetMask])]
                      entity:vehicle
                          db:db
                       error:errorBlk];
@@ -6193,7 +6203,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                            db:(FMDatabase *)db
                         error:(PELMDaoErrorBlk)errorBlk {
   NSString *stmt = [NSString stringWithFormat:@"INSERT INTO %@ (%@, %@, %@, %@, %@, \
-                    %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                    %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@, %@) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                     TBL_MAIN_VEHICLE,
                     COL_MAIN_USER_ID,
                     COL_GLOBAL_ID,
@@ -6204,6 +6214,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                     COL_VEH_DEFAULT_OCTANE,
                     COL_VEH_FUEL_CAPACITY,
                     COL_VEH_IS_DIESEL,
+                    COL_VEH_FIELDSET_MASK,
                     COL_MAN_EDIT_IN_PROGRESS,
                     COL_MAN_SYNC_IN_PROGRESS,
                     COL_MAN_SYNCED,
@@ -6221,6 +6232,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                             orNil([vehicle defaultOctane]),
                             orNil([vehicle fuelCapacity]),
                             [NSNumber numberWithBool:[vehicle isDiesel]],
+                            orNil([vehicle fieldsetMask]),
                             [NSNumber numberWithBool:[vehicle editInProgress]],
                             [NSNumber numberWithBool:[vehicle syncInProgress]],
                             [NSNumber numberWithBool:[vehicle synced]],
@@ -6243,6 +6255,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
           %@ = ?, \
           %@ = ?, \
           %@ = ?, \
+          %@ = ?, \
           %@ = ? \
           WHERE %@ = ?",
           TBL_MASTER_VEHICLE,     // table
@@ -6255,6 +6268,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
           COL_VEH_DEFAULT_OCTANE,
           COL_VEH_FUEL_CAPACITY,
           COL_VEH_IS_DIESEL,
+          COL_VEH_FIELDSET_MASK,
           COL_LOCAL_ID];          // where, col1
 }
 
@@ -6268,11 +6282,13 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
            orNil([vehicle defaultOctane]),
            orNil([vehicle fuelCapacity]),
            [NSNumber numberWithBool:[vehicle isDiesel]],
+           orNil([vehicle fieldsetMask]),
            [vehicle localMasterIdentifier]];
 }
 
 - (NSString *)updateStmtForMainVehicle {
   return [NSString stringWithFormat:@"UPDATE %@ SET \
+          %@ = ?, \
           %@ = ?, \
           %@ = ?, \
           %@ = ?, \
@@ -6298,6 +6314,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
           COL_VEH_DEFAULT_OCTANE,
           COL_VEH_FUEL_CAPACITY,
           COL_VEH_IS_DIESEL,
+          COL_VEH_FIELDSET_MASK,
           COL_MAN_EDIT_IN_PROGRESS,           // col7
           COL_MAN_SYNC_IN_PROGRESS,           // col8
           COL_MAN_SYNCED,                     // col9
@@ -6317,6 +6334,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
            orNil([vehicle defaultOctane]),
            orNil([vehicle fuelCapacity]),
            [NSNumber numberWithBool:[vehicle isDiesel]],
+           orNil([vehicle fieldsetMask]),
            [NSNumber numberWithBool:[vehicle editInProgress]],
            [NSNumber numberWithBool:[vehicle syncInProgress]],
            [NSNumber numberWithBool:[vehicle synced]],

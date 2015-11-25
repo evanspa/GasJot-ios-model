@@ -69,7 +69,8 @@ describe(@"FPCoordinatorDao", ^{
       FPVehicle *vehicle = [_coordDao vehicleWithName:@"My Bimmer"
                                         defaultOctane:@87
                                          fuelCapacity:[NSDecimalNumber decimalNumberWithString:@"20.5"]
-                                             isDiesel:NO];
+                                             isDiesel:NO
+                                         fieldsetMask:nil];
       [[vehicle updatedAt] shouldBeNil];
       _mocker(@"http-response.vehicles.POST.201", 0, 0);
       __block BOOL saveSuccess = NO;

@@ -17,6 +17,7 @@ NSString * const FPVehicleNameKey          = @"fpvehicle/name";
 NSString * const FPVehicleDefaultOctaneKey = @"fpvehicle/default-octane";
 NSString * const FPVehicleFuelCapacityKey  = @"fpvehicle/fuel-capacity";
 NSString * const FPVehicleIsDieselKey      = @"fpvehicle/is-diesel";
+NSString * const FPVehicleFieldSetMaskKey  = @"fpvehicle/field-set-mask";
 NSString * const FPVehicleCreatedAtKey     = @"fpvehicle/created-at";
 NSString * const FPVehicleUpdatedAtKey     = @"fpvehicle/updated-at";
 NSString * const FPVehicleDeletedAtKey     = @"fpvehicle/deleted-at";
@@ -44,8 +45,9 @@ NSString * const FPVehicleDeletedAtKey     = @"fpvehicle/deleted-at";
                      lastModified:(NSDate *)lastModified {
   FPVehicle *vehicle = [FPVehicle vehicleWithName:[resDict objectForKey:FPVehicleNameKey]
                                     defaultOctane:resDict[FPVehicleDefaultOctaneKey]
-                                     fuelCapacity:[PEUtils nullSafeDecimalNumberFromString:[resDict[FPVehicleFuelCapacityKey] description]]
+                                     fuelCapacity:resDict[FPVehicleFuelCapacityKey]
                                          isDiesel:[resDict[FPVehicleIsDieselKey] boolValue]
+                                     fieldsetMask:resDict[FPVehicleFieldSetMaskKey]
                                  globalIdentifier:location
                                         mediaType:mediaType
                                         relations:relations

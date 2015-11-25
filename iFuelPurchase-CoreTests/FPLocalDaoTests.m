@@ -53,7 +53,8 @@ describe(@"FPLocalDao", ^{
     _v1 = [_coordDao vehicleWithName:@"My Bimmer"
                        defaultOctane:@87
                         fuelCapacity:[NSDecimalNumber decimalNumberWithString:@"20.5"]
-                            isDiesel:NO];
+                            isDiesel:NO
+                        fieldsetMask:nil];
     [_coordDao saveNewVehicle:_v1 forUser:_user error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
     _fs1 = [_coordDao fuelStationWithName:@"Exxon" street:nil city:nil state:nil zip:nil latitude:nil longitude:nil];
     [_coordDao saveNewFuelStation:_fs1 forUser:_user error:[_coordTestCtx newLocalSaveErrBlkMaker]()];

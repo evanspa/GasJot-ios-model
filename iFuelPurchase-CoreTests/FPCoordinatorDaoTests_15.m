@@ -52,7 +52,8 @@ describe(@"FPCoordinatorDao", ^{
         [_coordDao vehicleWithName:@"My Bimmer"
                      defaultOctane:@87
                       fuelCapacity:[NSDecimalNumber decimalNumberWithString:@"20.5"]
-                          isDiesel:NO];
+                          isDiesel:NO
+                      fieldsetMask:nil];
       [_coordDao saveNewVehicle:vehicle forUser:user error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       FPFuelStation *fuelStation =
         [_coordDao fuelStationWithName:@"Exxon Mobile"

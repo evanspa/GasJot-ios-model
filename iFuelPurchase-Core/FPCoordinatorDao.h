@@ -240,7 +240,8 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk;
 - (FPVehicle *)vehicleWithName:(NSString *)name
                  defaultOctane:(NSNumber *)defaultOctane
                   fuelCapacity:(NSDecimalNumber *)fuelCapacity
-                      isDiesel:(BOOL)isDiesel;
+                      isDiesel:(BOOL)isDiesel
+                  fieldsetMask:(NSNumber *)fieldsetMask;
 
 - (NSArray *)vehiclesForUser:(FPUser *)user
                        error:(PELMDaoErrorBlk)errorBlk;

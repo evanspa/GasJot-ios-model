@@ -29,6 +29,7 @@ FOUNDATION_EXPORT NSString * const COL_VEH_NAME;
 FOUNDATION_EXPORT NSString * const COL_VEH_DEFAULT_OCTANE;
 FOUNDATION_EXPORT NSString * const COL_VEH_FUEL_CAPACITY;
 FOUNDATION_EXPORT NSString * const COL_VEH_IS_DIESEL;
+FOUNDATION_EXPORT NSString * const COL_VEH_FIELDSET_MASK;
 
 //##############################################################################
 // Fuel Station Entity (main and master)
