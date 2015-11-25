@@ -15,6 +15,8 @@ NSString * const FPVehicleDefaultOctaneField = @"FPVehicleDefaultOctaneField";
 NSString * const FPVehicleFuelCapacityField = @"FPVehicleFuelCapacityField";
 NSString * const FPVehicleIsDieselField = @"FPVehicleIsDieselField";
 NSString * const FPVehicleFieldsetMaskField = @"FPVehicleFieldsetMaskField";
+NSString * const FPVehicleVinField = @"FPVehicleVinField";
+NSString * const FPVehiclePlateField = @"FPVehiclePlateField";
 
 @implementation FPVehicle
 
@@ -40,7 +42,9 @@ NSString * const FPVehicleFieldsetMaskField = @"FPVehicleFieldsetMaskField";
                     defaultOctane:(NSNumber *)defaultOctane
                      fuelCapacity:(NSDecimalNumber *)fuelCapacity
                          isDiesel:(BOOL)isDiesel
-                     fieldsetMask:(NSNumber *)fieldsetMask {
+                     fieldsetMask:(NSNumber *)fieldsetMask
+                              vin:(NSString *)vin
+                            plate:(NSString *)plate {
   self = [super initWithLocalMainIdentifier:localMainIdentifier
                       localMasterIdentifier:localMasterIdentifier
                            globalIdentifier:globalIdentifier
@@ -65,6 +69,8 @@ NSString * const FPVehicleFieldsetMaskField = @"FPVehicleFieldsetMaskField";
     _fuelCapacity = fuelCapacity;
     _isDiesel = isDiesel;
     _fieldsetMask = fieldsetMask;
+    _vin = vin;
+    _plate = plate;
   }
   return self;
 }
@@ -92,7 +98,9 @@ NSString * const FPVehicleFieldsetMaskField = @"FPVehicleFieldsetMaskField";
                                                      defaultOctane:_defaultOctane
                                                       fuelCapacity:_fuelCapacity
                                                           isDiesel:_isDiesel
-                                                      fieldsetMask:_fieldsetMask];
+                                                      fieldsetMask:_fieldsetMask
+                                                               vin:_vin
+                                                             plate:_plate];
   return copy;
 }
 
@@ -103,12 +111,16 @@ NSString * const FPVehicleFieldsetMaskField = @"FPVehicleFieldsetMaskField";
                   fuelCapacity:(NSDecimalNumber *)fuelCapacity
                       isDiesel:(BOOL)isDiesel
                   fieldsetMask:(NSNumber *)fieldsetMask
+                           vin:(NSString *)vin
+                         plate:(NSString *)plate
                      mediaType:(HCMediaType *)mediaType {
   return [FPVehicle vehicleWithName:name
                       defaultOctane:defaultOctane
                        fuelCapacity:fuelCapacity
                            isDiesel:isDiesel
                        fieldsetMask:fieldsetMask
+                                vin:vin
+                              plate:plate
                    globalIdentifier:nil
                           mediaType:mediaType
                           relations:nil
@@ -122,6 +134,8 @@ NSString * const FPVehicleFieldsetMaskField = @"FPVehicleFieldsetMaskField";
                   fuelCapacity:(NSDecimalNumber *)fuelCapacity
                       isDiesel:(BOOL)isDiesel
                   fieldsetMask:(NSNumber *)fieldsetMask
+                           vin:(NSString *)vin
+                         plate:(NSString *)plate
               globalIdentifier:(NSString *)globalIdentifier
                      mediaType:(HCMediaType *)mediaType
                      relations:(NSDictionary *)relations
@@ -148,7 +162,9 @@ NSString * const FPVehicleFieldsetMaskField = @"FPVehicleFieldsetMaskField";
                                           defaultOctane:defaultOctane
                                            fuelCapacity:fuelCapacity
                                                isDiesel:isDiesel
-                                           fieldsetMask:fieldsetMask];
+                                           fieldsetMask:fieldsetMask
+                                                    vin:vin
+                                                  plate:plate];
 }
 
 + (FPVehicle *)vehicleWithLocalMasterIdentifier:(NSNumber *)localMasterIdentifier {
@@ -172,7 +188,9 @@ NSString * const FPVehicleFieldsetMaskField = @"FPVehicleFieldsetMaskField";
                                           defaultOctane:nil
                                            fuelCapacity:nil
                                                isDiesel:NO
-                                           fieldsetMask:nil];
+                                           fieldsetMask:nil
+                                                    vin:nil
+                                                  plate:nil];
 }
 
 #pragma mark - Merging
@@ -207,7 +225,17 @@ NSString * const FPVehicleFieldsetMaskField = @"FPVehicleFieldsetMaskField";
                                         [NSValue valueWithPointer:@selector(setFieldsetMask:)],
                                         ^(SEL getter, id obj1, id obj2) {return [PEUtils isNumProperty:getter equalFor:obj1 and:obj2];},
                                         ^(FPVehicle * localObject, FPVehicle * remoteObject) { [localObject setFieldsetMask:[remoteObject fieldsetMask]];},
-                                        FPVehicleFieldsetMaskField]]];
+                                        FPVehicleFieldsetMaskField],
+                                      @[[NSValue valueWithPointer:@selector(vin)],
+                                        [NSValue valueWithPointer:@selector(setVin:)],
+                                        ^(SEL getter, id obj1, id obj2) {return [PEUtils isStringProperty:getter equalFor:obj1 and:obj2];},
+                                        ^(FPVehicle * localObject, FPVehicle * remoteObject) {[localObject setVin:[remoteObject vin]];},
+                                        FPVehicleVinField],
+                                      @[[NSValue valueWithPointer:@selector(plate)],
+                                        [NSValue valueWithPointer:@selector(setPlate:)],
+                                        ^(SEL getter, id obj1, id obj2) {return [PEUtils isStringProperty:getter equalFor:obj1 and:obj2];},
+                                        ^(FPVehicle * localObject, FPVehicle * remoteObject) {[localObject setPlate:[remoteObject plate]];},
+                                        FPVehiclePlateField]]];
 }
 
 #pragma mark - Overwriting
@@ -219,6 +247,8 @@ NSString * const FPVehicleFieldsetMaskField = @"FPVehicleFieldsetMaskField";
   [self setFuelCapacity:[vehicle fuelCapacity]];
   [self setIsDiesel:[vehicle isDiesel]];
   [self setFieldsetMask:[vehicle fieldsetMask]];
+  [self setVin:[vehicle vin]];
+  [self setPlate:[vehicle plate]];
 }
 
 - (void)overwrite:(FPVehicle *)vehicle {
@@ -235,7 +265,9 @@ NSString * const FPVehicleFieldsetMaskField = @"FPVehicleFieldsetMaskField";
       [PEUtils isNumProperty:@selector(defaultOctane) equalFor:self and:vehicle] &&
       [PEUtils isNumProperty:@selector(fuelCapacity) equalFor:self and:vehicle] &&
       [PEUtils isBoolProperty:@selector(isDiesel) equalFor:self and:vehicle] &&
-      [PEUtils isNumProperty:@selector(fieldsetMask) equalFor:self and:vehicle];
+      [PEUtils isNumProperty:@selector(fieldsetMask) equalFor:self and:vehicle] &&
+      [PEUtils isString:[self vin] equalTo:[vehicle vin]] &&
+      [PEUtils isString:[self plate] equalTo:[vehicle plate]];
   }
   return NO;
 }
@@ -253,17 +285,21 @@ NSString * const FPVehicleFieldsetMaskField = @"FPVehicleFieldsetMaskField";
   [[self name] hash] ^
   [[self defaultOctane] hash] ^
   [[self fuelCapacity] hash] ^
-  [[self fieldsetMask] hash];
+  [[self fieldsetMask] hash] ^
+  [[self vin] hash] ^
+  [[self plate] hash];
 }
 
 - (NSString *)description {
-  return [NSString stringWithFormat:@"%@, name: [%@], default octane: [%@], fuel capacity: [%@], is diesel? [%d], field set mask: [%@]",
+  return [NSString stringWithFormat:@"%@, name: [%@], default octane: [%@], fuel capacity: [%@], is diesel? [%d], field set mask: [%@], vin: [%@], plate: [%@]",
           [super description],
           _name,
           _defaultOctane,
           _fuelCapacity,
           _isDiesel,
-          _fieldsetMask];
+          _fieldsetMask,
+          _vin,
+          _plate];
 }
 
 @end

@@ -14,6 +14,8 @@ FOUNDATION_EXPORT NSString * const FPVehicleDefaultOctaneField;
 FOUNDATION_EXPORT NSString * const FPVehicleFuelCapacityField;
 FOUNDATION_EXPORT NSString * const FPVehicleIsDieselField;
 FOUNDATION_EXPORT NSString * const FPVehicleFieldsetMaskField;
+FOUNDATION_EXPORT NSString * const FPVehicleVinField;
+FOUNDATION_EXPORT NSString * const FPVehiclePlateField;
 
 @interface FPVehicle : PELMMainSupport <NSCopying>
 
@@ -39,7 +41,9 @@ FOUNDATION_EXPORT NSString * const FPVehicleFieldsetMaskField;
                     defaultOctane:(NSNumber *)defaultOctane
                      fuelCapacity:(NSDecimalNumber *)fuelCapacity
                          isDiesel:(BOOL)isDiesel
-                     fieldsetMask:(NSNumber *)fieldsetMask;
+                     fieldsetMask:(NSNumber *)fieldsetMask
+                              vin:(NSString *)vin
+                            plate:(NSString *)plate;
 
 #pragma mark - Creation Functions
 
@@ -48,6 +52,8 @@ FOUNDATION_EXPORT NSString * const FPVehicleFieldsetMaskField;
                   fuelCapacity:(NSDecimalNumber *)fuelCapacity
                       isDiesel:(BOOL)isDiesel
                   fieldsetMask:(NSNumber *)fieldsetMask
+                           vin:(NSString *)vin
+                         plate:(NSString *)plate
                      mediaType:(HCMediaType *)mediaType;
 
 + (FPVehicle *)vehicleWithName:(NSString *)name
@@ -55,6 +61,8 @@ FOUNDATION_EXPORT NSString * const FPVehicleFieldsetMaskField;
                   fuelCapacity:(NSDecimalNumber *)fuelCapacity
                       isDiesel:(BOOL)isDiesel
                   fieldsetMask:(NSNumber *)fieldsetMask
+                           vin:(NSString *)vin
+                         plate:(NSString *)plate
               globalIdentifier:(NSString *)globalIdentifier
                      mediaType:(HCMediaType *)mediaType
                      relations:(NSDictionary *)relations
@@ -87,6 +95,10 @@ FOUNDATION_EXPORT NSString * const FPVehicleFieldsetMaskField;
 @property (nonatomic) BOOL isDiesel;
 
 @property (nonatomic) NSNumber *fieldsetMask;
+
+@property (nonatomic) NSString *vin;
+
+@property (nonatomic) NSString *plate;
 
 #pragma mark - Equality
 

@@ -55,7 +55,9 @@ describe(@"FPCoordinatorDao", ^{
                                         defaultOctane:@87
                                          fuelCapacity:[NSDecimalNumber decimalNumberWithString:@"19.0"]
                                              isDiesel:NO
-                                         fieldsetMask:nil];
+                                         fieldsetMask:nil
+                                                  vin:nil
+                                                plate:nil];
       [_coordDao saveNewVehicle:vehicle
                         forUser:user
                           error:[_coordTestCtx newLocalSaveErrBlkMaker]()];

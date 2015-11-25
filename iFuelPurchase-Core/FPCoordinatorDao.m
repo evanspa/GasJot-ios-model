@@ -906,12 +906,16 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk {
                  defaultOctane:(NSNumber *)defaultOctane
                   fuelCapacity:(NSDecimalNumber *)fuelCapacity
                       isDiesel:(BOOL)isDiesel
-                  fieldsetMask:(NSNumber *)fieldsetMask {
+                  fieldsetMask:(NSNumber *)fieldsetMask
+                           vin:(NSString *)vin
+                         plate:(NSString *)plate {
   return [FPVehicle vehicleWithName:name
                       defaultOctane:defaultOctane
                        fuelCapacity:fuelCapacity
                            isDiesel:isDiesel
                        fieldsetMask:fieldsetMask
+                                vin:vin
+                              plate:plate
                           mediaType:[FPKnownMediaTypes vehicleMediaTypeWithVersion:_vehicleResMtVersion]];
 }
 

@@ -77,7 +77,9 @@ typedef NS_OPTIONS(NSUInteger, FPSaveFuelPurchaseLogMsg) {
   FPSaveFuelPurchaseLogOctaneNegative            = 1 << 7,
   FPSaveFuelPurchaseLogUserDoesNotExist          = 1 << 8,
   FPSaveFuelPurchaseLogVehicleDoesNotExist       = 1 << 9,
-  FPSaveFuelPurchaseLogFuelStationDoesNotExist   = 1 << 10
+  FPSaveFuelPurchaseLogFuelStationDoesNotExist   = 1 << 10,
+  FPSaveFuelPurchaseLogOdometerNotProvided       = 1 << 11,
+  FPSaveFuelPurchaseLogOdometerNegative          = 1 << 12
 };
 
 /**

@@ -18,6 +18,8 @@ NSString * const FPVehicleDefaultOctaneKey = @"fpvehicle/default-octane";
 NSString * const FPVehicleFuelCapacityKey  = @"fpvehicle/fuel-capacity";
 NSString * const FPVehicleIsDieselKey      = @"fpvehicle/is-diesel";
 NSString * const FPVehicleFieldSetMaskKey  = @"fpvehicle/field-set-mask";
+NSString * const FPVehicleVinKey           = @"fpvehicle/vin";
+NSString * const FPVehiclePlateKey         = @"fpvehicle/plate";
 NSString * const FPVehicleCreatedAtKey     = @"fpvehicle/created-at";
 NSString * const FPVehicleUpdatedAtKey     = @"fpvehicle/updated-at";
 NSString * const FPVehicleDeletedAtKey     = @"fpvehicle/deleted-at";
@@ -33,6 +35,8 @@ NSString * const FPVehicleDeletedAtKey     = @"fpvehicle/deleted-at";
   [vehicleDict nullSafeSetObject:[vehicle defaultOctane] forKey:FPVehicleDefaultOctaneKey];
   [vehicleDict nullSafeSetObject:[vehicle fuelCapacity] forKey:FPVehicleFuelCapacityKey];
   [vehicleDict nullSafeSetObject:[NSNumber numberWithBool:[vehicle isDiesel]] forKey:FPVehicleIsDieselKey];
+  [vehicleDict nullSafeSetObject:[vehicle vin] forKey:FPVehicleVinKey];
+  [vehicleDict nullSafeSetObject:[vehicle plate] forKey:FPVehiclePlateKey];
   return vehicleDict;
 }
 
@@ -43,11 +47,13 @@ NSString * const FPVehicleDeletedAtKey     = @"fpvehicle/deleted-at";
                         mediaType:(HCMediaType *)mediaType
                          location:(NSString *)location
                      lastModified:(NSDate *)lastModified {
-  FPVehicle *vehicle = [FPVehicle vehicleWithName:[resDict objectForKey:FPVehicleNameKey]
+  FPVehicle *vehicle = [FPVehicle vehicleWithName:resDict[FPVehicleNameKey]
                                     defaultOctane:resDict[FPVehicleDefaultOctaneKey]
                                      fuelCapacity:resDict[FPVehicleFuelCapacityKey]
                                          isDiesel:[resDict[FPVehicleIsDieselKey] boolValue]
                                      fieldsetMask:resDict[FPVehicleFieldSetMaskKey]
+                                              vin:resDict[FPVehicleVinKey]
+                                            plate:resDict[FPVehiclePlateKey]
                                  globalIdentifier:location
                                         mediaType:mediaType
                                         relations:relations

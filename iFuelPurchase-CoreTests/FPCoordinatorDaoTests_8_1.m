@@ -70,7 +70,9 @@ describe(@"FPCoordinatorDao", ^{
                                         defaultOctane:@87
                                          fuelCapacity:[NSDecimalNumber decimalNumberWithString:@"20.5"]
                                              isDiesel:NO
-                                         fieldsetMask:nil];
+                                         fieldsetMask:nil
+                                                  vin:nil
+                                                plate:nil];
       [[vehicle updatedAt] shouldBeNil];
       _mocker(@"http-response.vehicles.POST.201", 0, 0);
       __block BOOL saveSuccess = NO;

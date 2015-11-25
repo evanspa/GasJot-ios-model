@@ -29,6 +29,8 @@ NSString * const COL_VEH_DEFAULT_OCTANE = @"default_octane";
 NSString * const COL_VEH_FUEL_CAPACITY = @"fuel_capacity";
 NSString * const COL_VEH_IS_DIESEL = @"is_diesel";
 NSString * const COL_VEH_FIELDSET_MASK = @"fieldset_mask";
+NSString * const COL_VEH_VIN = @"vin";
+NSString * const COL_VEH_PLATE = @"plate";
 
 //##############################################################################
 // Fuel Station Entity (main and master)

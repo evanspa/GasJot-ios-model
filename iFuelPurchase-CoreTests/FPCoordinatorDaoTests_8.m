@@ -70,7 +70,9 @@ describe(@"FPCoordinatorDao", ^{
                                         defaultOctane:@87
                                          fuelCapacity:[NSDecimalNumber decimalNumberWithString:@"20.5"]
                                              isDiesel:NO
-                                         fieldsetMask:nil];
+                                         fieldsetMask:nil                            
+                                                  vin:nil
+                                                plate:nil];
       [_coordDao saveNewVehicle:vehicle forUser:user error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       // our user had to have been copied down to main from master in order for the
       // new vehicle to have been saved to its main_vehicle table

@@ -54,7 +54,9 @@ describe(@"FPStats", ^{
                        defaultOctane:@87
                         fuelCapacity:[NSDecimalNumber decimalNumberWithString:@"20.5"]
                             isDiesel:NO
-                        fieldsetMask:nil];
+                        fieldsetMask:nil
+                                 vin:nil
+                               plate:nil];
     [_coordDao saveNewVehicle:_v1 forUser:_user error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
     _fs1 = [_coordDao fuelStationWithName:@"Exxon" street:nil city:nil state:nil zip:nil latitude:nil longitude:nil];
     [_coordDao saveNewFuelStation:_fs1 forUser:_user error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
@@ -124,7 +126,9 @@ describe(@"FPStats", ^{
                                    defaultOctane:@93
                                     fuelCapacity:[NSDecimalNumber decimalNumberWithString:@"19.1"]
                                         isDiesel:NO
-                                    fieldsetMask:nil];
+                                    fieldsetMask:nil
+                                             vin:nil
+                                           plate:nil];
       [_coordDao saveNewVehicle:v2 forUser:_user error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       saveGasLog(v2, _fs1, @"15.2", 91, @"10582", @"4.129", NO, @"0.08", @"02/01/2013");
       saveGasLog(v2, _fs1, @"15.3", 91, @"10584", @"4.129", NO, @"0.08", @"02/07/2013");
@@ -166,7 +170,9 @@ describe(@"FPStats", ^{
                                    defaultOctane:@93
                                     fuelCapacity:[NSDecimalNumber decimalNumberWithString:@"19.1"]
                                         isDiesel:NO
-                                    fieldsetMask:nil];
+                                    fieldsetMask:nil
+                                             vin:nil
+                                           plate:nil];
       [_coordDao saveNewVehicle:v2 forUser:_user error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       saveGasLog(v2, _fs1, @"15.2", 91, @"10582", @"4.129", NO, @"0.08", @"02/04/2013");
       saveGasLog(v2, _fs1, @"15.3", 91, @"10584", @"4.129", NO, @"0.08", @"02/06/2013");
@@ -382,7 +388,9 @@ describe(@"FPStats", ^{
                         defaultOctane:@93
                          fuelCapacity:[NSDecimalNumber decimalNumberWithString:@"19.1"]
                              isDiesel:NO
-                         fieldsetMask:nil];
+                         fieldsetMask:nil
+                                  vin:nil
+                                plate:nil];
       [_coordDao saveNewVehicle:v2 forUser:_user error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       
       // 2 years-ago v2, _fs1 logs (404 miles driven/recorded)
@@ -408,7 +416,9 @@ describe(@"FPStats", ^{
                         defaultOctane:@93
                          fuelCapacity:[NSDecimalNumber decimalNumberWithString:@"19.1"]
                              isDiesel:NO
-                         fieldsetMask:nil];
+                         fieldsetMask:nil
+                                  vin:nil
+                                plate:nil];
       [_coordDao saveNewVehicle:v3 forUser:_user error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       
       // 2 years-ago v3, fs2 logs (1060 miles driven/recorded)
@@ -764,7 +774,9 @@ describe(@"FPStats", ^{
                             defaultOctane:@87
                              fuelCapacity:[NSDecimalNumber decimalNumberWithString:@"18.25"]
                                  isDiesel:NO
-                             fieldsetMask:nil];
+                             fieldsetMask:nil
+                                      vin:nil
+                                    plate:nil];
           [_coordDao saveNewVehicle:v2 forUser:_user error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
           fplog3  = saveGasLog(v2, _fs1, @"5.01", 87, @"10582", @"2.899", NO, @"0.08", [NSDate date]);
         });
