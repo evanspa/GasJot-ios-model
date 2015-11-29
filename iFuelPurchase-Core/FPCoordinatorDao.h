@@ -248,6 +248,9 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk;
 - (NSArray *)vehiclesForUser:(FPUser *)user
                        error:(PELMDaoErrorBlk)errorBlk;
 
+- (NSArray *)dieselVehiclesForUser:(FPUser *)user
+                             error:(PELMDaoErrorBlk)errorBlk;
+
 - (NSArray *)unsyncedVehiclesForUser:(FPUser *)user
                                error:(PELMDaoErrorBlk)errorBlk;
 

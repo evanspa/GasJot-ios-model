@@ -1022,6 +1022,14 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
   return vehicles;
 }
 
+- (NSArray *)dieselVehiclesForUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk {
+  __block NSArray *vehicles = @[];
+  [_databaseQueue inDatabase:^(FMDatabase *db) {
+    vehicles = [self dieselVehiclesForUser:user db:db error:errorBlk];
+  }];
+  return vehicles;
+}
+
 - (NSArray *)unsyncedVehiclesForUser:(FPUser *)user
                                error:(PELMDaoErrorBlk)errorBlk {
   __block NSArray *vehicles = @[];
@@ -1061,6 +1069,32 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                    parentEntityMainIdColumn:COL_MAIN_USER_ID
                                    pageSize:nil
                                    whereBlk:nil
+                                  whereArgs:nil
+                          entityMasterTable:TBL_MASTER_VEHICLE
+             masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterVehicleFromResultSet:rs];}
+                            entityMainTable:TBL_MAIN_VEHICLE
+               mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainVehicleFromResultSet:rs];}
+                          comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPVehicle *)o1 name] compare:[(FPVehicle *)o2 name]];}
+                        orderByDomainColumn:COL_VEH_NAME
+               orderByDomainColumnDirection:@"ASC"
+                                         db:db
+                                      error:errorBlk];
+}
+
+- (NSArray *)dieselVehiclesForUser:(FPUser *)user
+                                db:(FMDatabase *)db
+                             error:(PELMDaoErrorBlk)errorBlk {
+  return [PELMUtils entitiesForParentEntity:user
+                      parentEntityMainTable:TBL_MAIN_USER
+                parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainUserFromResultSet:rs];}
+                 parentEntityMasterIdColumn:COL_MASTER_USER_ID
+                   parentEntityMainIdColumn:COL_MAIN_USER_ID
+                                   pageSize:nil
+                                   whereBlk:^(NSString *colPrefix) {
+                                     return [NSString stringWithFormat:@"%@%@ = 1",
+                                             colPrefix,
+                                             COL_VEH_IS_DIESEL];
+                                   }
                                   whereArgs:nil
                           entityMasterTable:TBL_MASTER_VEHICLE
              masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterVehicleFromResultSet:rs];}

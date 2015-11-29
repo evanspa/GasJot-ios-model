@@ -925,6 +925,12 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk {
                               error:errorBlk];
 }
 
+- (NSArray *)dieselVehiclesForUser:(FPUser *)user
+                             error:(PELMDaoErrorBlk)errorBlk {
+  return [_localDao dieselVehiclesForUser:user
+                                    error:errorBlk];
+}
+
 - (NSArray *)unsyncedVehiclesForUser:(FPUser *)user
                                error:(PELMDaoErrorBlk)errorBlk {
   return [_localDao unsyncedVehiclesForUser:user error:errorBlk];
