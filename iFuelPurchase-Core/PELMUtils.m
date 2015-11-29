@@ -886,8 +886,7 @@ PELMMainSupport * (^toMainSupport)(FMResultSet *, NSString *, NSDictionary *) = 
   NSMutableArray *entities = [NSMutableArray array];
   if ([parentEntity localMasterIdentifier]) {
     NSArray *argsArray = @[[parentEntity localMasterIdentifier]];
-    NSString *qry = [NSString stringWithFormat:@"\
-                     SELECT mstr.* FROM %@ mstr WHERE mstr.%@ = ? AND mstr.%@ IS NULL",
+    NSString *qry = [NSString stringWithFormat:@"SELECT mstr.* FROM %@ mstr WHERE mstr.%@ = ? AND mstr.%@ IS NULL",
                      entityMasterTable,
                      parentEntityMasterIdColumn,
                      COL_MST_DELETED_DT];
@@ -961,11 +960,7 @@ PELMMainSupport * (^toMainSupport)(FMResultSet *, NSString *, NSDictionary *) = 
     }
   }
   if ([parentEntity localMainIdentifier]) {
-    NSString *qry = [NSString stringWithFormat:@"\
-                     SELECT * \
-                     FROM %@ \
-                     WHERE %@ = ?", entityMainTable,
-                     parentEntityMainIdColumn];
+    NSString *qry = [NSString stringWithFormat:@"SELECT * FROM %@ WHERE %@ = ?", entityMainTable, parentEntityMainIdColumn];
     NSArray *argsArray = @[[parentEntity localMainIdentifier]];
     qry = mainQueryTransformer(qry);
     argsArray = mainArgsArrayTransformer(argsArray);
@@ -980,13 +975,30 @@ PELMMainSupport * (^toMainSupport)(FMResultSet *, NSString *, NSDictionary *) = 
     for (int i = 0; i < numMainEntities; i++) {
       PELMMainSupport *mainEntity = mainEntities[i];
       if ([mainEntity globalIdentifier]) {
-        NSNumber *masterLocalIdentifier =
-        [PELMUtils numberFromTable:entityMasterTable
-                      selectColumn:COL_LOCAL_ID
-                       whereColumn:COL_GLOBAL_ID
-                        whereValue:[mainEntity globalIdentifier]
-                                db:db
-                             error:errorBlk];
+        NSNumber *masterLocalIdentifier = [PELMUtils numberFromTable:entityMasterTable
+                                                        selectColumn:COL_LOCAL_ID
+                                                         whereColumn:COL_GLOBAL_ID
+                                                          whereValue:[mainEntity globalIdentifier]
+                                                                  db:db
+                                                               error:errorBlk];
+        [mainEntity setCreatedAt:[PELMUtils dateFromTable:entityMasterTable
+                                               dateColumn:COL_MST_CREATED_AT
+                                              whereColumn:COL_GLOBAL_ID
+                                               whereValue:[mainEntity globalIdentifier]
+                                                       db:db
+                                                    error:errorBlk]];
+        [mainEntity setDeletedAt:[PELMUtils dateFromTable:entityMasterTable
+                                               dateColumn:COL_MST_DELETED_DT
+                                              whereColumn:COL_GLOBAL_ID
+                                               whereValue:[mainEntity globalIdentifier]
+                                                       db:db
+                                                    error:errorBlk]];
+        [mainEntity setUpdatedAt:[PELMUtils dateFromTable:entityMasterTable
+                                               dateColumn:COL_MST_UPDATED_AT
+                                              whereColumn:COL_GLOBAL_ID
+                                               whereValue:[mainEntity globalIdentifier]
+                                                       db:db
+                                                    error:errorBlk]];
         if (masterLocalIdentifier) {
           [mainEntity setLocalMasterIdentifier:masterLocalIdentifier];
         }
@@ -1152,8 +1164,7 @@ PELMMainSupport * (^toMainSupport)(FMResultSet *, NSString *, NSDictionary *) = 
   NSInteger numEntities = 0;
   if ([parentEntity localMasterIdentifier]) {
     NSArray *argsArray = @[[parentEntity localMasterIdentifier]];
-    NSString *qry = [NSString stringWithFormat:@"\
-                     SELECT count(mstr.%@) FROM %@ mstr WHERE mstr.%@ = ? AND mstr.%@ IS NULL",
+    NSString *qry = [NSString stringWithFormat:@"SELECT count(mstr.%@) FROM %@ mstr WHERE mstr.%@ = ? AND mstr.%@ IS NULL",
                      COL_LOCAL_ID,
                      entityMasterTable,
                      parentEntityMasterIdColumn,
@@ -1243,28 +1254,45 @@ WHERE manparent.%@ IN (SELECT child.%@ \
                      parentEntityMainFkColumn,
                      childEntityMainTable,
                      COL_LOCAL_ID];
-    PELMMainSupport *mainEntity = [PELMUtils entityFromQuery:qry
-                                                 entityTable:parentEntityMainTable
-                                               localIdGetter:^NSNumber *(PELMModelSupport *entity){return [entity localMainIdentifier];}
-                                                   argsArray:@[[childEntity localMainIdentifier]]
-                                                 rsConverter:parentEntityMainRsConverter
-                                                          db:db
-                                                       error:errorBlk];
-    if (mainEntity) {
-      if ([mainEntity globalIdentifier]) {
-        NSNumber *localMasterIdentifier =
-        [PELMUtils numberFromTable:parentEntityMasterTable
-                      selectColumn:COL_LOCAL_ID
-                       whereColumn:COL_GLOBAL_ID
-                        whereValue:[mainEntity globalIdentifier]
-                                db:db
-                             error:errorBlk];
+    PELMMainSupport *parentMainEntity = [PELMUtils entityFromQuery:qry
+                                                       entityTable:parentEntityMainTable
+                                                     localIdGetter:^NSNumber *(PELMModelSupport *entity){return [entity localMainIdentifier];}
+                                                         argsArray:@[[childEntity localMainIdentifier]]
+                                                       rsConverter:parentEntityMainRsConverter
+                                                                db:db
+                                                             error:errorBlk];
+    if (parentMainEntity) {
+      if ([parentMainEntity globalIdentifier]) {
+        NSNumber *localMasterIdentifier = [PELMUtils numberFromTable:parentEntityMasterTable
+                                                        selectColumn:COL_LOCAL_ID
+                                                         whereColumn:COL_GLOBAL_ID
+                                                          whereValue:[parentMainEntity globalIdentifier]
+                                                                  db:db
+                                                               error:errorBlk];
+        [parentMainEntity setCreatedAt:[PELMUtils dateFromTable:parentEntityMasterTable
+                                               dateColumn:COL_MST_CREATED_AT
+                                              whereColumn:COL_GLOBAL_ID
+                                               whereValue:[parentMainEntity globalIdentifier]
+                                                       db:db
+                                                    error:errorBlk]];
+        [parentMainEntity setDeletedAt:[PELMUtils dateFromTable:parentEntityMasterTable
+                                                     dateColumn:COL_MST_DELETED_DT
+                                                    whereColumn:COL_GLOBAL_ID
+                                                     whereValue:[parentMainEntity globalIdentifier]
+                                                             db:db
+                                                          error:errorBlk]];
+        [parentMainEntity setUpdatedAt:[PELMUtils dateFromTable:parentEntityMasterTable
+                                               dateColumn:COL_MST_UPDATED_AT
+                                              whereColumn:COL_GLOBAL_ID
+                                               whereValue:[parentMainEntity globalIdentifier]
+                                                       db:db
+                                                    error:errorBlk]];
         if (localMasterIdentifier) {
-          [mainEntity setLocalMasterIdentifier:localMasterIdentifier];
+          [parentMainEntity setLocalMasterIdentifier:localMasterIdentifier];
         }
       }
     }
-    return mainEntity;
+    return parentMainEntity;
   } else if ([childEntity localMasterIdentifier]) {
     NSString *qry = [NSString stringWithFormat:@"\
 SELECT masparent.* \
@@ -1286,13 +1314,12 @@ WHERE masparent.%@ IN (SELECT child.%@ \
                                                          error:errorBlk];
     if (masterEntity) {
       if ([masterEntity globalIdentifier]) {
-        NSNumber *localMainIdentifier =
-        [PELMUtils numberFromTable:parentEntityMainTable
-                      selectColumn:COL_LOCAL_ID
-                       whereColumn:COL_GLOBAL_ID
-                        whereValue:[masterEntity globalIdentifier]
-                                db:db
-                             error:errorBlk];
+        NSNumber *localMainIdentifier = [PELMUtils numberFromTable:parentEntityMainTable
+                                                      selectColumn:COL_LOCAL_ID
+                                                       whereColumn:COL_GLOBAL_ID
+                                                        whereValue:[masterEntity globalIdentifier]
+                                                                db:db
+                                                             error:errorBlk];
         if (localMainIdentifier) {
           [masterEntity setLocalMainIdentifier:localMainIdentifier];
         }
@@ -1344,9 +1371,9 @@ WHERE masparent.%@ IN (SELECT child.%@ \
         @throw [NSException
                 exceptionWithName:NSInternalInconsistencyException
                 reason:[NSString stringWithFormat:@"Inside \
-                        localMainIdentifierForEntity:mainTable:db:error: - found local main ID [%@] is \
-                        different from the local main ID [%@] on the in-memory entity with global \
-                        ID: [%@].", foundLocalId, localId, [entity globalIdentifier]]
+localMainIdentifierForEntity:mainTable:db:error: - found local main ID [%@] is \
+different from the local main ID [%@] on the in-memory entity with global \
+ID: [%@].", foundLocalId, localId, [entity globalIdentifier]]
                 userInfo:nil];
       }
     }
