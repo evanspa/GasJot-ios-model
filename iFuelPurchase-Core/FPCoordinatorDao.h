@@ -241,7 +241,10 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk;
                  defaultOctane:(NSNumber *)defaultOctane
                   fuelCapacity:(NSDecimalNumber *)fuelCapacity
                       isDiesel:(BOOL)isDiesel
-                  fieldsetMask:(NSNumber *)fieldsetMask
+                 hasDteReadout:(BOOL)hasDteReadout
+                 hasMpgReadout:(BOOL)hasMpgReadout
+                 hasMphReadout:(BOOL)hasMphReadout
+         hasOutsideTempReadout:(BOOL)hasOutsideTempReadout
                            vin:(NSString *)vin
                          plate:(NSString *)plate;
 

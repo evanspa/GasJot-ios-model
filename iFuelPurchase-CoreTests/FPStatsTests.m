@@ -54,7 +54,10 @@ describe(@"FPStats", ^{
                        defaultOctane:@87
                         fuelCapacity:[NSDecimalNumber decimalNumberWithString:@"20.5"]
                             isDiesel:NO
-                        fieldsetMask:nil
+                       hasDteReadout:NO
+                       hasMpgReadout:NO
+                       hasMphReadout:NO
+               hasOutsideTempReadout:NO
                                  vin:nil
                                plate:nil];
     [_coordDao saveNewVehicle:_v1 forUser:_user error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
@@ -126,7 +129,10 @@ describe(@"FPStats", ^{
                                    defaultOctane:@93
                                     fuelCapacity:[NSDecimalNumber decimalNumberWithString:@"19.1"]
                                         isDiesel:NO
-                                    fieldsetMask:nil
+                                   hasDteReadout:NO
+                                   hasMpgReadout:NO
+                                   hasMphReadout:NO
+                           hasOutsideTempReadout:NO
                                              vin:nil
                                            plate:nil];
       [_coordDao saveNewVehicle:v2 forUser:_user error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
@@ -170,7 +176,10 @@ describe(@"FPStats", ^{
                                    defaultOctane:@93
                                     fuelCapacity:[NSDecimalNumber decimalNumberWithString:@"19.1"]
                                         isDiesel:NO
-                                    fieldsetMask:nil
+                                   hasDteReadout:NO
+                                   hasMpgReadout:NO
+                                   hasMphReadout:NO
+                           hasOutsideTempReadout:NO
                                              vin:nil
                                            plate:nil];
       [_coordDao saveNewVehicle:v2 forUser:_user error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
@@ -388,7 +397,10 @@ describe(@"FPStats", ^{
                         defaultOctane:@93
                          fuelCapacity:[NSDecimalNumber decimalNumberWithString:@"19.1"]
                              isDiesel:NO
-                         fieldsetMask:nil
+                        hasDteReadout:NO
+                        hasMpgReadout:NO
+                        hasMphReadout:NO
+                hasOutsideTempReadout:NO
                                   vin:nil
                                 plate:nil];
       [_coordDao saveNewVehicle:v2 forUser:_user error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
@@ -416,7 +428,10 @@ describe(@"FPStats", ^{
                         defaultOctane:@93
                          fuelCapacity:[NSDecimalNumber decimalNumberWithString:@"19.1"]
                              isDiesel:NO
-                         fieldsetMask:nil
+                        hasDteReadout:NO
+                        hasMpgReadout:NO
+                        hasMphReadout:NO
+                hasOutsideTempReadout:NO
                                   vin:nil
                                 plate:nil];
       [_coordDao saveNewVehicle:v3 forUser:_user error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
@@ -774,7 +789,10 @@ describe(@"FPStats", ^{
                             defaultOctane:@87
                              fuelCapacity:[NSDecimalNumber decimalNumberWithString:@"18.25"]
                                  isDiesel:NO
-                             fieldsetMask:nil
+                            hasDteReadout:NO
+                            hasMpgReadout:NO
+                            hasMphReadout:NO
+                    hasOutsideTempReadout:NO
                                       vin:nil
                                     plate:nil];
           [_coordDao saveNewVehicle:v2 forUser:_user error:[_coordTestCtx newLocalSaveErrBlkMaker]()];

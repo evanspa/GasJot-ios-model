@@ -13,16 +13,19 @@
 #import <PEObjc-Commons/PEUtils.h>
 #import <PEHateoas-Client/HCUtils.h>
 
-NSString * const FPVehicleNameKey          = @"fpvehicle/name";
-NSString * const FPVehicleDefaultOctaneKey = @"fpvehicle/default-octane";
-NSString * const FPVehicleFuelCapacityKey  = @"fpvehicle/fuel-capacity";
-NSString * const FPVehicleIsDieselKey      = @"fpvehicle/is-diesel";
-NSString * const FPVehicleFieldSetMaskKey  = @"fpvehicle/field-set-mask";
-NSString * const FPVehicleVinKey           = @"fpvehicle/vin";
-NSString * const FPVehiclePlateKey         = @"fpvehicle/plate";
-NSString * const FPVehicleCreatedAtKey     = @"fpvehicle/created-at";
-NSString * const FPVehicleUpdatedAtKey     = @"fpvehicle/updated-at";
-NSString * const FPVehicleDeletedAtKey     = @"fpvehicle/deleted-at";
+NSString * const FPVehicleNameKey                  = @"fpvehicle/name";
+NSString * const FPVehicleDefaultOctaneKey         = @"fpvehicle/default-octane";
+NSString * const FPVehicleFuelCapacityKey          = @"fpvehicle/fuel-capacity";
+NSString * const FPVehicleIsDieselKey              = @"fpvehicle/is-diesel";
+NSString * const FPVehicleHasDteReadoutKey         = @"fpvehicle/has-dte-readout";
+NSString * const FPVehicleHasMpgReadoutKey         = @"fpvehicle/has-mpg-readout";
+NSString * const FPVehicleHasMphReadoutKey         = @"fpvehicle/has-mph-readout";
+NSString * const FPVehicleHasOutsideTempReadoutKey = @"fpvehicle/has-outside-temp-readout";
+NSString * const FPVehicleVinKey                   = @"fpvehicle/vin";
+NSString * const FPVehiclePlateKey                 = @"fpvehicle/plate";
+NSString * const FPVehicleCreatedAtKey             = @"fpvehicle/created-at";
+NSString * const FPVehicleUpdatedAtKey             = @"fpvehicle/updated-at";
+NSString * const FPVehicleDeletedAtKey             = @"fpvehicle/deleted-at";
 
 @implementation FPVehicleSerializer
 
@@ -51,7 +54,10 @@ NSString * const FPVehicleDeletedAtKey     = @"fpvehicle/deleted-at";
                                     defaultOctane:resDict[FPVehicleDefaultOctaneKey]
                                      fuelCapacity:resDict[FPVehicleFuelCapacityKey]
                                          isDiesel:[resDict[FPVehicleIsDieselKey] boolValue]
-                                     fieldsetMask:resDict[FPVehicleFieldSetMaskKey]
+                                    hasDteReadout:[resDict[FPVehicleHasDteReadoutKey] boolValue]
+                                    hasMpgReadout:[resDict[FPVehicleHasMpgReadoutKey] boolValue]
+                                    hasMphReadout:[resDict[FPVehicleHasMphReadoutKey] boolValue]
+                            hasOutsideTempReadout:[resDict[FPVehicleHasOutsideTempReadoutKey] boolValue]
                                               vin:resDict[FPVehicleVinKey]
                                             plate:resDict[FPVehiclePlateKey]
                                  globalIdentifier:location

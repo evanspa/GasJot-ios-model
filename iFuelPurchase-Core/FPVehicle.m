@@ -14,7 +14,10 @@ NSString * const FPVehicleNameField = @"FPVehicleNameField";
 NSString * const FPVehicleDefaultOctaneField = @"FPVehicleDefaultOctaneField";
 NSString * const FPVehicleFuelCapacityField = @"FPVehicleFuelCapacityField";
 NSString * const FPVehicleIsDieselField = @"FPVehicleIsDieselField";
-NSString * const FPVehicleFieldsetMaskField = @"FPVehicleFieldsetMaskField";
+NSString * const FPVehicleHasDteReadoutField = @"FPVehicleHasDteReadoutField";
+NSString * const FPVehicleHasMpgReadoutField = @"FPVehicleHasMpgReadoutField";
+NSString * const FPVehicleHasMphReadoutField = @"FPVehicleHasMphReadoutField";
+NSString * const FPVehicleHasOutsideTempReadoutField = @"FPVehicleHasOutsideTempReadoutField";
 NSString * const FPVehicleVinField = @"FPVehicleVinField";
 NSString * const FPVehiclePlateField = @"FPVehiclePlateField";
 
@@ -42,7 +45,10 @@ NSString * const FPVehiclePlateField = @"FPVehiclePlateField";
                     defaultOctane:(NSNumber *)defaultOctane
                      fuelCapacity:(NSDecimalNumber *)fuelCapacity
                          isDiesel:(BOOL)isDiesel
-                     fieldsetMask:(NSNumber *)fieldsetMask
+                    hasDteReadout:(BOOL)hasDteReadout
+                    hasMpgReadout:(BOOL)hasMpgReadout
+                    hasMphReadout:(BOOL)hasMphReadout
+            hasOutsideTempReadout:(BOOL)hasOutsideTempReadout
                               vin:(NSString *)vin
                             plate:(NSString *)plate {
   self = [super initWithLocalMainIdentifier:localMainIdentifier
@@ -68,7 +74,10 @@ NSString * const FPVehiclePlateField = @"FPVehiclePlateField";
     _defaultOctane = defaultOctane;
     _fuelCapacity = fuelCapacity;
     _isDiesel = isDiesel;
-    _fieldsetMask = fieldsetMask;
+    _hasDteReadout = hasDteReadout;
+    _hasMpgReadout = hasMpgReadout;
+    _hasMphReadout = hasMphReadout;
+    _hasOutsideTempReadout = hasOutsideTempReadout;
     _vin = vin;
     _plate = plate;
   }
@@ -98,7 +107,10 @@ NSString * const FPVehiclePlateField = @"FPVehiclePlateField";
                                                      defaultOctane:_defaultOctane
                                                       fuelCapacity:_fuelCapacity
                                                           isDiesel:_isDiesel
-                                                      fieldsetMask:_fieldsetMask
+                                                     hasDteReadout:_hasDteReadout
+                                                     hasMpgReadout:_hasMpgReadout
+                                                     hasMphReadout:_hasMphReadout
+                                             hasOutsideTempReadout:_hasOutsideTempReadout
                                                                vin:_vin
                                                              plate:_plate];
   return copy;
@@ -110,7 +122,10 @@ NSString * const FPVehiclePlateField = @"FPVehiclePlateField";
                  defaultOctane:(NSNumber *)defaultOctane
                   fuelCapacity:(NSDecimalNumber *)fuelCapacity
                       isDiesel:(BOOL)isDiesel
-                  fieldsetMask:(NSNumber *)fieldsetMask
+                 hasDteReadout:(BOOL)hasDteReadout
+                 hasMpgReadout:(BOOL)hasMpgReadout
+                 hasMphReadout:(BOOL)hasMphReadout
+         hasOutsideTempReadout:(BOOL)hasOutsideTempReadout
                            vin:(NSString *)vin
                          plate:(NSString *)plate
                      mediaType:(HCMediaType *)mediaType {
@@ -118,7 +133,10 @@ NSString * const FPVehiclePlateField = @"FPVehiclePlateField";
                       defaultOctane:defaultOctane
                        fuelCapacity:fuelCapacity
                            isDiesel:isDiesel
-                       fieldsetMask:fieldsetMask
+                      hasDteReadout:hasDteReadout
+                      hasMpgReadout:hasMpgReadout
+                      hasMphReadout:hasMphReadout
+              hasOutsideTempReadout:hasOutsideTempReadout
                                 vin:vin
                               plate:plate
                    globalIdentifier:nil
@@ -133,7 +151,10 @@ NSString * const FPVehiclePlateField = @"FPVehiclePlateField";
                  defaultOctane:(NSNumber *)defaultOctane
                   fuelCapacity:(NSDecimalNumber *)fuelCapacity
                       isDiesel:(BOOL)isDiesel
-                  fieldsetMask:(NSNumber *)fieldsetMask
+                 hasDteReadout:(BOOL)hasDteReadout
+                 hasMpgReadout:(BOOL)hasMpgReadout
+                 hasMphReadout:(BOOL)hasMphReadout
+         hasOutsideTempReadout:(BOOL)hasOutsideTempReadout
                            vin:(NSString *)vin
                          plate:(NSString *)plate
               globalIdentifier:(NSString *)globalIdentifier
@@ -162,7 +183,10 @@ NSString * const FPVehiclePlateField = @"FPVehiclePlateField";
                                           defaultOctane:defaultOctane
                                            fuelCapacity:fuelCapacity
                                                isDiesel:isDiesel
-                                           fieldsetMask:fieldsetMask
+                                          hasDteReadout:hasDteReadout
+                                          hasMpgReadout:hasMpgReadout
+                                          hasMphReadout:hasMphReadout
+                                  hasOutsideTempReadout:hasOutsideTempReadout
                                                     vin:vin
                                                   plate:plate];
 }
@@ -188,7 +212,10 @@ NSString * const FPVehiclePlateField = @"FPVehiclePlateField";
                                           defaultOctane:nil
                                            fuelCapacity:nil
                                                isDiesel:NO
-                                           fieldsetMask:nil
+                                          hasDteReadout:NO
+                                          hasMpgReadout:NO
+                                          hasMphReadout:NO
+                                  hasOutsideTempReadout:NO
                                                     vin:nil
                                                   plate:nil];
 }
@@ -221,11 +248,26 @@ NSString * const FPVehiclePlateField = @"FPVehiclePlateField";
                                         ^(SEL getter, id obj1, id obj2) {return [PEUtils isBoolProperty:getter equalFor:obj1 and:obj2];},
                                         ^(FPVehicle * localObject, FPVehicle * remoteObject) { [localObject setIsDiesel:[remoteObject isDiesel]];},
                                         FPVehicleIsDieselField],
-                                      @[[NSValue valueWithPointer:@selector(fieldsetMask)],
-                                        [NSValue valueWithPointer:@selector(setFieldsetMask:)],
-                                        ^(SEL getter, id obj1, id obj2) {return [PEUtils isNumProperty:getter equalFor:obj1 and:obj2];},
-                                        ^(FPVehicle * localObject, FPVehicle * remoteObject) { [localObject setFieldsetMask:[remoteObject fieldsetMask]];},
-                                        FPVehicleFieldsetMaskField],
+                                      @[[NSValue valueWithPointer:@selector(hasDteReadout)],
+                                        [NSValue valueWithPointer:@selector(setHasDteReadout:)],
+                                        ^(SEL getter, id obj1, id obj2) {return [PEUtils isBoolProperty:getter equalFor:obj1 and:obj2];},
+                                        ^(FPVehicle * localObject, FPVehicle * remoteObject) { [localObject setHasDteReadout:[remoteObject hasDteReadout]];},
+                                        FPVehicleHasDteReadoutField],
+                                      @[[NSValue valueWithPointer:@selector(hasMpgReadout)],
+                                        [NSValue valueWithPointer:@selector(setHasMpgReadout:)],
+                                        ^(SEL getter, id obj1, id obj2) {return [PEUtils isBoolProperty:getter equalFor:obj1 and:obj2];},
+                                        ^(FPVehicle * localObject, FPVehicle * remoteObject) { [localObject setHasMpgReadout:[remoteObject hasMpgReadout]];},
+                                        FPVehicleHasMpgReadoutField],
+                                      @[[NSValue valueWithPointer:@selector(hasMphReadout)],
+                                        [NSValue valueWithPointer:@selector(setHasMphReadout:)],
+                                        ^(SEL getter, id obj1, id obj2) {return [PEUtils isBoolProperty:getter equalFor:obj1 and:obj2];},
+                                        ^(FPVehicle * localObject, FPVehicle * remoteObject) { [localObject setHasMphReadout:[remoteObject hasMphReadout]];},
+                                        FPVehicleHasMphReadoutField],
+                                      @[[NSValue valueWithPointer:@selector(hasOutsideTempReadout)],
+                                        [NSValue valueWithPointer:@selector(setHasOutsideTempReadout:)],
+                                        ^(SEL getter, id obj1, id obj2) {return [PEUtils isBoolProperty:getter equalFor:obj1 and:obj2];},
+                                        ^(FPVehicle * localObject, FPVehicle * remoteObject) { [localObject setHasOutsideTempReadout:[remoteObject hasOutsideTempReadout]];},
+                                        FPVehicleHasOutsideTempReadoutField],
                                       @[[NSValue valueWithPointer:@selector(vin)],
                                         [NSValue valueWithPointer:@selector(setVin:)],
                                         ^(SEL getter, id obj1, id obj2) {return [PEUtils isStringProperty:getter equalFor:obj1 and:obj2];},
@@ -246,7 +288,10 @@ NSString * const FPVehiclePlateField = @"FPVehiclePlateField";
   [self setDefaultOctane:[vehicle defaultOctane]];
   [self setFuelCapacity:[vehicle fuelCapacity]];
   [self setIsDiesel:[vehicle isDiesel]];
-  [self setFieldsetMask:[vehicle fieldsetMask]];
+  [self setHasDteReadout:[vehicle hasDteReadout]];
+  [self setHasMpgReadout:[vehicle hasMpgReadout]];
+  [self setHasMphReadout:[vehicle hasMphReadout]];
+  [self setHasOutsideTempReadout:[vehicle hasOutsideTempReadout]];
   [self setVin:[vehicle vin]];
   [self setPlate:[vehicle plate]];
 }
@@ -265,7 +310,10 @@ NSString * const FPVehiclePlateField = @"FPVehiclePlateField";
       [PEUtils isNumProperty:@selector(defaultOctane) equalFor:self and:vehicle] &&
       [PEUtils isNumProperty:@selector(fuelCapacity) equalFor:self and:vehicle] &&
       [PEUtils isBoolProperty:@selector(isDiesel) equalFor:self and:vehicle] &&
-      [PEUtils isNumProperty:@selector(fieldsetMask) equalFor:self and:vehicle] &&
+      [PEUtils isBoolProperty:@selector(hasDteReadout) equalFor:self and:vehicle] &&
+      [PEUtils isBoolProperty:@selector(hasMpgReadout) equalFor:self and:vehicle] &&
+      [PEUtils isBoolProperty:@selector(hasMphReadout) equalFor:self and:vehicle] &&
+      [PEUtils isBoolProperty:@selector(hasOutsideTempReadout) equalFor:self and:vehicle] &&
       [PEUtils isString:[self vin] equalTo:[vehicle vin]] &&
       [PEUtils isString:[self plate] equalTo:[vehicle plate]];
   }
@@ -285,19 +333,23 @@ NSString * const FPVehiclePlateField = @"FPVehiclePlateField";
   [[self name] hash] ^
   [[self defaultOctane] hash] ^
   [[self fuelCapacity] hash] ^
-  [[self fieldsetMask] hash] ^
   [[self vin] hash] ^
   [[self plate] hash];
 }
 
 - (NSString *)description {
-  return [NSString stringWithFormat:@"%@, name: [%@], default octane: [%@], fuel capacity: [%@], is diesel? [%d], field set mask: [%@], vin: [%@], plate: [%@]",
+  return [NSString stringWithFormat:@"%@, name: [%@], default octane: [%@], fuel capacity: [%@], \
+is diesel? [%d], has dte readout?: [%d], has mpg readout? [%d], has mph readout? [%d], \
+has outside temp readout? [%d], vin: [%@], plate: [%@]",
           [super description],
           _name,
           _defaultOctane,
           _fuelCapacity,
           _isDiesel,
-          _fieldsetMask,
+          _hasDteReadout,
+          _hasMpgReadout,
+          _hasMphReadout,
+          _hasOutsideTempReadout,
           _vin,
           _plate];
 }

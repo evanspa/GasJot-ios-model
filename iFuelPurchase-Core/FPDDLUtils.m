@@ -28,7 +28,10 @@ NSString * const COL_VEH_NAME = @"name";
 NSString * const COL_VEH_DEFAULT_OCTANE = @"default_octane";
 NSString * const COL_VEH_FUEL_CAPACITY = @"fuel_capacity";
 NSString * const COL_VEH_IS_DIESEL = @"is_diesel";
-NSString * const COL_VEH_FIELDSET_MASK = @"fieldset_mask";
+NSString * const COL_VEH_HAS_DTE_READOUT = @"has_dte_readout";
+NSString * const COL_VEH_HAS_MPG_READOUT = @"has_mpg_readout";
+NSString * const COL_VEH_HAS_MPH_READOUT = @"has_mph_readout";
+NSString * const COL_VEH_HAS_OUTSIDE_TEMP_READOUT = @"has_outside_temp_readout";
 NSString * const COL_VEH_VIN = @"vin";
 NSString * const COL_VEH_PLATE = @"plate";
 

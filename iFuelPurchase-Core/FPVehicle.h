@@ -13,7 +13,10 @@ FOUNDATION_EXPORT NSString * const FPVehicleNameField;
 FOUNDATION_EXPORT NSString * const FPVehicleDefaultOctaneField;
 FOUNDATION_EXPORT NSString * const FPVehicleFuelCapacityField;
 FOUNDATION_EXPORT NSString * const FPVehicleIsDieselField;
-FOUNDATION_EXPORT NSString * const FPVehicleFieldsetMaskField;
+FOUNDATION_EXPORT NSString * const FPVehicleHasDteReadoutField;
+FOUNDATION_EXPORT NSString * const FPVehicleHasMpgReadoutField;
+FOUNDATION_EXPORT NSString * const FPVehicleHasMphReadoutField;
+FOUNDATION_EXPORT NSString * const FPVehicleHasOutsideTempReadoutField;
 FOUNDATION_EXPORT NSString * const FPVehicleVinField;
 FOUNDATION_EXPORT NSString * const FPVehiclePlateField;
 
@@ -41,7 +44,10 @@ FOUNDATION_EXPORT NSString * const FPVehiclePlateField;
                     defaultOctane:(NSNumber *)defaultOctane
                      fuelCapacity:(NSDecimalNumber *)fuelCapacity
                          isDiesel:(BOOL)isDiesel
-                     fieldsetMask:(NSNumber *)fieldsetMask
+                    hasDteReadout:(BOOL)hasDteReadout
+                    hasMpgReadout:(BOOL)hasMpgReadout
+                    hasMphReadout:(BOOL)hasMphReadout
+            hasOutsideTempReadout:(BOOL)hasOutsideTempReadout
                               vin:(NSString *)vin
                             plate:(NSString *)plate;
 
@@ -51,7 +57,10 @@ FOUNDATION_EXPORT NSString * const FPVehiclePlateField;
                  defaultOctane:(NSNumber *)defaultOctane
                   fuelCapacity:(NSDecimalNumber *)fuelCapacity
                       isDiesel:(BOOL)isDiesel
-                  fieldsetMask:(NSNumber *)fieldsetMask
+                 hasDteReadout:(BOOL)hasDteReadout
+                 hasMpgReadout:(BOOL)hasMpgReadout
+                 hasMphReadout:(BOOL)hasMphReadout
+         hasOutsideTempReadout:(BOOL)hasOutsideTempReadout
                            vin:(NSString *)vin
                          plate:(NSString *)plate
                      mediaType:(HCMediaType *)mediaType;
@@ -60,7 +69,10 @@ FOUNDATION_EXPORT NSString * const FPVehiclePlateField;
                  defaultOctane:(NSNumber *)defaultOctane
                   fuelCapacity:(NSDecimalNumber *)fuelCapacity
                       isDiesel:(BOOL)isDiesel
-                  fieldsetMask:(NSNumber *)fieldsetMask
+                 hasDteReadout:(BOOL)hasDteReadout
+                 hasMpgReadout:(BOOL)hasMpgReadout
+                 hasMphReadout:(BOOL)hasMphReadout
+         hasOutsideTempReadout:(BOOL)hasOutsideTempReadout
                            vin:(NSString *)vin
                          plate:(NSString *)plate
               globalIdentifier:(NSString *)globalIdentifier
@@ -94,7 +106,13 @@ FOUNDATION_EXPORT NSString * const FPVehiclePlateField;
 
 @property (nonatomic) BOOL isDiesel;
 
-@property (nonatomic) NSNumber *fieldsetMask;
+@property (nonatomic) BOOL hasDteReadout;
+
+@property (nonatomic) BOOL hasMpgReadout;
+
+@property (nonatomic) BOOL hasMphReadout;
+
+@property (nonatomic) BOOL hasOutsideTempReadout;
 
 @property (nonatomic) NSString *vin;
 
