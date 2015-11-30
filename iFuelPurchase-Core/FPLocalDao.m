@@ -5782,10 +5782,10 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                           defaultOctane:[PELMUtils numberFromResultSet:rs columnName:COL_VEH_DEFAULT_OCTANE]
                                            fuelCapacity:[PELMUtils decimalNumberFromResultSet:rs columnName:COL_VEH_FUEL_CAPACITY]
                                                isDiesel:[rs boolForColumn:COL_VEH_IS_DIESEL]
-                                          hasDteReadout:[rs boolForColumn:COL_VEH_HAS_DTE_READOUT]
-                                          hasMpgReadout:[rs boolForColumn:COL_VEH_HAS_MPG_READOUT]
-                                          hasMphReadout:[rs boolForColumn:COL_VEH_HAS_MPH_READOUT]
-                                  hasOutsideTempReadout:[rs boolForColumn:COL_VEH_HAS_OUTSIDE_TEMP_READOUT]
+                                          hasDteReadout:[PELMUtils boolFromResultSet:rs columnName:COL_VEH_HAS_DTE_READOUT boolIfNull:YES]
+                                          hasMpgReadout:[PELMUtils boolFromResultSet:rs columnName:COL_VEH_HAS_MPG_READOUT boolIfNull:YES]
+                                          hasMphReadout:[PELMUtils boolFromResultSet:rs columnName:COL_VEH_HAS_MPH_READOUT boolIfNull:YES]
+                                  hasOutsideTempReadout:[PELMUtils boolFromResultSet:rs columnName:COL_VEH_HAS_OUTSIDE_TEMP_READOUT boolIfNull:YES]
                                                     vin:[rs stringForColumn:COL_VEH_VIN]
                                                   plate:[rs stringForColumn:COL_VEH_PLATE]];
 }
@@ -5811,10 +5811,10 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                           defaultOctane:[PELMUtils numberFromResultSet:rs columnName:COL_VEH_DEFAULT_OCTANE]
                                            fuelCapacity:[PELMUtils decimalNumberFromResultSet:rs columnName:COL_VEH_FUEL_CAPACITY]
                                                isDiesel:[rs boolForColumn:COL_VEH_IS_DIESEL]
-                                          hasDteReadout:[rs boolForColumn:COL_VEH_HAS_DTE_READOUT]
-                                          hasMpgReadout:[rs boolForColumn:COL_VEH_HAS_MPG_READOUT]
-                                          hasMphReadout:[rs boolForColumn:COL_VEH_HAS_MPH_READOUT]
-                                  hasOutsideTempReadout:[rs boolForColumn:COL_VEH_HAS_OUTSIDE_TEMP_READOUT]
+                                          hasDteReadout:[PELMUtils boolFromResultSet:rs columnName:COL_VEH_HAS_DTE_READOUT boolIfNull:YES]
+                                          hasMpgReadout:[PELMUtils boolFromResultSet:rs columnName:COL_VEH_HAS_MPG_READOUT boolIfNull:YES]
+                                          hasMphReadout:[PELMUtils boolFromResultSet:rs columnName:COL_VEH_HAS_MPH_READOUT boolIfNull:YES]
+                                  hasOutsideTempReadout:[PELMUtils boolFromResultSet:rs columnName:COL_VEH_HAS_OUTSIDE_TEMP_READOUT boolIfNull:YES]
                                                     vin:[rs stringForColumn:COL_VEH_VIN]
                                                   plate:[rs stringForColumn:COL_VEH_PLATE]];
 }

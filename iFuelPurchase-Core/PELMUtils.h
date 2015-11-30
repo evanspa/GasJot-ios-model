@@ -114,6 +114,8 @@ typedef NS_ENUM(NSInteger, PELMSaveNewOrExistingCode) {
 
 + (NSDate *)dateFromResultSet:(FMResultSet *)rs columnName:(NSString *)columnName;
 
++ (BOOL)boolFromResultSet:(FMResultSet *)rs columnName:(NSString *)columnName boolIfNull:(BOOL)boolIfNull;
+
 #pragma mark - Properties
 
 @property (nonatomic, readonly) FMDatabaseQueue *databaseQueue;

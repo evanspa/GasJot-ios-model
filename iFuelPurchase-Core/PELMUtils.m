@@ -259,6 +259,13 @@ PELMMainSupport * (^toMainSupport)(FMResultSet *, NSString *, NSDictionary *) = 
                    doubleForColumnBlk:^ double (FMResultSet *rs) { return [rs doubleForColumn:columnName]; }];
 }
 
++ (BOOL)boolFromResultSet:(FMResultSet *)rs columnName:(NSString *)columnName boolIfNull:(BOOL)boolIfNull {
+  if ([rs columnIsNull:columnName]) {
+    return boolIfNull;
+  }
+  return [rs boolForColumn:columnName];
+}
+
 #pragma mark - Utils
 
 - (void)cancelSyncForEntity:(PELMMainSupport *)entity
