@@ -38,6 +38,10 @@ NSString * const FPVehicleDeletedAtKey             = @"fpvehicle/deleted-at";
   [vehicleDict nullSafeSetObject:[vehicle defaultOctane] forKey:FPVehicleDefaultOctaneKey];
   [vehicleDict nullSafeSetObject:[vehicle fuelCapacity] forKey:FPVehicleFuelCapacityKey];
   [vehicleDict nullSafeSetObject:[NSNumber numberWithBool:[vehicle isDiesel]] forKey:FPVehicleIsDieselKey];
+  [vehicleDict nullSafeSetObject:[NSNumber numberWithBool:[vehicle hasDteReadout]] forKey:FPVehicleHasDteReadoutKey];
+  [vehicleDict nullSafeSetObject:[NSNumber numberWithBool:[vehicle hasMpgReadout]] forKey:FPVehicleHasMpgReadoutKey];
+  [vehicleDict nullSafeSetObject:[NSNumber numberWithBool:[vehicle hasMphReadout]] forKey:FPVehicleHasMphReadoutKey];
+  [vehicleDict nullSafeSetObject:[NSNumber numberWithBool:[vehicle hasOutsideTempReadout]] forKey:FPVehicleHasOutsideTempReadoutKey];
   [vehicleDict nullSafeSetObject:[vehicle vin] forKey:FPVehicleVinKey];
   [vehicleDict nullSafeSetObject:[vehicle plate] forKey:FPVehiclePlateKey];
   return vehicleDict;
@@ -53,11 +57,11 @@ NSString * const FPVehicleDeletedAtKey             = @"fpvehicle/deleted-at";
   FPVehicle *vehicle = [FPVehicle vehicleWithName:resDict[FPVehicleNameKey]
                                     defaultOctane:resDict[FPVehicleDefaultOctaneKey]
                                      fuelCapacity:resDict[FPVehicleFuelCapacityKey]
-                                         isDiesel:[resDict[FPVehicleIsDieselKey] boolValue]
-                                    hasDteReadout:[resDict[FPVehicleHasDteReadoutKey] boolValue]
-                                    hasMpgReadout:[resDict[FPVehicleHasMpgReadoutKey] boolValue]
-                                    hasMphReadout:[resDict[FPVehicleHasMphReadoutKey] boolValue]
-                            hasOutsideTempReadout:[resDict[FPVehicleHasOutsideTempReadoutKey] boolValue]
+                                         isDiesel:[resDict boolForKey:FPVehicleIsDieselKey]
+                                    hasDteReadout:[resDict boolForKey:FPVehicleHasDteReadoutKey]
+                                    hasMpgReadout:[resDict boolForKey:FPVehicleHasMpgReadoutKey]
+                                    hasMphReadout:[resDict boolForKey:FPVehicleHasMphReadoutKey]
+                            hasOutsideTempReadout:[resDict boolForKey:FPVehicleHasOutsideTempReadoutKey]
                                               vin:resDict[FPVehicleVinKey]
                                             plate:resDict[FPVehiclePlateKey]
                                  globalIdentifier:location
