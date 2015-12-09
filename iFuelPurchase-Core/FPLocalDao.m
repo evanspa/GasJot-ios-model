@@ -232,13 +232,25 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
     [csvWriter writeField:@"Vehicle Name"];
     [csvWriter writeField:@"Default Octane"];
     [csvWriter writeField:@"Fuel Capacity"];
-    [csvWriter writeField:@"Is Diesel?"];
+    [csvWriter writeField:@"Takes Diesel?"];
+    [csvWriter writeField:@"VIN"];
+    [csvWriter writeField:@"Plate"];
+    [csvWriter writeField:@"Has Range Readout?"];
+    [csvWriter writeField:@"Has MPG Readout?"];
+    [csvWriter writeField:@"Has MPH Readout?"];
+    [csvWriter writeField:@"Has Outside Temperature Readout?"];
     [csvWriter finishLine];
     for (FPVehicle *vehicle in records) {
       [csvWriter writeField:emptyIfNil(vehicle.name)];
       [csvWriter writeField:emptyIfNil(vehicle.defaultOctane)];
       [csvWriter writeField:emptyIfNil(vehicle.fuelCapacity)];
       [csvWriter writeField:[PEUtils yesNoFromBool:vehicle.isDiesel]];
+      [csvWriter writeField:emptyIfNil(vehicle.vin)];
+      [csvWriter writeField:emptyIfNil(vehicle.plate)];
+      [csvWriter writeField:[PEUtils yesNoFromBool:vehicle.hasDteReadout]];
+      [csvWriter writeField:[PEUtils yesNoFromBool:vehicle.hasMpgReadout]];
+      [csvWriter writeField:[PEUtils yesNoFromBool:vehicle.hasMphReadout]];
+      [csvWriter writeField:[PEUtils yesNoFromBool:vehicle.hasOutsideTempReadout]];
       [csvWriter finishLine];
     }
     [csvWriter closeStream];
@@ -301,10 +313,10 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
     csvWriter = [[CHCSVWriter alloc] initForWritingToCSVFile:odometerLogsFile];
     [csvWriter writeField:@"Vehicle"];
     [csvWriter writeField:@"Odometer"];
-    [csvWriter writeField:@"Reported Average MPG"];
-    [csvWriter writeField:@"Reported Average MPH"];
+    [csvWriter writeField:@"Average MPG"];
+    [csvWriter writeField:@"Average MPH"];
     [csvWriter writeField:@"Outside Temperature"];
-    [csvWriter writeField:@"Reported Distance-to-Empty"];
+    [csvWriter writeField:@"Range"];
     [csvWriter writeField:@"Log Date"];
     [csvWriter finishLine];
     records = [self environmentLogsForUser:user db:db error:errorBlk];
@@ -1792,7 +1804,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                              db:db
                                           error:errorBlk];
   }];
-  return [fplogs count] == 1;
+  return [fplogs count] >= 1;
 }
 
 - (NSArray *)distinctOctanesForVehicle:(FPVehicle *)vehicle
@@ -1819,7 +1831,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                              db:db
                                           error:errorBlk];
   }];
-  return [fplogs count] == 1;
+  return [fplogs count] >= 1;
 }
 
 - (NSArray *)distinctOctanesForFuelstation:(FPFuelStation *)fuelstation
@@ -1846,7 +1858,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                              db:db
                                           error:errorBlk];
   }];
-  return [fplogs count] == 1;
+  return [fplogs count] >= 1;
 }
 
 - (NSArray *)unorderedFuelPurchaseLogsForFuelstation:(FPFuelStation *)fuelstation
@@ -3802,7 +3814,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                                   error:(PELMDaoErrorBlk)errorBlk {
   NSArray *fpLogs =
   [self fuelPurchaseLogsForUser:user pageSize:1 db:db error:errorBlk];
-  if (fpLogs && ([fpLogs count] == 1)) {
+  if (fpLogs && ([fpLogs count] >= 1)) {
     return fpLogs[0];
   }
   return nil;
@@ -5274,7 +5286,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                                                 error:(PELMDaoErrorBlk)errorBlk {
   NSArray *envLogs =
   [self environmentLogsForUser:user pageSize:1 db:db error:errorBlk];
-  if (envLogs && ([envLogs count] == 1)) {
+  if (envLogs && ([envLogs count] >= 1)) {
     return envLogs[0];
   }
   return nil;
