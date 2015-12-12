@@ -11,19 +11,18 @@
 #import <PEHateoas-Client/HCCharset.h>
 #import "FPRemoteMasterDao.h"
 #import "FPChangelogSerializer.h"
-#import "FPUserSerializer.h"
-#import "FPLoginSerializer.h"
-#import "FPLogoutSerializer.h"
+#import "PEUserSerializer.h"
+#import "PELoginSerializer.h"
+#import "PELogoutSerializer.h"
 #import "FPVehicleSerializer.h"
 #import "FPFuelStationSerializer.h"
 #import "FPFuelPurchaseLogSerializer.h"
 #import "FPEnvironmentLogSerializer.h"
-#import "FPResendVerificationEmailSerializer.h"
-#import "FPPasswordResetSerializer.h"
+#import "PEResendVerificationEmailSerializer.h"
+#import "PEPasswordResetSerializer.h"
+#import "PERestRemoteMasterDao.h"
 
-FOUNDATION_EXPORT NSString * const LAST_MODIFIED_HEADER;
-
-@interface FPRestRemoteMasterDao : NSObject <FPRemoteMasterDao>
+@interface FPRestRemoteMasterDao : PERestRemoteMasterDao <FPRemoteMasterDao>
 
 #pragma mark - Initializers
 
@@ -44,19 +43,15 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
   nameOfApiJsonResourceFile:(NSString *)apiResourceFileName
             apiResMtVersion:(NSString *)apiResMtVersion
         changelogSerializer:(FPChangelogSerializer *)changelogSerializer
-             userSerializer:(FPUserSerializer *)userSerializer
-            loginSerializer:(FPLoginSerializer *)loginSerializer
-           logoutSerializer:(FPLogoutSerializer *)logoutSerializer
-resendVerificationEmailSerializer:(FPResendVerificationEmailSerializer *)resendVerificationEmailSerializer
-    passwordResetSerializer:(FPPasswordResetSerializer *)passwordResetSerializer
+             userSerializer:(PEUserSerializer *)userSerializer
+            loginSerializer:(PELoginSerializer *)loginSerializer
+           logoutSerializer:(PELogoutSerializer *)logoutSerializer
+resendVerificationEmailSerializer:(PEResendVerificationEmailSerializer *)resendVerificationEmailSerializer
+    passwordResetSerializer:(PEPasswordResetSerializer *)passwordResetSerializer
           vehicleSerializer:(FPVehicleSerializer *)vehicleSerializer
       fuelStationSerializer:(FPFuelStationSerializer *)fuelStationSerializer
   fuelPurchaseLogSerializer:(FPFuelPurchaseLogSerializer *)fuelPurchaseLogSerializer
    environmentLogSerializer:(FPEnvironmentLogSerializer *)environmentLogSerializer
    allowInvalidCertificates:(BOOL)allowInvalidCertificates;
-
-#pragma mark - Properties
-
-@property (nonatomic) NSString *authToken;
 
 @end

@@ -15,31 +15,12 @@
 #import "FPKnownMediaTypes.h"
 #import "PELMLoginUser.h"
 
-NSString * const LAST_MODIFIED_HEADER = @"last-modified";
-
 @implementation FPRestRemoteMasterDao {
-  HCRelationExecutor *_relationExecutor;
-  NSString *_authScheme;
-  NSString *_authTokenParamName;
-  NSString *_errorMaskHeaderName;
-  NSString *_establishSessionHeaderName;
-  NSString *_authTokenHeaderName;
-  NSString *_ifModifiedSinceHeaderName;
-  NSString *_ifUnmodifiedSinceHeaderName;
-  NSString *_loginFailedReasonHeaderName;
-  NSString *_accountClosedReasonHeaderName;
-  NSDictionary *_restApiRelations;
   FPChangelogSerializer *_changelogSerializer;
-  FPUserSerializer *_userSerializer;
-  FPLoginSerializer *_loginSerializer;
-  FPLogoutSerializer *_logoutSerializer;
   FPVehicleSerializer *_vehicleSerializer;
   FPFuelStationSerializer *_fuelStationSerializer;
   FPFuelPurchaseLogSerializer *_fuelPurchaseLogSerializer;
   FPEnvironmentLogSerializer *_environmentLogSerializer;
-  FPResendVerificationEmailSerializer *_resendVerificationEmailSerializer;
-  FPPasswordResetSerializer *_passwordResetSerializer;
-  dispatch_queue_t _serialQueue;
 }
 
 #pragma mark - Initializers
@@ -61,210 +42,53 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
   nameOfApiJsonResourceFile:(NSString *)apiResourceFileName
             apiResMtVersion:(NSString *)apiResMtVersion
         changelogSerializer:(FPChangelogSerializer *)changelogSerializer
-             userSerializer:(FPUserSerializer *)userSerializer
-            loginSerializer:(FPLoginSerializer *)loginSerializer
-           logoutSerializer:(FPLogoutSerializer *)logoutSerializer
-resendVerificationEmailSerializer:(FPResendVerificationEmailSerializer *)resendVerificationEmailSerializer
-passwordResetSerializer:(FPPasswordResetSerializer *)passwordResetSerializer
+             userSerializer:(PEUserSerializer *)userSerializer
+            loginSerializer:(PELoginSerializer *)loginSerializer
+           logoutSerializer:(PELogoutSerializer *)logoutSerializer
+resendVerificationEmailSerializer:(PEResendVerificationEmailSerializer *)resendVerificationEmailSerializer
+passwordResetSerializer:(PEPasswordResetSerializer *)passwordResetSerializer
           vehicleSerializer:(FPVehicleSerializer *)vehicleSerializer
       fuelStationSerializer:(FPFuelStationSerializer *)fuelStationSerializer
   fuelPurchaseLogSerializer:(FPFuelPurchaseLogSerializer *)fuelPurchaseLogSerializer
    environmentLogSerializer:(FPEnvironmentLogSerializer *)environmentLogSerializer
    allowInvalidCertificates:(BOOL)allowInvalidCertificates {
-  self = [super init];
+  self = [super initWithAcceptCharset:acceptCharset
+                       acceptLanguage:acceptLanguage
+                   contentTypeCharset:contentTypeCharset
+                           authScheme:authScheme
+                   authTokenParamName:authTokenParamName
+                            authToken:authToken
+                  errorMaskHeaderName:errorMaskHeaderName
+           establishSessionHeaderName:establishHeaderSessionName
+                  authTokenHeaderName:authTokenHeaderName
+            ifModifiedSinceHeaderName:ifModifiedSinceHeaderName
+          ifUnmodifiedSinceHeaderName:ifUnmodifiedSinceHeaderName
+          loginFailedReasonHeaderName:loginFailedReasonHeaderName
+        accountClosedReasonHeaderName:accountClosedReasonHeaderName
+         bundleHoldingApiJsonResource:bundle
+            nameOfApiJsonResourceFile:apiResourceFileName
+                      apiResMtVersion:apiResMtVersion
+                       userSerializer:userSerializer
+                      loginSerializer:loginSerializer
+                     logoutSerializer:logoutSerializer
+    resendVerificationEmailSerializer:resendVerificationEmailSerializer
+              passwordResetSerializer:passwordResetSerializer
+             allowInvalidCertificates:allowInvalidCertificates
+             clientFaultedErrorDomain:FPClientFaultedErrorDomain
+               userFaultedErrorDomain:FPUserFaultedErrorDomain
+             systemFaultedErrorDomain:FPSystemFaultedErrorDomain
+               connFaultedErrorDomain:FPConnFaultedErrorDomain
+                     restApiRelations:[HCUtils relsFromLocalHalJsonResource:bundle
+                                                                   fileName:apiResourceFileName
+                                                       resourceApiMediaType:[FPKnownMediaTypes apiMediaTypeWithVersion:apiResMtVersion]]];
   if (self) {
-    _relationExecutor = [[HCRelationExecutor alloc]
-                          initWithDefaultAcceptCharset:acceptCharset
-                                 defaultAcceptLanguage:acceptLanguage
-                             defaultContentTypeCharset:contentTypeCharset
-                              allowInvalidCertificates:allowInvalidCertificates];
-    _authScheme = authScheme;
-    _authTokenParamName = authTokenParamName;
-    _authToken = authToken;
-    _errorMaskHeaderName = errorMaskHeaderName;
-    _establishSessionHeaderName = establishHeaderSessionName;
-    _authTokenHeaderName = authTokenHeaderName;
-    _ifModifiedSinceHeaderName = ifModifiedSinceHeaderName;
-    _ifUnmodifiedSinceHeaderName = ifUnmodifiedSinceHeaderName;
-    _loginFailedReasonHeaderName = loginFailedReasonHeaderName;
-    _accountClosedReasonHeaderName = accountClosedReasonHeaderName;
-    _restApiRelations =
-      [HCUtils relsFromLocalHalJsonResource:bundle
-                                   fileName:apiResourceFileName
-                       resourceApiMediaType:[FPKnownMediaTypes apiMediaTypeWithVersion:apiResMtVersion]];
     _changelogSerializer = changelogSerializer;
-    _userSerializer = userSerializer;
-    _loginSerializer = loginSerializer;
-    _logoutSerializer = logoutSerializer;
-    _resendVerificationEmailSerializer = resendVerificationEmailSerializer;
-    _passwordResetSerializer = passwordResetSerializer;
     _vehicleSerializer = vehicleSerializer;
     _fuelStationSerializer = fuelStationSerializer;
     _fuelPurchaseLogSerializer = fuelPurchaseLogSerializer;
     _environmentLogSerializer = environmentLogSerializer;
-    _serialQueue = dispatch_queue_create("name.paulevans.fp.serialqueue", DISPATCH_QUEUE_SERIAL);
   }
   return self;
-}
-
-#pragma mark - Helpers
-
-- (NSDictionary *)addDateHeaderToHeaders:(NSDictionary *)headers
-                              headerName:(NSString *)headerName
-                                   value:(NSDate *)value {
-  if (value) {
-    NSMutableDictionary *newHeaders = [headers mutableCopy];
-    [newHeaders setObject:[[NSNumber numberWithDouble:([value timeIntervalSince1970] * 1000)] description]
-                   forKey:headerName];
-    return newHeaders;
-  } else {
-    return headers;
-  }
-}
-
-- (NSDictionary *)addFpIfUnmodifiedSinceHeaderToHeader:(NSDictionary *)headers
-                                                entity:(PELMMasterSupport *)entity {
-  return [self addDateHeaderToHeaders:headers
-                           headerName:_ifUnmodifiedSinceHeaderName
-                                value:[entity updatedAt]];
-}
-
-+ (HCServerUnavailableBlk)serverUnavailableBlk:(PELMRemoteMasterBusyBlk)busyHandler {
-  return ^(NSDate *retryAfter, NSHTTPURLResponse *resp) {
-    if (busyHandler) { busyHandler(retryAfter); }
-  };
-}
-
-+ (HCResource *)resourceFromModel:(PELMModelSupport *)model {
-  return [[HCResource alloc]
-           initWithMediaType:[model mediaType]
-                         uri:[NSURL URLWithString:[model globalIdentifier]]
-                       model:model];
-}
-
-+ (HCAuthReqdErrorBlk)toHCAuthReqdBlk:(PELMRemoteMasterAuthReqdBlk)authReqdBlk {
-  return ^(HCAuthentication *auth, NSHTTPURLResponse *resp) {
-    if (authReqdBlk) { authReqdBlk(auth); }
-  };
-}
-
-- (HCClientErrorBlk)newClientErrBlk:(PELMRemoteMasterCompletionHandler)complHandler {
-  return ^(NSHTTPURLResponse *httpResp) {
-    NSString *fpErrMaskStr = [[httpResp allHeaderFields] objectForKey:_errorMaskHeaderName];
-    NSError *error =
-      [NSError errorWithDomain:FPUserFaultedErrorDomain code:[fpErrMaskStr intValue] userInfo:nil];
-    BOOL gone = [httpResp statusCode] == 410;
-    BOOL notFound = [httpResp statusCode] == 404;
-    // now, the reason why "NO" is harded into the 'inConflict' block parameter
-    // is because we have a specific block type (HCConflictBlk) to handle the
-    // special case of the "409" client error type
-    complHandler(nil, nil, nil, nil, nil, NO, gone, notFound, NO, NO, error, httpResp);
-  };
-}
-
-- (HCRedirectionBlk)newRedirectionBlk:(PELMRemoteMasterCompletionHandler)complHandler {
-  return ^(NSURL *location, BOOL movedPermanently, BOOL notModified, NSHTTPURLResponse *resp) {
-    NSString *authToken = [[resp allHeaderFields] objectForKey:_authTokenHeaderName];
-    complHandler(authToken, [location absoluteString], nil, nil, nil, NO, NO, NO, movedPermanently, notModified, nil, resp);
-  };
-}
-
-- (HCServerErrorBlk)newServerErrBlk:(PELMRemoteMasterCompletionHandler)complHandler {
-  return ^(NSHTTPURLResponse *resp) {
-    NSString *fpErrMaskStr = [[resp allHeaderFields] objectForKey:_errorMaskHeaderName];
-    NSInteger codeForError = 0;
-    if (fpErrMaskStr) {
-      codeForError = [fpErrMaskStr integerValue];
-    }
-    NSError *error = [NSError errorWithDomain:FPSystemFaultedErrorDomain code:codeForError userInfo:nil];
-    complHandler(nil, nil, nil, nil, nil, NO, NO, NO, NO, NO, error, resp);
-  };
-}
-
-- (HCConnFailureBlk)newConnFailureBlk:(PELMRemoteMasterCompletionHandler)complHandler {
-  return ^(NSInteger nsurlErr) {
-    NSError *error = [NSError errorWithDomain:FPConnFaultedErrorDomain code:nsurlErr userInfo:nil];
-    complHandler(nil, nil, nil, nil, nil, NO, NO, NO, NO, NO, error, nil);
-  };
-}
-
-- (HCGETSuccessBlk)newGetSuccessBlk:(PELMRemoteMasterCompletionHandler)complHandler {
-  return ^(NSURL *location, id resModel, NSDate *lastModified, NSDictionary *rels, NSHTTPURLResponse *resp) {
-    NSString *authToken = [[resp allHeaderFields] objectForKey:_authTokenHeaderName];
-    complHandler(authToken, [location absoluteString], resModel, rels, lastModified, NO, NO, NO, NO, NO, nil, resp);
-  };
-}
-
-- (HCPOSTSuccessBlk)newPostSuccessBlk:(PELMRemoteMasterCompletionHandler)complHandler {
-  return ^(NSURL *location, id resModel, NSDate *lastModified, NSDictionary *rels, NSHTTPURLResponse *resp) {
-    NSString *authToken = [[resp allHeaderFields] objectForKey:_authTokenHeaderName];
-    complHandler(authToken, [location absoluteString], resModel, rels, lastModified, NO, NO, NO, NO, NO, nil, resp);
-  };
-}
-
-- (HCDELETESuccessBlk)newDeleteSuccessBlk:(PELMRemoteMasterCompletionHandler)complHandler {
-  return ^(NSHTTPURLResponse *resp) {
-    NSString *authToken = [[resp allHeaderFields] objectForKey:_authTokenHeaderName];
-    complHandler(authToken, nil, nil, nil, nil, NO, NO, NO, NO, NO, nil, resp);
-  };
-}
-
-- (HCPUTSuccessBlk)newPutSuccessBlk:(PELMRemoteMasterCompletionHandler)complHandler {
-  return ^(NSURL *location, id resModel, NSDate *lastModified, NSDictionary *rels, NSHTTPURLResponse *resp) {
-    NSString *authToken = [[resp allHeaderFields] objectForKey:_authTokenHeaderName];
-    complHandler(authToken, [location absoluteString], resModel, rels, lastModified, NO, NO, NO, NO, NO, nil, resp);
-  };
-}
-
-- (HCConflictBlk)newConflictBlk:(PELMRemoteMasterCompletionHandler)complHandler {
-  return ^(NSURL *location, id resModel, NSDate *lastModified, NSDictionary *rels, NSHTTPURLResponse *resp) {
-    NSString *authToken = [[resp allHeaderFields] objectForKey:_authTokenHeaderName];
-    NSError *error = [NSError errorWithDomain:FPClientFaultedErrorDomain code:[resp statusCode] userInfo:nil];
-    complHandler(authToken, [location absoluteString], resModel, rels, lastModified, YES, NO, NO, NO, NO, error, resp);
-  };
-}
-
-- (HCAuthorization *)authorization {
-  HCAuthorization *authorization = nil;
-  if (_authToken) {
-    authorization = [HCAuthorization authWithScheme:_authScheme
-                                singleAuthParamName:_authTokenParamName
-                                     authParamValue:_authToken];
-  }
-  return authorization;
-}
-
-- (void)doPostToRelation:(HCRelation *)relation
-      resourceModelParam:(id)resourceModelParam
-              serializer:(id<HCResourceSerializer>)serializer
-                 timeout:(NSInteger)timeout
-         remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
-            authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
-       completionHandler:(PELMRemoteMasterCompletionHandler)complHandler
-            otherHeaders:(NSDictionary *)otherHeaders {
-  [_relationExecutor
-    doPostForTargetResource:[relation target]
-         resourceModelParam:resourceModelParam
-            paramSerializer:serializer
-   responseEntitySerializer:serializer
-               asynchronous:YES
-            completionQueue:_serialQueue
-              authorization:[self authorization]
-                    success:[self newPostSuccessBlk:complHandler]
-                redirection:[self newRedirectionBlk:complHandler]
-                clientError:[self newClientErrBlk:complHandler]
-     authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired]
-                serverError:[self newServerErrBlk:complHandler]
-           unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
-          connectionFailure:[self newConnFailureBlk:complHandler]
-                    timeout:timeout
-               otherHeaders:otherHeaders];
-}
-
-#pragma mark - General Operations
-
-- (void)setAuthToken:(NSString *)authToken {
-  _authToken = authToken;
 }
 
 #pragma mark - Vehicle Operations
@@ -290,22 +114,21 @@ passwordResetSerializer:(FPPasswordResetSerializer *)passwordResetSerializer
             remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
           completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
-  [_relationExecutor
-    doPutForTargetResource:[FPRestRemoteMasterDao resourceFromModel:vehicle]
-          targetSerializer:_vehicleSerializer
-              asynchronous:YES
-           completionQueue:_serialQueue
-             authorization:[self authorization]
-                   success:[self newPutSuccessBlk:complHandler]
-               redirection:[self newRedirectionBlk:complHandler]
-               clientError:[self newClientErrBlk:complHandler]
-    authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired]
-               serverError:[self newServerErrBlk:complHandler]
-          unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
-                  conflict:[self newConflictBlk:complHandler]
-         connectionFailure:[self newConnFailureBlk:complHandler]
-                   timeout:timeout
-              otherHeaders:[self addFpIfUnmodifiedSinceHeaderToHeader:@{} entity:vehicle]];
+  [self.relationExecutor doPutForTargetResource:[FPRestRemoteMasterDao resourceFromModel:vehicle]
+                               targetSerializer:_vehicleSerializer
+                                   asynchronous:YES
+                                completionQueue:self.serialQueue
+                                  authorization:[self authorization]
+                                        success:[self newPutSuccessBlk:complHandler]
+                                    redirection:[self newRedirectionBlk:complHandler]
+                                    clientError:[self newClientErrBlk:complHandler]
+                         authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired]
+                                    serverError:[self newServerErrBlk:complHandler]
+                               unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
+                                       conflict:[self newConflictBlk:complHandler]
+                              connectionFailure:[self newConnFailureBlk:complHandler]
+                                        timeout:timeout
+                                   otherHeaders:[self addFpIfUnmodifiedSinceHeaderToHeader:@{} entity:vehicle]];
 }
 
 - (void)deleteVehicle:(FPVehicle *)vehicle
@@ -313,22 +136,21 @@ passwordResetSerializer:(FPPasswordResetSerializer *)passwordResetSerializer
       remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
          authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
     completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
-  [_relationExecutor
-    doDeleteOfTargetResource:[FPRestRemoteMasterDao resourceFromModel:vehicle]
-     wouldBeTargetSerializer:_vehicleSerializer
-                asynchronous:YES
-             completionQueue:_serialQueue
-               authorization:[self authorization]
-                     success:[self newDeleteSuccessBlk:complHandler]
-                 redirection:[self newRedirectionBlk:complHandler]
-                 clientError:[self newClientErrBlk:complHandler]
-      authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired]
-                 serverError:[self newServerErrBlk:complHandler]
-            unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
-                    conflict:[self newConflictBlk:complHandler]
-           connectionFailure:[self newConnFailureBlk:complHandler]
-                     timeout:timeout
-                otherHeaders:[self addFpIfUnmodifiedSinceHeaderToHeader:@{} entity:vehicle]];
+  [self.relationExecutor doDeleteOfTargetResource:[FPRestRemoteMasterDao resourceFromModel:vehicle]
+                          wouldBeTargetSerializer:_vehicleSerializer
+                                     asynchronous:YES
+                                  completionQueue:self.serialQueue
+                                    authorization:[self authorization]
+                                          success:[self newDeleteSuccessBlk:complHandler]
+                                      redirection:[self newRedirectionBlk:complHandler]
+                                      clientError:[self newClientErrBlk:complHandler]
+                           authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired]
+                                      serverError:[self newServerErrBlk:complHandler]
+                                 unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
+                                         conflict:[self newConflictBlk:complHandler]
+                                connectionFailure:[self newConnFailureBlk:complHandler]
+                                          timeout:timeout
+                                     otherHeaders:[self addFpIfUnmodifiedSinceHeaderToHeader:@{} entity:vehicle]];
 }
 
 - (void)fetchVehicleWithGlobalId:(NSString *)globalId
@@ -337,24 +159,24 @@ passwordResetSerializer:(FPPasswordResetSerializer *)passwordResetSerializer
                  remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                     authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
                completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
-  [_relationExecutor doGetForURLString:globalId
-                       ifModifiedSince:nil
-                      targetSerializer:_vehicleSerializer
-                          asynchronous:YES
-                       completionQueue:_serialQueue
-                         authorization:[self authorization]
-                               success:[self newGetSuccessBlk:complHandler]
-                           redirection:[self newRedirectionBlk:complHandler]
-                           clientError:[self newClientErrBlk:complHandler]
-                authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired]
-                           serverError:[self newServerErrBlk:complHandler]
-                      unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
-                     connectionFailure:[self newConnFailureBlk:complHandler]
-                               timeout:timeout
-                           cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
-                          otherHeaders:[self addDateHeaderToHeaders:@{}
-                                                         headerName:_ifModifiedSinceHeaderName
-                                                              value:ifModifiedSince]];
+  [self.relationExecutor doGetForURLString:globalId
+                           ifModifiedSince:nil
+                          targetSerializer:_vehicleSerializer
+                              asynchronous:YES
+                           completionQueue:self.serialQueue
+                             authorization:[self authorization]
+                                   success:[self newGetSuccessBlk:complHandler]
+                               redirection:[self newRedirectionBlk:complHandler]
+                               clientError:[self newClientErrBlk:complHandler]
+                    authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired]
+                               serverError:[self newServerErrBlk:complHandler]
+                          unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
+                         connectionFailure:[self newConnFailureBlk:complHandler]
+                                   timeout:timeout
+                               cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
+                              otherHeaders:[self addDateHeaderToHeaders:@{}
+                                                             headerName:self.ifModifiedSinceHeaderName
+                                                                  value:ifModifiedSince]];
 }
 
 #pragma mark - FuelStation Operations
@@ -380,22 +202,21 @@ passwordResetSerializer:(FPPasswordResetSerializer *)passwordResetSerializer
                 remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                    authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
               completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
-  [_relationExecutor
-    doPutForTargetResource:[FPRestRemoteMasterDao resourceFromModel:fuelStation]
-          targetSerializer:_fuelStationSerializer
-              asynchronous:YES
-           completionQueue:_serialQueue
-             authorization:[self authorization]
-                   success:[self newPutSuccessBlk:complHandler]
-               redirection:[self newRedirectionBlk:complHandler]
-               clientError:[self newClientErrBlk:complHandler]
-    authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired]
-               serverError:[self newServerErrBlk:complHandler]
-          unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
-                  conflict:[self newConflictBlk:complHandler]
-         connectionFailure:[self newConnFailureBlk:complHandler]
-                   timeout:timeout
-              otherHeaders:[self addFpIfUnmodifiedSinceHeaderToHeader:@{} entity:fuelStation]];
+  [self.relationExecutor doPutForTargetResource:[FPRestRemoteMasterDao resourceFromModel:fuelStation]
+                               targetSerializer:_fuelStationSerializer
+                                   asynchronous:YES
+                                completionQueue:self.serialQueue
+                                  authorization:[self authorization]
+                                        success:[self newPutSuccessBlk:complHandler]
+                                    redirection:[self newRedirectionBlk:complHandler]
+                                    clientError:[self newClientErrBlk:complHandler]
+                         authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired]
+                                    serverError:[self newServerErrBlk:complHandler]
+                               unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
+                                       conflict:[self newConflictBlk:complHandler]
+                              connectionFailure:[self newConnFailureBlk:complHandler]
+                                        timeout:timeout
+                                   otherHeaders:[self addFpIfUnmodifiedSinceHeaderToHeader:@{} entity:fuelStation]];
 }
 
 - (void)deleteFuelStation:(FPFuelStation *)fuelStation
@@ -403,22 +224,21 @@ passwordResetSerializer:(FPPasswordResetSerializer *)passwordResetSerializer
           remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
              authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
         completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
-  [_relationExecutor
-    doDeleteOfTargetResource:[FPRestRemoteMasterDao resourceFromModel:fuelStation]
-     wouldBeTargetSerializer:_fuelStationSerializer
-                asynchronous:YES
-             completionQueue:_serialQueue
-               authorization:[self authorization]
-                     success:[self newDeleteSuccessBlk:complHandler]
-                 redirection:[self newRedirectionBlk:complHandler]
-                 clientError:[self newClientErrBlk:complHandler]
-      authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired]
-                 serverError:[self newServerErrBlk:complHandler]
-            unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
-                    conflict:[self newConflictBlk:complHandler]
-           connectionFailure:[self newConnFailureBlk:complHandler]
-                     timeout:timeout
-                otherHeaders:[self addFpIfUnmodifiedSinceHeaderToHeader:@{} entity:fuelStation]];
+  [self.relationExecutor doDeleteOfTargetResource:[FPRestRemoteMasterDao resourceFromModel:fuelStation]
+                          wouldBeTargetSerializer:_fuelStationSerializer
+                                     asynchronous:YES
+                                  completionQueue:self.serialQueue
+                                    authorization:[self authorization]
+                                          success:[self newDeleteSuccessBlk:complHandler]
+                                      redirection:[self newRedirectionBlk:complHandler]
+                                      clientError:[self newClientErrBlk:complHandler]
+                           authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired]
+                                      serverError:[self newServerErrBlk:complHandler]
+                                 unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
+                                         conflict:[self newConflictBlk:complHandler]
+                                connectionFailure:[self newConnFailureBlk:complHandler]
+                                          timeout:timeout
+                                     otherHeaders:[self addFpIfUnmodifiedSinceHeaderToHeader:@{} entity:fuelStation]];
 }
 
 - (void)fetchFuelstationWithGlobalId:(NSString *)globalId
@@ -427,22 +247,22 @@ passwordResetSerializer:(FPPasswordResetSerializer *)passwordResetSerializer
                      remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                         authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
                    completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
-  [_relationExecutor doGetForURLString:globalId
-                       ifModifiedSince:nil
-                      targetSerializer:_fuelStationSerializer
-                          asynchronous:YES
-                       completionQueue:_serialQueue
-                         authorization:[self authorization]
-                               success:[self newGetSuccessBlk:complHandler]
-                           redirection:[self newRedirectionBlk:complHandler]
-                           clientError:[self newClientErrBlk:complHandler]
-                authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired]
-                           serverError:[self newServerErrBlk:complHandler]
-                      unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
-                     connectionFailure:[self newConnFailureBlk:complHandler]
-                               timeout:timeout
-                           cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
-                          otherHeaders:[self addDateHeaderToHeaders:@{} headerName:_ifModifiedSinceHeaderName value:ifModifiedSince]];
+  [self.relationExecutor doGetForURLString:globalId
+                           ifModifiedSince:nil
+                          targetSerializer:_fuelStationSerializer
+                              asynchronous:YES
+                           completionQueue:self.serialQueue
+                             authorization:[self authorization]
+                                   success:[self newGetSuccessBlk:complHandler]
+                               redirection:[self newRedirectionBlk:complHandler]
+                               clientError:[self newClientErrBlk:complHandler]
+                    authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired]
+                               serverError:[self newServerErrBlk:complHandler]
+                          unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
+                         connectionFailure:[self newConnFailureBlk:complHandler]
+                                   timeout:timeout
+                               cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
+                              otherHeaders:[self addDateHeaderToHeaders:@{} headerName:self.ifModifiedSinceHeaderName value:ifModifiedSince]];
 }
 
 #pragma mark - Fuel Purchase Log Operations
@@ -468,21 +288,21 @@ passwordResetSerializer:(FPPasswordResetSerializer *)passwordResetSerializer
                     remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                        authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
                   completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
-  [_relationExecutor doPutForTargetResource:[FPRestRemoteMasterDao resourceFromModel:fuelPurchaseLog]
-                           targetSerializer:_fuelPurchaseLogSerializer
-                               asynchronous:YES
-                            completionQueue:_serialQueue
-                              authorization:[self authorization]
-                                    success:[self newPutSuccessBlk:complHandler]
-                                redirection:[self newRedirectionBlk:complHandler]
-                                clientError:[self newClientErrBlk:complHandler]
-                     authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired]
-                                serverError:[self newServerErrBlk:complHandler]
-                           unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
-                                   conflict:[self newConflictBlk:complHandler]
-                          connectionFailure:[self newConnFailureBlk:complHandler]
-                                    timeout:timeout
-                               otherHeaders:[self addFpIfUnmodifiedSinceHeaderToHeader:@{} entity:fuelPurchaseLog]];
+  [self.relationExecutor doPutForTargetResource:[FPRestRemoteMasterDao resourceFromModel:fuelPurchaseLog]
+                               targetSerializer:_fuelPurchaseLogSerializer
+                                   asynchronous:YES
+                                completionQueue:self.serialQueue
+                                  authorization:[self authorization]
+                                        success:[self newPutSuccessBlk:complHandler]
+                                    redirection:[self newRedirectionBlk:complHandler]
+                                    clientError:[self newClientErrBlk:complHandler]
+                         authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired]
+                                    serverError:[self newServerErrBlk:complHandler]
+                               unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
+                                       conflict:[self newConflictBlk:complHandler]
+                              connectionFailure:[self newConnFailureBlk:complHandler]
+                                        timeout:timeout
+                                   otherHeaders:[self addFpIfUnmodifiedSinceHeaderToHeader:@{} entity:fuelPurchaseLog]];
 }
 
 - (void)deleteFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
@@ -490,21 +310,21 @@ passwordResetSerializer:(FPPasswordResetSerializer *)passwordResetSerializer
               remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                  authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
             completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
-  [_relationExecutor doDeleteOfTargetResource:[FPRestRemoteMasterDao resourceFromModel:fuelPurchaseLog]
-                      wouldBeTargetSerializer:_fuelPurchaseLogSerializer
-                                 asynchronous:YES
-                              completionQueue:_serialQueue
-                                authorization:[self authorization]
-                                      success:[self newDeleteSuccessBlk:complHandler]
-                                  redirection:[self newRedirectionBlk:complHandler]
-                                  clientError:[self newClientErrBlk:complHandler]
-                       authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired]
-                                  serverError:[self newServerErrBlk:complHandler]
-                             unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
-                                     conflict:[self newConflictBlk:complHandler]
-                            connectionFailure:[self newConnFailureBlk:complHandler]
-                                      timeout:timeout
-                                 otherHeaders:[self addFpIfUnmodifiedSinceHeaderToHeader:@{} entity:fuelPurchaseLog]];
+  [self.relationExecutor doDeleteOfTargetResource:[FPRestRemoteMasterDao resourceFromModel:fuelPurchaseLog]
+                          wouldBeTargetSerializer:_fuelPurchaseLogSerializer
+                                     asynchronous:YES
+                                  completionQueue:self.serialQueue
+                                    authorization:[self authorization]
+                                          success:[self newDeleteSuccessBlk:complHandler]
+                                      redirection:[self newRedirectionBlk:complHandler]
+                                      clientError:[self newClientErrBlk:complHandler]
+                           authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired]
+                                      serverError:[self newServerErrBlk:complHandler]
+                                 unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
+                                         conflict:[self newConflictBlk:complHandler]
+                                connectionFailure:[self newConnFailureBlk:complHandler]
+                                          timeout:timeout
+                                     otherHeaders:[self addFpIfUnmodifiedSinceHeaderToHeader:@{} entity:fuelPurchaseLog]];
 }
 
 - (void)fetchFuelPurchaseLogWithGlobalId:(NSString *)globalId
@@ -513,22 +333,22 @@ passwordResetSerializer:(FPPasswordResetSerializer *)passwordResetSerializer
                          remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                             authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
                        completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
-  [_relationExecutor doGetForURLString:globalId
-                       ifModifiedSince:nil
-                      targetSerializer:_fuelPurchaseLogSerializer
-                          asynchronous:YES
-                       completionQueue:_serialQueue
-                         authorization:[self authorization]
-                               success:[self newGetSuccessBlk:complHandler]
-                           redirection:[self newRedirectionBlk:complHandler]
-                           clientError:[self newClientErrBlk:complHandler]
-                authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired]
-                           serverError:[self newServerErrBlk:complHandler]
-                      unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
-                     connectionFailure:[self newConnFailureBlk:complHandler]
-                               timeout:timeout
-                           cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
-                          otherHeaders:[self addDateHeaderToHeaders:@{} headerName:_ifModifiedSinceHeaderName value:ifModifiedSince]];
+  [self.relationExecutor doGetForURLString:globalId
+                           ifModifiedSince:nil
+                          targetSerializer:_fuelPurchaseLogSerializer
+                              asynchronous:YES
+                           completionQueue:self.serialQueue
+                             authorization:[self authorization]
+                                   success:[self newGetSuccessBlk:complHandler]
+                               redirection:[self newRedirectionBlk:complHandler]
+                               clientError:[self newClientErrBlk:complHandler]
+                    authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired]
+                               serverError:[self newServerErrBlk:complHandler]
+                          unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
+                         connectionFailure:[self newConnFailureBlk:complHandler]
+                                   timeout:timeout
+                               cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
+                              otherHeaders:[self addDateHeaderToHeaders:@{} headerName:self.ifModifiedSinceHeaderName value:ifModifiedSince]];
 }
 
 #pragma mark - Environment Log Operations
@@ -554,21 +374,21 @@ passwordResetSerializer:(FPPasswordResetSerializer *)passwordResetSerializer
                    remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                       authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
                  completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
-  [_relationExecutor doPutForTargetResource:[FPRestRemoteMasterDao resourceFromModel:environmentLog]
-                           targetSerializer:_environmentLogSerializer
-                               asynchronous:YES
-                            completionQueue:_serialQueue
-                              authorization:[self authorization]
-                                    success:[self newPutSuccessBlk:complHandler]
-                                redirection:[self newRedirectionBlk:complHandler]
-                                clientError:[self newClientErrBlk:complHandler]
-                     authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired]
-                                serverError:[self newServerErrBlk:complHandler]
-                           unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
-                                   conflict:[self newConflictBlk:complHandler]
-                          connectionFailure:[self newConnFailureBlk:complHandler]
-                                    timeout:timeout
-                               otherHeaders:[self addFpIfUnmodifiedSinceHeaderToHeader:@{} entity:environmentLog]];
+  [self.relationExecutor doPutForTargetResource:[FPRestRemoteMasterDao resourceFromModel:environmentLog]
+                               targetSerializer:_environmentLogSerializer
+                                   asynchronous:YES
+                                completionQueue:self.serialQueue
+                                  authorization:[self authorization]
+                                        success:[self newPutSuccessBlk:complHandler]
+                                    redirection:[self newRedirectionBlk:complHandler]
+                                    clientError:[self newClientErrBlk:complHandler]
+                         authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired]
+                                    serverError:[self newServerErrBlk:complHandler]
+                               unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
+                                       conflict:[self newConflictBlk:complHandler]
+                              connectionFailure:[self newConnFailureBlk:complHandler]
+                                        timeout:timeout
+                                   otherHeaders:[self addFpIfUnmodifiedSinceHeaderToHeader:@{} entity:environmentLog]];
 }
 
 - (void)deleteEnvironmentLog:(FPEnvironmentLog *)environmentLog
@@ -576,21 +396,21 @@ passwordResetSerializer:(FPPasswordResetSerializer *)passwordResetSerializer
              remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                 authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
            completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
-  [_relationExecutor doDeleteOfTargetResource:[FPRestRemoteMasterDao resourceFromModel:environmentLog]
-                      wouldBeTargetSerializer:_environmentLogSerializer
-                                 asynchronous:YES
-                              completionQueue:_serialQueue
-                                authorization:[self authorization]
-                                      success:[self newDeleteSuccessBlk:complHandler]
-                                  redirection:[self newRedirectionBlk:complHandler]
-                                  clientError:[self newClientErrBlk:complHandler]
-                       authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired]
-                                  serverError:[self newServerErrBlk:complHandler]
-                             unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
-                                     conflict:[self newConflictBlk:complHandler]
-                            connectionFailure:[self newConnFailureBlk:complHandler]
-                                      timeout:timeout
-                                 otherHeaders:[self addFpIfUnmodifiedSinceHeaderToHeader:@{} entity:environmentLog]];
+  [self.relationExecutor doDeleteOfTargetResource:[FPRestRemoteMasterDao resourceFromModel:environmentLog]
+                          wouldBeTargetSerializer:_environmentLogSerializer
+                                     asynchronous:YES
+                                  completionQueue:self.serialQueue
+                                    authorization:[self authorization]
+                                          success:[self newDeleteSuccessBlk:complHandler]
+                                      redirection:[self newRedirectionBlk:complHandler]
+                                      clientError:[self newClientErrBlk:complHandler]
+                           authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired]
+                                      serverError:[self newServerErrBlk:complHandler]
+                                 unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
+                                         conflict:[self newConflictBlk:complHandler]
+                                connectionFailure:[self newConnFailureBlk:complHandler]
+                                          timeout:timeout
+                                     otherHeaders:[self addFpIfUnmodifiedSinceHeaderToHeader:@{} entity:environmentLog]];
 }
 
 - (void)fetchEnvironmentLogWithGlobalId:(NSString *)globalId
@@ -599,220 +419,22 @@ passwordResetSerializer:(FPPasswordResetSerializer *)passwordResetSerializer
                         remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                            authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
                       completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
-  [_relationExecutor doGetForURLString:globalId
-                       ifModifiedSince:nil
-                      targetSerializer:_environmentLogSerializer
-                          asynchronous:YES
-                       completionQueue:_serialQueue
-                         authorization:[self authorization]
-                               success:[self newGetSuccessBlk:complHandler]
-                           redirection:[self newRedirectionBlk:complHandler]
-                           clientError:[self newClientErrBlk:complHandler]
-                authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired]
-                           serverError:[self newServerErrBlk:complHandler]
-                      unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
-                     connectionFailure:[self newConnFailureBlk:complHandler]
-                               timeout:timeout
-                           cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
-                          otherHeaders:[self addDateHeaderToHeaders:@{} headerName:_ifModifiedSinceHeaderName value:ifModifiedSince]];
-}
-
-#pragma mark - User Operations
-
-- (void)logoutUser:(FPUser *)user
-           timeout:(NSInteger)timeout
-   remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
- completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
-  [self doPostToRelation:[[user relations] objectForKey:PELMLogoutRelation]
-      resourceModelParam:user
-              serializer:_logoutSerializer
-                 timeout:timeout
-         remoteStoreBusy:busyHandler
-            authRequired:nil
-       completionHandler:complHandler
-            otherHeaders:@{}];
-}
-
-- (void)resendVerificationEmailForUser:(FPUser *)user
-                               timeout:(NSInteger)timeout
-                       remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
-                     completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
-  [self doPostToRelation:[[user relations] objectForKey:PELMSendVerificationEmailRelation]
-      resourceModelParam:user
-              serializer:_resendVerificationEmailSerializer
-                 timeout:timeout
-         remoteStoreBusy:busyHandler
-            authRequired:nil
-       completionHandler:complHandler
-            otherHeaders:@{}];
-}
-
-- (void)sendPasswordResetEmailToEmail:(NSString *)email
-                              timeout:(NSInteger)timeout
-                      remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
-                    completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
-  PELMLoginUser *unknownUser = [[PELMLoginUser alloc] init];
-  [unknownUser setEmail:email];
-  [self doPostToRelation:[_restApiRelations objectForKey:PELMSendPasswordResetEmailRelation]
-      resourceModelParam:unknownUser
-              serializer:_passwordResetSerializer
-                 timeout:timeout
-         remoteStoreBusy:busyHandler
-            authRequired:nil
-       completionHandler:complHandler
-            otherHeaders:@{}];
-}
-
-- (void)establishAccountForUser:(FPUser *)user
-                        timeout:(NSInteger)timeout
-                remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
-                   authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
-              completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
-  [self doPostToRelation:[_restApiRelations objectForKey:PELMUsersRelation]
-      resourceModelParam:user
-              serializer:_userSerializer
-                 timeout:timeout
-         remoteStoreBusy:busyHandler
-            authRequired:authRequired
-       completionHandler:complHandler
-            otherHeaders:@{_establishSessionHeaderName : @"true"}];
-}
-
-- (void)saveExistingUser:(FPUser *)user
-                 timeout:(NSInteger)timeout
-         remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
-            authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
-       completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
-  [_relationExecutor
-    doPutForTargetResource:[FPRestRemoteMasterDao resourceFromModel:user]
-          targetSerializer:_userSerializer
-              asynchronous:YES
-           completionQueue:_serialQueue
-             authorization:[self authorization]
-                   success:[self newPutSuccessBlk:complHandler]
-               redirection:[self newRedirectionBlk:complHandler]
-               clientError:[self newClientErrBlk:complHandler]
-    authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired]
-               serverError:[self newServerErrBlk:complHandler]
-          unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
-                  conflict:[self newConflictBlk:complHandler]
-         connectionFailure:[self newConnFailureBlk:complHandler]
-                   timeout:timeout
-              otherHeaders:[self addFpIfUnmodifiedSinceHeaderToHeader:@{} entity:user]];
-}
-
-- (void)loginWithEmail:(NSString *)email
-              password:(NSString *)password
-         loginRelation:(NSString *)loginRelation
-               timeout:(NSInteger)timeout
-       remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
-          authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
-     completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
-  NSMutableDictionary *headers = [NSMutableDictionary new];
-  [headers setObject:@"true" forKey:_establishSessionHeaderName];
-  PELMLoginUser *loginUser = [[PELMLoginUser alloc] init];
-  [loginUser setEmail:email];
-  [loginUser setPassword:password];
-  [self doPostToRelation:[_restApiRelations objectForKey:loginRelation]
-      resourceModelParam:loginUser
-              serializer:_loginSerializer
-                 timeout:timeout
-         remoteStoreBusy:busyHandler
-            authRequired:authRequired
-       completionHandler:complHandler
-            otherHeaders:headers];
-}
-
-- (void)loginWithEmail:(NSString *)email
-              password:(NSString *)password
-               timeout:(NSInteger)timeout
-       remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
-          authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
-     completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
-  [self loginWithEmail:email
-              password:password
-         loginRelation:PELMLoginRelation
-               timeout:timeout
-       remoteStoreBusy:busyHandler
-          authRequired:authRequired
-     completionHandler:complHandler];
-}
-
-- (void)lightLoginForUser:(FPUser *)user
-                 password:(NSString *)password
-                  timeout:(NSInteger)timeout
-          remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
-             authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
-        completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
-  [self loginWithEmail:[user email]
-              password:password
-         loginRelation:PELMLightLoginRelation
-               timeout:timeout
-       remoteStoreBusy:busyHandler
-          authRequired:authRequired
-     completionHandler:complHandler];
-}
-
-- (void)sendConfirmationEmailForUser:(FPUser *)user
-                             timeout:(NSInteger)timeout
-                     remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
-                        authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
-                   completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
-  [self doPostToRelation:[[user relations] objectForKey:FPSendEmailConfirmationRelation]
-      resourceModelParam:user
-              serializer:nil
-                 timeout:timeout
-         remoteStoreBusy:busyHandler
-            authRequired:authRequired
-       completionHandler:complHandler
-            otherHeaders:@{}];
-}
-
-- (void)deleteUser:(FPUser *)user
-           timeout:(NSInteger)timeout
-   remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
-      authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
- completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
-  [_relationExecutor
-    doDeleteOfTargetResource:[FPRestRemoteMasterDao resourceFromModel:user]
-     wouldBeTargetSerializer:_userSerializer
-                asynchronous:YES
-             completionQueue:_serialQueue
-               authorization:[self authorization]
-                     success:[self newDeleteSuccessBlk:complHandler]
-                 redirection:[self newRedirectionBlk:complHandler]
-                 clientError:[self newClientErrBlk:complHandler]
-      authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired]
-                 serverError:[self newServerErrBlk:complHandler]
-            unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
-                    conflict:[self newConflictBlk:complHandler]
-           connectionFailure:[self newConnFailureBlk:complHandler]
-                     timeout:timeout
-                otherHeaders:[self addFpIfUnmodifiedSinceHeaderToHeader:@{} entity:user]];
-}
-
-- (void)fetchUserWithGlobalId:(NSString *)globalId
-              ifModifiedSince:(NSDate *)ifModifiedSince
-                      timeout:(NSInteger)timeout
-              remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
-                 authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
-            completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
-  [_relationExecutor doGetForURLString:globalId
-                       ifModifiedSince:nil
-                      targetSerializer:_userSerializer
-                          asynchronous:YES
-                       completionQueue:_serialQueue
-                         authorization:[self authorization]
-                               success:[self newGetSuccessBlk:complHandler]
-                           redirection:[self newRedirectionBlk:complHandler]
-                           clientError:[self newClientErrBlk:complHandler]
-                authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired]
-                           serverError:[self newServerErrBlk:complHandler]
-                      unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
-                     connectionFailure:[self newConnFailureBlk:complHandler]
-                               timeout:timeout
-                           cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
-                          otherHeaders:[self addDateHeaderToHeaders:@{} headerName:_ifModifiedSinceHeaderName value:ifModifiedSince]];
+  [self.relationExecutor doGetForURLString:globalId
+                           ifModifiedSince:nil
+                          targetSerializer:_environmentLogSerializer
+                              asynchronous:YES
+                           completionQueue:self.serialQueue
+                             authorization:[self authorization]
+                                   success:[self newGetSuccessBlk:complHandler]
+                               redirection:[self newRedirectionBlk:complHandler]
+                               clientError:[self newClientErrBlk:complHandler]
+                    authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired]
+                               serverError:[self newServerErrBlk:complHandler]
+                          unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
+                         connectionFailure:[self newConnFailureBlk:complHandler]
+                                   timeout:timeout
+                               cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
+                              otherHeaders:[self addDateHeaderToHeaders:@{} headerName:self.ifModifiedSinceHeaderName value:ifModifiedSince]];
 }
 
 #pragma mark - Changelog Operations
@@ -823,22 +445,22 @@ passwordResetSerializer:(FPPasswordResetSerializer *)passwordResetSerializer
                    remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                       authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
                  completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
-  [_relationExecutor doGetForURLString:globalId
-                       ifModifiedSince:nil
-                      targetSerializer:_changelogSerializer
-                          asynchronous:YES
-                       completionQueue:_serialQueue
-                         authorization:[self authorization]
-                               success:[self newGetSuccessBlk:complHandler]
-                           redirection:[self newRedirectionBlk:complHandler]
-                           clientError:[self newClientErrBlk:complHandler]
-                authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired]
-                           serverError:[self newServerErrBlk:complHandler]
-                      unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
-                     connectionFailure:[self newConnFailureBlk:complHandler]
-                               timeout:timeout
-                           cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
-                          otherHeaders:[self addDateHeaderToHeaders:@{} headerName:_ifModifiedSinceHeaderName value:ifModifiedSince]];
+  [self.relationExecutor doGetForURLString:globalId
+                           ifModifiedSince:nil
+                          targetSerializer:_changelogSerializer
+                              asynchronous:YES
+                           completionQueue:self.serialQueue
+                             authorization:[self authorization]
+                                   success:[self newGetSuccessBlk:complHandler]
+                               redirection:[self newRedirectionBlk:complHandler]
+                               clientError:[self newClientErrBlk:complHandler]
+                    authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired]
+                               serverError:[self newServerErrBlk:complHandler]
+                          unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
+                         connectionFailure:[self newConnFailureBlk:complHandler]
+                                   timeout:timeout
+                               cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
+                              otherHeaders:[self addDateHeaderToHeaders:@{} headerName:self.ifModifiedSinceHeaderName value:ifModifiedSince]];
 }
 
 @end

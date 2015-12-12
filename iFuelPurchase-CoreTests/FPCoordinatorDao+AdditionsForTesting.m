@@ -16,7 +16,7 @@
 - (void)deleteUser:(PELMDaoErrorBlk)errorBlk {
   FPUser *user = [self userWithError:errorBlk];
   if (user) {
-    [self deleteUser:user error:errorBlk];
+    [self.localDao deleteUser:user error:errorBlk];
   }
 }
 

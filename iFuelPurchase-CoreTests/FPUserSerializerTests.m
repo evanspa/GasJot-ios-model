@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Paul Evans. All rights reserved.
 //
 
-#import "FPUserSerializer.h"
+#import "PEUserSerializer.h"
 #import "FPVehicleSerializer.h"
 #import "FPUser.h"
 #import "FPKnownMediaTypes.h"
@@ -23,11 +23,12 @@ describe(@"FPUserSerializer", ^{
     HCActionForEmbeddedResource actionForEmbeddedVehicle = ^(id user, id embeddedVehicle) {
       [(FPUser *)user addVehicle:embeddedVehicle];
     };
-    FPUserSerializer *userSerializer =
-      [[FPUserSerializer alloc] initWithMediaType:[FPKnownMediaTypes userMediaTypeWithVersion:@"0.0.1"]
+    PEUserSerializer *userSerializer =
+      [[PEUserSerializer alloc] initWithMediaType:[FPKnownMediaTypes userMediaTypeWithVersion:@"0.0.1"]
                                           charset:[HCCharset UTF8]
                   serializersForEmbeddedResources:@{[[vehicleSerializer mediaType] description] : vehicleSerializer}
-                      actionsForEmbeddedResources:@{[[vehicleSerializer mediaType] description] : actionForEmbeddedVehicle}];
+                      actionsForEmbeddedResources:@{[[vehicleSerializer mediaType] description] : actionForEmbeddedVehicle}
+                                        userClass:[FPUser class]];
 
     /*
      * ---------------------------------------------------------------------------

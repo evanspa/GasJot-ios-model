@@ -1,5 +1,5 @@
 //
-//  FPLogoutSerializer.h
+//  PELogoutSerializer.h
 //  PEFuelPurchase-Model
 //
 //  Created by Paul Evans on 7/28/15.
@@ -9,6 +9,6 @@
 #import <Foundation/Foundation.h>
 #import <PEHateoas-Client/HCHalJsonSerializerExtensionSupport.h>
 
-@interface FPLogoutSerializer : HCHalJsonSerializerExtensionSupport
+@interface PELogoutSerializer : HCHalJsonSerializerExtensionSupport
 
 @end

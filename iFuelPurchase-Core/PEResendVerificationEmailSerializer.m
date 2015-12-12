@@ -1,26 +1,19 @@
 //
-//  FPPasswordResetSerializer.m
+//  FPResendVerificationEmailSerializer.m
 //  PEFuelPurchase-Model
 //
-//  Created by Evans, Paul on 8/17/14.
-//  Copyright (c) 2014 Paul Evans. All rights reserved.
+//  Created by Paul Evans on 9/29/15.
+//  Copyright © 2015 Paul Evans. All rights reserved.
 //
 
-#import "FPPasswordResetSerializer.h"
-#import "PELMLoginUser.h"
-#import <PEObjc-Commons/NSMutableDictionary+PEAdditions.h>
+#import "PEResendVerificationEmailSerializer.h"
 
-NSString * const FPUnknownUserEmailKey = @"user/email";
-
-@implementation FPPasswordResetSerializer
+@implementation PEResendVerificationEmailSerializer
 
 #pragma mark - Serialization (Resource Model -> JSON Dictionary)
 
 - (NSDictionary *)dictionaryWithResourceModel:(id)resourceModel {
-  PELMLoginUser *unknownUser = (PELMLoginUser *)resourceModel;
-  NSMutableDictionary *dict = [NSMutableDictionary dictionary];
-  [dict setObjectIfNotNull:[unknownUser email] forKey:FPUnknownUserEmailKey];
-  return dict;
+  return @{};
 }
 
 #pragma mark - Deserialization (JSON Dictionary -> Resource Model)

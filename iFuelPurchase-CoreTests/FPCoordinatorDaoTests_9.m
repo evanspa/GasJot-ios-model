@@ -89,10 +89,10 @@ describe(@"FPCoordinatorDao", ^{
       [[theValue(prepareForEditSuccess) should] beYes];
       [[theValue([_coordTestCtx prepareForEditEntityDeleted]) should] beNo];
       [[theValue([_coordTestCtx prepareForEditEntityBeingEditedByOtherActor]) should] beNo];
-      user = [[_coordDao localDao] mainUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
+      user = (FPUser *)[[_coordDao localDao] mainUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
       [user shouldNotBeNil]; // user not pruned from main because vehicle (child) is in main_vehicle
       [[theValue([user synced]) should] beYes];
-      user = [[_coordDao localDao] masterUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
+      user = (FPUser *)[[_coordDao localDao] masterUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
       [user shouldNotBeNil];
       [[[user name] should] equal:@"Paul Evans"];
       [[[user email] should] equal:@"paul.evans@example.com"];
@@ -132,7 +132,7 @@ describe(@"FPCoordinatorDao", ^{
       // pruned from main_vehicle
       [_coordDao pruneAllSyncedEntitiesWithError:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[[_coordDao localDao] mainUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()] shouldBeNil];
-      user = [[_coordDao localDao] mainUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
+      user = (FPUser *)[[_coordDao localDao] mainUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
       [user shouldBeNil];
     });
   });

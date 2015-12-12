@@ -15,8 +15,9 @@
 #import "FPFuelStation.h"
 #import "FPEnvironmentLog.h"
 #import "FPFuelPurchaseLog.h"
+#import "PELocalDao.h"
 
-@interface FPLocalDao : NSObject
+@interface FPLocalDao : PELocalDao
 
 #pragma mark - Initializers
 
@@ -25,12 +26,6 @@
 #pragma mark - Initialize Database
 
 - (void)initializeDatabaseWithError:(PELMDaoErrorBlk)errorBlk;
-
-#pragma mark - Properties
-
-@property (nonatomic, readonly) PELMUtils *localModelUtils;
-
-@property (nonatomic, readonly) FMDatabaseQueue *databaseQueue;
 
 #pragma mark - System related
 
@@ -50,10 +45,6 @@
 #pragma mark - User
 
 - (NSDate *)mostRecentMasterUpdateForUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk;
-
-- (FPUser *)masterUserWithId:(NSNumber *)userId error:(PELMDaoErrorBlk)errorBlk;
-
-- (FPUser *)masterUserWithGlobalId:(NSString *)globalId error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)deleteUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk;
 
@@ -79,8 +70,6 @@
 
 - (NSInteger)totalNumSyncNeededEntitiesForUser:(FPUser *)user;
 
-- (void)saveNewLocalUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk;
-
 - (void)saveNewRemoteUser:(FPUser *)remoteUser
        andLinkToLocalUser:(FPUser *)localUser
 preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
@@ -90,32 +79,6 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
            andLinkToLocalUser:(FPUser *)localUser
 preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
                         error:(PELMDaoErrorBlk)errorBlk;
-
-- (FPUser *)userWithError:(PELMDaoErrorBlk)errorBlk;
-
-- (BOOL)prepareUserForEdit:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk;
-
-- (void)saveUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk;
-
-- (void)markAsDoneEditingImmediateSyncUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk;
-
-- (void)markAsDoneEditingUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk;
-
-- (void)reloadUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk;
-
-- (void)cancelEditOfUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk;
-
-- (FPUser *)markUserAsSyncInProgressWithError:(PELMDaoErrorBlk)errorBlk;
-
-- (void)cancelSyncForUser:(FPUser *)user
-             httpRespCode:(NSNumber *)httpRespCode
-                errorMask:(NSNumber *)errorMask
-                  retryAt:(NSDate *)retryAt
-                    error:(PELMDaoErrorBlk)errorBlk;
-
-- (BOOL)saveMasterUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk;
-
-- (void)markAsSyncCompleteForUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk;
 
 - (NSArray *)saveChangelog:(FPChangelog *)changelog
                    forUser:(FPUser *)user
@@ -979,11 +942,5 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
 
 - (void)markAsSyncCompleteForUpdatedEnvironmentLog:(FPEnvironmentLog *)environmentLog
                                              error:(PELMDaoErrorBlk)errorBlk;
-
-#pragma mark - User data access helpers (quasi-private)
-
-- (FPUser *)mainUserWithError:(PELMDaoErrorBlk)errorBlk;
-
-- (FPUser *)masterUserWithError:(PELMDaoErrorBlk)errorBlk;
 
 @end

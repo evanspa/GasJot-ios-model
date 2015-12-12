@@ -28,7 +28,6 @@
 		1824816E19B95DBD00A71C97 /* FPFuelStation.m in Sources */ = {isa = PBXBuildFile; fileRef = 1824816D19B95DBD00A71C97 /* FPFuelStation.m */; };
 		1824817119B95DCD00A71C97 /* FPFuelPurchaseLog.m in Sources */ = {isa = PBXBuildFile; fileRef = 1824817019B95DCD00A71C97 /* FPFuelPurchaseLog.m */; };
 		1824817419B95E2700A71C97 /* FPEnvironmentLog.m in Sources */ = {isa = PBXBuildFile; fileRef = 1824817319B95E2700A71C97 /* FPEnvironmentLog.m */; };
-		18417F401AA179D3007B8489 /* FPLoginSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 18417F3F1AA179D3007B8489 /* FPLoginSerializer.m */; };
 		18417F441AA17FDD007B8489 /* PELMUser.m in Sources */ = {isa = PBXBuildFile; fileRef = 18417F431AA17FDD007B8489 /* PELMUser.m */; };
 		187289E119FA147B00B5D7B0 /* FPEnvironmentLogSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 187289E019FA147B00B5D7B0 /* FPEnvironmentLogSerializer.m */; };
 		18823C2019B80B3B001DB778 /* FPVehicleSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 18823C1F19B80B3B001DB778 /* FPVehicleSerializer.m */; };
@@ -51,13 +50,18 @@
 		18F1140019C159420013A903 /* FPChangelogSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 18F113FF19C159420013A903 /* FPChangelogSerializer.m */; };
 		18F23A9F19A150330059DA22 /* FPCoordinatorDao.m in Sources */ = {isa = PBXBuildFile; fileRef = 18F23A9E19A150330059DA22 /* FPCoordinatorDao.m */; };
 		18F23AA919A153460059DA22 /* FPRemoteDaoErrorDomains.m in Sources */ = {isa = PBXBuildFile; fileRef = 18F23AA819A153460059DA22 /* FPRemoteDaoErrorDomains.m */; };
-		18F23AAC19A1537F0059DA22 /* FPUserSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 18F23AAB19A1537F0059DA22 /* FPUserSerializer.m */; };
 		18F23AB019A1EF6D0059DA22 /* FPRestRemoteMasterDao.m in Sources */ = {isa = PBXBuildFile; fileRef = 18F23AAF19A1EF6D0059DA22 /* FPRestRemoteMasterDao.m */; };
 		18F23AB519A1F4730059DA22 /* FPErrorDomains.m in Sources */ = {isa = PBXBuildFile; fileRef = 18F23AB419A1F4730059DA22 /* FPErrorDomains.m */; };
 		18F5FD23198D1DC100D6BB13 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 18F5FD21198D1D6A00D6BB13 /* libsqlite3.dylib */; };
-		CA0520891BBB216F00075974 /* FPResendVerificationEmailSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = CA0520881BBB216F00075974 /* FPResendVerificationEmailSerializer.m */; };
+		CA0520891BBB216F00075974 /* PEResendVerificationEmailSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = CA0520881BBB216F00075974 /* PEResendVerificationEmailSerializer.m */; };
 		CA27A5591BCCA50300CBD4B9 /* FPStats.m in Sources */ = {isa = PBXBuildFile; fileRef = CA27A5581BCCA50300CBD4B9 /* FPStats.m */; };
-		CA4F2DA71BC22209003887C8 /* FPPasswordResetSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = CA4F2DA61BC22209003887C8 /* FPPasswordResetSerializer.m */; };
+		CA4690AE1C1BBD4600E4718E /* PELocalDao.m in Sources */ = {isa = PBXBuildFile; fileRef = CA4690AD1C1BBD4600E4718E /* PELocalDao.m */; };
+		CA4690BF1C1BDF6400E4718E /* PEUserSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = CA4690BE1C1BDF6400E4718E /* PEUserSerializer.m */; };
+		CA4690C21C1BE39900E4718E /* PELoginSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = CA4690C11C1BE39900E4718E /* PELoginSerializer.m */; };
+		CA4690C51C1BE54300E4718E /* PELogoutSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = CA4690C41C1BE54300E4718E /* PELogoutSerializer.m */; };
+		CA4690C81C1BE68A00E4718E /* PERestRemoteMasterDao.m in Sources */ = {isa = PBXBuildFile; fileRef = CA4690C71C1BE68A00E4718E /* PERestRemoteMasterDao.m */; };
+		CA4690CB1C1C762300E4718E /* PECoordinatorDao.m in Sources */ = {isa = PBXBuildFile; fileRef = CA4690CA1C1C762300E4718E /* PECoordinatorDao.m */; };
+		CA4F2DA71BC22209003887C8 /* PEPasswordResetSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = CA4F2DA61BC22209003887C8 /* PEPasswordResetSerializer.m */; };
 		CA7D5AAE1B3B07B500433581 /* PELMLoginUser.m in Sources */ = {isa = PBXBuildFile; fileRef = CA7D5AAD1B3B07B500433581 /* PELMLoginUser.m */; };
 		CA8344D21BE87421008755C9 /* FPCoordinatorDaoTests_1.m in Sources */ = {isa = PBXBuildFile; fileRef = 182267E11A5BA75200242806 /* FPCoordinatorDaoTests_1.m */; };
 		CA8344D31BE87421008755C9 /* FPCoordinatorDaoTests_2.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D9DBC61A5CD98A00747936 /* FPCoordinatorDaoTests_2.m */; };
@@ -77,7 +81,6 @@
 		CABC952E1BE29750004FFC06 /* FPStatsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CA27A55F1BCD862C00CBD4B9 /* FPStatsTests.m */; };
 		CABC953E1BE29E0D004FFC06 /* FPLocalDaoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 18156D2719918EC600C93FF4 /* FPLocalDaoTests.m */; };
 		CABF51801BD602780083B460 /* FPUserSerializerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 18D8C11719C3EEF0006C65F9 /* FPUserSerializerTests.m */; };
-		CADD42491B681756005E1DF8 /* FPLogoutSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = CADD42481B681756005E1DF8 /* FPLogoutSerializer.m */; };
 		CAFC844E1B98AC9500FAEB66 /* FPChangelog.m in Sources */ = {isa = PBXBuildFile; fileRef = CAFC844D1B98AC9500FAEB66 /* FPChangelog.m */; };
 /* End PBXBuildFile section */
 
@@ -137,8 +140,6 @@
 		1824817019B95DCD00A71C97 /* FPFuelPurchaseLog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FPFuelPurchaseLog.m; sourceTree = "<group>"; };
 		1824817219B95E2700A71C97 /* FPEnvironmentLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FPEnvironmentLog.h; sourceTree = "<group>"; };
 		1824817319B95E2700A71C97 /* FPEnvironmentLog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FPEnvironmentLog.m; sourceTree = "<group>"; };
-		18417F3E1AA179D3007B8489 /* FPLoginSerializer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FPLoginSerializer.h; sourceTree = "<group>"; };
-		18417F3F1AA179D3007B8489 /* FPLoginSerializer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FPLoginSerializer.m; sourceTree = "<group>"; };
 		18417F421AA17FDD007B8489 /* PELMUser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PELMUser.h; sourceTree = "<group>"; };
 		18417F431AA17FDD007B8489 /* PELMUser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PELMUser.m; sourceTree = "<group>"; };
 		185E821919939B1300B5B102 /* FPModelSupportTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FPModelSupportTests.m; sourceTree = "<group>"; };
@@ -191,8 +192,6 @@
 		18F23A9E19A150330059DA22 /* FPCoordinatorDao.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FPCoordinatorDao.m; sourceTree = "<group>"; };
 		18F23AA719A153460059DA22 /* FPRemoteDaoErrorDomains.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FPRemoteDaoErrorDomains.h; sourceTree = "<group>"; };
 		18F23AA819A153460059DA22 /* FPRemoteDaoErrorDomains.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FPRemoteDaoErrorDomains.m; sourceTree = "<group>"; };
-		18F23AAA19A1537F0059DA22 /* FPUserSerializer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FPUserSerializer.h; sourceTree = "<group>"; };
-		18F23AAB19A1537F0059DA22 /* FPUserSerializer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FPUserSerializer.m; sourceTree = "<group>"; };
 		18F23AAD19A1EEC70059DA22 /* FPRemoteMasterDao.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FPRemoteMasterDao.h; sourceTree = "<group>"; };
 		18F23AAE19A1EF6D0059DA22 /* FPRestRemoteMasterDao.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FPRestRemoteMasterDao.h; sourceTree = "<group>"; };
 		18F23AAF19A1EF6D0059DA22 /* FPRestRemoteMasterDao.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FPRestRemoteMasterDao.m; sourceTree = "<group>"; };
@@ -204,19 +203,30 @@
 		97D994DB608A1FC554052190 /* libPods-PEFuelPurchase-ModelTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-PEFuelPurchase-ModelTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		9A6BD3B0D574C7E922BFBF8D /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 		A6C811B0429F450C845608ED /* libPods-iFuelPurchase-CoreTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-iFuelPurchase-CoreTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		CA0520871BBB216F00075974 /* FPResendVerificationEmailSerializer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FPResendVerificationEmailSerializer.h; sourceTree = "<group>"; };
-		CA0520881BBB216F00075974 /* FPResendVerificationEmailSerializer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FPResendVerificationEmailSerializer.m; sourceTree = "<group>"; };
+		CA0520871BBB216F00075974 /* PEResendVerificationEmailSerializer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PEResendVerificationEmailSerializer.h; sourceTree = "<group>"; };
+		CA0520881BBB216F00075974 /* PEResendVerificationEmailSerializer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PEResendVerificationEmailSerializer.m; sourceTree = "<group>"; };
 		CA27A5571BCCA50300CBD4B9 /* FPStats.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FPStats.h; sourceTree = "<group>"; };
 		CA27A5581BCCA50300CBD4B9 /* FPStats.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FPStats.m; sourceTree = "<group>"; };
 		CA27A55F1BCD862C00CBD4B9 /* FPStatsTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FPStatsTests.m; sourceTree = "<group>"; };
-		CA4F2DA51BC22209003887C8 /* FPPasswordResetSerializer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FPPasswordResetSerializer.h; sourceTree = "<group>"; };
-		CA4F2DA61BC22209003887C8 /* FPPasswordResetSerializer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FPPasswordResetSerializer.m; sourceTree = "<group>"; };
+		CA4690AC1C1BBD4600E4718E /* PELocalDao.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PELocalDao.h; sourceTree = "<group>"; };
+		CA4690AD1C1BBD4600E4718E /* PELocalDao.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PELocalDao.m; sourceTree = "<group>"; };
+		CA4690AF1C1BDB1900E4718E /* PERemoteMasterDao.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PERemoteMasterDao.h; sourceTree = "<group>"; };
+		CA4690BD1C1BDF6400E4718E /* PEUserSerializer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PEUserSerializer.h; sourceTree = "<group>"; };
+		CA4690BE1C1BDF6400E4718E /* PEUserSerializer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PEUserSerializer.m; sourceTree = "<group>"; };
+		CA4690C01C1BE39900E4718E /* PELoginSerializer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PELoginSerializer.h; sourceTree = "<group>"; };
+		CA4690C11C1BE39900E4718E /* PELoginSerializer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PELoginSerializer.m; sourceTree = "<group>"; };
+		CA4690C31C1BE54300E4718E /* PELogoutSerializer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PELogoutSerializer.h; sourceTree = "<group>"; };
+		CA4690C41C1BE54300E4718E /* PELogoutSerializer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PELogoutSerializer.m; sourceTree = "<group>"; };
+		CA4690C61C1BE68A00E4718E /* PERestRemoteMasterDao.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PERestRemoteMasterDao.h; sourceTree = "<group>"; };
+		CA4690C71C1BE68A00E4718E /* PERestRemoteMasterDao.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PERestRemoteMasterDao.m; sourceTree = "<group>"; };
+		CA4690C91C1C762300E4718E /* PECoordinatorDao.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PECoordinatorDao.h; sourceTree = "<group>"; };
+		CA4690CA1C1C762300E4718E /* PECoordinatorDao.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PECoordinatorDao.m; sourceTree = "<group>"; };
+		CA4F2DA51BC22209003887C8 /* PEPasswordResetSerializer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PEPasswordResetSerializer.h; sourceTree = "<group>"; };
+		CA4F2DA61BC22209003887C8 /* PEPasswordResetSerializer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PEPasswordResetSerializer.m; sourceTree = "<group>"; };
 		CA73FB4B1B2CF37F00451D50 /* FPCoordinatorDaoTests_11.1.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FPCoordinatorDaoTests_11.1.m; sourceTree = "<group>"; };
 		CA7D5AAC1B3B07B500433581 /* PELMLoginUser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PELMLoginUser.h; sourceTree = "<group>"; };
 		CA7D5AAD1B3B07B500433581 /* PELMLoginUser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PELMLoginUser.m; sourceTree = "<group>"; };
 		CA848CE01B2F660500411A09 /* FPCoordinatorDaoTests_8_1.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FPCoordinatorDaoTests_8_1.m; sourceTree = "<group>"; };
-		CADD42471B681756005E1DF8 /* FPLogoutSerializer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FPLogoutSerializer.h; sourceTree = "<group>"; };
-		CADD42481B681756005E1DF8 /* FPLogoutSerializer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FPLogoutSerializer.m; sourceTree = "<group>"; };
 		CAFC844C1B98AC9500FAEB66 /* FPChangelog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FPChangelog.h; sourceTree = "<group>"; };
 		CAFC844D1B98AC9500FAEB66 /* FPChangelog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FPChangelog.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -285,6 +295,7 @@
 		1800C9E219A8E4AE00ECD51A /* PE Local Model */ = {
 			isa = PBXGroup;
 			children = (
+				CA4690A81C1BBD0E00E4718E /* DAO */,
 				183DE9F41A5D8D8E0065F600 /* Notifications */,
 				18F113FC19C159120013A903 /* Model JSON Serializers */,
 				1800C9E819A8E73A00ECD51A /* DDL */,
@@ -539,15 +550,6 @@
 				1800F3C019D52210004DCEC1 /* Notification Utils */,
 			);
 			name = Notifications;
-			sourceTree = "<group>";
-		};
-		18417F3D1AA1797C007B8489 /* Login Serializer */ = {
-			isa = PBXGroup;
-			children = (
-				18417F3E1AA179D3007B8489 /* FPLoginSerializer.h */,
-				18417F3F1AA179D3007B8489 /* FPLoginSerializer.m */,
-			);
-			name = "Login Serializer";
 			sourceTree = "<group>";
 		};
 		18417F411AA17FBD007B8489 /* Base User */ = {
@@ -811,16 +813,11 @@
 		18F23AA419A152F80059DA22 /* Model JSON Serializers */ = {
 			isa = PBXGroup;
 			children = (
-				CA4F2DA41BC2217C003887C8 /* Send Password Reset Email Serializer */,
-				CA0520861BBB214A00075974 /* Re-send Verification Email Serializer */,
 				18F113FD19C159200013A903 /* Change Log Serializer */,
-				CADD42461B68172B005E1DF8 /* Logout Serializer */,
-				18417F3D1AA1797C007B8489 /* Login Serializer */,
 				187289DE19FA145C00B5D7B0 /* Environment Log */,
 				18EC862719E81D45006C104A /* Fuel Purchase Log */,
 				188A03B919DFACFE005C14D8 /* Fuel Station */,
 				18823C1D19B80B1B001DB778 /* Vehicle Serializer */,
-				18F23AA619A153170059DA22 /* User Serializer */,
 			);
 			name = "Model JSON Serializers";
 			sourceTree = "<group>";
@@ -834,15 +831,6 @@
 			name = "HAL/JSON REST API-based DAO";
 			sourceTree = "<group>";
 		};
-		18F23AA619A153170059DA22 /* User Serializer */ = {
-			isa = PBXGroup;
-			children = (
-				18F23AAA19A1537F0059DA22 /* FPUserSerializer.h */,
-				18F23AAB19A1537F0059DA22 /* FPUserSerializer.m */,
-			);
-			name = "User Serializer";
-			sourceTree = "<group>";
-		};
 		18F23AB119A1F4180059DA22 /* Error Handling */ = {
 			isa = PBXGroup;
 			children = (
@@ -850,15 +838,6 @@
 				18F23AB419A1F4730059DA22 /* FPErrorDomains.m */,
 			);
 			name = "Error Handling";
-			sourceTree = "<group>";
-		};
-		CA0520861BBB214A00075974 /* Re-send Verification Email Serializer */ = {
-			isa = PBXGroup;
-			children = (
-				CA0520871BBB216F00075974 /* FPResendVerificationEmailSerializer.h */,
-				CA0520881BBB216F00075974 /* FPResendVerificationEmailSerializer.m */,
-			);
-			name = "Re-send Verification Email Serializer";
 			sourceTree = "<group>";
 		};
 		CA27A5561BCCA4B600CBD4B9 /* Stats */ = {
@@ -878,11 +857,122 @@
 			name = Stats;
 			sourceTree = "<group>";
 		};
-		CA4F2DA41BC2217C003887C8 /* Send Password Reset Email Serializer */ = {
+		CA4690A81C1BBD0E00E4718E /* DAO */ = {
 			isa = PBXGroup;
 			children = (
-				CA4F2DA51BC22209003887C8 /* FPPasswordResetSerializer.h */,
-				CA4F2DA61BC22209003887C8 /* FPPasswordResetSerializer.m */,
+				CA4690A91C1BBD1500E4718E /* Local DAO */,
+				CA4690AB1C1BBD2700E4718E /* Remote DAO */,
+				CA4690AA1C1BBD1D00E4718E /* Coordinator DAO */,
+			);
+			name = DAO;
+			sourceTree = "<group>";
+		};
+		CA4690A91C1BBD1500E4718E /* Local DAO */ = {
+			isa = PBXGroup;
+			children = (
+				CA4690AC1C1BBD4600E4718E /* PELocalDao.h */,
+				CA4690AD1C1BBD4600E4718E /* PELocalDao.m */,
+			);
+			name = "Local DAO";
+			sourceTree = "<group>";
+		};
+		CA4690AA1C1BBD1D00E4718E /* Coordinator DAO */ = {
+			isa = PBXGroup;
+			children = (
+				CA4690C91C1C762300E4718E /* PECoordinatorDao.h */,
+				CA4690CA1C1C762300E4718E /* PECoordinatorDao.m */,
+			);
+			name = "Coordinator DAO";
+			sourceTree = "<group>";
+		};
+		CA4690AB1C1BBD2700E4718E /* Remote DAO */ = {
+			isa = PBXGroup;
+			children = (
+				CA4690B01C1BDBBD00E4718E /* Impl */,
+				CA4690AF1C1BDB1900E4718E /* PERemoteMasterDao.h */,
+			);
+			name = "Remote DAO";
+			sourceTree = "<group>";
+		};
+		CA4690B01C1BDBBD00E4718E /* Impl */ = {
+			isa = PBXGroup;
+			children = (
+				CA4690B11C1BDBCA00E4718E /* REST */,
+				CA4690B31C1BDBE300E4718E /* Model JSON Serializers */,
+				CA4690B41C1BDBFA00E4718E /* HAL/JSON REST API-based DAO */,
+			);
+			name = Impl;
+			sourceTree = "<group>";
+		};
+		CA4690B11C1BDBCA00E4718E /* REST */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = REST;
+			sourceTree = "<group>";
+		};
+		CA4690B31C1BDBE300E4718E /* Model JSON Serializers */ = {
+			isa = PBXGroup;
+			children = (
+				CA4690B91C1BDC9400E4718E /* Send Password Reset Email Serializer */,
+				CA4690B81C1BDC8600E4718E /* Re-send Verification Email Serializer */,
+				CA4690B71C1BDC7C00E4718E /* Logout Serializer */,
+				CA4690B61C1BDC7200E4718E /* Login Serializer */,
+				CA4690B51C1BDC6200E4718E /* User Serializer */,
+			);
+			name = "Model JSON Serializers";
+			sourceTree = "<group>";
+		};
+		CA4690B41C1BDBFA00E4718E /* HAL/JSON REST API-based DAO */ = {
+			isa = PBXGroup;
+			children = (
+				CA4690C61C1BE68A00E4718E /* PERestRemoteMasterDao.h */,
+				CA4690C71C1BE68A00E4718E /* PERestRemoteMasterDao.m */,
+			);
+			name = "HAL/JSON REST API-based DAO";
+			sourceTree = "<group>";
+		};
+		CA4690B51C1BDC6200E4718E /* User Serializer */ = {
+			isa = PBXGroup;
+			children = (
+				CA4690BD1C1BDF6400E4718E /* PEUserSerializer.h */,
+				CA4690BE1C1BDF6400E4718E /* PEUserSerializer.m */,
+			);
+			name = "User Serializer";
+			sourceTree = "<group>";
+		};
+		CA4690B61C1BDC7200E4718E /* Login Serializer */ = {
+			isa = PBXGroup;
+			children = (
+				CA4690C01C1BE39900E4718E /* PELoginSerializer.h */,
+				CA4690C11C1BE39900E4718E /* PELoginSerializer.m */,
+			);
+			name = "Login Serializer";
+			sourceTree = "<group>";
+		};
+		CA4690B71C1BDC7C00E4718E /* Logout Serializer */ = {
+			isa = PBXGroup;
+			children = (
+				CA4690C31C1BE54300E4718E /* PELogoutSerializer.h */,
+				CA4690C41C1BE54300E4718E /* PELogoutSerializer.m */,
+			);
+			name = "Logout Serializer";
+			sourceTree = "<group>";
+		};
+		CA4690B81C1BDC8600E4718E /* Re-send Verification Email Serializer */ = {
+			isa = PBXGroup;
+			children = (
+				CA0520871BBB216F00075974 /* PEResendVerificationEmailSerializer.h */,
+				CA0520881BBB216F00075974 /* PEResendVerificationEmailSerializer.m */,
+			);
+			name = "Re-send Verification Email Serializer";
+			sourceTree = "<group>";
+		};
+		CA4690B91C1BDC9400E4718E /* Send Password Reset Email Serializer */ = {
+			isa = PBXGroup;
+			children = (
+				CA4F2DA51BC22209003887C8 /* PEPasswordResetSerializer.h */,
+				CA4F2DA61BC22209003887C8 /* PEPasswordResetSerializer.m */,
 			);
 			name = "Send Password Reset Email Serializer";
 			sourceTree = "<group>";
@@ -894,15 +984,6 @@
 				CA7D5AAD1B3B07B500433581 /* PELMLoginUser.m */,
 			);
 			name = "Login User";
-			sourceTree = "<group>";
-		};
-		CADD42461B68172B005E1DF8 /* Logout Serializer */ = {
-			isa = PBXGroup;
-			children = (
-				CADD42471B681756005E1DF8 /* FPLogoutSerializer.h */,
-				CADD42481B681756005E1DF8 /* FPLogoutSerializer.m */,
-			);
-			name = "Logout Serializer";
 			sourceTree = "<group>";
 		};
 		CAFC844B1B98AC4E00FAEB66 /* Change Log */ = {
@@ -1034,16 +1115,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CADD42491B681756005E1DF8 /* FPLogoutSerializer.m in Sources */,
+				CA4690AE1C1BBD4600E4718E /* PELocalDao.m in Sources */,
 				CA27A5591BCCA50300CBD4B9 /* FPStats.m in Sources */,
 				1824816E19B95DBD00A71C97 /* FPFuelStation.m in Sources */,
 				187289E119FA147B00B5D7B0 /* FPEnvironmentLogSerializer.m in Sources */,
 				18823C2019B80B3B001DB778 /* FPVehicleSerializer.m in Sources */,
 				18D0803719859DBA0076A71E /* FPLocalDao.m in Sources */,
+				CA4690CB1C1C762300E4718E /* PECoordinatorDao.m in Sources */,
 				18D8C12119C532DA006C65F9 /* FPKnownMediaTypes.m in Sources */,
 				18F23AB019A1EF6D0059DA22 /* FPRestRemoteMasterDao.m in Sources */,
 				18D8C10E19C3EB20006C65F9 /* PELMJsonMemberNames.m in Sources */,
 				1800C9E719A8E4E900ECD51A /* PELMUtils.m in Sources */,
+				CA4690C21C1BE39900E4718E /* PELoginSerializer.m in Sources */,
 				18C266A919843A48000BD684 /* FPUser.m in Sources */,
 				18C266AD19843A87000BD684 /* PELMModelSupport.m in Sources */,
 				18417F441AA17FDD007B8489 /* PELMUser.m in Sources */,
@@ -1056,18 +1139,19 @@
 				18D0802F198595070076A71E /* PELMMasterSupport.m in Sources */,
 				18F23AA919A153460059DA22 /* FPRemoteDaoErrorDomains.m in Sources */,
 				1800F3C319D5222B004DCEC1 /* PELMNotificationUtils.m in Sources */,
-				CA4F2DA71BC22209003887C8 /* FPPasswordResetSerializer.m in Sources */,
+				CA4690BF1C1BDF6400E4718E /* PEUserSerializer.m in Sources */,
+				CA4F2DA71BC22209003887C8 /* PEPasswordResetSerializer.m in Sources */,
 				1824817119B95DCD00A71C97 /* FPFuelPurchaseLog.m in Sources */,
 				18F1140019C159420013A903 /* FPChangelogSerializer.m in Sources */,
+				CA4690C51C1BE54300E4718E /* PELogoutSerializer.m in Sources */,
 				CA7D5AAE1B3B07B500433581 /* PELMLoginUser.m in Sources */,
-				18F23AAC19A1537F0059DA22 /* FPUserSerializer.m in Sources */,
+				CA4690C81C1BE68A00E4718E /* PERestRemoteMasterDao.m in Sources */,
 				18F23AB519A1F4730059DA22 /* FPErrorDomains.m in Sources */,
 				1800C9EB19A8E75C00ECD51A /* PELMDDL.m in Sources */,
 				18EC862A19E852AC006C104A /* FPFuelPurchaseLogSerializer.m in Sources */,
-				CA0520891BBB216F00075974 /* FPResendVerificationEmailSerializer.m in Sources */,
+				CA0520891BBB216F00075974 /* PEResendVerificationEmailSerializer.m in Sources */,
 				1824817419B95E2700A71C97 /* FPEnvironmentLog.m in Sources */,
 				1882CAF419889B7500A00E67 /* FPVehicle.m in Sources */,
-				18417F401AA179D3007B8489 /* FPLoginSerializer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

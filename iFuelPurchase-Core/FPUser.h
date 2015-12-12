@@ -17,7 +17,6 @@ FOUNDATION_EXPORT NSString * const FPVehiclesRelation;
 FOUNDATION_EXPORT NSString * const FPFuelStationsRelation;
 FOUNDATION_EXPORT NSString * const FPFuelPurchaseLogsRelation;
 FOUNDATION_EXPORT NSString * const FPEnvironmentLogsRelation;
-FOUNDATION_EXPORT NSString * const FPSendEmailConfirmationRelation;
 
 FOUNDATION_EXPORT NSString * const FPUserNameField;
 FOUNDATION_EXPORT NSString * const FPUserEmailField;

@@ -16,7 +16,7 @@ typedef void (^FPSavedNewEntityCompletionHandler)(FPUser *, NSError *);
 
 typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
 
-@interface FPCoordinatorDao : NSObject
+@interface FPCoordinatorDao : FPLocalDao
 
 #pragma mark - Initializers
 
@@ -74,16 +74,6 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
 
 @property (nonatomic) NSString *authToken;
 
-@property (nonatomic, readonly) FPLocalDao *localDao;
-
-#pragma mark - Pruning
-
-- (void)pruneAllSyncedEntitiesWithError:(PELMDaoErrorBlk)errorBlk;
-
-#pragma mark - System
-
-- (void)globalCancelSyncInProgressWithError:(PELMDaoErrorBlk)error;
-
 #pragma mark - Flushing All Unsynced Edits to Remote Master
 
 - (NSInteger)flushAllUnsyncedEditsToRemoteForUser:(FPUser *)user
@@ -98,29 +88,6 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
                                             error:(PELMDaoErrorBlk)errorBlk;
 
 #pragma mark - User
-
-- (void)deleteUser:(FPUser *)user
-             error:(PELMDaoErrorBlk)errorBlk;
-
-- (NSInteger)numUnsyncedVehiclesForUser:(FPUser *)user;
-
-- (NSInteger)numUnsyncedFuelStationsForUser:(FPUser *)user;
-
-- (NSInteger)numUnsyncedFuelPurchaseLogsForUser:(FPUser *)user;
-
-- (NSInteger)numUnsyncedEnvironmentLogsForUser:(FPUser *)user;
-
-- (NSInteger)totalNumUnsyncedEntitiesForUser:(FPUser *)user;
-
-- (NSInteger)numSyncNeededVehiclesForUser:(FPUser *)user;
-
-- (NSInteger)numSyncNeededFuelStationsForUser:(FPUser *)user;
-
-- (NSInteger)numSyncNeededFuelPurchaseLogsForUser:(FPUser *)user;
-
-- (NSInteger)numSyncNeededEnvironmentLogsForUser:(FPUser *)user;
-
-- (NSInteger)totalNumSyncNeededEntitiesForUser:(FPUser *)user;
 
 - (BOOL)doesUserHaveAnyUnsyncedEntities:(FPUser *)user;
 
@@ -219,23 +186,7 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk;
            tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk
           addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk;
 
-- (NSArray *)saveChangelog:(FPChangelog *)changelog
-                   forUser:(FPUser *)user
-                     error:(PELMDaoErrorBlk)errorBlk;
-
-- (void)reloadUser:(FPUser *)user
-             error:(PELMDaoErrorBlk)errorBlk;
-
-- (void)cancelEditOfUser:(FPUser *)user
-                   error:(PELMDaoErrorBlk)errorBlk;
-
 #pragma mark - Vehicle
-
-- (void)copyVehicleToMaster:(FPVehicle *)vehicle
-                      error:(PELMDaoErrorBlk)errorBlk;
-
-- (NSInteger)numVehiclesForUser:(FPUser *)user
-                          error:(PELMDaoErrorBlk)errorBlk;
 
 - (FPVehicle *)vehicleWithName:(NSString *)name
                  defaultOctane:(NSNumber *)defaultOctane
@@ -247,22 +198,6 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk;
          hasOutsideTempReadout:(BOOL)hasOutsideTempReadout
                            vin:(NSString *)vin
                          plate:(NSString *)plate;
-
-- (NSArray *)vehiclesForUser:(FPUser *)user
-                       error:(PELMDaoErrorBlk)errorBlk;
-
-- (NSArray *)dieselVehiclesForUser:(FPUser *)user
-                             error:(PELMDaoErrorBlk)errorBlk;
-
-- (NSArray *)unsyncedVehiclesForUser:(FPUser *)user
-                               error:(PELMDaoErrorBlk)errorBlk;
-
-- (FPUser *)userForVehicle:(FPVehicle *)vehicle
-                     error:(PELMDaoErrorBlk)errorBlk;
-
-- (void)saveNewVehicle:(FPVehicle *)vehicle
-               forUser:(FPUser *)user
-                 error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)saveNewAndSyncImmediateVehicle:(FPVehicle *)vehicle
                                forUser:(FPUser *)user

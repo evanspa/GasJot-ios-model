@@ -16,6 +16,7 @@ NSString * const PELMLightLoginRelation = @"light-login";
 NSString * const PELMLogoutRelation = @"logout";
 NSString * const PELMSendVerificationEmailRelation = @"send-verification-email";
 NSString * const PELMSendPasswordResetEmailRelation = @"send-password-reset-email";
+NSString * const PELMSendEmailConfirmationRelation = @"send-email-confirmation";
 
 @implementation PELMUser
 
@@ -96,52 +97,55 @@ NSString * const PELMSendPasswordResetEmailRelation = @"send-password-reset-emai
 
 #pragma mark - Creation Functions
 
-+ (PELMUser *)userWithName:(NSString *)name
-                     email:(NSString *)email
-                  password:(NSString *)password
-                 mediaType:(HCMediaType *)mediaType {
-  return [PELMUser userWithName:name
-                          email:email
-                       password:password
-                     verifiedAt:nil
-               globalIdentifier:nil
-                      mediaType:mediaType
-                      relations:nil
-                      createdAt:nil
-                      deletedAt:nil
-                      updatedAt:nil];
++ (PELMUser *)userOfClass:(Class)clazz
+                 withName:(NSString *)name
+                    email:(NSString *)email
+                 password:(NSString *)password
+                mediaType:(HCMediaType *)mediaType {
+  return [PELMUser userOfClass:clazz
+                      withName:name
+                         email:email
+                      password:password
+                    verifiedAt:nil
+              globalIdentifier:nil
+                     mediaType:mediaType
+                     relations:nil
+                     createdAt:nil
+                     deletedAt:nil
+                     updatedAt:nil];
 }
 
-+ (PELMUser *)userWithName:(NSString *)name
-                     email:(NSString *)email
-                  password:(NSString *)password
-                verifiedAt:(NSDate *)verifiedAt
-          globalIdentifier:(NSString *)globalIdentifier
-                 mediaType:(HCMediaType *)mediaType
-                 relations:(NSDictionary *)relations
-                 createdAt:(NSDate *)createdAt
-                 deletedAt:(NSDate *)deletedAt
-                 updatedAt:(NSDate *)updatedAt {
-  return [[PELMUser alloc] initWithLocalMainIdentifier:nil
-                                 localMasterIdentifier:nil
-                                      globalIdentifier:globalIdentifier
-                                             mediaType:mediaType
-                                             relations:relations
-                                             createdAt:createdAt
-                                             deletedAt:deletedAt
-                                             updatedAt:updatedAt
-                                  dateCopiedFromMaster:nil
-                                        editInProgress:NO
-                                        syncInProgress:NO
-                                                synced:NO
-                                             editCount:0
-                                      syncHttpRespCode:nil
-                                           syncErrMask:nil
-                                           syncRetryAt:nil
-                                                  name:name
-                                                 email:email
-                                              password:password
-                                            verifiedAt:verifiedAt];
++ (PELMUser *)userOfClass:(Class)clazz
+                 withName:(NSString *)name
+                    email:(NSString *)email
+                 password:(NSString *)password
+               verifiedAt:(NSDate *)verifiedAt
+         globalIdentifier:(NSString *)globalIdentifier
+                mediaType:(HCMediaType *)mediaType
+                relations:(NSDictionary *)relations
+                createdAt:(NSDate *)createdAt
+                deletedAt:(NSDate *)deletedAt
+                updatedAt:(NSDate *)updatedAt {
+  return [[clazz alloc] initWithLocalMainIdentifier:nil
+                              localMasterIdentifier:nil
+                                   globalIdentifier:globalIdentifier
+                                          mediaType:mediaType
+                                          relations:relations
+                                          createdAt:createdAt
+                                          deletedAt:deletedAt
+                                          updatedAt:updatedAt
+                               dateCopiedFromMaster:nil
+                                     editInProgress:NO
+                                     syncInProgress:NO
+                                             synced:NO
+                                          editCount:0
+                                   syncHttpRespCode:nil
+                                        syncErrMask:nil
+                                        syncRetryAt:nil
+                                               name:name
+                                              email:email
+                                           password:password
+                                         verifiedAt:verifiedAt];
 }
 
 #pragma mark - Methods

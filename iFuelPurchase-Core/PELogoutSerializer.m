@@ -1,14 +1,14 @@
 //
-//  FPLogoutSerializer.m
+//  PELogoutSerializer.m
 //  PEFuelPurchase-Model
 //
 //  Created by Paul Evans on 7/28/15.
 //  Copyright (c) 2015 Paul Evans. All rights reserved.
 //
 
-#import "FPLogoutSerializer.h"
+#import "PELogoutSerializer.h"
 
-@implementation FPLogoutSerializer
+@implementation PELogoutSerializer
 
 #pragma mark - Serialization (Resource Model -> JSON Dictionary)
 

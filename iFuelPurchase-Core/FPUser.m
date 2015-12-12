@@ -15,7 +15,6 @@ NSString * const FPVehiclesRelation = @"vehicles";
 NSString * const FPFuelStationsRelation = @"fuelstations";
 NSString * const FPFuelPurchaseLogsRelation = @"fuelpurchase-logs";
 NSString * const FPEnvironmentLogsRelation = @"environment-logs";
-NSString * const FPSendEmailConfirmationRelation = @"send-email-confirmation";
 
 NSString * const FPUserNameField = @"FPUserNameField";
 NSString * const FPUserEmailField = @"FPUserEmailField";
@@ -111,16 +110,11 @@ NSString * const FPUserVerifiedAtField = @"FPUserVerifiedAtField";
                    email:(NSString *)email
                 password:(NSString *)password
                mediaType:(HCMediaType *)mediaType {
-  return [FPUser userWithName:name
-                        email:email
-                     password:password
-                   verifiedAt:nil
-             globalIdentifier:nil
-                    mediaType:mediaType
-                    relations:nil
-                    createdAt:nil
-                    deletedAt:nil
-                    updatedAt:nil];
+  return (FPUser *)[PELMUser userOfClass:[FPUser class]
+                                withName:name
+                                   email:email
+                                password:password
+                               mediaType:mediaType];
 }
 
 + (FPUser *)userWithName:(NSString *)name
@@ -133,26 +127,17 @@ NSString * const FPUserVerifiedAtField = @"FPUserVerifiedAtField";
                createdAt:(NSDate *)createdAt
                deletedAt:(NSDate *)deletedAt
                updatedAt:(NSDate *)updatedAt {
-  return [[FPUser alloc] initWithLocalMainIdentifier:nil
-                               localMasterIdentifier:nil
-                                    globalIdentifier:globalIdentifier
-                                           mediaType:mediaType
-                                           relations:relations
-                                           createdAt:createdAt
-                                           deletedAt:deletedAt
-                                           updatedAt:updatedAt
-                                dateCopiedFromMaster:nil
-                                      editInProgress:NO
-                                      syncInProgress:NO
-                                              synced:NO
-                                           editCount:0
-                                    syncHttpRespCode:nil
-                                         syncErrMask:nil
-                                         syncRetryAt:nil
-                                                name:name
-                                               email:email
-                                            password:password
-                                          verifiedAt:verifiedAt];
+  return (FPUser *)[PELMUser userOfClass:[FPUser class]
+                                withName:name
+                                   email:email
+                                password:password
+                              verifiedAt:verifiedAt
+                        globalIdentifier:globalIdentifier
+                               mediaType:mediaType
+                               relations:relations
+                               createdAt:createdAt
+                               deletedAt:deletedAt
+                               updatedAt:updatedAt];
 }
 
 #pragma mark - Merging

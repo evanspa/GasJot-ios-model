@@ -15,6 +15,7 @@ FOUNDATION_EXPORT NSString * const PELMLightLoginRelation;
 FOUNDATION_EXPORT NSString * const PELMLogoutRelation;
 FOUNDATION_EXPORT NSString * const PELMSendVerificationEmailRelation;
 FOUNDATION_EXPORT NSString * const PELMSendPasswordResetEmailRelation;
+FOUNDATION_EXPORT NSString * const PELMSendEmailConfirmationRelation;
 
 @interface PELMUser : PELMMainSupport <NSCopying>
 
@@ -43,21 +44,23 @@ FOUNDATION_EXPORT NSString * const PELMSendPasswordResetEmailRelation;
 
 #pragma mark - Creation Functions
 
-+ (PELMUser *)userWithName:(NSString *)name
-                     email:(NSString *)email
-                  password:(NSString *)password
-                 mediaType:(HCMediaType *)mediaType;
++ (PELMUser *)userOfClass:(Class)clazz
+                 withName:(NSString *)name
+                    email:(NSString *)email
+                 password:(NSString *)password
+                mediaType:(HCMediaType *)mediaType;
 
-+ (PELMUser *)userWithName:(NSString *)name
-                     email:(NSString *)email
-                  password:(NSString *)password
-                verifiedAt:(NSDate *)verifiedAt
-          globalIdentifier:(NSString *)globalIdentifier
-                 mediaType:(HCMediaType *)mediaType
-                 relations:(NSDictionary *)relations
-                 createdAt:(NSDate *)createdAt
-                 deletedAt:(NSDate *)deletedAt
-                 updatedAt:(NSDate *)updatedAt;
++ (PELMUser *)userOfClass:(Class)clazz
+                 withName:(NSString *)name
+                    email:(NSString *)email
+                 password:(NSString *)password
+               verifiedAt:(NSDate *)verifiedAt
+         globalIdentifier:(NSString *)globalIdentifier
+                mediaType:(HCMediaType *)mediaType
+                relations:(NSDictionary *)relations
+                createdAt:(NSDate *)createdAt
+                deletedAt:(NSDate *)deletedAt
+                updatedAt:(NSDate *)updatedAt;
 
 #pragma mark - Methods
 

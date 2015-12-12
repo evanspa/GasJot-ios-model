@@ -9,6 +9,6 @@
 #import <Foundation/Foundation.h>
 #import <PEHateoas-Client/HCHalJsonSerializerExtensionSupport.h>
 
-@interface FPResendVerificationEmailSerializer : HCHalJsonSerializerExtensionSupport
+@interface PEResendVerificationEmailSerializer : HCHalJsonSerializerExtensionSupport
 
 @end

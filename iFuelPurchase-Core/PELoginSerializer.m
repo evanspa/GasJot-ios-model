@@ -6,20 +6,20 @@
 //  Copyright (c) 2014 Paul Evans. All rights reserved.
 //
 
-#import "FPLoginSerializer.h"
+#import "PELoginSerializer.h"
 #import "PELMLoginUser.h"
 #import <PEObjc-Commons/NSMutableDictionary+PEAdditions.h>
 
-NSString * const FPLoginUserEmailKey    = @"user/username-or-email";
-NSString * const FPLoginUserPasswordKey = @"user/password";
+NSString * const PELoginUserEmailKey    = @"user/username-or-email";
+NSString * const PELoginUserPasswordKey = @"user/password";
 
-@implementation FPLoginSerializer {
-  FPUserSerializer *_userSerializer;
+@implementation PELoginSerializer {
+  PEUserSerializer *_userSerializer;
 }
 
 - (id)initWithMediaType:(HCMediaType *)mediaType
                 charset:(HCCharset *)charset
-         userSerializer:(FPUserSerializer *)userSerializer {
+         userSerializer:(PEUserSerializer *)userSerializer {
   self = [super initWithMediaType:mediaType
                           charset:charset
   serializersForEmbeddedResources:[userSerializer embeddedSerializers]
@@ -35,8 +35,8 @@ NSString * const FPLoginUserPasswordKey = @"user/password";
 - (NSDictionary *)dictionaryWithResourceModel:(id)resourceModel {
   PELMLoginUser *loginUser = (PELMLoginUser *)resourceModel;
   NSMutableDictionary *userDict = [NSMutableDictionary dictionary];
-  [userDict setObjectIfNotNull:[loginUser email] forKey:FPLoginUserEmailKey];
-  [userDict setObjectIfNotNull:[loginUser password] forKey:FPLoginUserPasswordKey];
+  [userDict setObjectIfNotNull:[loginUser email] forKey:PELoginUserEmailKey];
+  [userDict setObjectIfNotNull:[loginUser password] forKey:PELoginUserPasswordKey];
   return userDict;
 }
 

@@ -77,7 +77,7 @@ describe(@"FPCoordinatorDao", ^{
       // notice that I didn't even have to start the flusher job!
       
       // explicitly get the user from master
-      user = [[_coordDao localDao] masterUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
+      user = (FPUser *)[[_coordDao localDao] masterUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
       [user shouldNotBeNil];
       [[[user name] should] equal:@"Paul Evans"];
       [[[user email] should] equal:@"paul.evans@example.com"];
@@ -99,7 +99,7 @@ describe(@"FPCoordinatorDao", ^{
                                        addlAuthRequiredBlk:^{}
                                                  error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[expectFutureValue(theValue(saveFailed)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
-      user = [[_coordDao localDao] mainUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
+      user = (FPUser *)[[_coordDao localDao] mainUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
       [user shouldNotBeNil];
       [[theValue([user syncInProgress]) should] beNo];
       [[theValue([user editInProgress]) should] beNo];
@@ -121,7 +121,7 @@ describe(@"FPCoordinatorDao", ^{
                                        addlAuthRequiredBlk:^{}
                                                  error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[expectFutureValue(theValue(saveFailed)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
-      user = [[_coordDao localDao] mainUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
+      user = (FPUser *)[[_coordDao localDao] mainUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
       [user shouldNotBeNil];
       [[theValue([user syncInProgress]) should] beNo];
       [[theValue([user editInProgress]) should] beNo];
@@ -144,7 +144,7 @@ describe(@"FPCoordinatorDao", ^{
                                        addlAuthRequiredBlk:^{}
                                                  error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[expectFutureValue(theValue(saveFailed)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
-      user = [[_coordDao localDao] mainUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
+      user = (FPUser *)[[_coordDao localDao] mainUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
       [user shouldNotBeNil];
       [[theValue([user syncInProgress]) should] beNo];
       [[theValue([user editInProgress]) should] beNo];
@@ -168,7 +168,7 @@ describe(@"FPCoordinatorDao", ^{
                                        addlAuthRequiredBlk:^{}
                                                  error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[expectFutureValue(theValue(saveFailed)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
-      user = [[_coordDao localDao] mainUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
+      user = (FPUser *)[[_coordDao localDao] mainUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
       [user shouldNotBeNil];
       [[theValue([user syncInProgress]) should] beNo];
       [[theValue([user editInProgress]) should] beNo];
@@ -192,7 +192,7 @@ describe(@"FPCoordinatorDao", ^{
                                        addlAuthRequiredBlk:^{saveFailed = YES;}
                                                  error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[expectFutureValue(theValue(saveFailed)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
-      user = [[_coordDao localDao] mainUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
+      user = (FPUser *)[[_coordDao localDao] mainUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
       [user shouldNotBeNil];
       [[theValue([user syncInProgress]) should] beNo];
       [[theValue([user editInProgress]) should] beNo];

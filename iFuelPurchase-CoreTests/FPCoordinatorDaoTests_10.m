@@ -76,7 +76,7 @@ describe(@"FPCoordinatorDao", ^{
       [[expectFutureValue(theValue(syncUserSuccess)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
       [[[_coordDao localDao] mainUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()] shouldNotBeNil];
       // explicitly get the user from master
-      user = [[_coordDao localDao] masterUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
+      user = (FPUser *)[[_coordDao localDao] masterUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
       [user shouldNotBeNil];
       [[[user name] should] equal:@"Paul Evans"];
       [[[user email] should] equal:@"paul.evans@example.com"];

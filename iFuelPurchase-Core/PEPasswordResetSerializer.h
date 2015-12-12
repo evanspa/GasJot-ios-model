@@ -1,5 +1,5 @@
 //
-//  FPUserSerializer.h
+//  FPPasswordResetSerializer.h
 //  PEFuelPurchase-Model
 //
 //  Created by Evans, Paul on 8/17/14.
@@ -9,6 +9,6 @@
 #import <Foundation/Foundation.h>
 #import <PEHateoas-Client/HCHalJsonSerializerExtensionSupport.h>
 
-@interface FPUserSerializer : HCHalJsonSerializerExtensionSupport
+@interface PEPasswordResetSerializer : HCHalJsonSerializerExtensionSupport
 
 @end
