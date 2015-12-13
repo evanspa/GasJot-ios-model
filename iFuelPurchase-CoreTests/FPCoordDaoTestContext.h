@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "FPUser.h"
-#import "FPCoordinatorDao.h"
+#import "FPCoordinatorDaoImpl.h"
 #import "FPToggler.h"
 
 typedef void (^FPCoordTestingErrLogger)(NSError *, int, NSString *);
@@ -18,11 +18,11 @@ typedef void (^(^FPCoordTestingNewLocalBgErrBlkMaker)(void))(NSError *, int, NSS
 typedef void (^(^FPCoordTestingNewRemoteStoreBusyBlkMaker)(void))(NSDate *);
 typedef void (^(^FPCoordTestingNew1ErrArgComplHandlerBlkMaker)(void))(FPUser *, NSError *);
 typedef void (^(^FPCoordTestingNew0ErrArgComplHandlerBlkMaker)(void))(NSError *);
-typedef NSNumber * (^FPCoordTestingNumValueFetcher)(FPCoordinatorDao *, NSString *, NSString *, NSNumber *);
-typedef FPUser *(^FPCoordTestingFreshUserMaker)(NSString *, NSString *, NSString *, NSString *, FPCoordinatorDao *, void (^)(void));
-typedef FPUser * (^FPCoordTestingFreshJoeSmithMaker)(FPCoordinatorDao *, void (^waitBlock)(void));
+typedef NSNumber * (^FPCoordTestingNumValueFetcher)(FPCoordinatorDaoImpl *, NSString *, NSString *, NSNumber *);
+typedef FPUser *(^FPCoordTestingFreshUserMaker)(NSString *, NSString *, NSString *, NSString *, FPCoordinatorDaoImpl *, void (^)(void));
+typedef FPUser * (^FPCoordTestingFreshJoeSmithMaker)(FPCoordinatorDaoImpl *, void (^waitBlock)(void));
 typedef FPToggler * (^FPCoordTestingObserver)(NSArray *);
-typedef void (^FPCoordTestingExpectedNumberOfEntitiesAsserter)(FPCoordinatorDao *, NSString *, int);
+typedef void (^FPCoordTestingExpectedNumberOfEntitiesAsserter)(FPCoordinatorDaoImpl *, NSString *, int);
 typedef NSNumber *(^FPCoordTestingNumEntitiesComputer)(NSString *);
 typedef void (^FPCoordTestingMocker)(NSString *, NSInteger, NSInteger);
 
@@ -51,7 +51,7 @@ typedef void (^FPCoordTestingMocker)(NSString *, NSInteger, NSInteger);
 #pragma mark - Test Helpers
 
 - (FPCoordTestingMocker)newMocker;
-- (FPCoordTestingNumEntitiesComputer)newNumEntitiesComputerWithCoordDao:(FPCoordinatorDao *)coordDao;
+- (FPCoordTestingNumEntitiesComputer)newNumEntitiesComputerWithCoordDao:(FPCoordinatorDaoImpl *)coordDao;
 - (FPCoordTestingErrLogger)newErrLogger;
 - (FPCoordTestingNewLocalSaveErrBlkMaker)newLocalSaveErrBlkMaker;
 - (FPCoordTestingNewLocalFetchErrBlkMaker)newLocalFetchErrBlkMaker;
@@ -65,6 +65,6 @@ typedef void (^FPCoordTestingMocker)(NSString *, NSInteger, NSInteger);
 - (FPCoordTestingFreshJoeSmithMaker)newFreshJoeSmithMaker;
 - (FPCoordTestingObserver)newObserver;
 
-- (FPCoordinatorDao *)newStoreCoord;
+- (FPCoordinatorDaoImpl *)newStoreCoord;
 
 @end

@@ -11,26 +11,15 @@
 #import "FPVehicle.h"
 #import "FPFuelStation.h"
 #import "FPEnvironmentLog.h"
+#import "PEChangelog.h"
 
-@interface FPChangelog : NSObject
+@interface FPChangelog : PEChangelog
 
 #pragma mark - Initializers
 
 - (id)initWithUpdatedAt:(NSDate *)updatedAt;
 
-#pragma mark - Properties
-
-@property (nonatomic) NSString *globalIdentifier;
-
-@property (nonatomic) HCMediaType *mediaType;
-
-@property (nonatomic) NSDictionary *relations;
-
-@property (nonatomic) NSDate *updatedAt;
-
 #pragma mark - Methods
-
-- (void)setUser:(FPUser *)user;
 
 - (void)addVehicle:(FPVehicle *)vehicle;
 
@@ -39,8 +28,6 @@
 - (void)addFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog;
 
 - (void)addEnvironmentLog:(FPEnvironmentLog *)environmentLog;
-
-- (FPUser *)user;
 
 - (NSArray *)vehicles;
 

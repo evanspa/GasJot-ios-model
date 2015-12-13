@@ -6,9 +6,9 @@
 //  Copyright (c) 2014 Paul Evans. All rights reserved.
 //
 
-#import "FPCoordinatorDao.h"
+#import "FPCoordinatorDaoImpl.h"
 
-@interface FPCoordinatorDao (AdditionsForTesting)
+@interface FPCoordinatorDaoImpl (AdditionsForTesting)
 
 - (void)deleteUser:(PELMDaoErrorBlk)errorBlk;
 

@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Paul Evans. All rights reserved.
 //
 
-#import "FPCoordinatorDao.h"
+#import "FPCoordinatorDaoImpl.h"
 #import "FPCoordinatorDao+AdditionsForTesting.h"
 #import <CocoaLumberjack/DDLog.h>
 #import <CocoaLumberjack/DDASLLogger.h>
@@ -23,7 +23,7 @@
 SPEC_BEGIN(FPCoordinatorDaoSpec_10)
 
 __block FPCoordDaoTestContext *_coordTestCtx;
-__block FPCoordinatorDao *_coordDao;
+__block FPCoordinatorDaoImpl *_coordDao;
 __block FPCoordTestingNumEntitiesComputer _numEntitiesBlk;
 __block FPCoordTestingMocker _mocker;
 __block FPCoordTestingObserver _observer;
@@ -74,15 +74,15 @@ describe(@"FPCoordinatorDao", ^{
                                        addlAuthRequiredBlk:nil
                                                  error:nil];
       [[expectFutureValue(theValue(syncUserSuccess)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
-      [[[_coordDao localDao] mainUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()] shouldNotBeNil];
+      [[_coordDao mainUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()] shouldNotBeNil];
       // explicitly get the user from master
-      user = (FPUser *)[[_coordDao localDao] masterUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
+      user = (FPUser *)[_coordDao masterUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
       [user shouldNotBeNil];
       [[[user name] should] equal:@"Paul Evans"];
       [[[user email] should] equal:@"paul.evans@example.com"];
       [[[user updatedAt] should] equal:[HCUtils rfc7231DateFromString:@"Wed, 03 Sep 2014 9:04:02 GMT"]];
       [_coordDao pruneAllSyncedEntitiesWithError:[_coordTestCtx newLocalSaveErrBlkMaker]()];
-      [[[_coordDao localDao] mainUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()] shouldBeNil]; // it should have been pruned
+      [[_coordDao mainUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()] shouldBeNil]; // it should have been pruned
     });
   });
 });

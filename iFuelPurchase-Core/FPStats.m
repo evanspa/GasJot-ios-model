@@ -12,13 +12,13 @@
 typedef id (^FPValueBlock)(void);
 
 @implementation FPStats {
-  FPLocalDao *_localDao;
+  FPLocalDaoImpl *_localDao;
   PELMDaoErrorBlk _errorBlk;
 }
 
 #pragma mark - Initializers
 
-- (id)initWithLocalDao:(FPLocalDao *)localDao errorBlk:(PELMDaoErrorBlk)errorBlk {
+- (id)initWithLocalDao:(FPLocalDaoImpl *)localDao errorBlk:(PELMDaoErrorBlk)errorBlk {
   self = [super init];
   if (self) {
     _localDao = localDao;

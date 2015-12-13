@@ -6,14 +6,11 @@
 //  Copyright © 2015 Paul Evans. All rights reserved.
 //
 
+#import <Foundation/Foundation.h>
+#import "PECoordinatorDao.h"
 #import "PELocalDao.h"
+#import "PELocalDaoImpl.h"
 
-typedef void (^PESavedNewEntityCompletionHandler)(PELMUser *, NSError *);
-
-@protocol PECoordinatorDao <PELocalDao>
-
-#pragma mark - Getters
-
-- (NSString *)authToken;
+@interface PECoordinatorDaoImpl : PELocalDaoImpl <PECoordinatorDao>
 
 @end

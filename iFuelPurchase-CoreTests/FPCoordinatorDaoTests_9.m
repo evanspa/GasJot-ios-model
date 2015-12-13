@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Paul Evans. All rights reserved.
 //
 
-#import "FPCoordinatorDao.h"
+#import "FPCoordinatorDaoImpl.h"
 #import "FPCoordinatorDao+AdditionsForTesting.h"
 #import <CocoaLumberjack/DDLog.h>
 #import <CocoaLumberjack/DDASLLogger.h>
@@ -22,7 +22,7 @@
 SPEC_BEGIN(FPCoordinatorDaoSpec_9)
 
 __block FPCoordDaoTestContext *_coordTestCtx;
-__block FPCoordinatorDao *_coordDao;
+__block FPCoordinatorDaoImpl *_coordDao;
 __block FPCoordTestingNumEntitiesComputer _numEntitiesBlk;
 __block FPCoordTestingMocker _mocker;
 __block FPCoordTestingObserver _observer;
@@ -89,10 +89,10 @@ describe(@"FPCoordinatorDao", ^{
       [[theValue(prepareForEditSuccess) should] beYes];
       [[theValue([_coordTestCtx prepareForEditEntityDeleted]) should] beNo];
       [[theValue([_coordTestCtx prepareForEditEntityBeingEditedByOtherActor]) should] beNo];
-      user = (FPUser *)[[_coordDao localDao] mainUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
+      user = (FPUser *)[_coordDao mainUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
       [user shouldNotBeNil]; // user not pruned from main because vehicle (child) is in main_vehicle
       [[theValue([user synced]) should] beYes];
-      user = (FPUser *)[[_coordDao localDao] masterUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
+      user = (FPUser *)[_coordDao masterUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
       [user shouldNotBeNil];
       [[[user name] should] equal:@"Paul Evans"];
       [[[user email] should] equal:@"paul.evans@example.com"];
@@ -131,8 +131,8 @@ describe(@"FPCoordinatorDao", ^{
       // main_user should get pruned (since the vehicle instance should have gotten
       // pruned from main_vehicle
       [_coordDao pruneAllSyncedEntitiesWithError:[_coordTestCtx newLocalSaveErrBlkMaker]()];
-      [[[_coordDao localDao] mainUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()] shouldBeNil];
-      user = (FPUser *)[[_coordDao localDao] mainUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
+      [[_coordDao mainUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()] shouldBeNil];
+      user = (FPUser *)[_coordDao mainUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
       [user shouldBeNil];
     });
   });

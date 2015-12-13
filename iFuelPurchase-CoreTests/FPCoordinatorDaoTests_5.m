@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Paul Evans. All rights reserved.
 //
 
-#import "FPCoordinatorDao.h"
+#import "FPCoordinatorDaoImpl.h"
 #import "FPCoordinatorDao+AdditionsForTesting.h"
 #import <CocoaLumberjack/DDLog.h>
 #import <CocoaLumberjack/DDASLLogger.h>
@@ -22,7 +22,7 @@
 SPEC_BEGIN(FPCoordinatorDaoSpec_5)
 
 __block FPCoordDaoTestContext *_coordTestCtx;
-__block FPCoordinatorDao *_coordDao;
+__block FPCoordinatorDaoImpl *_coordDao;
 __block FPCoordTestingNumEntitiesComputer _numEntitiesBlk;
 __block FPCoordTestingMocker _mocker;
 __block FPCoordTestingObserver _observer;
@@ -46,7 +46,7 @@ describe(@"FPCoordinatorDao", ^{
 
   context(@"Tests", ^{
     it(@"Sync-in-progress entity goes from YES to NO after failed sync attempt", ^{
-      FPUser *user = [_coordDao userWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
+      FPUser *user = (FPUser *)[_coordDao userWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
       [user shouldBeNil];
       _mocker(@"http-response.login.POST.200", 0, 0);
       user = [_coordDao newLocalUserWithError:[_coordTestCtx newLocalSaveErrBlkMaker]()];
@@ -58,7 +58,7 @@ describe(@"FPCoordinatorDao", ^{
               completionHandler:[_coordTestCtx new1ErrArgComplHandlerBlkMaker]()
           localSaveErrorHandler:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[expectFutureValue(theValue([_coordTestCtx authTokenReceived])) shouldEventuallyBeforeTimingOutAfter(60)] beYes];
-      user = [_coordDao userWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
+      user = (FPUser *)[_coordDao userWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
       [user shouldNotBeNil]; // sanity check
       [[[user updatedAt] should] equal:[NSDate dateWithTimeIntervalSince1970:1433472979.065]];
       [[theValue([_coordDao numVehiclesForUser:user error:[_coordTestCtx newLocalFetchErrBlkMaker]()]) should] equal:theValue(2)];

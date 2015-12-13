@@ -8,9 +8,9 @@
 
 #import <CoreLocation/CoreLocation.h>
 #import <CocoaLumberjack/DDLog.h>
-#import "FPCoordinatorDao.h"
+#import "FPCoordinatorDaoImpl.h"
 #import "FPErrorDomainsAndCodes.h"
-#import "FPLocalDao.h"
+#import "FPLocalDaoImpl.h"
 #import "FPRestRemoteMasterDao.h"
 #import "FPRemoteDaoErrorDomains.h"
 #import "PELMUtils.h"
@@ -20,7 +20,7 @@
 #import "FPLogging.h"
 #import <PEHateoas-Client/HCRelation.h>
 
-@implementation FPCoordinatorDao {
+@implementation FPCoordinatorDaoImpl {
   id<FPRemoteMasterDao> _remoteMasterDao;
   NSInteger _timeout;
   NSString *_authScheme;
@@ -33,6 +33,7 @@
   NSString *_fuelPurchaseLogResMtVersion;
   NSString *_environmentLogResMtVersion;
   id<FPAuthTokenDelegate> _authTokenDelegate;
+  NSString *_authToken;
 }
 
 #pragma mark - Initializers
@@ -92,7 +93,7 @@
                fuelStationSerializer:fuelStationSerializer
            fuelPurchaseLogSerializer:fuelPurchaseLogSerializer
             environmentLogSerializer:environmentLogSerializer];
-    FPChangelogSerializer *changelogSerializer = [self changelogSerializerForCharset:acceptCharset
+    PEChangelogSerializer *changelogSerializer = [self changelogSerializerForCharset:acceptCharset
                                                                       userSerializer:userSerializer
                                                                    vehicleSerializer:vehicleSerializer
                                                                fuelStationSerializer:fuelStationSerializer
@@ -105,33 +106,33 @@
     PELogoutSerializer *logoutSerializer = [self logoutSerializerForCharset:acceptCharset];
     PEResendVerificationEmailSerializer *resendVerificationEmailSerializer = [self resendVerificationEmailSerializerForCharset:acceptCharset];
     PEPasswordResetSerializer *passwordResetSerializer = [self passwordResetSerializerForCharset:acceptCharset];
-    _remoteMasterDao = [[FPRestRemoteMasterDao alloc]  initWithAcceptCharset:acceptCharset
-                                                              acceptLanguage:acceptLanguage
-                                                          contentTypeCharset:contentTypeCharset
-                                                                  authScheme:authScheme
-                                                          authTokenParamName:authTokenParamName
-                                                                   authToken:authToken
-                                                         errorMaskHeaderName:errorMaskHeaderName
-                                                  establishSessionHeaderName:establishHeaderSessionName
-                                                         authTokenHeaderName:authTokenHeaderName
-                                                   ifModifiedSinceHeaderName:ifModifiedSinceHeaderName
-                                                 ifUnmodifiedSinceHeaderName:ifUnmodifiedSinceHeaderName
-                                                 loginFailedReasonHeaderName:loginFailedReasonHeaderName
-                                               accountClosedReasonHeaderName:accountClosedReasonHeaderName
-                                                bundleHoldingApiJsonResource:bundle
-                                                   nameOfApiJsonResourceFile:apiResourceFileName
-                                                             apiResMtVersion:apiResMtVersion
-                                                         changelogSerializer:changelogSerializer
-                                                              userSerializer:userSerializer
-                                                             loginSerializer:loginSerializer
-                                                            logoutSerializer:logoutSerializer
-                                           resendVerificationEmailSerializer:resendVerificationEmailSerializer
-                                                     passwordResetSerializer:passwordResetSerializer
-                                                           vehicleSerializer:vehicleSerializer
-                                                       fuelStationSerializer:fuelStationSerializer
-                                                   fuelPurchaseLogSerializer:fuelPurchaseLogSerializer
-                                                    environmentLogSerializer:environmentLogSerializer
-                                                    allowInvalidCertificates:allowInvalidCertificates];
+    _remoteMasterDao = [[FPRestRemoteMasterDao alloc] initWithAcceptCharset:acceptCharset
+                                                             acceptLanguage:acceptLanguage
+                                                         contentTypeCharset:contentTypeCharset
+                                                                 authScheme:authScheme
+                                                         authTokenParamName:authTokenParamName
+                                                                  authToken:authToken
+                                                        errorMaskHeaderName:errorMaskHeaderName
+                                                 establishSessionHeaderName:establishHeaderSessionName
+                                                        authTokenHeaderName:authTokenHeaderName
+                                                  ifModifiedSinceHeaderName:ifModifiedSinceHeaderName
+                                                ifUnmodifiedSinceHeaderName:ifUnmodifiedSinceHeaderName
+                                                loginFailedReasonHeaderName:loginFailedReasonHeaderName
+                                              accountClosedReasonHeaderName:accountClosedReasonHeaderName
+                                               bundleHoldingApiJsonResource:bundle
+                                                  nameOfApiJsonResourceFile:apiResourceFileName
+                                                            apiResMtVersion:apiResMtVersion
+                                                             userSerializer:userSerializer
+                                                        changelogSerializer:changelogSerializer
+                                                            loginSerializer:loginSerializer
+                                                           logoutSerializer:logoutSerializer
+                                          resendVerificationEmailSerializer:resendVerificationEmailSerializer
+                                                    passwordResetSerializer:passwordResetSerializer
+                                                          vehicleSerializer:vehicleSerializer
+                                                      fuelStationSerializer:fuelStationSerializer
+                                                  fuelPurchaseLogSerializer:fuelPurchaseLogSerializer
+                                                   environmentLogSerializer:environmentLogSerializer
+                                                   allowInvalidCertificates:allowInvalidCertificates];
     _authTokenDelegate = authTokenDelegate;
   }
   return self;
@@ -195,7 +196,7 @@
                                   actionsForEmbeddedResources:@{}];
 }
 
-- (FPChangelogSerializer *)changelogSerializerForCharset:(HCCharset *)charset
+- (PEChangelogSerializer *)changelogSerializerForCharset:(HCCharset *)charset
                                           userSerializer:(PEUserSerializer *)userSerializer
                                        vehicleSerializer:(FPVehicleSerializer *)vehicleSerializer
                                    fuelStationSerializer:(FPFuelStationSerializer *)fuelStationSerializer
@@ -216,7 +217,7 @@
   HCActionForEmbeddedResource actionForEmbeddedEnvironmentLog = ^(FPChangelog *changelog, id embeddedEnvironmentLog) {
     [changelog addEnvironmentLog:embeddedEnvironmentLog];
   };
-  return [[FPChangelogSerializer alloc] initWithMediaType:[FPKnownMediaTypes changelogMediaTypeWithVersion:_changelogResMtVersion]
+  return [[PEChangelogSerializer alloc] initWithMediaType:[FPKnownMediaTypes changelogMediaTypeWithVersion:_changelogResMtVersion]
                                                   charset:charset
                           serializersForEmbeddedResources:@{[[userSerializer mediaType] description] : userSerializer,
                                                             [[vehicleSerializer mediaType] description] : vehicleSerializer,
@@ -227,7 +228,8 @@
                                                             [[vehicleSerializer mediaType] description] : actionForEmbeddedVehicle,
                                                             [[fuelStationSerializer mediaType] description] : actionForEmbeddedFuelStation,
                                                             [[fuelPurchaseLogSerializer mediaType] description] : actionForEmbeddedFuelPurchaseLog,
-                                                            [[environmentLogSerializer mediaType] description] : actionForEmbeddedEnvironmentLog}];
+                                                            [[environmentLogSerializer mediaType] description] : actionForEmbeddedEnvironmentLog}
+                                           changelogClass:[FPChangelog class]];
 }
 
 - (PEUserSerializer *)userSerializerForCharset:(HCCharset *)charset
@@ -278,6 +280,12 @@
     // if no http status code, then it was a connection failure, and that by nature is temporary
     if (tempRemoteErrorBlk) tempRemoteErrorBlk();
   }
+}
+
+#pragma mark - Getters
+
+- (NSString *)authToken {
+  return _authToken;
 }
 
 #pragma mark - Flushing All Unsynced Edits to Remote Master
@@ -453,15 +461,13 @@
   return totalNumToSync;
 }
 
-#pragma mark - User
-
-- (NSInteger)totalNumSyncNeededEntitiesForUser:(FPUser *)user {
-  return [self totalNumSyncNeededEntitiesForUser:user];
-}
+#pragma mark - Unsynced Entities Check
 
 - (BOOL)doesUserHaveAnyUnsyncedEntities:(FPUser *)user {
   return ([self totalNumUnsyncedEntitiesForUser:user] > 0);
 }
+
+#pragma mark - User Operations
 
 - (void)resetAsLocalUser:(FPUser *)user error:(PELMDaoErrorBlk)error {
   [self deleteUser:user error:error];
@@ -499,9 +505,9 @@
     if (globalId) { // success!
       remoteUser = (FPUser *)resourceModel;
       [self saveNewRemoteUser:remoteUser
-                andLinkToLocalUser:localUser
-     preserveExistingLocalEntities:preserveExistingLocalEntities
-                             error:localSaveErrorHandler];
+           andLinkToLocalUser:localUser
+preserveExistingLocalEntities:preserveExistingLocalEntities
+                        error:localSaveErrorHandler];
       [self processNewAuthToken:newAuthTkn forUser:remoteUser];
     };
     complHandler(remoteUser, err);
@@ -527,9 +533,9 @@ preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
     FPUser *remoteUser = (FPUser *)resourceModel;
     if (remoteUser) {
       [self deepSaveNewRemoteUser:remoteUser
-                    andLinkToLocalUser:localUser
-         preserveExistingLocalEntities:preserveExistingLocalEntities
-                                 error:localSaveErrorHandler];
+               andLinkToLocalUser:localUser
+    preserveExistingLocalEntities:preserveExistingLocalEntities
+                            error:localSaveErrorHandler];
       [self processNewAuthToken:newAuthTkn forUser:remoteUser];
     }
     complHandler(remoteUser, err);
@@ -663,7 +669,7 @@ localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler {
     [PELMUtils complHandlerToFlushUnsyncedChangesToEntity:user
                                       remoteStoreErrorBlk:^(NSError *err, NSNumber *httpStatusCode) {
                                         [self cancelSyncForUser:user httpRespCode:httpStatusCode errorMask:@([err code]) retryAt:nil error:errorBlk];
-                                        [FPCoordinatorDao invokeErrorBlocksForHttpStatusCode:httpStatusCode
+                                        [FPCoordinatorDaoImpl invokeErrorBlocksForHttpStatusCode:httpStatusCode
                                                                                        error:err
                                                                       tempRemoteErrorBlk:addlTempRemoteErrorBlk
                                                                           remoteErrorBlk:addlRemoteErrorBlk];
@@ -726,7 +732,7 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
   PELMRemoteMasterCompletionHandler remoteStoreComplHandler =
     [PELMUtils complHandlerToDeleteEntity:user
                       remoteStoreErrorBlk:^(NSError *err, NSNumber *httpStatusCode) {
-                        [FPCoordinatorDao invokeErrorBlocksForHttpStatusCode:httpStatusCode
+                        [FPCoordinatorDaoImpl invokeErrorBlocksForHttpStatusCode:httpStatusCode
                                                                        error:err
                                                       tempRemoteErrorBlk:tempRemoteErrorBlk
                                                           remoteErrorBlk:remoteErrorBlk];
@@ -849,18 +855,6 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk {
                                 error:errorBlk];
 }
 
-/*- (BOOL)prepareVehicleForEdit:(FPVehicle *)vehicle forUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk {
-  return [self prepareVehicleForEdit:vehicle forUser:user error:errorBlk];
-}
-
-- (void)saveVehicle:(FPVehicle *)vehicle error:(PELMDaoErrorBlk)errorBlk {
-  [self saveVehicle:vehicle error:errorBlk];
-}*/
-
-/*- (void)markAsDoneEditingVehicle:(FPVehicle *)vehicle error:(PELMDaoErrorBlk)errorBlk {
-  [self markAsDoneEditingVehicle:vehicle error:errorBlk];
-}*/
-
 - (void)flushUnsyncedChangesToVehicle:(FPVehicle *)vehicle
                               forUser:(FPUser *)user
                   notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
@@ -878,7 +872,7 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk {
     [PELMUtils complHandlerToFlushUnsyncedChangesToEntity:vehicle
                                       remoteStoreErrorBlk:^(NSError *err, NSNumber *httpStatusCode) {
                                         [self cancelSyncForVehicle:vehicle httpRespCode:httpStatusCode errorMask:@([err code]) retryAt:nil error:errorBlk];
-                                        [FPCoordinatorDao invokeErrorBlocksForHttpStatusCode:httpStatusCode
+                                        [FPCoordinatorDaoImpl invokeErrorBlocksForHttpStatusCode:httpStatusCode
                                                                                        error:err
                                                                       tempRemoteErrorBlk:addlTempRemoteErrorBlk
                                                                           remoteErrorBlk:addlRemoteErrorBlk];
@@ -958,7 +952,7 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk {
   PELMRemoteMasterCompletionHandler remoteStoreComplHandler =
     [PELMUtils complHandlerToDeleteEntity:vehicle
                       remoteStoreErrorBlk:^(NSError *err, NSNumber *httpStatusCode) {
-                        [FPCoordinatorDao invokeErrorBlocksForHttpStatusCode:httpStatusCode
+                        [FPCoordinatorDaoImpl invokeErrorBlocksForHttpStatusCode:httpStatusCode
                                                                        error:err
                                                       tempRemoteErrorBlk:tempRemoteErrorBlk
                                                           remoteErrorBlk:remoteErrorBlk];
@@ -1028,19 +1022,7 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk {
              addlAuthRequiredBlk:addlAuthRequiredBlk];
 }
 
-/*- (void)reloadVehicle:(FPVehicle *)vehicle error:(PELMDaoErrorBlk)errorBlk {
-  [self reloadVehicle:vehicle error:errorBlk];
-}
-
-- (void)cancelEditOfVehicle:(FPVehicle *)vehicle error:(PELMDaoErrorBlk)errorBlk {
-  [self cancelEditOfVehicle:vehicle error:errorBlk];
-}*/
-
 #pragma mark - Fuel Station
-
-/*- (NSInteger)numFuelStationsForUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk {
-  return [self numFuelStationsForUser:user error:errorBlk];
-}*/
 
 - (FPFuelStation *)fuelStationWithName:(NSString *)name
                                 street:(NSString *)street
@@ -1058,22 +1040,6 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk {
                                   longitude:longitude
                                   mediaType:[FPKnownMediaTypes fuelStationMediaTypeWithVersion:_fuelStationResMtVersion]];
 }
-
-/*- (NSArray *)fuelStationsForUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk {
-  return [self fuelStationsForUser:user error:errorBlk];
-}
-
-- (NSArray *)unsyncedFuelStationsForUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk {
-  return [self unsyncedFuelStationsForUser:user error:errorBlk];
-}
-
-- (FPUser *)userForFuelStation:(FPFuelStation *)fuelStation error:(PELMDaoErrorBlk)errorBlk {
-  return [self userForFuelStation:fuelStation error:errorBlk];
-}
-
-- (void)saveNewFuelStation:(FPFuelStation *)fuelStation forUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk {
-  [self saveNewFuelStation:fuelStation forUser:user error:errorBlk];
-}*/
 
 - (void)saveNewAndSyncImmediateFuelStation:(FPFuelStation *)fuelStation
                                    forUser:(FPUser *)user
@@ -1098,26 +1064,6 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk {
                                     error:errorBlk];
 }
 
-/*- (BOOL)prepareFuelStationForEdit:(FPFuelStation *)fuelStation
-                          forUser:(FPUser *)user
-                            error:(PELMDaoErrorBlk)errorBlk {
-  return [self prepareFuelStationForEdit:fuelStation
-                                      forUser:user
-                                        error:errorBlk];
-}
-
-- (void)saveFuelStation:(FPFuelStation *)fuelStation
-                  error:(PELMDaoErrorBlk)errorBlk {
-  [self saveFuelStation:fuelStation
-                       error:errorBlk];
-}
-
-- (void)markAsDoneEditingFuelStation:(FPFuelStation *)fuelStation
-                               error:(PELMDaoErrorBlk)errorBlk {
-  [self markAsDoneEditingFuelStation:fuelStation
-                                    error:errorBlk];
-}*/
-
 - (void)flushUnsyncedChangesToFuelStation:(FPFuelStation *)fuelStation
                                   forUser:(FPUser *)user
                       notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
@@ -1135,7 +1081,7 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk {
   [PELMUtils complHandlerToFlushUnsyncedChangesToEntity:fuelStation
                                     remoteStoreErrorBlk:^(NSError *err, NSNumber *httpStatusCode) {
                                       [self cancelSyncForFuelStation:fuelStation httpRespCode:httpStatusCode errorMask:@([err code]) retryAt:nil error:errorBlk];
-                                      [FPCoordinatorDao invokeErrorBlocksForHttpStatusCode:httpStatusCode
+                                      [FPCoordinatorDaoImpl invokeErrorBlocksForHttpStatusCode:httpStatusCode
                                                                                      error:err
                                                                     tempRemoteErrorBlk:addlTempRemoteErrorBlk
                                                                         remoteErrorBlk:addlRemoteErrorBlk];
@@ -1215,7 +1161,7 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk {
   PELMRemoteMasterCompletionHandler remoteStoreComplHandler =
     [PELMUtils complHandlerToDeleteEntity:fuelStation
                       remoteStoreErrorBlk:^(NSError *err, NSNumber *httpStatusCode) {
-                        [FPCoordinatorDao invokeErrorBlocksForHttpStatusCode:httpStatusCode
+                        [FPCoordinatorDaoImpl invokeErrorBlocksForHttpStatusCode:httpStatusCode
                                                                        error:err
                                                       tempRemoteErrorBlk:tempRemoteErrorBlk
                                                           remoteErrorBlk:remoteErrorBlk];
@@ -1285,31 +1231,7 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk {
                  addlAuthRequiredBlk:addlAuthRequiredBlk];  
 }
 
-/*- (void)reloadFuelStation:(FPFuelStation *)fuelStation
-                    error:(PELMDaoErrorBlk)errorBlk {
-  [self reloadFuelStation:fuelStation error:errorBlk];
-}
-
-- (void)cancelEditOfFuelStation:(FPFuelStation *)fuelStation
-                          error:(PELMDaoErrorBlk)errorBlk {
-  [self cancelEditOfFuelStation:fuelStation
-                               error:errorBlk];
-}*/
-
 #pragma mark - Fuel Purchase Log
-
-/*- (NSInteger)numFuelPurchaseLogsForUser:(FPUser *)user
-                                  error:(PELMDaoErrorBlk)errorBlk {
-  return [self numFuelPurchaseLogsForUser:user error:errorBlk];
-}*/
-
-/*- (NSInteger)numFuelPurchaseLogsForUser:(FPUser *)user
-                              newerThan:(NSDate *)newerThan
-                                  error:(PELMDaoErrorBlk)errorBlk {
-  return [self numFuelPurchaseLogsForUser:user
-                                     newerThan:newerThan
-                                         error:errorBlk];
-}*/
 
 - (FPFuelPurchaseLog *)fuelPurchaseLogWithNumGallons:(NSDecimalNumber *)numGallons
                                               octane:(NSNumber *)octane
@@ -1329,128 +1251,6 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk {
                                                  isDiesel:isDiesel
                                                 mediaType:[FPKnownMediaTypes fuelPurchaseLogMediaTypeWithVersion:_fuelPurchaseLogResMtVersion]];
 }
-
-/*- (NSArray *)fuelPurchaseLogsForUser:(FPUser *)user
-                            pageSize:(NSInteger)pageSize
-                               error:(PELMDaoErrorBlk)errorBlk {
-  return [self fuelPurchaseLogsForUser:user
-                              pageSize:pageSize
-                      beforeDateLogged:nil
-                                 error:errorBlk];
-}
-
-- (NSArray *)unsyncedFuelPurchaseLogsForUser:(FPUser *)user
-                                       error:(PELMDaoErrorBlk)errorBlk {
-  return [self unsyncedFuelPurchaseLogsForUser:user error:errorBlk];
-}
-
-- (NSArray *)fuelPurchaseLogsForUser:(FPUser *)user
-                            pageSize:(NSInteger)pageSize
-                    beforeDateLogged:(NSDate *)beforeDateLogged
-                               error:(PELMDaoErrorBlk)errorBlk {
-  return [self fuelPurchaseLogsForUser:user
-                                   pageSize:pageSize
-                           beforeDateLogged:beforeDateLogged
-                                      error:errorBlk];
-}
-
-- (NSInteger)numFuelPurchaseLogsForVehicle:(FPVehicle *)vehicle
-                                     error:(PELMDaoErrorBlk)errorBlk {
-  return [self numFuelPurchaseLogsForVehicle:vehicle error:errorBlk];
-}
-
-- (NSInteger)numFuelPurchaseLogsForVehicle:(FPVehicle *)vehicle
-                                 newerThan:(NSDate *)newerThan
-                                     error:(PELMDaoErrorBlk)errorBlk {
-  return [self numFuelPurchaseLogsForVehicle:vehicle
-                                        newerThan:newerThan
-                                            error:errorBlk];
-}
-
-- (NSArray *)fuelPurchaseLogsForVehicle:(FPVehicle *)vehicle
-                               pageSize:(NSInteger)pageSize
-                                  error:(PELMDaoErrorBlk)errorBlk {
-  return [self fuelPurchaseLogsForVehicle:vehicle
-                                 pageSize:pageSize
-                         beforeDateLogged:nil
-                                    error:errorBlk];
-}
-
-- (NSArray *)fuelPurchaseLogsForVehicle:(FPVehicle *)vehicle
-                               pageSize:(NSInteger)pageSize
-                       beforeDateLogged:(NSDate *)beforeDateLogged
-                                  error:(PELMDaoErrorBlk)errorBlk {
-  return [self fuelPurchaseLogsForVehicle:vehicle
-                                      pageSize:pageSize
-                              beforeDateLogged:beforeDateLogged
-                                         error:errorBlk];
-}
-
-- (NSInteger)numFuelPurchaseLogsForFuelStation:(FPFuelStation *)fuelStation
-                                         error:(PELMDaoErrorBlk)errorBlk {
-  return [self numFuelPurchaseLogsForFuelStation:fuelStation error:errorBlk];
-}
-
-- (NSInteger)numFuelPurchaseLogsForFuelStation:(FPFuelStation *)fuelStation
-                                     newerThan:(NSDate *)newerThan
-                                         error:(PELMDaoErrorBlk)errorBlk {
-  return [self numFuelPurchaseLogsForFuelStation:fuelStation
-                                            newerThan:newerThan
-                                                error:errorBlk];
-}
-
-- (NSArray *)fuelPurchaseLogsForFuelStation:(FPFuelStation *)fuelStation
-                                   pageSize:(NSInteger)pageSize
-                                      error:(PELMDaoErrorBlk)errorBlk {
-  return [self fuelPurchaseLogsForFuelStation:fuelStation
-                                     pageSize:pageSize
-                             beforeDateLogged:nil
-                                        error:errorBlk];
-}
-
-- (NSArray *)fuelPurchaseLogsForFuelStation:(FPFuelStation *)fuelStation
-                                   pageSize:(NSInteger)pageSize
-                           beforeDateLogged:(NSDate *)beforeDateLogged
-                                      error:(PELMDaoErrorBlk)errorBlk {
-  return [self fuelPurchaseLogsForFuelStation:fuelStation
-                                          pageSize:pageSize
-                                  beforeDateLogged:beforeDateLogged
-                                             error:errorBlk];
-}
-
-- (FPVehicle *)vehicleForFuelPurchaseLog:(FPFuelPurchaseLog *)fpLog
-                                   error:(PELMDaoErrorBlk)errorBlk {
-  return [self vehicleForFuelPurchaseLog:fpLog error:errorBlk];
-}
-
-- (FPFuelStation *)fuelStationForFuelPurchaseLog:(FPFuelPurchaseLog *)fpLog
-                                           error:(PELMDaoErrorBlk)errorBlk {
-  return [self fuelStationForFuelPurchaseLog:fpLog error:errorBlk];
-}
-
-- (FPVehicle *)vehicleForMostRecentFuelPurchaseLogForUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk {
-  return [self vehicleForMostRecentFuelPurchaseLogForUser:user error:errorBlk];
-}
-
-- (FPFuelStation *)defaultFuelStationForNewFuelPurchaseLogForUser:(FPUser *)user
-                                                  currentLocation:(CLLocation *)currentLocation
-                                                            error:(PELMDaoErrorBlk)errorBlk {
-  return [self defaultFuelStationForNewFuelPurchaseLogForUser:user
-                                                   currentLocation:currentLocation
-                                                             error:errorBlk];
-}
-
-- (void)saveNewFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
-                       forUser:(FPUser *)user
-                       vehicle:(FPVehicle *)vehicle
-                   fuelStation:(FPFuelStation *)fuelStation
-                         error:(PELMDaoErrorBlk)errorBlk {
-  [self saveNewFuelPurchaseLog:fuelPurchaseLog
-                            forUser:user
-                            vehicle:vehicle
-                        fuelStation:fuelStation
-                              error:errorBlk];
-}*/
 
 - (void)saveNewAndSyncImmediateFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
                                        forUser:(FPUser *)user
@@ -1504,32 +1304,6 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk {
   }
 }
 
-/*- (BOOL)prepareFuelPurchaseLogForEdit:(FPFuelPurchaseLog *)fuelPurchaseLog
-                              forUser:(FPUser *)user
-                                error:(PELMDaoErrorBlk)errorBlk {
-  return [self prepareFuelPurchaseLogForEdit:fuelPurchaseLog
-                                          forUser:user
-                                            error:errorBlk];
-}
-
-- (void)saveFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
-                    forUser:(FPUser *)user
-                    vehicle:(FPVehicle *)vehicle
-                fuelStation:(FPFuelStation *)fuelStation
-                      error:(PELMDaoErrorBlk)errorBlk {
-  [self saveFuelPurchaseLog:fuelPurchaseLog
-                         forUser:user
-                         vehicle:vehicle
-                     fuelStation:fuelStation
-                           error:errorBlk];
-}
-
-- (void)markAsDoneEditingFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
-                                   error:(PELMDaoErrorBlk)errorBlk {
-  [self markAsDoneEditingFuelPurchaseLog:fuelPurchaseLog
-                                        error:errorBlk];
-}*/
-
 - (void)flushUnsyncedChangesToFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
                                       forUser:(FPUser *)user
                           notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
@@ -1563,7 +1337,7 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk {
   [PELMUtils complHandlerToFlushUnsyncedChangesToEntity:fuelPurchaseLog
                                     remoteStoreErrorBlk:^(NSError *err, NSNumber *httpStatusCode) {
                                       [self cancelSyncForFuelPurchaseLog:fuelPurchaseLog httpRespCode:httpStatusCode errorMask:@([err code]) retryAt:nil error:errorBlk];
-                                      [FPCoordinatorDao invokeErrorBlocksForHttpStatusCode:httpStatusCode
+                                      [FPCoordinatorDaoImpl invokeErrorBlocksForHttpStatusCode:httpStatusCode
                                                                                      error:err
                                                                     tempRemoteErrorBlk:addlTempRemoteErrorBlk
                                                                         remoteErrorBlk:addlRemoteErrorBlk];
@@ -1647,7 +1421,7 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk {
   PELMRemoteMasterCompletionHandler remoteStoreComplHandler =
     [PELMUtils complHandlerToDeleteEntity:fplog
                       remoteStoreErrorBlk:^(NSError *err, NSNumber *httpStatusCode) {
-                        [FPCoordinatorDao invokeErrorBlocksForHttpStatusCode:httpStatusCode
+                        [FPCoordinatorDaoImpl invokeErrorBlocksForHttpStatusCode:httpStatusCode
                                                                        error:err
                                                           tempRemoteErrorBlk:tempRemoteErrorBlk
                                                               remoteErrorBlk:remoteErrorBlk];
@@ -1696,17 +1470,6 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk {
                                    completionHandler:remoteStoreComplHandler];
 }
 
-/*- (void)reloadFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
-                        error:(PELMDaoErrorBlk)errorBlk {
-  [self reloadFuelPurchaseLog:fuelPurchaseLog error:errorBlk];
-}
-
-- (void)cancelEditOfFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
-                              error:(PELMDaoErrorBlk)errorBlk {
-  [self cancelEditOfFuelPurchaseLog:fuelPurchaseLog
-                                   error:errorBlk];
-}*/
-
 #pragma mark - Environment Log
 
 - (FPEnvironmentLog *)environmentLogWithOdometer:(NSDecimalNumber *)odometer
@@ -1723,95 +1486,6 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk {
                                   reportedDte:reportedDte
                                     mediaType:[FPKnownMediaTypes environmentLogMediaTypeWithVersion:_environmentLogResMtVersion]];
 }
-
-/*- (NSInteger)numEnvironmentLogsForUser:(FPUser *)user
-                                 error:(PELMDaoErrorBlk)errorBlk {
-  return [self numEnvironmentLogsForUser:user error:errorBlk];
-}
-
-- (NSInteger)numEnvironmentLogsForUser:(FPUser *)user
-                             newerThan:(NSDate *)newerThan
-                                 error:(PELMDaoErrorBlk)errorBlk {
-  return [self numEnvironmentLogsForUser:user
-                                    newerThan:newerThan
-                                        error:errorBlk];
-}
-
-- (NSArray *)environmentLogsForUser:(FPUser *)user
-                           pageSize:(NSInteger)pageSize
-                              error:(PELMDaoErrorBlk)errorBlk {
-  return [self environmentLogsForUser:user
-                             pageSize:pageSize
-                     beforeDateLogged:nil
-                                error:errorBlk];
-}
-
-- (NSArray *)environmentLogsForUser:(FPUser *)user
-                           pageSize:(NSInteger)pageSize
-                   beforeDateLogged:(NSDate *)beforeDateLogged
-                              error:(PELMDaoErrorBlk)errorBlk {
-  return [self environmentLogsForUser:user
-                                  pageSize:pageSize
-                          beforeDateLogged:beforeDateLogged
-                                     error:errorBlk];
-}
-
-- (NSArray *)unsyncedEnvironmentLogsForUser:(FPUser *)user
-                                      error:(PELMDaoErrorBlk)errorBlk {
-  return [self unsyncedEnvironmentLogsForUser:user error:errorBlk];
-}
-
-- (NSInteger)numEnvironmentLogsForVehicle:(FPVehicle *)vehicle
-                                    error:(PELMDaoErrorBlk)errorBlk {
-  return [self numEnvironmentLogsForVehicle:vehicle error:errorBlk];
-}
-
-- (NSInteger)numEnvironmentLogsForVehicle:(FPVehicle *)vehicle
-                                newerThan:(NSDate *)newerThan
-                                    error:(PELMDaoErrorBlk)errorBlk {
-  return [self numEnvironmentLogsForVehicle:vehicle
-                                       newerThan:newerThan
-                                           error:errorBlk];
-}
-
-- (NSArray *)environmentLogsForVehicle:(FPVehicle *)vehicle
-                              pageSize:(NSInteger)pageSize
-                                 error:(PELMDaoErrorBlk)errorBlk {
-  return [self environmentLogsForVehicle:vehicle
-                                pageSize:pageSize
-                        beforeDateLogged:nil
-                                   error:errorBlk];
-}
-
-- (NSArray *)environmentLogsForVehicle:(FPVehicle *)vehicle
-                              pageSize:(NSInteger)pageSize
-                      beforeDateLogged:(NSDate *)beforeDateLogged
-                                 error:(PELMDaoErrorBlk)errorBlk {
-  return [self environmentLogsForVehicle:vehicle
-                                     pageSize:pageSize
-                             beforeDateLogged:beforeDateLogged
-                                        error:errorBlk];
-}
-
-- (FPVehicle *)vehicleForEnvironmentLog:(FPEnvironmentLog *)fpLog
-                                  error:(PELMDaoErrorBlk)errorBlk {
-  return [self vehicleForEnvironmentLog:fpLog error:errorBlk];
-}
-
-- (FPVehicle *)defaultVehicleForNewEnvironmentLogForUser:(FPUser *)user
-                                                   error:(PELMDaoErrorBlk)errorBlk {
-  return [self defaultVehicleForNewEnvironmentLogForUser:user error:errorBlk];
-}
-
-- (void)saveNewEnvironmentLog:(FPEnvironmentLog *)environmentLog
-                      forUser:(FPUser *)user
-                      vehicle:(FPVehicle *)vehicle
-                        error:(PELMDaoErrorBlk)errorBlk {
-  [self saveNewEnvironmentLog:environmentLog
-                           forUser:user
-                           vehicle:vehicle
-                             error:errorBlk];
-}*/
 
 - (void)saveNewAndSyncImmediateEnvironmentLog:(FPEnvironmentLog *)envLog
                                       forUser:(FPUser *)user
@@ -1844,30 +1518,6 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk {
   }
 }
 
-/*- (BOOL)prepareEnvironmentLogForEdit:(FPEnvironmentLog *)environmentLog
-                             forUser:(FPUser *)user
-                               error:(PELMDaoErrorBlk)errorBlk {
-  return [self prepareEnvironmentLogForEdit:environmentLog
-                                         forUser:user
-                                           error:errorBlk];
-}
-
-- (void)saveEnvironmentLog:(FPEnvironmentLog *)environmentLog
-                   forUser:(FPUser *)user
-                   vehicle:(FPVehicle *)vehicle
-                     error:(PELMDaoErrorBlk)errorBlk {
-  [self saveEnvironmentLog:environmentLog
-                        forUser:user
-                        vehicle:vehicle
-                          error:errorBlk];
-}
-
-- (void)markAsDoneEditingEnvironmentLog:(FPEnvironmentLog *)environmentLog
-                                  error:(PELMDaoErrorBlk)errorBlk {
-  [self markAsDoneEditingEnvironmentLog:environmentLog
-                                       error:errorBlk];
-}*/
-
 - (void)flushUnsyncedChangesToEnvironmentLog:(FPEnvironmentLog *)environmentLog
                                      forUser:(FPUser *)user
                          notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
@@ -1893,7 +1543,7 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk {
   [PELMUtils complHandlerToFlushUnsyncedChangesToEntity:environmentLog
                                     remoteStoreErrorBlk:^(NSError *err, NSNumber *httpStatusCode) {
                                       [self cancelSyncForEnvironmentLog:environmentLog httpRespCode:httpStatusCode errorMask:@([err code]) retryAt:nil error:errorBlk];
-                                      [FPCoordinatorDao invokeErrorBlocksForHttpStatusCode:httpStatusCode
+                                      [FPCoordinatorDaoImpl invokeErrorBlocksForHttpStatusCode:httpStatusCode
                                                                                      error:err
                                                                     tempRemoteErrorBlk:addlTempRemoteErrorBlk
                                                                         remoteErrorBlk:addlRemoteErrorBlk];
@@ -1975,7 +1625,7 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk {
     PELMRemoteMasterCompletionHandler remoteStoreComplHandler =
     [PELMUtils complHandlerToDeleteEntity:envlog
                       remoteStoreErrorBlk:^(NSError *err, NSNumber *httpStatusCode) {
-                        [FPCoordinatorDao invokeErrorBlocksForHttpStatusCode:httpStatusCode
+                        [FPCoordinatorDaoImpl invokeErrorBlocksForHttpStatusCode:httpStatusCode
                                                                        error:err
                                                           tempRemoteErrorBlk:tempRemoteErrorBlk
                                                               remoteErrorBlk:remoteErrorBlk];
@@ -2023,17 +1673,6 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk {
                                         }
                                   completionHandler:remoteStoreComplHandler];
 }
-
-/*- (void)reloadEnvironmentLog:(FPEnvironmentLog *)environmentLog
-                       error:(PELMDaoErrorBlk)errorBlk {
-  [self reloadEnvironmentLog:environmentLog error:errorBlk];
-}
-
-- (void)cancelEditOfEnvironmentLog:(FPEnvironmentLog *)environmentLog
-                             error:(PELMDaoErrorBlk)errorBlk {
-  [self cancelEditOfEnvironmentLog:environmentLog
-                                  error:errorBlk];
-}*/
 
 #pragma mark - Flush to Remote Master helpers (private)
 

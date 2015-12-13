@@ -11,12 +11,12 @@
 #import "FPCoordDaoTestContext.h"
 #import "FPLogging.h"
 
-@implementation FPCoordinatorDao (AdditionsForTesting)
+@implementation FPCoordinatorDaoImpl (AdditionsForTesting)
 
 - (void)deleteUser:(PELMDaoErrorBlk)errorBlk {
-  FPUser *user = [self userWithError:errorBlk];
+  FPUser *user = (FPUser *)[self userWithError:errorBlk];
   if (user) {
-    [self.localDao deleteUser:user error:errorBlk];
+    [self deleteUser:user error:errorBlk];
   }
 }
 

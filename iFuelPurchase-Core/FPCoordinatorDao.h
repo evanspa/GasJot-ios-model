@@ -1,22 +1,18 @@
 //
-//  FPCoordinatorDao.h
-//  PEFuelPurchase-Model
+//  FPCoordinator.h
+//  Gas Jot Model
 //
-//  Created by Evans, Paul on 8/17/14.
-//  Copyright (c) 2014 Paul Evans. All rights reserved.
+//  Created by Paul Evans on 12/12/15.
+//  Copyright © 2015 Paul Evans. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-#import <PEHateoas-Client/HCCharset.h>
-#import <PEFuelPurchase-Common/FPAuthTokenDelegate.h>
-#import "FPRemoteMasterDao.h"
-#import "FPLocalDao.h"
+#import "PECoordinatorDao.h"
 
 typedef void (^FPSavedNewEntityCompletionHandler)(FPUser *, NSError *);
 
 typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
 
-@interface FPCoordinatorDao : FPLocalDao
+@protocol FPCoordinatorDao <PECoordinatorDao, FPLocalDao>
 
 #pragma mark - Initializers
 
@@ -66,14 +62,6 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
                authTokenDelegate:(id<FPAuthTokenDelegate>)authTokenDelegate
         allowInvalidCertificates:(BOOL)allowInvalidCertifications;
 
-#pragma mark - Initialize Local Database
-
-- (void)initializeLocalDatabaseWithError:(PELMDaoErrorBlk)errorBlk;
-
-#pragma mark - Properties
-
-@property (nonatomic) NSString *authToken;
-
 #pragma mark - Flushing All Unsynced Edits to Remote Master
 
 - (NSInteger)flushAllUnsyncedEditsToRemoteForUser:(FPUser *)user
@@ -87,9 +75,11 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
                                           allDone:(void(^)(void))allDoneBlk
                                             error:(PELMDaoErrorBlk)errorBlk;
 
-#pragma mark - User
+#pragma mark - Unsynced Entities Check
 
 - (BOOL)doesUserHaveAnyUnsyncedEntities:(FPUser *)user;
+
+#pragma mark - User Operations
 
 - (void)resetAsLocalUser:(FPUser *)user error:(PELMDaoErrorBlk)error;
 
@@ -100,8 +90,6 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
                            remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                          completionHandler:(FPSavedNewEntityCompletionHandler)complHandler
                      localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler;
-
-- (FPUser *)userWithError:(PELMDaoErrorBlk)errorBlk;
 
 - (void)loginWithEmail:(NSString *)email
               password:(NSString *)password
@@ -132,13 +120,6 @@ localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler;
                            successBlk:(void(^)(void))successBlk
                       unknownEmailBlk:(void(^)(void))unknownEmailBlk
                              errorBlk:(void(^)(void))errorBlk;
-
-
-- (BOOL)prepareUserForEdit:(FPUser *)user
-                     error:(PELMDaoErrorBlk)errorBlk;
-
-- (void)saveUser:(FPUser *)user
-           error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)flushUnsyncedChangesToUser:(FPUser *)user
                notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
@@ -210,16 +191,6 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk;
                    addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
                                  error:(PELMDaoErrorBlk)errorBlk;
 
-- (BOOL)prepareVehicleForEdit:(FPVehicle *)vehicle
-                      forUser:(FPUser *)user
-                        error:(PELMDaoErrorBlk)errorBlk;
-
-- (void)saveVehicle:(FPVehicle *)vehicle
-              error:(PELMDaoErrorBlk)errorBlk;
-
-- (void)markAsDoneEditingVehicle:(FPVehicle *)vehicle
-                           error:(PELMDaoErrorBlk)errorBlk;
-
 - (void)flushUnsyncedChangesToVehicle:(FPVehicle *)vehicle
                               forUser:(FPUser *)user
                   notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
@@ -271,14 +242,7 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk;
                        addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
                                      error:(PELMDaoErrorBlk)errorBlk;
 
-- (void)reloadVehicle:(FPVehicle *)vehicle error:(PELMDaoErrorBlk)errorBlk;
-
-- (void)cancelEditOfVehicle:(FPVehicle *)vehicle error:(PELMDaoErrorBlk)errorBlk;
-
 #pragma mark - Fuel Station
-
-- (NSInteger)numFuelStationsForUser:(FPUser *)user
-                              error:(PELMDaoErrorBlk)errorBlk;
 
 - (FPFuelStation *)fuelStationWithName:(NSString *)name
                                 street:(NSString *)street
@@ -287,19 +251,6 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk;
                                    zip:(NSString *)zip
                               latitude:(NSDecimalNumber *)latitude
                              longitude:(NSDecimalNumber *)longitude;
-
-- (NSArray *)fuelStationsForUser:(FPUser *)user
-                           error:(PELMDaoErrorBlk)errorBlk;
-
-- (NSArray *)unsyncedFuelStationsForUser:(FPUser *)user
-                                   error:(PELMDaoErrorBlk)errorBlk;
-
-- (FPUser *)userForFuelStation:(FPFuelStation *)fuelStation
-                         error:(PELMDaoErrorBlk)errorBlk;
-
-- (void)saveNewFuelStation:(FPFuelStation *)fuelStation
-                   forUser:(FPUser *)user
-                     error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)saveNewAndSyncImmediateFuelStation:(FPFuelStation *)fuelStation
                                    forUser:(FPUser *)user
@@ -311,16 +262,6 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk;
                            addlConflictBlk:(void(^)(id))addlConflictBlk
                        addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
                                      error:(PELMDaoErrorBlk)errorBlk;
-
-- (BOOL)prepareFuelStationForEdit:(FPFuelStation *)fuelStation
-                          forUser:(FPUser *)user
-                            error:(PELMDaoErrorBlk)errorBlk;
-
-- (void)saveFuelStation:(FPFuelStation *)fuelStation
-                  error:(PELMDaoErrorBlk)errorBlk;
-
-- (void)markAsDoneEditingFuelStation:(FPFuelStation *)fuelStation
-                               error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)flushUnsyncedChangesToFuelStation:(FPFuelStation *)fuelStation
                                   forUser:(FPUser *)user
@@ -373,20 +314,7 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk;
                            addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
                                          error:(PELMDaoErrorBlk)errorBlk;
 
-- (void)reloadFuelStation:(FPFuelStation *)fuelStation
-                    error:(PELMDaoErrorBlk)errorBlk;
-
-- (void)cancelEditOfFuelStation:(FPFuelStation *)fuelStation
-                          error:(PELMDaoErrorBlk)errorBlk;
-
 #pragma mark - Fuel Purchase Log
-
-- (NSInteger)numFuelPurchaseLogsForUser:(FPUser *)user
-                                  error:(PELMDaoErrorBlk)errorBlk;
-
-- (NSInteger)numFuelPurchaseLogsForUser:(FPUser *)user
-                              newerThan:(NSDate *)newerThan
-                                  error:(PELMDaoErrorBlk)errorBlk;
 
 - (FPFuelPurchaseLog *)fuelPurchaseLogWithNumGallons:(NSDecimalNumber *)numGallons
                                               octane:(NSNumber *)octane
@@ -396,68 +324,6 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk;
                             carWashPerGallonDiscount:(NSDecimalNumber *)carWashPerGallonDiscount
                                              logDate:(NSDate *)logDate
                                             isDiesel:(BOOL)isDiesel;
-
-- (NSArray *)fuelPurchaseLogsForUser:(FPUser *)user
-                            pageSize:(NSInteger)pageSize
-                               error:(PELMDaoErrorBlk)errorBlk;
-
-- (NSArray *)unsyncedFuelPurchaseLogsForUser:(FPUser *)user
-                                       error:(PELMDaoErrorBlk)errorBlk;
-
-- (NSArray *)fuelPurchaseLogsForUser:(FPUser *)user
-                            pageSize:(NSInteger)pageSize
-                    beforeDateLogged:(NSDate *)beforeDateLogged
-                               error:(PELMDaoErrorBlk)errorBlk;
-
-- (NSInteger)numFuelPurchaseLogsForVehicle:(FPVehicle *)vehicle
-                                     error:(PELMDaoErrorBlk)errorBlk;
-
-- (NSInteger)numFuelPurchaseLogsForVehicle:(FPVehicle *)vehicle
-                                 newerThan:(NSDate *)newerThan
-                                     error:(PELMDaoErrorBlk)errorBlk;
-
-- (NSArray *)fuelPurchaseLogsForVehicle:(FPVehicle *)vehicle
-                               pageSize:(NSInteger)pageSize
-                                  error:(PELMDaoErrorBlk)errorBlk;
-
-- (NSArray *)fuelPurchaseLogsForVehicle:(FPVehicle *)vehicle
-                               pageSize:(NSInteger)pageSize
-                       beforeDateLogged:(NSDate *)beforeDateLogged
-                                  error:(PELMDaoErrorBlk)errorBlk;
-
-- (NSInteger)numFuelPurchaseLogsForFuelStation:(FPFuelStation *)fuelStation
-                                         error:(PELMDaoErrorBlk)errorBlk;
-
-- (NSInteger)numFuelPurchaseLogsForFuelStation:(FPFuelStation *)fuelStation
-                                     newerThan:(NSDate *)newerThan
-                                         error:(PELMDaoErrorBlk)errorBlk;
-
-- (NSArray *)fuelPurchaseLogsForFuelStation:(FPFuelStation *)fuelStation
-                                   pageSize:(NSInteger)pageSize
-                                      error:(PELMDaoErrorBlk)errorBlk;
-
-- (NSArray *)fuelPurchaseLogsForFuelStation:(FPFuelStation *)fuelStation
-                                   pageSize:(NSInteger)pageSize
-                           beforeDateLogged:(NSDate *)beforeDateLogged
-                                      error:(PELMDaoErrorBlk)errorBlk;
-
-- (FPVehicle *)vehicleForFuelPurchaseLog:(FPFuelPurchaseLog *)fpLog
-                                   error:(PELMDaoErrorBlk)errorBlk;
-
-- (FPFuelStation *)fuelStationForFuelPurchaseLog:(FPFuelPurchaseLog *)fpLog
-                                           error:(PELMDaoErrorBlk)errorBlk;
-
-- (FPVehicle *)vehicleForMostRecentFuelPurchaseLogForUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk;
-
-- (FPFuelStation *)defaultFuelStationForNewFuelPurchaseLogForUser:(FPUser *)user
-                                                  currentLocation:(CLLocation *)currentLocation
-                                                            error:(PELMDaoErrorBlk)errorBlk;
-
-- (void)saveNewFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
-                       forUser:(FPUser *)user
-                       vehicle:(FPVehicle *)vehicle
-                   fuelStation:(FPFuelStation *)fuelStation
-                         error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)saveNewAndSyncImmediateFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
                                        forUser:(FPUser *)user
@@ -473,19 +339,6 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk;
                   skippedDueToVehicleNotSynced:(void(^)(void))skippedDueToVehicleNotSynced
               skippedDueToFuelStationNotSynced:(void(^)(void))skippedDueToFuelStationNotSynced
                                          error:(PELMDaoErrorBlk)errorBlk;
-
-- (BOOL)prepareFuelPurchaseLogForEdit:(FPFuelPurchaseLog *)fuelPurchaseLog
-                              forUser:(FPUser *)user
-                                error:(PELMDaoErrorBlk)errorBlk;
-
-- (void)saveFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
-                    forUser:(FPUser *)user
-                    vehicle:(FPVehicle *)vehicle
-                fuelStation:(FPFuelStation *)fuelStation
-                      error:(PELMDaoErrorBlk)errorBlk;
-
-- (void)markAsDoneEditingFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
-                                   error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)flushUnsyncedChangesToFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
                                       forUser:(FPUser *)user
@@ -533,12 +386,6 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk;
                       tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk
                      addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk;
 
-- (void)reloadFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
-                        error:(PELMDaoErrorBlk)errorBlk;
-
-- (void)cancelEditOfFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
-                              error:(PELMDaoErrorBlk)errorBlk;
-
 #pragma mark - Environment Log
 
 - (FPEnvironmentLog *)environmentLogWithOdometer:(NSDecimalNumber *)odometer
@@ -547,52 +394,6 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk;
                              reportedOutsideTemp:(NSNumber *)reportedOutsideTemp
                                          logDate:(NSDate *)logDate
                                      reportedDte:(NSNumber *)reportedDte;
-
-- (NSInteger)numEnvironmentLogsForUser:(FPUser *)user
-                                 error:(PELMDaoErrorBlk)errorBlk;
-
-- (NSInteger)numEnvironmentLogsForUser:(FPUser *)user
-                             newerThan:(NSDate *)newerThan
-                                 error:(PELMDaoErrorBlk)errorBlk;
-
-- (NSArray *)environmentLogsForUser:(FPUser *)user
-                           pageSize:(NSInteger)pageSize
-                              error:(PELMDaoErrorBlk)errorBlk;
-
-- (NSArray *)unsyncedEnvironmentLogsForUser:(FPUser *)user
-                                      error:(PELMDaoErrorBlk)errorBlk;
-
-- (NSArray *)environmentLogsForUser:(FPUser *)user
-                           pageSize:(NSInteger)pageSize
-                   beforeDateLogged:(NSDate *)beforeDateLogged
-                              error:(PELMDaoErrorBlk)errorBlk;
-
-- (NSInteger)numEnvironmentLogsForVehicle:(FPVehicle *)vehicle
-                                    error:(PELMDaoErrorBlk)errorBlk;
-
-- (NSInteger)numEnvironmentLogsForVehicle:(FPVehicle *)vehicle
-                                newerThan:(NSDate *)newerThan
-                                    error:(PELMDaoErrorBlk)errorBlk;
-
-- (NSArray *)environmentLogsForVehicle:(FPVehicle *)vehicle
-                              pageSize:(NSInteger)pageSize
-                                 error:(PELMDaoErrorBlk)errorBlk;
-
-- (NSArray *)environmentLogsForVehicle:(FPVehicle *)vehicle
-                              pageSize:(NSInteger)pageSize
-                      beforeDateLogged:(NSDate *)beforeDateLogged
-                                 error:(PELMDaoErrorBlk)errorBlk;
-
-- (FPVehicle *)vehicleForEnvironmentLog:(FPEnvironmentLog *)fpLog
-                                  error:(PELMDaoErrorBlk)errorBlk;
-
-- (FPVehicle *)defaultVehicleForNewEnvironmentLogForUser:(FPUser *)user
-                                                   error:(PELMDaoErrorBlk)errorBlk;
-
-- (void)saveNewEnvironmentLog:(FPEnvironmentLog *)envLog
-                      forUser:(FPUser *)user
-                      vehicle:(FPVehicle *)vehicle
-                        error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)saveNewAndSyncImmediateEnvironmentLog:(FPEnvironmentLog *)envLog
                                       forUser:(FPUser *)user
@@ -606,18 +407,6 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk;
                           addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
                  skippedDueToVehicleNotSynced:(void(^)(void))skippedDueToVehicleNotSynced
                                         error:(PELMDaoErrorBlk)errorBlk;
-
-- (BOOL)prepareEnvironmentLogForEdit:(FPEnvironmentLog *)envLog
-                             forUser:(FPUser *)user
-                               error:(PELMDaoErrorBlk)errorBlk;
-
-- (void)saveEnvironmentLog:(FPEnvironmentLog *)envLog
-                   forUser:(FPUser *)user
-                   vehicle:(FPVehicle *)vehicle
-                     error:(PELMDaoErrorBlk)errorBlk;
-
-- (void)markAsDoneEditingEnvironmentLog:(FPEnvironmentLog *)envLog
-                                  error:(PELMDaoErrorBlk)errorBlk;
 
 - (void)flushUnsyncedChangesToEnvironmentLog:(FPEnvironmentLog *)environmentLog
                                      forUser:(FPUser *)user
@@ -662,11 +451,5 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk;
                      remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
                      tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk
                     addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk;
-
-- (void)reloadEnvironmentLog:(FPEnvironmentLog *)environmentLog
-                       error:(PELMDaoErrorBlk)errorBlk;
-
-- (void)cancelEditOfEnvironmentLog:(FPEnvironmentLog *)envLog
-                             error:(PELMDaoErrorBlk)errorBlk;
 
 @end

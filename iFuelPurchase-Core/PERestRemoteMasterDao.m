@@ -32,6 +32,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
   nameOfApiJsonResourceFile:(NSString *)apiResourceFileName
             apiResMtVersion:(NSString *)apiResMtVersion
              userSerializer:(PEUserSerializer *)userSerializer
+        changelogSerializer:(PEChangelogSerializer *)changelogSerializer
             loginSerializer:(PELoginSerializer *)loginSerializer
            logoutSerializer:(PELogoutSerializer *)logoutSerializer
 resendVerificationEmailSerializer:(PEResendVerificationEmailSerializer *)resendVerificationEmailSerializer
@@ -59,6 +60,7 @@ resendVerificationEmailSerializer:(PEResendVerificationEmailSerializer *)resendV
     _loginFailedReasonHeaderName = loginFailedReasonHeaderName;
     _accountClosedReasonHeaderName = accountClosedReasonHeaderName;
     _userSerializer = userSerializer;
+    _changelogSerializer = changelogSerializer;
     _loginSerializer = loginSerializer;
     _logoutSerializer = logoutSerializer;
     _resendVerificationEmailSerializer = resendVerificationEmailSerializer;
@@ -406,23 +408,48 @@ resendVerificationEmailSerializer:(PEResendVerificationEmailSerializer *)resendV
             authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
        completionHandler:(PELMRemoteMasterCompletionHandler)complHandler
             otherHeaders:(NSDictionary *)otherHeaders {
-  [_relationExecutor
-   doPostForTargetResource:[relation target]
-   resourceModelParam:resourceModelParam
-   paramSerializer:serializer
-   responseEntitySerializer:serializer
-   asynchronous:YES
-   completionQueue:_serialQueue
-   authorization:[self authorization]
-   success:[self newPostSuccessBlk:complHandler]
-   redirection:[self newRedirectionBlk:complHandler]
-   clientError:[self newClientErrBlk:complHandler]
-   authenticationRequired:[PERestRemoteMasterDao toHCAuthReqdBlk:authRequired]
-   serverError:[self newServerErrBlk:complHandler]
-   unavailableError:[PERestRemoteMasterDao serverUnavailableBlk:busyHandler]
-   connectionFailure:[self newConnFailureBlk:complHandler]
-   timeout:timeout
-   otherHeaders:otherHeaders];
+  [_relationExecutor doPostForTargetResource:[relation target]
+                          resourceModelParam:resourceModelParam
+                             paramSerializer:serializer
+                    responseEntitySerializer:serializer
+                                asynchronous:YES
+                             completionQueue:_serialQueue
+                               authorization:[self authorization]
+                                     success:[self newPostSuccessBlk:complHandler]
+                                 redirection:[self newRedirectionBlk:complHandler]
+                                 clientError:[self newClientErrBlk:complHandler]
+                      authenticationRequired:[PERestRemoteMasterDao toHCAuthReqdBlk:authRequired]
+                                 serverError:[self newServerErrBlk:complHandler]
+                            unavailableError:[PERestRemoteMasterDao serverUnavailableBlk:busyHandler]
+                           connectionFailure:[self newConnFailureBlk:complHandler]
+                                     timeout:timeout
+                                otherHeaders:otherHeaders];
+}
+
+#pragma mark - Changelog Operations
+
+- (void)fetchChangelogWithGlobalId:(NSString *)globalId
+                   ifModifiedSince:(NSDate *)ifModifiedSince
+                           timeout:(NSInteger)timeout
+                   remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
+                      authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
+                 completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
+  [_relationExecutor doGetForURLString:globalId
+                       ifModifiedSince:nil
+                      targetSerializer:_changelogSerializer
+                          asynchronous:YES
+                       completionQueue:self.serialQueue
+                         authorization:[self authorization]
+                               success:[self newGetSuccessBlk:complHandler]
+                           redirection:[self newRedirectionBlk:complHandler]
+                           clientError:[self newClientErrBlk:complHandler]
+                authenticationRequired:[PERestRemoteMasterDao toHCAuthReqdBlk:authRequired]
+                           serverError:[self newServerErrBlk:complHandler]
+                      unavailableError:[PERestRemoteMasterDao serverUnavailableBlk:busyHandler]
+                     connectionFailure:[self newConnFailureBlk:complHandler]
+                               timeout:timeout
+                           cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
+                          otherHeaders:[self addDateHeaderToHeaders:@{} headerName:self.ifModifiedSinceHeaderName value:ifModifiedSince]];
 }
 
 #pragma mark - General Operations

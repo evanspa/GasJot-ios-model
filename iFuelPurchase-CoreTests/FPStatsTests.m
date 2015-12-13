@@ -6,7 +6,7 @@
 //  Copyright © 2015 Paul Evans. All rights reserved.
 //
 
-#import "FPCoordinatorDao.h"
+#import "FPCoordinatorDaoImpl.h"
 #import "FPCoordinatorDao+AdditionsForTesting.h"
 #import <CocoaLumberjack/DDLog.h>
 #import <CocoaLumberjack/DDASLLogger.h>
@@ -23,7 +23,7 @@
 SPEC_BEGIN(FPStatsSpec)
 
 __block FPCoordDaoTestContext *_coordTestCtx;
-__block FPCoordinatorDao *_coordDao;
+__block FPCoordinatorDaoImpl *_coordDao;
 __block NSDateFormatter *_dateFormatter;
 __block FPStats *_stats;
 __block FPUser *_user;
@@ -39,7 +39,7 @@ describe(@"FPStats", ^{
     [DDLog addLogger:[DDTTYLogger sharedInstance]];
     _coordTestCtx = [[FPCoordDaoTestContext alloc] initWithTestBundle:[NSBundle bundleForClass:[self class]]];
     _coordDao = [_coordTestCtx newStoreCoord];
-    _stats = [[FPStats alloc] initWithLocalDao:_coordDao.localDao errorBlk:[_coordTestCtx newLocalFetchErrBlkMaker]()];
+    _stats = [[FPStats alloc] initWithLocalDao:_coordDao errorBlk:[_coordTestCtx newLocalFetchErrBlkMaker]()];
     _dateFormatter = [[NSDateFormatter alloc] init];
     [_dateFormatter setDateFormat:@"MM/dd/yyyy"];
     _d = ^(NSString *dateStr) { return [_dateFormatter dateFromString:dateStr]; };

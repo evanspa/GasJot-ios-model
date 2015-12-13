@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Paul Evans. All rights reserved.
 //
 
-#import "FPCoordinatorDao.h"
+#import "FPCoordinatorDaoImpl.h"
 #import "FPCoordinatorDao+AdditionsForTesting.h"
 #import <CocoaLumberjack/DDLog.h>
 #import <CocoaLumberjack/DDASLLogger.h>
@@ -22,7 +22,7 @@
 SPEC_BEGIN(FPCoordinatorDaoSpec_12)
 
 __block FPCoordDaoTestContext *_coordTestCtx;
-__block FPCoordinatorDao *_coordDao;
+__block FPCoordinatorDaoImpl *_coordDao;
 __block FPCoordTestingNumEntitiesComputer _numEntitiesBlk;
 __block FPCoordTestingMocker _mocker;
 __block FPCoordTestingObserver _observer;
@@ -75,9 +75,9 @@ describe(@"FPCoordinatorDao", ^{
         addlAuthRequiredBlk:nil
                       error:nil];
       [[expectFutureValue(theValue(saveSuccess)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
-      user = [_coordDao userWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
+      user = (FPUser *)[_coordDao userWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
       [user shouldBeNil];
-      user = [_coordDao userWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
+      user = (FPUser *)[_coordDao userWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
       [user shouldBeNil];
       [_numValueFetcher(_coordDao, TBL_MAIN_USER, COL_MASTER_USER_ID, userLocalId) shouldBeNil];
       [_numValueFetcher(_coordDao, TBL_MASTER_USER, COL_LOCAL_ID, masterUserId) shouldBeNil];

@@ -2,29 +2,68 @@
 //  PELocalDao.h
 //  Gas Jot Model
 //
-//  Created by Paul Evans on 12/11/15.
+//  Created by Paul Evans on 12/12/15.
 //  Copyright © 2015 Paul Evans. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+#import <FMDB/FMDatabase.h>
+#import <FMDB/FMDatabaseQueue.h>
 #import "PELMUser.h"
 #import "PELMUtils.h"
-#import <FMDB/FMDatabaseQueue.h>
+#import "PEChangelog.h"
 
-@interface PELocalDao : NSObject
+typedef void (^PELMProcessChangelogEntitiesBlk)(NSArray *,
+                                                NSString *,
+                                                NSString *,
+                                                void(^)(id),
+                                                PELMSaveNewOrExistingCode(^)(id));
+
+@protocol PELocalDao <NSObject>
 
 #pragma mark - Initializers
 
 - (id)initWithSqliteDataFilePath:(NSString *)sqliteDataFilePath
                concreteUserClass:(Class)concreteUserClass;
 
-#pragma mark - Properties
+#pragma mark - Getters
 
-@property (nonatomic, readonly) PELMUtils *localModelUtils;
+- (PELMUtils *)localModelUtils;
 
-@property (nonatomic, readonly) FMDatabaseQueue *databaseQueue;
+- (FMDatabaseQueue *)databaseQueue;
+
+#pragma mark - System Functions
+
+- (void)pruneAllSyncedEntitiesWithError:(PELMDaoErrorBlk)errorBlk;
+
+- (void)globalCancelSyncInProgressWithError:(PELMDaoErrorBlk)error;
+
+#pragma mark - Change Log Operations
+
+- (NSArray *)saveChangelog:(PEChangelog *)changelog forUser:(PELMUser *)user error:(PELMDaoErrorBlk)errorBlk;
 
 #pragma mark - User Operations
+
+- (void)saveNewRemoteUser:(PELMUser *)remoteUser
+       andLinkToLocalUser:(PELMUser *)localUser
+preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
+                    error:(PELMDaoErrorBlk)errorBlk;
+
+- (void)saveNewRemoteUser:(PELMUser *)newRemoteUser
+       andLinkToLocalUser:(PELMUser *)localUser
+preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
+                       db:(FMDatabase *)db
+                    error:(PELMDaoErrorBlk)errorBlk;
+
+- (void)deepSaveNewRemoteUser:(PELMUser *)remoteUser
+           andLinkToLocalUser:(PELMUser *)localUser
+preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
+                        error:(PELMDaoErrorBlk)errorBlk;
+
+- (NSDate *)mostRecentMasterUpdateForUser:(PELMUser *)user error:(PELMDaoErrorBlk)errorBlk;
+
+- (void)deleteUser:(PELMUser *)user error:(PELMDaoErrorBlk)errorBlk;
+
+- (void)deleteUser:(PELMUser *)user db:(FMDatabase *)db error:(PELMDaoErrorBlk)errorBlk;
 
 - (PELMUser *)masterUserWithId:(NSNumber *)userId error:(PELMDaoErrorBlk)errorBlk;
 

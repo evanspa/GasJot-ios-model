@@ -15,12 +15,9 @@
 #import "FPFuelPurchaseLog.h"
 #import "FPEnvironmentLog.h"
 #import "PELMUtils.h"
+#import "PERemoteMasterDao.h"
 
-@protocol FPRemoteMasterDao <NSObject>
-
-#pragma mark - General Operations
-
-- (void)setAuthToken:(NSString *)authToken;
+@protocol FPRemoteMasterDao <PERemoteMasterDao>
 
 #pragma mark - Vehicle Operations
 
@@ -133,76 +130,5 @@
                         remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
                            authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
                       completionHandler:(PELMRemoteMasterCompletionHandler)complHandler;
-
-#pragma mark - User Operations
-
-- (void)logoutUser:(FPUser *)user
-           timeout:(NSInteger)timeout
-   remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
- completionHandler:(PELMRemoteMasterCompletionHandler)complHandler;
-
-- (void)resendVerificationEmailForUser:(FPUser *)user
-                               timeout:(NSInteger)timeout
-                       remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
-                     completionHandler:(PELMRemoteMasterCompletionHandler)complHandler;
-
-- (void)sendPasswordResetEmailToEmail:(NSString *)email
-                              timeout:(NSInteger)timeout
-                      remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
-                    completionHandler:(PELMRemoteMasterCompletionHandler)complHandler;
-
-- (void)establishAccountForUser:(FPUser *)user
-                        timeout:(NSInteger)timeout
-                remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
-                   authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
-              completionHandler:(PELMRemoteMasterCompletionHandler)complHandler;
-
-- (void)saveExistingUser:(FPUser *)user
-                 timeout:(NSInteger)timeout
-         remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
-            authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
-       completionHandler:(PELMRemoteMasterCompletionHandler)complHandler;
-
-- (void)loginWithEmail:(NSString *)email
-              password:(NSString *)password
-               timeout:(NSInteger)timeout
-       remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
-          authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
-     completionHandler:(PELMRemoteMasterCompletionHandler)complHandler;
-
-- (void)lightLoginForUser:(FPUser *)user
-                 password:(NSString *)password
-                  timeout:(NSInteger)timeout
-          remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
-             authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
-        completionHandler:(PELMRemoteMasterCompletionHandler)complHandler;
-
-- (void)sendConfirmationEmailForUser:(FPUser *)user
-                             timeout:(NSInteger)timeout
-                     remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
-                        authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
-                   completionHandler:(PELMRemoteMasterCompletionHandler)complHandler;
-
-- (void)deleteUser:(FPUser *)user
-           timeout:(NSInteger)timeout
-   remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
-      authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
- completionHandler:(PELMRemoteMasterCompletionHandler)complHandler;
-
-- (void)fetchUserWithGlobalId:(NSString *)globalId
-              ifModifiedSince:(NSDate *)ifModifiedSince
-                      timeout:(NSInteger)timeout
-              remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
-                 authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
-            completionHandler:(PELMRemoteMasterCompletionHandler)complHandler;
-
-#pragma mark - Changelog Operations
-
-- (void)fetchChangelogWithGlobalId:(NSString *)globalId
-                   ifModifiedSince:(NSDate *)ifModifiedSince
-                           timeout:(NSInteger)timeout
-                   remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
-                      authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
-                 completionHandler:(PELMRemoteMasterCompletionHandler)complHandler;
 
 @end

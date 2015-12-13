@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Paul Evans. All rights reserved.
 //
 
-#import "FPLocalDao.h"
+#import "FPLocalDaoImpl.h"
 #import "FPDDLUtils.h"
 #import <FMDB/FMDatabaseQueue.h>
 #import <FMDB/FMDatabaseAdditions.h>
@@ -21,7 +21,7 @@
 
 uint32_t const FP_REQUIRED_SCHEMA_VERSION = 3;
 
-@implementation FPLocalDao
+@implementation FPLocalDaoImpl
 
 #pragma mark - Initializers
 
@@ -180,27 +180,6 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   makeRelTable(TBL_MAIN_ENV_LOG);
 }
 
-#pragma mark - System functions
-
-- (void)pruneAllSyncedEntitiesWithError:(PELMDaoErrorBlk)errorBlk {
-  [self.localModelUtils pruneAllSyncedFromMainTables:@[TBL_MAIN_ENV_LOG,
-                                                   TBL_MAIN_FUELPURCHASE_LOG,
-                                                   TBL_MAIN_VEHICLE,
-                                                   TBL_MAIN_FUEL_STATION,
-                                                   TBL_MAIN_USER]
-                                           error:errorBlk];
-}
-
-- (void)globalCancelSyncInProgressWithError:(PELMDaoErrorBlk)error {
-  [self.databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
-    [PELMUtils cancelSyncInProgressForEntityTable:TBL_MAIN_USER db:db error:error];
-    [PELMUtils cancelSyncInProgressForEntityTable:TBL_MAIN_VEHICLE db:db error:error];
-    [PELMUtils cancelSyncInProgressForEntityTable:TBL_MAIN_FUEL_STATION db:db error:error];
-    [PELMUtils cancelSyncInProgressForEntityTable:TBL_MAIN_FUELPURCHASE_LOG db:db error:error];
-    [PELMUtils cancelSyncInProgressForEntityTable:TBL_MAIN_ENV_LOG db:db error:error];
-  }];
-}
-
 #pragma mark - Export
 
 - (void)exportWithPathToVehiclesFile:(NSString *)vehiclesPath
@@ -325,73 +304,101 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   }];
 }
 
-#pragma mark - User
+#pragma mark - PELocalDaoImpl Overrides
 
-- (NSDate *)mostRecentMasterUpdateForUser:(FPUser *)user
-                                    error:(PELMDaoErrorBlk)errorBlk {
-  __block NSDate *overallMostRecent = nil;
-  [self.databaseQueue inDatabase:^(FMDatabase *db) {
-    NSDate *(^mostRecentDate)(NSString *) = ^ NSDate * (NSString *table) {
-      return [PELMUtils maxDateFromTable:table
-                              dateColumn:COL_MST_UPDATED_AT
-                             whereColumn:COL_MASTER_USER_ID
-                              whereValue:user.localMasterIdentifier
-                                      db:db
-                                   error:errorBlk];
-    };
-    overallMostRecent = [PELMUtils maxDateFromTable:TBL_MASTER_USER
-                                         dateColumn:COL_MST_UPDATED_AT
-                                        whereColumn:COL_LOCAL_ID
-                                         whereValue:user.localMasterIdentifier
-                                                 db:db
-                                              error:errorBlk];
-    overallMostRecent = [PEUtils largerOfDate:overallMostRecent
-                                      andDate:mostRecentDate(TBL_MASTER_VEHICLE)];
-    overallMostRecent = [PEUtils largerOfDate:overallMostRecent
-                                      andDate:mostRecentDate(TBL_MASTER_FUEL_STATION)];
-    overallMostRecent = [PEUtils largerOfDate:overallMostRecent
-                                      andDate:mostRecentDate(TBL_MASTER_FUELPURCHASE_LOG)];
-    overallMostRecent = [PEUtils largerOfDate:overallMostRecent
-                                      andDate:mostRecentDate(TBL_MASTER_ENV_LOG)];
-  }];
-  return overallMostRecent;
+- (NSArray *)masterEntityTableNames {
+  return @[TBL_MASTER_VEHICLE,
+           TBL_MASTER_FUEL_STATION,
+           TBL_MASTER_FUELPURCHASE_LOG,
+           TBL_MASTER_ENV_LOG];
 }
 
-- (void)deleteUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk {
-  [self.databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
-    [self deleteUser:user db:db error:errorBlk];
-  }];
+- (PEUserDbOpBlk)preDeleteUserHook {
+  return ^(PELMUser *user, FMDatabase *db, PELMDaoErrorBlk errorBlk) {
+    [self deleteVehiclesOfUser:(FPUser *)user db:db error:errorBlk];
+    [self deleteFuelstationsOfUser:(FPUser *)user db:db error:errorBlk];
+  };
 }
 
-- (void)deleteUser:(FPUser *)user
-                db:(FMDatabase *)db
-             error:(PELMDaoErrorBlk)errorBlk {
-  [self deleteVehiclesOfUser:user db:db error:errorBlk];
-  [self deleteFuelstationsOfUser:user db:db error:errorBlk];
-  [PELMUtils deleteEntity:user
-          entityMainTable:TBL_MAIN_USER
-        entityMasterTable:TBL_MASTER_USER
-                       db:db
-                    error:errorBlk];
+- (NSArray *)mainEntityTableNamesChildToParentOrder {
+  return @[TBL_MAIN_ENV_LOG,
+           TBL_MAIN_FUELPURCHASE_LOG,
+           TBL_MAIN_FUEL_STATION,
+           TBL_MAIN_VEHICLE];
 }
 
-- (void)deleteVehiclesOfUser:(FPUser *)user
-                          db:(FMDatabase *)db
-                       error:(PELMDaoErrorBlk)errorBlk {
-  NSArray *vehicles = [self vehiclesForUser:user db:db error:errorBlk];
-  for (FPVehicle *vehicle in vehicles) {
-    [self deleteVehicle:vehicle db:db error:errorBlk];
-  }
+- (PEUserDbOpBlk)postDeepSaveUserHook {
+  return ^(PELMUser *user, FMDatabase *db, PELMDaoErrorBlk errorBlk) {
+    FPUser *fpuser = (FPUser *)user;
+    NSArray *vehicles = [fpuser vehicles];
+    if (vehicles) {
+      for (FPVehicle *vehicle in vehicles) {
+        [self persistDeepVehicleFromRemoteMaster:vehicle
+                                         forUser:fpuser
+                                              db:db
+                                           error:errorBlk];
+      }
+    }
+    NSArray *fuelStations = [fpuser fuelStations];
+    if (fuelStations) {
+      for (FPFuelStation *fuelStation in fuelStations) {
+        [self persistDeepFuelStationFromRemoteMaster:fuelStation
+                                             forUser:fpuser
+                                                  db:db
+                                               error:errorBlk];
+      }
+    }
+    NSArray *fpLogs = [fpuser fuelPurchaseLogs];
+    if (fpLogs) {
+      for (FPFuelPurchaseLog *fpLog in fpLogs) {
+        [self persistDeepFuelPurchaseLogFromRemoteMaster:fpLog
+                                                 forUser:fpuser
+                                                      db:db
+                                                   error:errorBlk];
+      }
+    }
+    NSArray *envLogs = [fpuser environmentLogs];
+    if (envLogs) {
+      for (FPEnvironmentLog *envLog in envLogs) {
+        [self persistDeepEnvironmentLogFromRemoteMaster:envLog
+                                                forUser:fpuser
+                                                     db:db
+                                                  error:errorBlk];
+      }
+    }
+  };
 }
 
-- (void)deleteFuelstationsOfUser:(FPUser *)user
-                              db:(FMDatabase *)db
-                           error:(PELMDaoErrorBlk)errorBlk {
-  NSArray *fuelstations = [self fuelStationsForUser:user db:db error:errorBlk];
-  for (FPFuelStation *fuelstation in fuelstations) {
-    [self deleteFuelstation:fuelstation db:db error:errorBlk];
-  }
+- (NSArray *)changelogProcessorsWithUser:(PELMUser *)user
+                               changelog:(PEChangelog *)changelog
+                                      db:(FMDatabase *)db
+                         processingBlock:(PELMProcessChangelogEntitiesBlk)processingBlk
+                                errorBlk:(PELMDaoErrorBlk)errorBlk {
+  FPUser *fpuser = (FPUser *)user;
+  FPChangelog *fpchangelog = (FPChangelog *)changelog;
+  return @[^{processingBlk([fpchangelog vehicles],
+                           TBL_MASTER_VEHICLE,
+                           TBL_MAIN_VEHICLE,
+                           ^(FPVehicle *vehicle) { [self deleteVehicle:vehicle db:db error:errorBlk]; },
+                           ^(FPVehicle *vehicle) { return [self saveNewOrExistingMasterVehicle:vehicle forUser:fpuser db:db error:errorBlk]; });},
+            ^{processingBlk([fpchangelog fuelStations],
+                            TBL_MASTER_FUEL_STATION,
+                            TBL_MAIN_FUEL_STATION,
+                            ^(FPFuelStation *fuelstation) { [self deleteFuelstation:fuelstation db:db error:errorBlk]; },
+                            ^(FPFuelStation *fuelstation) { return [self saveNewOrExistingMasterFuelstation:fuelstation forUser:fpuser db:db error:errorBlk]; });},
+            ^{processingBlk([fpchangelog fuelPurchaseLogs],
+                            TBL_MASTER_FUELPURCHASE_LOG,
+                            TBL_MAIN_FUELPURCHASE_LOG,
+                            ^(FPFuelPurchaseLog *fplog) { [self deleteFuelPurchaseLog:fplog db:db error:errorBlk]; },
+                            ^(FPFuelPurchaseLog *fplog) { return [self saveNewOrExistingMasterFuelPurchaseLog:fplog forUser:fpuser db:db error:errorBlk]; });},
+            ^{processingBlk([fpchangelog environmentLogs],
+                            TBL_MASTER_ENV_LOG,
+                            TBL_MAIN_ENV_LOG,
+                            ^(FPEnvironmentLog *envlog) { [self deleteEnvironmentLog:envlog db:db error:errorBlk]; },
+                            ^(FPEnvironmentLog *envlog) { return [self saveNewOrExistingMasterEnvironmentLog:envlog forUser:fpuser db:db error:errorBlk]; });}];
 }
+
+#pragma mark - Unsynced and Sync-Needed Counts
 
 - (NSInteger)numUnsyncedVehiclesForUser:(FPUser *)user {
   return [self numUnsyncedEntitiesForUser:user mainEntityTable:TBL_MAIN_VEHICLE];
@@ -439,175 +446,14 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
     [self numSyncNeededEnvironmentLogsForUser:user];
 }
 
-- (void)saveNewRemoteUser:(FPUser *)remoteUser
-       andLinkToLocalUser:(FPUser *)localUser
-preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
-                    error:(PELMDaoErrorBlk)errorBlk {
-  // user is special in that, upon insertion, it should have a global-ID (this
-  // is because as part of user-creation, we FIRST save to remote master, which
-  // returns us back a global-ID, then we insert into local master, hence this
-  // invariant check)
-  NSAssert([remoteUser globalIdentifier] != nil, @"globalIdentifier is nil");
-  [self.databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
-    [self saveNewRemoteUser:remoteUser
-         andLinkToLocalUser:localUser
-preserveExistingLocalEntities:preserveExistingLocalEntities
-                         db:db
-                      error:errorBlk];
-  }];
-}
+#pragma mark - Vehicle
 
-- (void)saveNewRemoteUser:(FPUser *)newRemoteUser
-       andLinkToLocalUser:(FPUser *)localUser
-preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
-                       db:(FMDatabase *)db
-                    error:(PELMDaoErrorBlk)errorBlk {
-  [self insertIntoMasterUser:newRemoteUser db:db error:errorBlk];
-  [PELMUtils insertRelations:[newRemoteUser relations]
-                   forEntity:newRemoteUser
-                 entityTable:TBL_MASTER_USER
-             localIdentifier:[newRemoteUser localMasterIdentifier]
-                          db:db
-                       error:errorBlk];
-  [self linkMainUser:localUser toMasterUser:newRemoteUser db:db error:errorBlk];
-  if (!preserveExistingLocalEntities) {
-    [self deleteVehiclesOfUser:localUser db:db error:errorBlk];
-    [self deleteFuelstationsOfUser:localUser db:db error:errorBlk];
+- (void)deleteVehiclesOfUser:(FPUser *)user db:(FMDatabase *)db error:(PELMDaoErrorBlk)errorBlk {
+  NSArray *vehicles = [self vehiclesForUser:user db:db error:errorBlk];
+  for (FPVehicle *vehicle in vehicles) {
+    [self deleteVehicle:vehicle db:db error:errorBlk];
   }
 }
-
-- (void)deepSaveNewRemoteUser:(FPUser *)remoteUser
-           andLinkToLocalUser:(FPUser *)localUser
-preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
-                        error:(PELMDaoErrorBlk)errorBlk {
-  NSAssert([remoteUser globalIdentifier] != nil, @"globalIdentifier is nil");
-  [self.databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
-    [self saveNewRemoteUser:remoteUser
-         andLinkToLocalUser:localUser
-preserveExistingLocalEntities:preserveExistingLocalEntities
-                         db:db
-                      error:errorBlk];
-    NSArray *vehicles = [remoteUser vehicles];
-    if (vehicles) {
-      for (FPVehicle *vehicle in vehicles) {
-        [self persistDeepVehicleFromRemoteMaster:vehicle
-                                         forUser:remoteUser
-                                              db:db
-                                           error:errorBlk];
-      }
-    }
-    NSArray *fuelStations = [remoteUser fuelStations];
-    if (fuelStations) {
-      for (FPFuelStation *fuelStation in fuelStations) {
-        [self persistDeepFuelStationFromRemoteMaster:fuelStation
-                                             forUser:remoteUser
-                                                  db:db
-                                               error:errorBlk];
-      }
-    }
-    NSArray *fpLogs = [remoteUser fuelPurchaseLogs];
-    if (fpLogs) {
-      for (FPFuelPurchaseLog *fpLog in fpLogs) {
-        [self persistDeepFuelPurchaseLogFromRemoteMaster:fpLog
-                                                 forUser:remoteUser
-                                                      db:db
-                                                   error:errorBlk];
-      }
-    }
-    NSArray *envLogs = [remoteUser environmentLogs];
-    if (envLogs) {
-      for (FPEnvironmentLog *envLog in envLogs) {
-        [self persistDeepEnvironmentLogFromRemoteMaster:envLog
-                                                forUser:remoteUser
-                                                     db:db
-                                                  error:errorBlk];
-      }
-    }
-  }];
-}
-
-- (NSArray *)saveChangelog:(FPChangelog *)changelog
-                   forUser:(FPUser *)user
-                     error:(PELMDaoErrorBlk)errorBlk {
-  __block NSInteger numDeletes = 0;
-  __block NSInteger numUpdates = 0;
-  __block NSInteger numInserts = 0;
-  [self.databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
-    void (^processChangelogEntities)(NSArray *,
-                                     NSString *,
-                                     NSString *,
-                                     void(^)(id),
-                                     PELMSaveNewOrExistingCode(^)(id)) =
-    ^ (NSArray *entities, NSString *masterTable, NSString *mainTable, void(^deleteBlk)(id), PELMSaveNewOrExistingCode(^saveNewOrExistingBlk)(id)) {
-      for (PELMMainSupport *entity in entities) {
-        if (![PEUtils isNil:entity.deletedAt]) {
-          NSNumber *masterLocalId = [PELMUtils masterLocalIdFromEntityTable:masterTable
-                                                           globalIdentifier:entity.globalIdentifier
-                                                                         db:db
-                                                                      error:errorBlk];
-          if (![PEUtils isNil:masterLocalId]) {
-            [entity setLocalMasterIdentifier:masterLocalId];
-            NSNumber *mainLocalId = [PELMUtils localMainIdentifierForEntity:entity
-                                                                  mainTable:mainTable
-                                                                         db:db
-                                                                      error:errorBlk];
-            [entity setLocalMainIdentifier:mainLocalId];
-            deleteBlk(entity);
-            numDeletes++;
-          } else {
-            // the entity never existed on our device (i.e., it was created and deleted
-            // before it could ever be downloaded to this device)
-          }
-        } else {
-          PELMSaveNewOrExistingCode returnCode = saveNewOrExistingBlk(entity);
-          switch (returnCode) {
-            case PELMSaveNewOrExistingCodeDidUpdate:
-              numUpdates++;
-              break;
-            case PELMSaveNewOrExistingCodeDidInsert:
-              numInserts++;
-              break;
-            case PELMSaveNewOrExistingCodeDidNothing:
-              // do nothing
-              break;
-          }
-        }
-      }
-    };
-    FPUser *updatedUser = [changelog user];
-    if (![PEUtils isNil:updatedUser]) {
-      if ([updatedUser.updatedAt compare:user.updatedAt] == NSOrderedDescending) {
-        if ([self saveMasterUser:updatedUser db:db error:errorBlk]) {
-          [user overwriteDomainProperties:updatedUser];
-          numUpdates++;
-        }
-      }
-    }
-    processChangelogEntities([changelog vehicles],
-                             TBL_MASTER_VEHICLE,
-                             TBL_MAIN_VEHICLE,
-                             ^(FPVehicle *vehicle) { [self deleteVehicle:vehicle db:db error:errorBlk]; },
-                             ^(FPVehicle *vehicle) { return [self saveNewOrExistingMasterVehicle:vehicle forUser:user db:db error:errorBlk]; });
-    processChangelogEntities([changelog fuelStations],
-                             TBL_MASTER_FUEL_STATION,
-                             TBL_MAIN_FUEL_STATION,
-                             ^(FPFuelStation *fuelstation) { [self deleteFuelstation:fuelstation db:db error:errorBlk]; },
-                             ^(FPFuelStation *fuelstation) { return [self saveNewOrExistingMasterFuelstation:fuelstation forUser:user db:db error:errorBlk]; });
-    processChangelogEntities([changelog fuelPurchaseLogs],
-                             TBL_MASTER_FUELPURCHASE_LOG,
-                             TBL_MAIN_FUELPURCHASE_LOG,
-                             ^(FPFuelPurchaseLog *fplog) { [self deleteFuelPurchaseLog:fplog db:db error:errorBlk]; },
-                             ^(FPFuelPurchaseLog *fplog) { return [self saveNewOrExistingMasterFuelPurchaseLog:fplog forUser:user db:db error:errorBlk]; });
-    processChangelogEntities([changelog environmentLogs],
-                             TBL_MASTER_ENV_LOG,
-                             TBL_MAIN_ENV_LOG,
-                             ^(FPEnvironmentLog *envlog) { [self deleteEnvironmentLog:envlog db:db error:errorBlk]; },
-                             ^(FPEnvironmentLog *envlog) { return [self saveNewOrExistingMasterEnvironmentLog:envlog forUser:user db:db error:errorBlk]; });
-  }];
-  return @[@(numDeletes), @(numUpdates), @(numInserts)];
-}
-
-#pragma mark - Vehicle
 
 - (FPVehicle *)masterVehicleWithId:(NSNumber *)vehicleId
                              error:(PELMDaoErrorBlk)errorBlk {
@@ -1032,6 +878,13 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
 }
 
 #pragma mark - Fuel Station
+
+- (void)deleteFuelstationsOfUser:(FPUser *)user db:(FMDatabase *)db error:(PELMDaoErrorBlk)errorBlk {
+  NSArray *fuelstations = [self fuelStationsForUser:user db:db error:errorBlk];
+  for (FPFuelStation *fuelstation in fuelstations) {
+    [self deleteFuelstation:fuelstation db:db error:errorBlk];
+  }
+}
 
 - (FPFuelStation *)masterFuelstationWithId:(NSNumber *)fuelstationId
                                      error:(PELMDaoErrorBlk)errorBlk {

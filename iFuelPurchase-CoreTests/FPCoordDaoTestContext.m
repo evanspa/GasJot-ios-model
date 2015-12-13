@@ -70,10 +70,10 @@
   };
 }
 
-- (FPCoordTestingNumEntitiesComputer)newNumEntitiesComputerWithCoordDao:(FPCoordinatorDao *)coordDao {
+- (FPCoordTestingNumEntitiesComputer)newNumEntitiesComputerWithCoordDao:(FPCoordinatorDaoImpl *)coordDao {
   return (^ NSNumber * (NSString *table) {
-    return [NSNumber numberWithInteger:[[[coordDao localDao] localModelUtils] numEntitiesFromTable:table
-                                                                                             error:[self newLocalBgErrBlkMaker]()]];
+    return [NSNumber numberWithInteger:[[coordDao localModelUtils] numEntitiesFromTable:table
+                                                                                  error:[self newLocalBgErrBlkMaker]()]];
   });
 }
 
@@ -143,13 +143,12 @@
 }
 
 - (FPCoordTestingNumValueFetcher)newNumValueFetcher {
-  return ^NSNumber *(FPCoordinatorDao *coordDao, NSString *table, NSString *selectColumn, NSNumber *keyValue) {
-    return [[[coordDao localDao]
-              localModelUtils] numberFromTable:table
-                                  selectColumn:selectColumn
-                                   whereColumn:COL_LOCAL_ID
-                                    whereValue:keyValue
-                                         error:[self newLocalFetchErrBlkMaker]()];
+  return ^NSNumber *(FPCoordinatorDaoImpl *coordDao, NSString *table, NSString *selectColumn, NSNumber *keyValue) {
+    return [[coordDao localModelUtils] numberFromTable:table
+                                          selectColumn:selectColumn
+                                           whereColumn:COL_LOCAL_ID
+                                            whereValue:keyValue
+                                                 error:[self newLocalFetchErrBlkMaker]()];
   };
 }
 
@@ -158,7 +157,7 @@
                      NSString *name,
                      NSString *email,
                      NSString *password,
-                     FPCoordinatorDao *coordDao,
+                     FPCoordinatorDaoImpl *coordDao,
                      void (^waitBlock)(void)) {
     [self newMocker](Two01MockResponseFile, 0, 0);
     /*FPUser *user = [coordDao userWithName:name
@@ -177,14 +176,14 @@
                                completionHandler:complHandler
                            localSaveErrorHandler:localDaoErrHandler];
     waitBlock();
-    return [coordDao userWithError:^(NSError *error, int code, NSString *msg) {
+    return (FPUser *)[coordDao userWithError:^(NSError *error, int code, NSString *msg) {
       DDLogError(@"Error fetching local user from within 'fetchUser' helper block.  Error: [%@]", error);
     }];
   };
 }
 
 - (FPCoordTestingFreshJoeSmithMaker)newFreshJoeSmithMaker {
-  return ^ FPUser * (FPCoordinatorDao *coordDao, void (^waitBlock)(void)) {
+  return ^ FPUser * (FPCoordinatorDaoImpl *coordDao, void (^waitBlock)(void)) {
     return [self newFreshUserMaker](@"http-response.users.POST.201",
                                     @"Joe Smith",
                                     @"joe.smith@example.com",
@@ -207,7 +206,7 @@
   };
 }
 
-- (FPCoordinatorDao *)newStoreCoord {
+- (FPCoordinatorDaoImpl *)newStoreCoord {
   NSURL *localSqlLiteDataFileUrl =
   [_testBundle URLForResource:@"sqlite-datafile-for-testing"
                 withExtension:@"data"];
@@ -222,8 +221,8 @@
      _authRequired = YES;
      _authentication = auth;
    }];
-  FPCoordinatorDao *coordDao =
-    [[FPCoordinatorDao alloc] initWithSqliteDataFilePath:[localSqlLiteDataFileUrl absoluteString]
+  FPCoordinatorDaoImpl *coordDao =
+    [[FPCoordinatorDaoImpl alloc] initWithSqliteDataFilePath:[localSqlLiteDataFileUrl absoluteString]
                                    localDatabaseCreationError:^(NSError *err, int code, NSString *msg) {
                                                                  DDLogDebug(@"Error creating local database: [%@]", err); }
                                timeoutForMainThreadOperations:10
@@ -251,7 +250,7 @@
                                    environmentLogResMtVersion:@"0.0.1"                                        
                                             authTokenDelegate:authTokenDelegate
                                      allowInvalidCertificates:NO];
-  [coordDao initializeLocalDatabaseWithError:[self newLocalSaveErrBlkMaker]()];
+  [coordDao initializeDatabaseWithError:[self newLocalSaveErrBlkMaker]()];
   return coordDao;
 }
 

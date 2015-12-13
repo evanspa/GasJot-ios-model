@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Paul Evans. All rights reserved.
 //
 
-#import "FPCoordinatorDao.h"
+#import "FPCoordinatorDaoImpl.h"
 #import "FPCoordinatorDao+AdditionsForTesting.h"
 #import <CocoaLumberjack/DDLog.h>
 #import <CocoaLumberjack/DDASLLogger.h>
@@ -23,7 +23,7 @@
 SPEC_BEGIN(FPCoordinatorDaoSpec_1)
 
 __block FPCoordDaoTestContext *_coordTestCtx;
-__block FPCoordinatorDao *_coordDao;
+__block FPCoordinatorDaoImpl *_coordDao;
 __block FPCoordTestingNumEntitiesComputer _numEntitiesBlk;
 __block FPCoordTestingMocker _mocker;
 __block FPCoordTestingObserver _observer;
@@ -79,8 +79,8 @@ describe(@"FPCoordinatorDao", ^{
       [[envLog localMainIdentifier] shouldNotBeNil];
       [[vehicle localMasterIdentifier] shouldBeNil];
       [[envLog localMasterIdentifier] shouldBeNil];
-      [[theValue([_coordDao.localDao numUnsyncedVehiclesForUser:user]) should] equal:theValue(1)];
-      [[theValue([_coordDao.localDao numUnsyncedEnvironmentLogsForUser:user]) should] equal:theValue(1)];
+      [[theValue([_coordDao numUnsyncedVehiclesForUser:user]) should] equal:theValue(1)];
+      [[theValue([_coordDao numUnsyncedEnvironmentLogsForUser:user]) should] equal:theValue(1)];
       _mocker(@"http-response.vehicles.POST.201", 0, 0);
       _mocker(@"http-response.envlogs.POST.201", 0, 0);
       __block float overallFlushProgress = 0.0;

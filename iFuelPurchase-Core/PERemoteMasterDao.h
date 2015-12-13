@@ -77,4 +77,13 @@
                  authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
             completionHandler:(PELMRemoteMasterCompletionHandler)complHandler;
 
+#pragma mark - Changelog Operations
+
+- (void)fetchChangelogWithGlobalId:(NSString *)globalId
+                   ifModifiedSince:(NSDate *)ifModifiedSince
+                           timeout:(NSInteger)timeout
+                   remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
+                      authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
+                 completionHandler:(PELMRemoteMasterCompletionHandler)complHandler;
+
 @end

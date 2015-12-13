@@ -7,13 +7,13 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "FPLocalDao.h"
+#import "FPLocalDaoImpl.h"
 
 @interface FPStats : NSObject
 
 #pragma mark - Initializers
 
-- (id)initWithLocalDao:(FPLocalDao *)localDao errorBlk:(PELMDaoErrorBlk)errorBlk;
+- (id)initWithLocalDao:(FPLocalDaoImpl *)localDao errorBlk:(PELMDaoErrorBlk)errorBlk;
 
 #pragma mark - Sinces since last odometer log
 

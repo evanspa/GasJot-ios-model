@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Paul Evans. All rights reserved.
 //
 
-#import "FPCoordinatorDao.h"
+#import "FPCoordinatorDaoImpl.h"
 #import "FPCoordinatorDao+AdditionsForTesting.h"
 #import <CocoaLumberjack/DDLog.h>
 #import <CocoaLumberjack/DDASLLogger.h>
@@ -22,7 +22,7 @@
 SPEC_BEGIN(FPCoordinatorDaoSpec_13)
 
 __block FPCoordDaoTestContext *_coordTestCtx;
-__block FPCoordinatorDao *_coordDao;
+__block FPCoordinatorDaoImpl *_coordDao;
 __block FPCoordTestingNumEntitiesComputer _numEntitiesBlk;
 __block FPCoordTestingMocker _mocker;
 __block FPCoordTestingObserver _observer;
@@ -43,7 +43,7 @@ describe(@"FPCoordinatorDao", ^{
   
   context(@"Tests", ^{
     it(@"Gives expected behavior when remote master store gives error for User Creation", ^{
-      FPUser *user = [_coordDao userWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
+      FPUser *user = (FPUser *)[_coordDao userWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
       [[theValue([_coordTestCtx localFetchError]) should] beNo];
       [user shouldBeNil];
       _mocker(@"http-response.users.POST.500", 0, 0);

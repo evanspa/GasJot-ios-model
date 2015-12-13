@@ -6,13 +6,15 @@
 //  Copyright © 2015 Paul Evans. All rights reserved.
 //
 
-#import "PELocalDao.h"
+#import "PELocalDaoImpl.h"
 #import <FMDB/FMDatabase.h>
 #import "PELMDDL.h"
 #import <PEObjc-Commons/PEUtils.h>
 
-@implementation PELocalDao {
+@implementation PELocalDaoImpl {
   Class _concreteUserClass;
+  FMDatabaseQueue *_databaseQueue;
+  PELMUtils *_localModelUtils;
 }
 
 #pragma mark - Initializers
@@ -34,7 +36,225 @@
   return self;
 }
 
+#pragma mark - Master Entity Table Names
+
+- (NSArray *)masterEntityTableNames { return @[]; }
+
+#pragma mark - Pre-Delete User Hook
+
+- (PEUserDbOpBlk)preDeleteUserHook { return nil; }
+
+#pragma mark - Post-Deep Save User Hook
+
+- (PEUserDbOpBlk)postDeepSaveUserHook { return nil; }
+
+#pragma mark - Main Entity Table Names (child -> parent order)
+
+- (NSArray *)mainEntityTableNamesChildToParentOrder { return @[]; }
+
+#pragma mark - Change Log Processors
+
+- (NSArray *)changelogProcessorsWithUser:(PELMUser *)user
+                               changelog:(PEChangelog *)changelog
+                                      db:(FMDatabase *)db
+                         processingBlock:(PELMProcessChangelogEntitiesBlk)processingBlk
+                                errorBlk:(PELMDaoErrorBlk)errorBlk {
+  return @[];
+}
+
+
+#pragma mark - Getters
+
+- (PELMUtils *)localModelUtils { return _localModelUtils; }
+
+- (FMDatabaseQueue *)databaseQueue { return _databaseQueue; }
+
+#pragma mark - System Functions
+
+- (void)pruneAllSyncedEntitiesWithError:(PELMDaoErrorBlk)errorBlk {
+  NSMutableArray *mainTables = [NSMutableArray arrayWithArray:[self mainEntityTableNamesChildToParentOrder]];
+  [mainTables addObject:TBL_MAIN_USER];
+  [self.localModelUtils pruneAllSyncedFromMainTables:mainTables error:errorBlk];
+}
+
+- (void)globalCancelSyncInProgressWithError:(PELMDaoErrorBlk)error {
+  NSMutableArray *mainTables = [NSMutableArray arrayWithObject:TBL_MAIN_USER];
+  [mainTables addObjectsFromArray:[[[self mainEntityTableNamesChildToParentOrder] reverseObjectEnumerator] allObjects]];
+  [self.databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
+    for (NSString *mainEntityTableName in mainTables) {
+      [PELMUtils cancelSyncInProgressForEntityTable:mainEntityTableName db:db error:error];
+    }
+  }];
+}
+
+#pragma mark - Change Log Operations
+
+- (NSArray *)saveChangelog:(PEChangelog *)changelog forUser:(PELMUser *)user error:(PELMDaoErrorBlk)errorBlk {
+  __block NSInteger numDeletes = 0;
+  __block NSInteger numUpdates = 0;
+  __block NSInteger numInserts = 0;
+  [self.databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
+    PELMProcessChangelogEntitiesBlk processChangelogEntities =
+    ^(NSArray *entities, NSString *masterTable, NSString *mainTable, void(^deleteBlk)(id), PELMSaveNewOrExistingCode(^saveNewOrExistingBlk)(id)) {
+      for (PELMMainSupport *entity in entities) {
+        if (![PEUtils isNil:entity.deletedAt]) {
+          NSNumber *masterLocalId = [PELMUtils masterLocalIdFromEntityTable:masterTable
+                                                           globalIdentifier:entity.globalIdentifier
+                                                                         db:db
+                                                                      error:errorBlk];
+          if (![PEUtils isNil:masterLocalId]) {
+            [entity setLocalMasterIdentifier:masterLocalId];
+            NSNumber *mainLocalId = [PELMUtils localMainIdentifierForEntity:entity
+                                                                  mainTable:mainTable
+                                                                         db:db
+                                                                      error:errorBlk];
+            [entity setLocalMainIdentifier:mainLocalId];
+            deleteBlk(entity);
+            numDeletes++;
+          } else {
+            // the entity never existed on our device (i.e., it was created and deleted
+            // before it could ever be downloaded to this device)
+          }
+        } else {
+          PELMSaveNewOrExistingCode returnCode = saveNewOrExistingBlk(entity);
+          switch (returnCode) {
+            case PELMSaveNewOrExistingCodeDidUpdate:
+              numUpdates++;
+              break;
+            case PELMSaveNewOrExistingCodeDidInsert:
+              numInserts++;
+              break;
+            case PELMSaveNewOrExistingCodeDidNothing:
+              // do nothing
+              break;
+          }
+        }
+      }
+    };
+    PELMUser *updatedUser = [changelog user];
+    if (![PEUtils isNil:updatedUser]) {
+      if ([updatedUser.updatedAt compare:user.updatedAt] == NSOrderedDescending) {
+        if ([self saveMasterUser:updatedUser db:db error:errorBlk]) {
+          [user overwriteDomainProperties:updatedUser];
+          numUpdates++;
+        }
+      }
+    }
+    NSArray *changelogProcessors = [self changelogProcessorsWithUser:user
+                                                           changelog:changelog
+                                                                  db:db
+                                                     processingBlock:processChangelogEntities
+                                                            errorBlk:errorBlk];
+    void (^changelogProcessor)(void);
+    for (changelogProcessor in changelogProcessors) {
+      changelogProcessor();
+    }
+  }];
+  return @[@(numDeletes), @(numUpdates), @(numInserts)];
+}
+
 #pragma mark - User Operations
+
+- (void)saveNewRemoteUser:(PELMUser *)remoteUser
+       andLinkToLocalUser:(PELMUser *)localUser
+preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
+                    error:(PELMDaoErrorBlk)errorBlk {
+  // user is special in that, upon insertion, it should have a global-ID (this
+  // is because as part of user-creation, we FIRST save to remote master, which
+  // returns us back a global-ID, then we insert into local master, hence this
+  // invariant check)
+  NSAssert([remoteUser globalIdentifier] != nil, @"globalIdentifier is nil");
+  [self.databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
+    [self saveNewRemoteUser:remoteUser
+         andLinkToLocalUser:localUser
+preserveExistingLocalEntities:preserveExistingLocalEntities
+                         db:db
+                      error:errorBlk];
+  }];
+}
+
+- (void)saveNewRemoteUser:(PELMUser *)newRemoteUser
+       andLinkToLocalUser:(PELMUser *)localUser
+preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
+                       db:(FMDatabase *)db
+                    error:(PELMDaoErrorBlk)errorBlk {
+  [self insertIntoMasterUser:newRemoteUser db:db error:errorBlk];
+  [PELMUtils insertRelations:[newRemoteUser relations]
+                   forEntity:newRemoteUser
+                 entityTable:TBL_MASTER_USER
+             localIdentifier:[newRemoteUser localMasterIdentifier]
+                          db:db
+                       error:errorBlk];
+  [self linkMainUser:localUser toMasterUser:newRemoteUser db:db error:errorBlk];
+  if (!preserveExistingLocalEntities) {
+    PEUserDbOpBlk preDeleteUserHook = [self preDeleteUserHook];
+    if (preDeleteUserHook) {
+      preDeleteUserHook(localUser, db, errorBlk);
+    }
+  }
+}
+
+- (void)deepSaveNewRemoteUser:(PELMUser *)remoteUser
+           andLinkToLocalUser:(PELMUser *)localUser
+preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
+                        error:(PELMDaoErrorBlk)errorBlk {
+  NSAssert([remoteUser globalIdentifier] != nil, @"globalIdentifier is nil");
+  [self.databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
+    [self saveNewRemoteUser:remoteUser
+         andLinkToLocalUser:localUser
+preserveExistingLocalEntities:preserveExistingLocalEntities
+                         db:db
+                      error:errorBlk];
+    PEUserDbOpBlk postDeepSaveUserHook = [self postDeepSaveUserHook];
+    if (postDeepSaveUserHook) {
+      postDeepSaveUserHook(remoteUser, db, errorBlk);
+    }
+  }];
+}
+
+- (void)deleteUser:(PELMUser *)user error:(PELMDaoErrorBlk)errorBlk {
+  [self.databaseQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
+    [self deleteUser:user db:db error:errorBlk];
+  }];
+}
+
+- (void)deleteUser:(PELMUser *)user db:(FMDatabase *)db error:(PELMDaoErrorBlk)errorBlk {
+  PEUserDbOpBlk preDeleteHook = [self preDeleteUserHook];
+  if (preDeleteHook) {
+    preDeleteHook(user, db, errorBlk);
+  }
+  [PELMUtils deleteEntity:user
+          entityMainTable:TBL_MAIN_USER
+        entityMasterTable:TBL_MASTER_USER
+                       db:db
+                    error:errorBlk];
+}
+
+- (NSDate *)mostRecentMasterUpdateForUser:(PELMUser *)user error:(PELMDaoErrorBlk)errorBlk {
+  __block NSDate *overallMostRecent = nil;
+  [self.databaseQueue inDatabase:^(FMDatabase *db) {
+    NSDate *(^mostRecentDate)(NSString *) = ^ NSDate * (NSString *table) {
+      return [PELMUtils maxDateFromTable:table
+                              dateColumn:COL_MST_UPDATED_AT
+                             whereColumn:COL_MASTER_USER_ID
+                              whereValue:user.localMasterIdentifier
+                                      db:db
+                                   error:errorBlk];
+    };
+    overallMostRecent = [PELMUtils maxDateFromTable:TBL_MASTER_USER
+                                         dateColumn:COL_MST_UPDATED_AT
+                                        whereColumn:COL_LOCAL_ID
+                                         whereValue:user.localMasterIdentifier
+                                                 db:db
+                                              error:errorBlk];
+    NSArray *masterEntityTableNames = [self masterEntityTableNames];
+    for (NSString *tableName in masterEntityTableNames) {
+      overallMostRecent = [PEUtils largerOfDate:overallMostRecent
+                                        andDate:mostRecentDate(tableName)];
+    }
+  }];
+  return overallMostRecent;
+}
 
 - (PELMUser *)masterUserWithId:(NSNumber *)userId error:(PELMDaoErrorBlk)errorBlk {
   __block PELMUser *user = nil;

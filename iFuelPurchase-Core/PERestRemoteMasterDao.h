@@ -14,6 +14,7 @@
 #import <PEHateoas-Client/HCRelation.h>
 #import "PERemoteMasterDao.h"
 #import "PEUserSerializer.h"
+#import "PEChangelogSerializer.h"
 #import "PELoginSerializer.h"
 #import "PELogoutSerializer.h"
 #import "PEResendVerificationEmailSerializer.h"
@@ -42,6 +43,7 @@ bundleHoldingApiJsonResource:(NSBundle *)bundle
   nameOfApiJsonResourceFile:(NSString *)apiResourceFileName
             apiResMtVersion:(NSString *)apiResMtVersion
              userSerializer:(PEUserSerializer *)userSerializer
+        changelogSerializer:(PEChangelogSerializer *)changelogSerializer
             loginSerializer:(PELoginSerializer *)loginSerializer
            logoutSerializer:(PELogoutSerializer *)logoutSerializer
 resendVerificationEmailSerializer:(PEResendVerificationEmailSerializer *)resendVerificationEmailSerializer
@@ -80,6 +82,8 @@ resendVerificationEmailSerializer:(PEResendVerificationEmailSerializer *)resendV
 @property (nonatomic, readonly) NSString *accountClosedReasonHeaderName;
 
 @property (nonatomic, readonly) PEUserSerializer *userSerializer;
+
+@property (nonatomic, readonly) PEChangelogSerializer *changelogSerializer;
 
 @property (nonatomic, readonly) PELoginSerializer *loginSerializer;
 

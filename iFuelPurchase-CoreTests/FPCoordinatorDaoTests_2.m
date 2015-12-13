@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Paul Evans. All rights reserved.
 //
 
-#import "FPCoordinatorDao.h"
+#import "FPCoordinatorDaoImpl.h"
 #import "FPCoordinatorDao+AdditionsForTesting.h"
 #import <CocoaLumberjack/DDLog.h>
 #import <CocoaLumberjack/DDASLLogger.h>
@@ -22,7 +22,7 @@
 SPEC_BEGIN(FPCoordinatorDaoSpec_2)
 
 __block FPCoordDaoTestContext *_coordTestCtx;
-__block FPCoordinatorDao *_coordDao;
+__block FPCoordinatorDaoImpl *_coordDao;
 __block FPCoordTestingNumEntitiesComputer _numEntitiesBlk;
 __block FPCoordTestingMocker _mocker;
 __block FPCoordTestingObserver _observer;
@@ -128,7 +128,7 @@ describe(@"FPCoordinatorDao", ^{
       [[_numEntitiesBlk(TBL_MASTER_FUELPURCHASE_LOG) should] equal:[NSNumber numberWithInt:1]]; // synced
       
       // Now, starting "fresh", lets edit our fplog
-      user = [_coordDao userWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
+      user = (FPUser *)[_coordDao userWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
       NSArray *vehicles = [_coordDao vehiclesForUser:user error:[_coordTestCtx newLocalFetchErrBlkMaker]()];
       [[vehicles should] haveCountOf:1];
       vehicle = vehicles[0];
@@ -159,7 +159,7 @@ describe(@"FPCoordinatorDao", ^{
       // prepareForEdit call on our fplog, the associated vehicle was copied down to main; however, our
       // 'vehicle' object in-memory was not mutated; it was mutated in the database.  So, in order to have
       // a consistent view of our data model, we need to refetch things from the database.
-      user = [_coordDao userWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
+      user = (FPUser *)[_coordDao userWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
       vehicles = [_coordDao vehiclesForUser:user error:[_coordTestCtx newLocalFetchErrBlkMaker]()];
       [[vehicles should] haveCountOf:1]; // sanity check
       vehicle = vehicles[0];

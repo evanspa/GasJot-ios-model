@@ -9,7 +9,6 @@
 #import "FPChangelog.h"
 
 @implementation FPChangelog {
-  FPUser *_user;
   NSMutableArray *_vehicles;
   NSMutableArray *_fuelStations;
   NSMutableArray *_fuelPurchaseLogs;
@@ -19,8 +18,8 @@
 #pragma mark - Initializers
 
 - (id)initWithUpdatedAt:(NSDate *)updatedAt {
+  self = [super initWithUpdatedAt:updatedAt];
   if (self) {
-    _updatedAt = updatedAt;
     _vehicles = [NSMutableArray array];
     _fuelStations = [NSMutableArray array];
     _fuelPurchaseLogs = [NSMutableArray array];
@@ -30,10 +29,6 @@
 }
 
 #pragma mark - Methods
-
-- (void)setUser:(FPUser *)user {
-  _user = user;
-}
 
 - (void)addVehicle:(FPVehicle *)vehicle {
   [_vehicles addObject:vehicle];
@@ -65,10 +60,6 @@
 
 - (NSArray *)environmentLogs {
   return _environmentLogs;
-}
-
-- (FPUser *)user {
-  return _user;
 }
 
 @end

@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Paul Evans. All rights reserved.
 //
 
-#import "FPCoordinatorDao.h"
+#import "FPCoordinatorDaoImpl.h"
 #import "FPCoordinatorDao+AdditionsForTesting.h"
 #import <CocoaLumberjack/DDLog.h>
 #import <CocoaLumberjack/DDASLLogger.h>
@@ -22,7 +22,7 @@
 SPEC_BEGIN(FPCoordinatorDaoSpec_14)
 
 __block FPCoordDaoTestContext *_coordTestCtx;
-__block FPCoordinatorDao *_coordDao;
+__block FPCoordinatorDaoImpl *_coordDao;
 __block FPCoordTestingNumEntitiesComputer _numEntitiesBlk;
 __block FPCoordTestingMocker _mocker;
 __block FPCoordTestingObserver _observer;
@@ -46,7 +46,7 @@ describe(@"FPCoordinatorDao", ^{
   
   context(@"Tests", ^{
     it(@"Is working properly for creating and fetching a user", ^{
-      FPUser *user = [_coordDao userWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
+      FPUser *user = (FPUser *)[_coordDao userWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
       [[theValue([_coordTestCtx localFetchError]) should] beNo];
       [user shouldBeNil];
       _mocker(@"http-response.users.POST.201", 0, 0);
@@ -67,7 +67,7 @@ describe(@"FPCoordinatorDao", ^{
       [[theValue([_coordTestCtx generalComplError]) should] beNo];
       [[theValue([_coordTestCtx localSaveError]) should] beNo];      
       [_coordTestCtx setLocalFetchError:NO];
-      user = [_coordDao userWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
+      user = (FPUser *)[_coordDao userWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
       [[theValue([_coordTestCtx localFetchError]) should] beNo];
       [user shouldNotBeNil];
     });

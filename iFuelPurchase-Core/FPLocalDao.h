@@ -1,23 +1,14 @@
 //
 //  FPLocalDao.h
-//  PEFuelPurchase-Model
+//  Gas Jot Model
 //
-//  Created by Evans, Paul on 7/27/14.
-//  Copyright (c) 2014 Paul Evans. All rights reserved.
+//  Created by Paul Evans on 12/12/15.
+//  Copyright © 2015 Paul Evans. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-#import <CoreLocation/CoreLocation.h>
-#import "PELMUtils.h"
-#import "FPChangelog.h"
-#import "FPUser.h"
-#import "FPVehicle.h"
-#import "FPFuelStation.h"
-#import "FPEnvironmentLog.h"
-#import "FPFuelPurchaseLog.h"
 #import "PELocalDao.h"
 
-@interface FPLocalDao : PELocalDao
+@protocol FPLocalDao <PELocalDao>
 
 #pragma mark - Initializers
 
@@ -26,12 +17,6 @@
 #pragma mark - Initialize Database
 
 - (void)initializeDatabaseWithError:(PELMDaoErrorBlk)errorBlk;
-
-#pragma mark - System related
-
-- (void)pruneAllSyncedEntitiesWithError:(PELMDaoErrorBlk)errorBlk;
-
-- (void)globalCancelSyncInProgressWithError:(PELMDaoErrorBlk)error;
 
 #pragma mark - Export
 
@@ -42,13 +27,7 @@
                                 user:(FPUser *)user
                                error:(PELMDaoErrorBlk)errorBlk;
 
-#pragma mark - User
-
-- (NSDate *)mostRecentMasterUpdateForUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk;
-
-- (void)deleteUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk;
-
-- (void)deleteUser:(FPUser *)user db:(FMDatabase *)db error:(PELMDaoErrorBlk)errorBlk;
+#pragma mark - Unsynced and Sync-Needed Counts
 
 - (NSInteger)numUnsyncedVehiclesForUser:(FPUser *)user;
 
@@ -69,20 +48,6 @@
 - (NSInteger)numSyncNeededEnvironmentLogsForUser:(FPUser *)user;
 
 - (NSInteger)totalNumSyncNeededEntitiesForUser:(FPUser *)user;
-
-- (void)saveNewRemoteUser:(FPUser *)remoteUser
-       andLinkToLocalUser:(FPUser *)localUser
-preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
-                    error:(PELMDaoErrorBlk)errorBlk;
-
-- (void)deepSaveNewRemoteUser:(FPUser *)remoteUser
-           andLinkToLocalUser:(FPUser *)localUser
-preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
-                        error:(PELMDaoErrorBlk)errorBlk;
-
-- (NSArray *)saveChangelog:(FPChangelog *)changelog
-                   forUser:(FPUser *)user
-                     error:(PELMDaoErrorBlk)errorBlk;
 
 #pragma mark - Vehicle
 

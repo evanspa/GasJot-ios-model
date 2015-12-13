@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Paul Evans. All rights reserved.
 //
 
-#import "FPCoordinatorDao.h"
+#import "FPCoordinatorDaoImpl.h"
 #import "FPCoordinatorDao+AdditionsForTesting.h"
 #import <CocoaLumberjack/DDLog.h>
 #import <CocoaLumberjack/DDASLLogger.h>
@@ -25,7 +25,7 @@
 SPEC_BEGIN(FPCoordinatorDaoSpec_7)
 
 __block FPCoordDaoTestContext *_coordTestCtx;
-__block FPCoordinatorDao *_coordDao;
+__block FPCoordinatorDaoImpl *_coordDao;
 __block FPCoordTestingNumEntitiesComputer _numEntitiesBlk;
 __block FPCoordTestingMocker _mocker;
 __block FPCoordTestingObserver _observer;
@@ -67,7 +67,7 @@ describe(@"FPCoordinatorDao", ^{
   
   context(@"Tests", ^{
     it(@"Can do a normal login followed by a light login.", ^{
-      FPUser *user = [_coordDao userWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
+      FPUser *user = (FPUser *)[_coordDao userWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
       [user shouldBeNil];
       _mocker(@"http-response.login.POST.200", 0, 0);
       user = [_coordDao newLocalUserWithError:[_coordTestCtx newLocalSaveErrBlkMaker]()];
@@ -80,7 +80,7 @@ describe(@"FPCoordinatorDao", ^{
           localSaveErrorHandler:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[expectFutureValue(theValue([_coordTestCtx authTokenReceived])) shouldEventuallyBeforeTimingOutAfter(60)] beYes];
       [[[_coordTestCtx authToken] should] equal:@"1092348123049OLSDFJLIE001234"];
-      user = [_coordDao userWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
+      user = (FPUser *)[_coordDao userWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
       [user shouldNotBeNil]; // sanity check
       [[[user name] should] equal:@"Paul Evans"];
       [[[user email] should] equal:@"evansp2@gmail.com"];

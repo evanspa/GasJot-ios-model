@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Paul Evans. All rights reserved.
 //
 
-#import "FPCoordinatorDao.h"
+#import "FPCoordinatorDaoImpl.h"
 #import "FPCoordinatorDao+AdditionsForTesting.h"
 #import <CocoaLumberjack/DDLog.h>
 #import <CocoaLumberjack/DDASLLogger.h>
@@ -22,7 +22,7 @@
 SPEC_BEGIN(FPCoordinatorDaoSpec_11_1)
 
 __block FPCoordDaoTestContext *_coordTestCtx;
-__block FPCoordinatorDao *_coordDao;
+__block FPCoordinatorDaoImpl *_coordDao;
 __block FPCoordTestingNumEntitiesComputer _numEntitiesBlk;
 __block FPCoordTestingMocker _mocker;
 __block FPCoordTestingObserver _observer;
@@ -60,7 +60,7 @@ describe(@"FPCoordinatorDao", ^{
       [user setName:@"Paul Evans"];
       [user setEmail:@"paul.evans@example.com"];
       _mocker(@"http-response.user.PUT.204", 0, 0);
-      [[[_coordDao localDao] mainUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()] shouldNotBeNil];
+      [[_coordDao mainUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()] shouldNotBeNil];
       __block BOOL saveSuccess = NO;
       [_coordDao markAsDoneEditingAndSyncUserImmediate:user
                                    notFoundOnServerBlk:^{}
@@ -73,12 +73,12 @@ describe(@"FPCoordinatorDao", ^{
                                                  error:[_coordTestCtx newLocalSaveErrBlkMaker]()];      
       [[expectFutureValue(theValue(saveSuccess)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
       // explicitly get the user from master
-      user = (FPUser *)[[_coordDao localDao] masterUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
+      user = (FPUser *)[_coordDao masterUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
       [user shouldNotBeNil];
       [[[user name] should] equal:@"Paul Evans"];
       [[[user email] should] equal:@"paul.evans@example.com"];
       [_coordDao pruneAllSyncedEntitiesWithError:[_coordTestCtx newLocalSaveErrBlkMaker]()];
-      [[[_coordDao localDao] mainUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()] shouldBeNil]; // it should have been pruned
+      [[_coordDao mainUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()] shouldBeNil]; // it should have been pruned
     });
   });
 });

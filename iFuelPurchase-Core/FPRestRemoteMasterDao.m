@@ -16,7 +16,6 @@
 #import "PELMLoginUser.h"
 
 @implementation FPRestRemoteMasterDao {
-  FPChangelogSerializer *_changelogSerializer;
   FPVehicleSerializer *_vehicleSerializer;
   FPFuelStationSerializer *_fuelStationSerializer;
   FPFuelPurchaseLogSerializer *_fuelPurchaseLogSerializer;
@@ -41,8 +40,8 @@ accountClosedReasonHeaderName:(NSString *)accountClosedReasonHeaderName
 bundleHoldingApiJsonResource:(NSBundle *)bundle
   nameOfApiJsonResourceFile:(NSString *)apiResourceFileName
             apiResMtVersion:(NSString *)apiResMtVersion
-        changelogSerializer:(FPChangelogSerializer *)changelogSerializer
              userSerializer:(PEUserSerializer *)userSerializer
+        changelogSerializer:(PEChangelogSerializer *)changelogSerializer
             loginSerializer:(PELoginSerializer *)loginSerializer
            logoutSerializer:(PELogoutSerializer *)logoutSerializer
 resendVerificationEmailSerializer:(PEResendVerificationEmailSerializer *)resendVerificationEmailSerializer
@@ -69,6 +68,7 @@ passwordResetSerializer:(PEPasswordResetSerializer *)passwordResetSerializer
             nameOfApiJsonResourceFile:apiResourceFileName
                       apiResMtVersion:apiResMtVersion
                        userSerializer:userSerializer
+                  changelogSerializer:changelogSerializer
                       loginSerializer:loginSerializer
                      logoutSerializer:logoutSerializer
     resendVerificationEmailSerializer:resendVerificationEmailSerializer
@@ -82,7 +82,6 @@ passwordResetSerializer:(PEPasswordResetSerializer *)passwordResetSerializer
                                                                    fileName:apiResourceFileName
                                                        resourceApiMediaType:[FPKnownMediaTypes apiMediaTypeWithVersion:apiResMtVersion]]];
   if (self) {
-    _changelogSerializer = changelogSerializer;
     _vehicleSerializer = vehicleSerializer;
     _fuelStationSerializer = fuelStationSerializer;
     _fuelPurchaseLogSerializer = fuelPurchaseLogSerializer;
@@ -422,32 +421,6 @@ passwordResetSerializer:(PEPasswordResetSerializer *)passwordResetSerializer
   [self.relationExecutor doGetForURLString:globalId
                            ifModifiedSince:nil
                           targetSerializer:_environmentLogSerializer
-                              asynchronous:YES
-                           completionQueue:self.serialQueue
-                             authorization:[self authorization]
-                                   success:[self newGetSuccessBlk:complHandler]
-                               redirection:[self newRedirectionBlk:complHandler]
-                               clientError:[self newClientErrBlk:complHandler]
-                    authenticationRequired:[FPRestRemoteMasterDao toHCAuthReqdBlk:authRequired]
-                               serverError:[self newServerErrBlk:complHandler]
-                          unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
-                         connectionFailure:[self newConnFailureBlk:complHandler]
-                                   timeout:timeout
-                               cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
-                              otherHeaders:[self addDateHeaderToHeaders:@{} headerName:self.ifModifiedSinceHeaderName value:ifModifiedSince]];
-}
-
-#pragma mark - Changelog Operations
-
-- (void)fetchChangelogWithGlobalId:(NSString *)globalId
-                   ifModifiedSince:(NSDate *)ifModifiedSince
-                           timeout:(NSInteger)timeout
-                   remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
-                      authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
-                 completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
-  [self.relationExecutor doGetForURLString:globalId
-                           ifModifiedSince:nil
-                          targetSerializer:_changelogSerializer
                               asynchronous:YES
                            completionQueue:self.serialQueue
                              authorization:[self authorization]
