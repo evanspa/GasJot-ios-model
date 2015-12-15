@@ -7,6 +7,12 @@
 //
 
 #import "PELocalDao.h"
+#import "PELMUtils.h"
+#import "FPUser.h"
+#import "FPVehicle.h"
+#import "FPFuelStation.h"
+#import "FPFuelPurchaseLog.h"
+#import "FPEnvironmentLog.h"
 
 @protocol FPLocalDao <PELocalDao>
 
