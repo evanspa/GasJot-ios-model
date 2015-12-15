@@ -7,7 +7,7 @@ export LC_CTYPE=en_US.UTF-8
 
 xcodebuild \
     -workspace "${PROJECT_NAME}.xcworkspace" \
-    -scheme "PEFuelPurchase-ModelTests" \
+    -scheme "Gas Jot Model Tests" \
     -configuration Debug \
     -sdk iphonesimulator${SDK_VERSION} \
     -arch ${ARCH} test

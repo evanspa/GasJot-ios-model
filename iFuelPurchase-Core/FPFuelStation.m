@@ -259,10 +259,9 @@ NSString * const FPFuelstationLongitudeField = @"FPFuelstationLongitudeField";
 #pragma mark - Methods
 
 - (CLLocation *)location {
-  if ((_latitude && ![_latitude isEqual:[NSNull null]]) &&
-      (_longitude && ![_longitude isEqual:[NSNull null]])) {
-    return [[CLLocation alloc] initWithLatitude:[_latitude doubleValue]
-                                      longitude:[_longitude doubleValue]];
+  if ((_latitude && ![_latitude isEqual:[NSNull null]] && ![_latitude isEqual:[NSDecimalNumber notANumber]]) &&
+      (_longitude && ![_longitude isEqual:[NSNull null]] && ![_longitude isEqual:[NSDecimalNumber notANumber]])) {
+    return [[CLLocation alloc] initWithLatitude:[_latitude doubleValue] longitude:[_longitude doubleValue]];
   }
   return nil;
 }
