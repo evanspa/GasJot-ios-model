@@ -98,10 +98,15 @@ saveUsrPwdConfirmPwdDontMatchBit:(NSInteger)saveUsrPwdConfirmPwdDontMatchBit
   return self;
 }
 
-#pragma mark - Getters
+#pragma mark - Getters / Setters
 
 - (NSString *)authToken {
   return _authToken;
+}
+
+- (void)setAuthToken:(NSString *)authToken {
+  _authToken = authToken;
+  [_remoteMasterDao setAuthToken:authToken];
 }
 
 #pragma mark - User Operations
@@ -477,11 +482,6 @@ addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk {
     // if no http status code, then it was a connection failure, and that by nature is temporary
     if (tempRemoteErrorBlk) tempRemoteErrorBlk();
   }
-}
-
-- (void)setAuthToken:(NSString *)authToken {
-  _authToken = authToken;
-  [_remoteMasterDao setAuthToken:authToken];
 }
 
 @end

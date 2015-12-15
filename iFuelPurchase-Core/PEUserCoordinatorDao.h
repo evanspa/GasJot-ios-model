@@ -45,9 +45,11 @@ saveUsrConfirmPwdNotProvidedBit:(NSInteger)saveUsrConfirmPwdNotProvidedBit
 saveUsrPwdConfirmPwdDontMatchBit:(NSInteger)saveUsrPwdConfirmPwdDontMatchBit
             changeLogRelation:(NSString *)changeLogRelation;
 
-#pragma mark - Getters
+#pragma mark - Getters / Setters
 
 - (NSString *)authToken;
+
+- (void)setAuthToken:(NSString *)authToken;
 
 #pragma mark - User Operations
 
