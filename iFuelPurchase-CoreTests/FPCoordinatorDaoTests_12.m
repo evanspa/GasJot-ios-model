@@ -65,9 +65,9 @@ describe(@"FPCoordinatorDao", ^{
       [[theValue([_coordTestCtx localSaveError]) should] beNo];
       _mocker(@"http-response.user.DELETE.204", 0, 0);
       __block BOOL saveSuccess = NO;
-      [_coordDao deleteUser:user
-        notFoundOnServerBlk:nil
-             addlSuccessBlk:^{ saveSuccess = YES; }
+      [_coordDao.userCoordinatorDao deleteUser:user
+                           notFoundOnServerBlk:nil
+                                addlSuccessBlk:^{ saveSuccess = YES; }
      remoteStoreBusyBlk:nil
      tempRemoteErrorBlk:nil
          remoteErrorBlk:nil

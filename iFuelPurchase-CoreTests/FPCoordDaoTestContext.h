@@ -16,7 +16,7 @@ typedef void (^(^FPCoordTestingNewLocalSaveErrBlkMaker)(void))(NSError *, int, N
 typedef void (^(^FPCoordTestingNewLocalFetchErrBlkMaker)(void))(NSError *, int, NSString *);
 typedef void (^(^FPCoordTestingNewLocalBgErrBlkMaker)(void))(NSError *, int, NSString *);
 typedef void (^(^FPCoordTestingNewRemoteStoreBusyBlkMaker)(void))(NSDate *);
-typedef void (^(^FPCoordTestingNew1ErrArgComplHandlerBlkMaker)(void))(FPUser *, NSError *);
+typedef void (^(^FPCoordTestingNew1ErrArgComplHandlerBlkMaker)(void))(PELMUser *, NSError *);
 typedef void (^(^FPCoordTestingNew0ErrArgComplHandlerBlkMaker)(void))(NSError *);
 typedef NSNumber * (^FPCoordTestingNumValueFetcher)(FPCoordinatorDaoImpl *, NSString *, NSString *, NSNumber *);
 typedef FPUser *(^FPCoordTestingFreshUserMaker)(NSString *, NSString *, NSString *, NSString *, FPCoordinatorDaoImpl *, void (^)(void));

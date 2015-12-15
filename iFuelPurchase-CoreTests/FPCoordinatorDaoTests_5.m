@@ -49,9 +49,9 @@ describe(@"FPCoordinatorDao", ^{
       FPUser *user = (FPUser *)[_coordDao userWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
       [user shouldBeNil];
       _mocker(@"http-response.login.POST.200", 0, 0);
-      user = [_coordDao newLocalUserWithError:[_coordTestCtx newLocalSaveErrBlkMaker]()];
-      [_coordDao loginWithEmail:@"evansp@test.com"
-                       password:@"1n53cur3"
+      user = (FPUser *)[_coordDao.userCoordinatorDao newLocalUserWithError:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+      [_coordDao.userCoordinatorDao loginWithEmail:@"evansp@test.com"
+                                          password:@"1n53cur3"
    andLinkRemoteUserToLocalUser:user
   preserveExistingLocalEntities:YES
                 remoteStoreBusy:[_coordTestCtx newRemoteStoreBusyBlkMaker]()

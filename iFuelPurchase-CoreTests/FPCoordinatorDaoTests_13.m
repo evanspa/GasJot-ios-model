@@ -47,15 +47,15 @@ describe(@"FPCoordinatorDao", ^{
       [[theValue([_coordTestCtx localFetchError]) should] beNo];
       [user shouldBeNil];
       _mocker(@"http-response.users.POST.500", 0, 0);
-      user = [_coordDao newLocalUserWithError:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+      user = (FPUser *)[_coordDao.userCoordinatorDao newLocalUserWithError:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [user setName:@"Joe Smith"];
       [user setEmail:@"joe.smith@example.com"];
       [user setPassword:@"pa55w0rd"];
-      [_coordDao establishRemoteAccountForLocalUser:user
-                      preserveExistingLocalEntities:YES
-                                    remoteStoreBusy:[_coordTestCtx newRemoteStoreBusyBlkMaker]()
-                                  completionHandler:[_coordTestCtx new1ErrArgComplHandlerBlkMaker]()
-                              localSaveErrorHandler:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+      [_coordDao.userCoordinatorDao establishRemoteAccountForLocalUser:user
+                                         preserveExistingLocalEntities:YES
+                                                       remoteStoreBusy:[_coordTestCtx newRemoteStoreBusyBlkMaker]()
+                                                     completionHandler:[_coordTestCtx new1ErrArgComplHandlerBlkMaker]()
+                                                 localSaveErrorHandler:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[expectFutureValue(theValue([_coordTestCtx authTokenReceived])) shouldEventuallyBeforeTimingOutAfter(60)] beNo];
       [[_coordTestCtx authToken] shouldBeNil];
       [[theValue([_coordTestCtx success]) should] beNo];

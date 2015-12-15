@@ -62,15 +62,15 @@ describe(@"FPCoordinatorDao", ^{
       _mocker(@"http-response.user.PUT.204", 0, 0);
       [[_coordDao mainUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()] shouldNotBeNil];
       __block BOOL saveSuccess = NO;
-      [_coordDao markAsDoneEditingAndSyncUserImmediate:user
-                                   notFoundOnServerBlk:^{}
-                                            addlSuccessBlk:^{saveSuccess = YES;}
-                                    addlRemoteStoreBusyBlk:^(NSDate *retryAfter) {}
-                                    addlTempRemoteErrorBlk:^{}
-                                        addlRemoteErrorBlk:^(NSInteger fpErrMask) {}
-                                           addlConflictBlk:^(FPUser *latestUser) {}
-                                       addlAuthRequiredBlk:^{}
-                                                 error:[_coordTestCtx newLocalSaveErrBlkMaker]()];      
+      [_coordDao.userCoordinatorDao markAsDoneEditingAndSyncUserImmediate:user
+                                                      notFoundOnServerBlk:^{}
+                                                           addlSuccessBlk:^{saveSuccess = YES;}
+                                                   addlRemoteStoreBusyBlk:^(NSDate *retryAfter) {}
+                                                   addlTempRemoteErrorBlk:^{}
+                                                       addlRemoteErrorBlk:^(NSInteger fpErrMask) {}
+                                                          addlConflictBlk:^(PELMUser *latestUser) {}
+                                                      addlAuthRequiredBlk:^{}
+                                                                    error:[_coordTestCtx newLocalSaveErrBlkMaker]()];      
       [[expectFutureValue(theValue(saveSuccess)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
       // explicitly get the user from master
       user = (FPUser *)[_coordDao masterUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];

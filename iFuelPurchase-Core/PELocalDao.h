@@ -25,6 +25,9 @@ typedef void (^PELMProcessChangelogEntitiesBlk)(NSArray *,
 - (id)initWithSqliteDataFilePath:(NSString *)sqliteDataFilePath
                concreteUserClass:(Class)concreteUserClass;
 
+- (id)initWithDatabaseQueue:(FMDatabaseQueue *)databaseQueue
+          concreteUserClass:(Class)concreteUserClass;
+
 #pragma mark - Getters
 
 - (PELMUtils *)localModelUtils;

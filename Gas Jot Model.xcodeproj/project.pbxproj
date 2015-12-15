@@ -61,7 +61,7 @@
 		CA4690C21C1BE39900E4718E /* PELoginSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = CA4690C11C1BE39900E4718E /* PELoginSerializer.m */; };
 		CA4690C51C1BE54300E4718E /* PELogoutSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = CA4690C41C1BE54300E4718E /* PELogoutSerializer.m */; };
 		CA4690C81C1BE68A00E4718E /* PERestRemoteMasterDao.m in Sources */ = {isa = PBXBuildFile; fileRef = CA4690C71C1BE68A00E4718E /* PERestRemoteMasterDao.m */; };
-		CA4690CB1C1C762300E4718E /* PECoordinatorDaoImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = CA4690CA1C1C762300E4718E /* PECoordinatorDaoImpl.m */; };
+		CA4690CB1C1C762300E4718E /* PEUserCoordinatorDaoImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = CA4690CA1C1C762300E4718E /* PEUserCoordinatorDaoImpl.m */; };
 		CA4F2DA71BC22209003887C8 /* PEPasswordResetSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = CA4F2DA61BC22209003887C8 /* PEPasswordResetSerializer.m */; };
 		CA7D5AAE1B3B07B500433581 /* PELMLoginUser.m in Sources */ = {isa = PBXBuildFile; fileRef = CA7D5AAD1B3B07B500433581 /* PELMLoginUser.m */; };
 		CA8344D21BE87421008755C9 /* FPCoordinatorDaoTests_1.m in Sources */ = {isa = PBXBuildFile; fileRef = 182267E11A5BA75200242806 /* FPCoordinatorDaoTests_1.m */; };
@@ -211,6 +211,7 @@
 		CA33AA941C1D3AF30088F5CE /* PEChangelog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PEChangelog.m; sourceTree = "<group>"; };
 		CA33AA971C1D3FF00088F5CE /* PEChangelogSerializer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PEChangelogSerializer.h; sourceTree = "<group>"; };
 		CA33AA981C1D3FF00088F5CE /* PEChangelogSerializer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PEChangelogSerializer.m; sourceTree = "<group>"; };
+		CA33AA9A1C1E77E10088F5CE /* PEAuthTokenDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PEAuthTokenDelegate.h; sourceTree = "<group>"; };
 		CA4690AC1C1BBD4600E4718E /* PELocalDaoImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PELocalDaoImpl.h; sourceTree = "<group>"; };
 		CA4690AD1C1BBD4600E4718E /* PELocalDaoImpl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PELocalDaoImpl.m; sourceTree = "<group>"; };
 		CA4690AF1C1BDB1900E4718E /* PERemoteMasterDao.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PERemoteMasterDao.h; sourceTree = "<group>"; };
@@ -222,11 +223,11 @@
 		CA4690C41C1BE54300E4718E /* PELogoutSerializer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PELogoutSerializer.m; sourceTree = "<group>"; };
 		CA4690C61C1BE68A00E4718E /* PERestRemoteMasterDao.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PERestRemoteMasterDao.h; sourceTree = "<group>"; };
 		CA4690C71C1BE68A00E4718E /* PERestRemoteMasterDao.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PERestRemoteMasterDao.m; sourceTree = "<group>"; };
-		CA4690C91C1C762300E4718E /* PECoordinatorDaoImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PECoordinatorDaoImpl.h; sourceTree = "<group>"; };
-		CA4690CA1C1C762300E4718E /* PECoordinatorDaoImpl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PECoordinatorDaoImpl.m; sourceTree = "<group>"; };
+		CA4690C91C1C762300E4718E /* PEUserCoordinatorDaoImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PEUserCoordinatorDaoImpl.h; sourceTree = "<group>"; };
+		CA4690CA1C1C762300E4718E /* PEUserCoordinatorDaoImpl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PEUserCoordinatorDaoImpl.m; sourceTree = "<group>"; };
 		CA4690CD1C1CBD5400E4718E /* PELocalDao.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PELocalDao.h; sourceTree = "<group>"; };
 		CA4690CF1C1CBF0500E4718E /* FPLocalDao.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FPLocalDao.h; sourceTree = "<group>"; };
-		CA4690D21C1CC13F00E4718E /* PECoordinatorDao.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PECoordinatorDao.h; sourceTree = "<group>"; };
+		CA4690D21C1CC13F00E4718E /* PEUserCoordinatorDao.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PEUserCoordinatorDao.h; sourceTree = "<group>"; };
 		CA4690D31C1CC40600E4718E /* FPCoordinatorDao.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FPCoordinatorDao.h; sourceTree = "<group>"; };
 		CA4F2DA51BC22209003887C8 /* PEPasswordResetSerializer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PEPasswordResetSerializer.h; sourceTree = "<group>"; };
 		CA4F2DA61BC22209003887C8 /* PEPasswordResetSerializer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PEPasswordResetSerializer.m; sourceTree = "<group>"; };
@@ -878,7 +879,7 @@
 			children = (
 				CA4690A91C1BBD1500E4718E /* Local DAO */,
 				CA4690AB1C1BBD2700E4718E /* Remote DAO */,
-				CA4690AA1C1BBD1D00E4718E /* Coordinator DAO */,
+				CA4690AA1C1BBD1D00E4718E /* User Coordinator DAO */,
 			);
 			name = DAO;
 			sourceTree = "<group>";
@@ -892,18 +893,19 @@
 			name = "Local DAO";
 			sourceTree = "<group>";
 		};
-		CA4690AA1C1BBD1D00E4718E /* Coordinator DAO */ = {
+		CA4690AA1C1BBD1D00E4718E /* User Coordinator DAO */ = {
 			isa = PBXGroup;
 			children = (
-				CA4690D21C1CC13F00E4718E /* PECoordinatorDao.h */,
+				CA4690D21C1CC13F00E4718E /* PEUserCoordinatorDao.h */,
 				CA4690D11C1CC11200E4718E /* impl */,
 			);
-			name = "Coordinator DAO";
+			name = "User Coordinator DAO";
 			sourceTree = "<group>";
 		};
 		CA4690AB1C1BBD2700E4718E /* Remote DAO */ = {
 			isa = PBXGroup;
 			children = (
+				CA33AA9A1C1E77E10088F5CE /* PEAuthTokenDelegate.h */,
 				CA4690AF1C1BDB1900E4718E /* PERemoteMasterDao.h */,
 				CA4690B01C1BDBBD00E4718E /* Impl */,
 			);
@@ -1024,8 +1026,8 @@
 		CA4690D11C1CC11200E4718E /* impl */ = {
 			isa = PBXGroup;
 			children = (
-				CA4690C91C1C762300E4718E /* PECoordinatorDaoImpl.h */,
-				CA4690CA1C1C762300E4718E /* PECoordinatorDaoImpl.m */,
+				CA4690C91C1C762300E4718E /* PEUserCoordinatorDaoImpl.h */,
+				CA4690CA1C1C762300E4718E /* PEUserCoordinatorDaoImpl.m */,
 			);
 			name = impl;
 			sourceTree = "<group>";
@@ -1175,7 +1177,7 @@
 				187289E119FA147B00B5D7B0 /* FPEnvironmentLogSerializer.m in Sources */,
 				18823C2019B80B3B001DB778 /* FPVehicleSerializer.m in Sources */,
 				18D0803719859DBA0076A71E /* FPLocalDaoImpl.m in Sources */,
-				CA4690CB1C1C762300E4718E /* PECoordinatorDaoImpl.m in Sources */,
+				CA4690CB1C1C762300E4718E /* PEUserCoordinatorDaoImpl.m in Sources */,
 				18D8C12119C532DA006C65F9 /* FPKnownMediaTypes.m in Sources */,
 				18F23AB019A1EF6D0059DA22 /* FPRestRemoteMasterDao.m in Sources */,
 				18D8C10E19C3EB20006C65F9 /* PELMJsonMemberNames.m in Sources */,

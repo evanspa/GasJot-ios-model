@@ -21,10 +21,16 @@
 
 - (id)initWithSqliteDataFilePath:(NSString *)sqliteDataFilePath
                concreteUserClass:(Class)concreteUserClass {
+  return [self initWithDatabaseQueue:[FMDatabaseQueue databaseQueueWithPath:sqliteDataFilePath]
+                   concreteUserClass:concreteUserClass];
+}
+
+- (id)initWithDatabaseQueue:(FMDatabaseQueue *)databaseQueue
+          concreteUserClass:(Class)concreteUserClass {
   self = [super init];
   if (self) {
     _concreteUserClass = concreteUserClass;
-    _databaseQueue = [FMDatabaseQueue databaseQueueWithPath:sqliteDataFilePath];
+    _databaseQueue = databaseQueue;
     _localModelUtils = [[PELMUtils alloc] initWithDatabaseQueue:_databaseQueue];
     [_databaseQueue inDatabase:^(FMDatabase *db) {
       // for some reason, this has to be done in a "inDatabase" block for it to
@@ -525,7 +531,7 @@ preserveExistingLocalEntities:preserveExistingLocalEntities
                        %@ = 0 and \
                        %@ = 0 and \
                        %@ = 0 and \
-                       (%@ is null or %@ < 0)",
+                       (%@ is null or %@ <= 0)",
                        entityTable,
                        COL_MAIN_USER_ID,
                        COL_MAN_SYNCED,

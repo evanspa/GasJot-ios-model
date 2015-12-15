@@ -49,10 +49,10 @@ describe(@"FPCoordinatorDao", ^{
     it(@"2 or more saves, followed by cancel-edit leaves entity in main table", ^{
       FPUser *user = (FPUser *)[_coordDao userWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
       [user shouldBeNil];
-      user = [_coordDao newLocalUserWithError:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+      user = (FPUser *)[_coordDao.userCoordinatorDao newLocalUserWithError:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       _mocker(@"http-response.login.POST.200", 0, 0);
-      [_coordDao loginWithEmail:@"evans@test.com"
-                       password:@"1n53cur3"
+      [_coordDao.userCoordinatorDao loginWithEmail:@"evans@test.com"
+                                          password:@"1n53cur3"
    andLinkRemoteUserToLocalUser:user
   preserveExistingLocalEntities:YES
                 remoteStoreBusy:[_coordTestCtx newRemoteStoreBusyBlkMaker]()

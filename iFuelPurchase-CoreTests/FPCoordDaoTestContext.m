@@ -120,7 +120,7 @@
 
 - (FPCoordTestingNew1ErrArgComplHandlerBlkMaker)new1ErrArgComplHandlerBlkMaker {
   return ^{
-    return (^(FPUser *savedUser, NSError *error) {
+    return (^(PELMUser *savedUser, NSError *error) {
       if (error) {
         _generalComplError = YES;
       } else {
@@ -165,16 +165,16 @@
                                  username:username
                                  password:password];*/
     PELMDaoErrorBlk localDaoErrHandler = ^(NSError *error, int code, NSString *msg) { };
-    FPUser *localUser = [coordDao newLocalUserWithError:localDaoErrHandler];
+    FPUser *localUser = (FPUser *)[coordDao.userCoordinatorDao newLocalUserWithError:localDaoErrHandler];
     [localUser setName:name];
     [localUser setEmail:email];
     [localUser setPassword:password];
-    FPSavedNewEntityCompletionHandler complHandler = ^(FPUser *savedUser, NSError *error) { };
-    [coordDao establishRemoteAccountForLocalUser:localUser
-                   preserveExistingLocalEntities:YES
-                                 remoteStoreBusy:[self newRemoteStoreBusyBlkMaker]()
-                               completionHandler:complHandler
-                           localSaveErrorHandler:localDaoErrHandler];
+    PESavedNewEntityCompletionHandler complHandler = ^(PELMUser *savedUser, NSError *error) { };
+    [coordDao.userCoordinatorDao establishRemoteAccountForLocalUser:localUser
+                                      preserveExistingLocalEntities:YES
+                                                    remoteStoreBusy:[self newRemoteStoreBusyBlkMaker]()
+                                                  completionHandler:complHandler
+                                              localSaveErrorHandler:localDaoErrHandler];
     waitBlock();
     return (FPUser *)[coordDao userWithError:^(NSError *error, int code, NSString *msg) {
       DDLogError(@"Error fetching local user from within 'fetchUser' helper block.  Error: [%@]", error);

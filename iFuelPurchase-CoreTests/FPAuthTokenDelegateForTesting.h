@@ -7,9 +7,9 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <PEFuelPurchase-Common/FPAuthTokenDelegate.h>
+#import "PEAuthTokenDelegate.h"
 
-@interface FPAuthTokenDelegateForTesting : NSObject <FPAuthTokenDelegate>
+@interface FPAuthTokenDelegateForTesting : NSObject <PEAuthTokenDelegate>
 
 - (id)initWithBlockForNewAuthTokenReceived:(void(^)(NSString *))authTokenReceivedBlk
                            authRequiredBlk:(void(^)(HCAuthentication *))authRequiredBlk;

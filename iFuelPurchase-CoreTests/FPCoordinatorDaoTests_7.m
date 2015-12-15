@@ -70,9 +70,9 @@ describe(@"FPCoordinatorDao", ^{
       FPUser *user = (FPUser *)[_coordDao userWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
       [user shouldBeNil];
       _mocker(@"http-response.login.POST.200", 0, 0);
-      user = [_coordDao newLocalUserWithError:[_coordTestCtx newLocalSaveErrBlkMaker]()];
-      [_coordDao loginWithEmail:@"evansp@test.com"
-                       password:@"1n53cur3"
+      user = (FPUser *)[_coordDao.userCoordinatorDao newLocalUserWithError:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+      [_coordDao.userCoordinatorDao loginWithEmail:@"evansp@test.com"
+                                          password:@"1n53cur3"
    andLinkRemoteUserToLocalUser:user
   preserveExistingLocalEntities:YES
                 remoteStoreBusy:[_coordTestCtx newRemoteStoreBusyBlkMaker]()
@@ -124,11 +124,11 @@ describe(@"FPCoordinatorDao", ^{
       // now we'll do a light login
       [_coordTestCtx setAuthTokenReceived:NO]; // reset this
       _mocker(@"http-response.light-login.POST.204", 0, 0);
-      [_coordDao lightLoginForUser:user
-                          password:@"1n53cur3"
-                   remoteStoreBusy:[_coordTestCtx newRemoteStoreBusyBlkMaker]()
-                 completionHandler:[_coordTestCtx new0ErrArgComplHandlerBlkMaker]()
-             localSaveErrorHandler:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+      [_coordDao.userCoordinatorDao lightLoginForUser:user
+                                             password:@"1n53cur3"
+                                      remoteStoreBusy:[_coordTestCtx newRemoteStoreBusyBlkMaker]()
+                                    completionHandler:[_coordTestCtx new0ErrArgComplHandlerBlkMaker]()
+                                localSaveErrorHandler:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[expectFutureValue(theValue([_coordTestCtx authTokenReceived])) shouldEventuallyBeforeTimingOutAfter(60)] beYes];
       [[[_coordTestCtx authToken] should] equal:@"1092348123049OLSDFJLIE001234_5"];
     });

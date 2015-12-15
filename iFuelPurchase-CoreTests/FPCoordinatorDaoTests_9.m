@@ -58,17 +58,17 @@ describe(@"FPCoordinatorDao", ^{
       [user setEmail:@"paul.evans@example.com"];
       _mocker(@"http-response.user.PUT.204", 0, 0);
       __block BOOL syncUserSuccess = NO;
-      [_coordDao markAsDoneEditingAndSyncUserImmediate:user
-                                   notFoundOnServerBlk:nil
-                                            addlSuccessBlk:^{
-                                              syncUserSuccess = YES;
-                                            }
-                                    addlRemoteStoreBusyBlk:nil
-                                    addlTempRemoteErrorBlk:nil
-                                        addlRemoteErrorBlk:nil
-                                           addlConflictBlk:nil
-                                       addlAuthRequiredBlk:nil
-                                                 error:nil];
+      [_coordDao.userCoordinatorDao markAsDoneEditingAndSyncUserImmediate:user
+                                                      notFoundOnServerBlk:nil
+                                                           addlSuccessBlk:^{
+                                                             syncUserSuccess = YES;
+                                                           }
+                                                   addlRemoteStoreBusyBlk:nil
+                                                   addlTempRemoteErrorBlk:nil
+                                                       addlRemoteErrorBlk:nil
+                                                          addlConflictBlk:nil
+                                                      addlAuthRequiredBlk:nil
+                                                                    error:nil];
       [[expectFutureValue(theValue(syncUserSuccess)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
       FPVehicle *vehicle = [_coordDao vehicleWithName:@"My Bimmer"
                                         defaultOctane:@87

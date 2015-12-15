@@ -6,13 +6,13 @@
 //  Copyright © 2015 Paul Evans. All rights reserved.
 //
 
-#import "PECoordinatorDao.h"
+#import "PEUserCoordinatorDao.h"
 
 typedef void (^FPSavedNewEntityCompletionHandler)(FPUser *, NSError *);
 
 typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
 
-@protocol FPCoordinatorDao <PECoordinatorDao, FPLocalDao>
+@protocol FPCoordinatorDao <FPLocalDao>
 
 #pragma mark - Initializers
 
@@ -59,8 +59,12 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
          fuelStationResMtVersion:(NSString *)fuelStationResMtVersion
      fuelPurchaseLogResMtVersion:(NSString *)fuelPurchaseLogResMtVersion
       environmentLogResMtVersion:(NSString *)environmentLogResMtVersion
-               authTokenDelegate:(id<FPAuthTokenDelegate>)authTokenDelegate
+               authTokenDelegate:(id<PEAuthTokenDelegate>)authTokenDelegate
         allowInvalidCertificates:(BOOL)allowInvalidCertifications;
+
+#pragma mark - Getters
+
+- (id<PEUserCoordinatorDao>)userCoordinatorDao;
 
 #pragma mark - Flushing All Unsynced Edits to Remote Master
 
@@ -78,94 +82,6 @@ typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
 #pragma mark - Unsynced Entities Check
 
 - (BOOL)doesUserHaveAnyUnsyncedEntities:(FPUser *)user;
-
-#pragma mark - User Operations
-
-- (void)resetAsLocalUser:(FPUser *)user error:(PELMDaoErrorBlk)error;
-
-- (FPUser *)newLocalUserWithError:(PELMDaoErrorBlk)errorBlk;
-
-- (void)establishRemoteAccountForLocalUser:(FPUser *)localUser
-             preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
-                           remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
-                         completionHandler:(FPSavedNewEntityCompletionHandler)complHandler
-                     localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler;
-
-- (void)loginWithEmail:(NSString *)email
-              password:(NSString *)password
-andLinkRemoteUserToLocalUser:(FPUser *)localUser
-preserveExistingLocalEntities:(BOOL)preserveExistingLocalEntities
-       remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
-     completionHandler:(FPFetchedEntityCompletionHandler)complHandler
- localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler;
-
-- (void)lightLoginForUser:(FPUser *)user
-                 password:(NSString *)password
-          remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
-        completionHandler:(void(^)(NSError *))complHandler
-    localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler;
-
-- (void)logoutUser:(FPUser *)user
-remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
- addlCompletionBlk:(void(^)(void))addlCompletionBlk
-localSaveErrorHandler:(PELMDaoErrorBlk)localSaveErrorHandler;
-
-- (void)resendVerificationEmailForUser:(FPUser *)user
-                    remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
-                            successBlk:(void(^)(void))successBlk
-                              errorBlk:(void(^)(void))errorBlk;
-
-- (void)sendPasswordResetEmailToEmail:(NSString *)email
-                   remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
-                           successBlk:(void(^)(void))successBlk
-                      unknownEmailBlk:(void(^)(void))unknownEmailBlk
-                             errorBlk:(void(^)(void))errorBlk;
-
-- (void)flushUnsyncedChangesToUser:(FPUser *)user
-               notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
-                    addlSuccessBlk:(void(^)(void))addlSuccessBlk
-            addlRemoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)addlRemoteStoreBusyBlk
-            addlTempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
-                addlRemoteErrorBlk:(void(^)(NSInteger))addlRemoteErrorBlk
-                   addlConflictBlk:(void(^)(FPUser *))addlConflictBlk
-               addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
-                             error:(PELMDaoErrorBlk)errorBlk;
-
-- (void)markAsDoneEditingAndSyncUserImmediate:(FPUser *)user
-                          notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
-                               addlSuccessBlk:(void(^)(void))addlSuccessBlk
-                       addlRemoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)addlRemoteStoreBusyBlk
-                       addlTempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
-                           addlRemoteErrorBlk:(void(^)(NSInteger))addlRemoteErrorBlk
-                              addlConflictBlk:(void(^)(FPUser *))addlConflictBlk
-                          addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
-                                        error:(PELMDaoErrorBlk)errorBlk;
-
-- (void)deleteUser:(FPUser *)user
-notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
-    addlSuccessBlk:(void(^)(void))addlSuccessBlk
-remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)addlRemoteStoreBusyBlk
-tempRemoteErrorBlk:(void(^)(void))addlTempRemoteErrorBlk
-    remoteErrorBlk:(void(^)(NSInteger))addlRemoteErrorBlk
-       conflictBlk:(void(^)(FPUser *))conflictBlk
-addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk
-             error:(PELMDaoErrorBlk)errorBlk;
-
-- (void)fetchUser:(FPUser *)user
-  ifModifiedSince:(NSDate *)ifModifiedSince
-notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
-       successBlk:(void(^)(FPUser *))successBlk
-remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
-tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk
-addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk;
-
-- (void)fetchChangelogForUser:(FPUser *)user
-              ifModifiedSince:(NSDate *)ifModifiedSince
-          notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
-                   successBlk:(void(^)(FPChangelog *))successBlk
-           remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
-           tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk
-          addlAuthRequiredBlk:(void(^)(void))addlAuthRequiredBlk;
 
 #pragma mark - Vehicle
 

@@ -29,9 +29,21 @@ FOUNDATION_EXPORT NSString * const FPConnFaultedErrorDomain;
  */
 FOUNDATION_EXPORT NSString * const FPSystemFaultedErrorDomain;
 
+/**
+ Error codes for the 'Sign In' use case of the FPUserFaultedErrorDomain
+ domain.
+ */
+typedef NS_OPTIONS(NSUInteger, FPSignInMsg) {
+  FPSignInAnyIssues                  = 1 << 0,
+  FPSignInInvalidEmail               = 1 << 1,
+  FPSignInEmailNotProvided           = 1 << 2,
+  FPSignInPasswordNotProvided        = 1 << 3,
+  FPSignInInvalidCredentials         = 1 << 4
+};
+
 typedef NS_OPTIONS(NSUInteger, FPSendPasswordResetEmailMsg) {
-  FPSendPasswordResetAnyIssues    = 1 << 0,
-  FPSendPasswordResetUnknownEmail = 1 << 1
+  FPSendPasswordResetAnyIssues       = 1 << 0,
+  FPSendPasswordResetUnknownEmail    = 1 << 1
 };
 
 /**
@@ -113,15 +125,4 @@ typedef NS_OPTIONS(NSUInteger, FPSysErrorMsg) {
   FPSysDatabaseDown = 1 << 1
 };
 
-/**
- Error codes for the 'Sign In' use case of the FPUserFaultedErrorDomain
- domain.
- */
-typedef NS_OPTIONS(NSUInteger, FPSignInMsg) {
-  FPSignInAnyIssues                  = 1 << 0,
-  FPSignInInvalidEmail               = 1 << 1,
-  FPSignInEmailNotProvided           = 1 << 2,
-  FPSignInPasswordNotProvided        = 1 << 3,
-  FPSignInInvalidCredentials         = 1 << 4
-};
 

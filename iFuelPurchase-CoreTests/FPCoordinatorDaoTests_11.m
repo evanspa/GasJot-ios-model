@@ -63,15 +63,15 @@ describe(@"FPCoordinatorDao", ^{
       [user setEmail:@"paul.evans@example.com"];
       _mocker(@"http-response.user.PUT.204", 0, 0);
       __block BOOL saveSuccess = NO;
-      [_coordDao markAsDoneEditingAndSyncUserImmediate:user
-                                   notFoundOnServerBlk:^{}
-                                            addlSuccessBlk:^{saveSuccess = YES;}
-                                    addlRemoteStoreBusyBlk:^(NSDate *retryAfter) {}
-                                    addlTempRemoteErrorBlk:^{}
-                                        addlRemoteErrorBlk:^(NSInteger fpErrMask) {}
-                                           addlConflictBlk:^(FPUser *latestUser) {}
-                                       addlAuthRequiredBlk:^{}
-                                                 error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+      [_coordDao.userCoordinatorDao markAsDoneEditingAndSyncUserImmediate:user
+                                                      notFoundOnServerBlk:^{}
+                                                           addlSuccessBlk:^{saveSuccess = YES;}
+                                                   addlRemoteStoreBusyBlk:^(NSDate *retryAfter) {}
+                                                   addlTempRemoteErrorBlk:^{}
+                                                       addlRemoteErrorBlk:^(NSInteger fpErrMask) {}
+                                                          addlConflictBlk:^(PELMUser *latestUser) {}
+                                                      addlAuthRequiredBlk:^{}
+                                                                    error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       
       [[expectFutureValue(theValue(saveSuccess)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
       // notice that I didn't even have to start the flusher job!
@@ -89,15 +89,15 @@ describe(@"FPCoordinatorDao", ^{
       [PEHttpResponseSimulator simulateCannotConnectToHostForRequestUrl:[NSURL URLWithString:@"http://example.com/gasjot/d/users/U8890209302"]
                                                    andRequestHttpMethod:@"PUT"];
       __block BOOL saveFailed = NO;
-      [_coordDao markAsDoneEditingAndSyncUserImmediate:user
-                                   notFoundOnServerBlk:^{}
-                                            addlSuccessBlk:^{}
-                                    addlRemoteStoreBusyBlk:^(NSDate *retryAfter) {}
-                                    addlTempRemoteErrorBlk:^{saveFailed = YES;}
-                                        addlRemoteErrorBlk:^(NSInteger fpErrMask) {}
-                                           addlConflictBlk:^(FPUser *latestUser) {}
-                                       addlAuthRequiredBlk:^{}
-                                                 error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+      [_coordDao.userCoordinatorDao markAsDoneEditingAndSyncUserImmediate:user
+                                                      notFoundOnServerBlk:^{}
+                                                           addlSuccessBlk:^{}
+                                                   addlRemoteStoreBusyBlk:^(NSDate *retryAfter) {}
+                                                   addlTempRemoteErrorBlk:^{saveFailed = YES;}
+                                                       addlRemoteErrorBlk:^(NSInteger fpErrMask) {}
+                                                          addlConflictBlk:^(PELMUser *latestUser) {}
+                                                      addlAuthRequiredBlk:^{}
+                                                                    error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[expectFutureValue(theValue(saveFailed)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
       user = (FPUser *)[_coordDao mainUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
       [user shouldNotBeNil];
@@ -111,15 +111,15 @@ describe(@"FPCoordinatorDao", ^{
       [_coordDao prepareUserForEdit:user error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       _mocker(@"http-response.user.PUT.500", 0, 0);
       saveFailed = NO;
-      [_coordDao markAsDoneEditingAndSyncUserImmediate:user
-                                   notFoundOnServerBlk:^{}
-                                            addlSuccessBlk:^{}
-                                    addlRemoteStoreBusyBlk:^(NSDate *retryAfter) {}
-                                    addlTempRemoteErrorBlk:^{saveFailed = YES;}
-                                        addlRemoteErrorBlk:^(NSInteger fpErrMask) {}
-                                           addlConflictBlk:^(FPUser *latestUser) {}
-                                       addlAuthRequiredBlk:^{}
-                                                 error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+      [_coordDao.userCoordinatorDao markAsDoneEditingAndSyncUserImmediate:user
+                                                      notFoundOnServerBlk:^{}
+                                                           addlSuccessBlk:^{}
+                                                   addlRemoteStoreBusyBlk:^(NSDate *retryAfter) {}
+                                                   addlTempRemoteErrorBlk:^{saveFailed = YES;}
+                                                       addlRemoteErrorBlk:^(NSInteger fpErrMask) {}
+                                                          addlConflictBlk:^(PELMUser *latestUser) {}
+                                                      addlAuthRequiredBlk:^{}
+                                                                    error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[expectFutureValue(theValue(saveFailed)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
       user = (FPUser *)[_coordDao mainUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
       [user shouldNotBeNil];
@@ -134,15 +134,15 @@ describe(@"FPCoordinatorDao", ^{
       _mocker(@"http-response.user.PUT.422", 0, 0);
       saveFailed = NO;
       __block NSInteger errMask = 0;
-      [_coordDao markAsDoneEditingAndSyncUserImmediate:user
-                                   notFoundOnServerBlk:^{}
-                                            addlSuccessBlk:^{}
-                                    addlRemoteStoreBusyBlk:^(NSDate *retryAfter) {}
-                                    addlTempRemoteErrorBlk:^{}
-                                        addlRemoteErrorBlk:^(NSInteger fpErrMask) {saveFailed = YES; errMask = fpErrMask;}
-                                           addlConflictBlk:^(FPUser *latestUser) {}
-                                       addlAuthRequiredBlk:^{}
-                                                 error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+      [_coordDao.userCoordinatorDao markAsDoneEditingAndSyncUserImmediate:user
+                                                      notFoundOnServerBlk:^{}
+                                                           addlSuccessBlk:^{}
+                                                   addlRemoteStoreBusyBlk:^(NSDate *retryAfter) {}
+                                                   addlTempRemoteErrorBlk:^{}
+                                                       addlRemoteErrorBlk:^(NSInteger fpErrMask) {saveFailed = YES; errMask = fpErrMask;}
+                                                          addlConflictBlk:^(PELMUser *latestUser) {}
+                                                      addlAuthRequiredBlk:^{}
+                                                                    error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[expectFutureValue(theValue(saveFailed)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
       user = (FPUser *)[_coordDao mainUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
       [user shouldNotBeNil];
@@ -158,15 +158,15 @@ describe(@"FPCoordinatorDao", ^{
       _mocker(@"http-response.user.PUT.503", 0, 0);
       saveFailed = NO;
       __block NSDate *retryAfterVal = nil;
-      [_coordDao markAsDoneEditingAndSyncUserImmediate:user
-                                   notFoundOnServerBlk:^{}
-                                            addlSuccessBlk:^{}
-                                    addlRemoteStoreBusyBlk:^(NSDate *retryAfter) {saveFailed = YES; retryAfterVal = retryAfter;}
-                                    addlTempRemoteErrorBlk:^{}
-                                        addlRemoteErrorBlk:^(NSInteger fpErrMask) {}
-                                           addlConflictBlk:^(FPUser *latestUser) {}
-                                       addlAuthRequiredBlk:^{}
-                                                 error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+      [_coordDao.userCoordinatorDao markAsDoneEditingAndSyncUserImmediate:user
+                                                      notFoundOnServerBlk:^{}
+                                                           addlSuccessBlk:^{}
+                                                   addlRemoteStoreBusyBlk:^(NSDate *retryAfter) {saveFailed = YES; retryAfterVal = retryAfter;}
+                                                   addlTempRemoteErrorBlk:^{}
+                                                       addlRemoteErrorBlk:^(NSInteger fpErrMask) {}
+                                                          addlConflictBlk:^(PELMUser *latestUser) {}
+                                                      addlAuthRequiredBlk:^{}
+                                                                    error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[expectFutureValue(theValue(saveFailed)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
       user = (FPUser *)[_coordDao mainUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
       [user shouldNotBeNil];
@@ -182,15 +182,15 @@ describe(@"FPCoordinatorDao", ^{
       [_coordDao prepareUserForEdit:user error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       _mocker(@"http-response.user.PUT.401", 0, 0);
       saveFailed = NO;
-      [_coordDao markAsDoneEditingAndSyncUserImmediate:user
-                                   notFoundOnServerBlk:^{}
-                                            addlSuccessBlk:^{}
-                                    addlRemoteStoreBusyBlk:^(NSDate *retryAfter) {}
-                                    addlTempRemoteErrorBlk:^{}
-                                        addlRemoteErrorBlk:^(NSInteger fpErrMask) {}
-                                           addlConflictBlk:^(FPUser *latestUser) {}
-                                       addlAuthRequiredBlk:^{saveFailed = YES;}
-                                                 error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
+      [_coordDao.userCoordinatorDao markAsDoneEditingAndSyncUserImmediate:user
+                                                      notFoundOnServerBlk:^{}
+                                                           addlSuccessBlk:^{}
+                                                   addlRemoteStoreBusyBlk:^(NSDate *retryAfter) {}
+                                                   addlTempRemoteErrorBlk:^{}
+                                                       addlRemoteErrorBlk:^(NSInteger fpErrMask) {}
+                                                          addlConflictBlk:^(PELMUser *latestUser) {}
+                                                      addlAuthRequiredBlk:^{saveFailed = YES;}
+                                                                    error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       [[expectFutureValue(theValue(saveFailed)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
       user = (FPUser *)[_coordDao mainUserWithError:[_coordTestCtx newLocalFetchErrBlkMaker]()];
       [user shouldNotBeNil];
