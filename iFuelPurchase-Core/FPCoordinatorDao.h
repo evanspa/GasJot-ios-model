@@ -6,11 +6,12 @@
 //  Copyright © 2015 Paul Evans. All rights reserved.
 //
 
+#import "FPLocalDao.h"
 #import "PEUserCoordinatorDao.h"
-
-typedef void (^FPSavedNewEntityCompletionHandler)(FPUser *, NSError *);
-
-typedef void (^FPFetchedEntityCompletionHandler)(id, NSError *);
+#import "FPUser.h"
+#import "PEAuthTokenDelegate.h"
+#import "PELMUtils.h"
+#import <PEHateoas-Client/HCCharset.h>
 
 @protocol FPCoordinatorDao <FPLocalDao>
 
