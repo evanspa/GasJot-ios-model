@@ -2,7 +2,7 @@ Pod::Spec.new do |s|
   s.name         = "PEFuelPurchase-Model"
   s.version      = "1.0.192"
   s.license      = "MIT"
-  s.summary      = "An iOS static library representing the core logic of the PEFuelPurchase-App application."
+  s.summary      = "An iOS static library representing the core logic of the Gas Jot application."
   s.author       = { "Paul Evans" => "evansp2@gmail.com" }
   s.homepage     = "https://github.com/evanspa/#{s.name}"
   s.source       = { :git => "https://github.com/evanspa/#{s.name}.git", :tag => "#{s.name}-v#{s.version}" }
