@@ -85,7 +85,7 @@ DEPENDENCIES:
   - PEFuelPurchase-Common (~> 1.0.12)
   - PEHateoas-Client (~> 1.0.8)
   - PELocal-Data (~> 0.0.1)
-  - PEObjc-Commons (~> 1.0.100)
+  - PEObjc-Commons (~> 1.0.101)
   - PEWire-Control (~> 1.0.4)
   - UICKeyChainStore (~> 2.0.4)
 
