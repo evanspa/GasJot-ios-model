@@ -7,6 +7,7 @@
 //
 
 #import "PELMMasterSupport.h"
+#import <PEHateoas-Client/HCMediaType.h>
 #import <Kiwi/Kiwi.h>
 
 SPEC_BEGIN(FPMasterSupportSpec)

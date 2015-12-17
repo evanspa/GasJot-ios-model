@@ -18,6 +18,7 @@
 #import "PELMNotificationUtils.h"
 #import "FPLogging.h"
 #import <CHCSVParser/CHCSVParser.h>
+#import <PEHateoas-Client/HCMediaType.h>
 
 uint32_t const FP_REQUIRED_SCHEMA_VERSION = 3;
 

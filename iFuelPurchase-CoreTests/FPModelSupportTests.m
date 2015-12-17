@@ -8,6 +8,7 @@
 
 #import "PELMModelSupport.h"
 #import <Kiwi/Kiwi.h>
+#import <PEHateoas-Client/HCMediaType.h>
 
 SPEC_BEGIN(FPModelSupportSpec)
 

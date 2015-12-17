@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "PEFuelPurchase-Model"
-  s.version      = "1.0.192"
+  s.version      = "1.0.193"
   s.license      = "MIT"
   s.summary      = "An iOS static library representing the core logic of the Gas Jot application."
   s.author       = { "Paul Evans" => "evansp2@gmail.com" }
@@ -11,11 +11,12 @@ Pod::Spec.new do |s|
   s.public_header_files = '**/*.h'
   s.exclude_files = "**/*Tests/*.*"
   s.requires_arc = true
+  s.pod_target_xcconfig = {'CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES' => 'YES'}
   s.dependency 'PEObjc-Commons', '~> 1.0.101'
-  s.dependency 'PELocal-Data', '~> 0.0.1'
+  s.dependency 'PELocal-Data', '~> 0.0.4'
   s.dependency 'PEFuelPurchase-Common', '~> 1.0.12'
   s.dependency 'FMDB', '~> 2.5'
-  s.dependency 'PEHateoas-Client', '~> 1.0.8'
+  s.dependency 'PEHateoas-Client', '~> 1.0.11'
   s.dependency 'CocoaLumberjack', '~> 1.9'
   s.dependency 'UICKeyChainStore', '~> 2.0.4'
   s.dependency 'CHCSVParser', '~> 2.1.0'
