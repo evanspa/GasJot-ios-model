@@ -8,8 +8,6 @@
 
 #import <PELocal-Data/PELMUser.h>
 
-@class HCMediaType;
-@class FPUser;
 @class FPVehicle;
 @class FPFuelStation;
 @class FPFuelPurchaseLog;
