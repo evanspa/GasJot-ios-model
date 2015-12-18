@@ -7,6 +7,7 @@
 //
 
 #import "FPRestRemoteMasterDao.h"
+
 #import <PEHateoas-Client/HCRelationExecutor.h>
 #import <PEHateoas-Client/HCUtils.h>
 #import <PEHateoas-Client/HCRelation.h>
@@ -14,11 +15,18 @@
 #import <PEHateoas-Client/HCMediaType.h>
 #import <PEHateoas-Client/HCCharset.h>
 
+#import <PELocal-Data/PELMLoginUser.h>
+#import <PELocal-Data/PERemoteMasterDao.h>
+#import <PELocal-Data/PEChangelogSerializer.h>
+#import <PELocal-Data/PEUserSerializer.h>
+#import <PELocal-Data/PELoginSerializer.h>
+#import <PELocal-Data/PELogoutSerializer.h>
+#import <PELocal-Data/PEResendVerificationEmailSerializer.h>
+#import <PELocal-Data/PEPasswordResetSerializer.h>
+
 #import "FPErrorDomainsAndCodes.h"
 #import "FPRemoteDaoErrorDomains.h"
 #import "FPKnownMediaTypes.h"
-#import "PELMLoginUser.h"
-#import "PERemoteMasterDao.h"
 #import "FPChangelog.h"
 #import "FPUser.h"
 #import "FPVehicle.h"
@@ -26,16 +34,10 @@
 #import "FPFuelPurchaseLog.h"
 #import "FPEnvironmentLog.h"
 
-#import "PEChangelogSerializer.h"
-#import "PEUserSerializer.h"
-#import "PELoginSerializer.h"
-#import "PELogoutSerializer.h"
 #import "FPVehicleSerializer.h"
 #import "FPFuelStationSerializer.h"
 #import "FPFuelPurchaseLogSerializer.h"
 #import "FPEnvironmentLogSerializer.h"
-#import "PEResendVerificationEmailSerializer.h"
-#import "PEPasswordResetSerializer.h"
 
 @implementation FPRestRemoteMasterDao {
   FPVehicleSerializer *_vehicleSerializer;

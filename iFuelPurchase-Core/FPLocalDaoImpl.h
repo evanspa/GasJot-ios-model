@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Paul Evans. All rights reserved.
 //
 
-#import "PELocalDaoImpl.h"
+#import <PELocal-Data/PELocalDaoImpl.h>
 #import "FPLocalDao.h"
 
 @interface FPLocalDaoImpl : PELocalDaoImpl <FPLocalDao>

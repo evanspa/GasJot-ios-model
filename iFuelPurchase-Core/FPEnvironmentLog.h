@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Paul Evans. All rights reserved.
 //
 
-#import "PELMMainSupport.h"
+#import <PELocal-Data/PELMMainSupport.h>
 
 FOUNDATION_EXPORT NSString * const FPEnvlogOdometerField;
 FOUNDATION_EXPORT NSString * const FPEnvlogReportedAvgMpgField;

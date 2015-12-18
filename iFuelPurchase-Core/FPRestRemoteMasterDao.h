@@ -8,7 +8,7 @@
 
 @import Foundation;
 
-#import "PERestRemoteMasterDao.h"
+#import <PELocal-Data/PERestRemoteMasterDao.h>
 #import "FPRemoteMasterDao.h"
 
 @class PEChangelogSerializer;

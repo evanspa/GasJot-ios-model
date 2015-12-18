@@ -20,6 +20,7 @@
 #import <PELocal-Data/PELMDDL.h>
 #import <PELocal-Data/PELMUtils.h>
 #import <PELocal-Data/PELMDefs.h>
+#import <PELocal-Data/PELMNotificationUtils.h>
 
 #import "FPLocalDaoImpl.h"
 #import "FPDDLUtils.h"
@@ -29,7 +30,6 @@
 #import "FPFuelStation.h"
 #import "FPEnvironmentLog.h"
 #import "FPFuelPurchaseLog.h"
-#import "PELMNotificationUtils.h"
 #import "FPLogging.h"
 
 uint32_t const FP_REQUIRED_SCHEMA_VERSION = 3;

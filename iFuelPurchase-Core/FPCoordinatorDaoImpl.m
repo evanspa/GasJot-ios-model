@@ -6,11 +6,22 @@
 //  Copyright (c) 2014 Paul Evans. All rights reserved.
 //
 
-#import <CoreLocation/CoreLocation.h>
+@import CoreLocation;
+
 #import <CocoaLumberjack/DDLog.h>
 #import <PEObjc-Commons/PEUtils.h>
 #import <PEHateoas-Client/HCRelation.h>
 #import <PEHateoas-Client/HCMediaType.h>
+
+#import <PELocal-Data/PELMUtils.h>
+#import <PELocal-Data/PELMNotificationUtils.h>
+#import <PELocal-Data/PEUserCoordinatorDaoImpl.h>
+#import <PELocal-Data/PEResendVerificationEmailSerializer.h>
+#import <PELocal-Data/PEPasswordResetSerializer.h>
+#import <PELocal-Data/PEChangelogSerializer.h>
+#import <PELocal-Data/PEUserSerializer.h>
+#import <PELocal-Data/PELoginSerializer.h>
+#import <PELocal-Data/PELogoutSerializer.h>
 
 #import "FPUser.h"
 #import "FPVehicle.h"
@@ -22,23 +33,14 @@
 #import "FPLocalDaoImpl.h"
 #import "FPRestRemoteMasterDao.h"
 #import "FPRemoteDaoErrorDomains.h"
-#import "PELMUtils.h"
 #import "FPKnownMediaTypes.h"
-#import "PELMNotificationUtils.h"
 #import "FPLogging.h"
-#import "PEUserCoordinatorDaoImpl.h"
 #import "FPChangelog.h"
-
-#import "PEChangelogSerializer.h"
-#import "PEUserSerializer.h"
-#import "PELoginSerializer.h"
-#import "PELogoutSerializer.h"
 #import "FPVehicleSerializer.h"
 #import "FPFuelStationSerializer.h"
 #import "FPFuelPurchaseLogSerializer.h"
 #import "FPEnvironmentLogSerializer.h"
-#import "PEResendVerificationEmailSerializer.h"
-#import "PEPasswordResetSerializer.h"
+
 
 @implementation FPCoordinatorDaoImpl {
   id<FPRemoteMasterDao> _remoteMasterDao;
