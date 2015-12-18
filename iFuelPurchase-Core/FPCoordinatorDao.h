@@ -13,6 +13,11 @@
 @protocol PEUserCoordinatorDao;
 
 @class HCCharset;
+@class FPUser;
+@class FPVehicle;
+@class FPFuelStation;
+@class FPFuelPurchaseLog;
+@class FPEnvironmentLog;
 
 @protocol FPCoordinatorDao <FPLocalDao>
 
