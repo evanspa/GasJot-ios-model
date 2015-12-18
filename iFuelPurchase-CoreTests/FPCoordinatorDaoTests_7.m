@@ -19,6 +19,7 @@
 #import "FPCoordDaoTestContext.h"
 #import <PEHateoas-Client/HCUtils.h>
 #import <PEHateoas-Client/HCRelation.h>
+#import <PEHateoas-Client/HCResource.h>
 #import "FPKnownMediaTypes.h"
 #import <Kiwi/Kiwi.h>
 

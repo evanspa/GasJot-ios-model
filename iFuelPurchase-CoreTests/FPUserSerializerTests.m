@@ -10,6 +10,9 @@
 #import "FPVehicleSerializer.h"
 #import "FPUser.h"
 #import "FPKnownMediaTypes.h"
+#import <PEHateoas-Client/HCCharset.h>
+#import <PEHateoas-Client/HCDeserializedPair.h>
+#import <PEHateoas-Client/HCDefs.h>
 #import <Kiwi/Kiwi.h>
 
 SPEC_BEGIN(FPUserSerializerSpec)

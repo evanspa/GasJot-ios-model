@@ -13,10 +13,10 @@ Pod::Spec.new do |s|
   s.requires_arc = true
   s.pod_target_xcconfig = {'CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES' => 'YES'}
   s.dependency 'PEObjc-Commons', '~> 1.0.101'
-  s.dependency 'PELocal-Data', '~> 0.0.5'
+  s.dependency 'PELocal-Data', '~> 0.0.7'
   s.dependency 'PEFuelPurchase-Common', '~> 1.0.12'
   s.dependency 'FMDB', '~> 2.5'
-  s.dependency 'PEHateoas-Client', '~> 1.0.12'
+  s.dependency 'PEHateoas-Client', '~> 1.0.14'
   s.dependency 'CocoaLumberjack', '~> 1.9'
   s.dependency 'UICKeyChainStore', '~> 2.0.4'
   s.dependency 'CHCSVParser', '~> 2.1.0'
