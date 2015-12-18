@@ -6,6 +6,8 @@
 //  Copyright © 2015 Paul Evans. All rights reserved.
 //
 
+#import <PELocal-Data/PELMDefs.h>
+
 @protocol FPLocalDao;
 @protocol PEAuthTokenDelegate;
 @protocol PEUserCoordinatorDao;
