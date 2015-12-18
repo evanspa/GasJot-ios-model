@@ -17,9 +17,9 @@
 #import <PEObjc-Commons/NSString+PEAdditions.h>
 #import <CHCSVParser/CHCSVParser.h>
 #import <PEHateoas-Client/HCMediaType.h>
+#import <PELocal-Data/PELMDDL.h>
 #import <PELocal-Data/PELMUtils.h>
 #import <PELocal-Data/PELMDefs.h>
-#import <PELocal-Data/PELMDDL.h>
 
 #import "FPLocalDaoImpl.h"
 #import "FPDDLUtils.h"
