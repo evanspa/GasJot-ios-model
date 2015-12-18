@@ -19,6 +19,13 @@
 #import "FPLogging.h"
 #import <CHCSVParser/CHCSVParser.h>
 #import <PEHateoas-Client/HCMediaType.h>
+#import <PELocal-Data/PELMUtils.h>
+#import "FPChangelog.h"
+#import "FPUser.h"
+#import "FPVehicle.h"
+#import "FPFuelStation.h"
+#import "FPEnvironmentLog.h"
+#import "FPFuelPurchaseLog.h"
 
 uint32_t const FP_REQUIRED_SCHEMA_VERSION = 3;
 
