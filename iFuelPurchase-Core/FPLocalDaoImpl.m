@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Paul Evans. All rights reserved.
 //
 
+@import CoreLocation;
+
 #import <FMDB/FMDatabaseQueue.h>
 #import <FMDB/FMDatabaseAdditions.h>
 #import <FMDB/FMDatabase.h>
@@ -17,6 +19,7 @@
 #import <PEHateoas-Client/HCMediaType.h>
 #import <PELocal-Data/PELMUtils.h>
 #import <PELocal-Data/PELMDefs.h>
+#import <PELocal-Data/PELMDDL.h>
 
 #import "FPLocalDaoImpl.h"
 #import "FPDDLUtils.h"

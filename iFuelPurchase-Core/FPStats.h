@@ -6,14 +6,22 @@
 //  Copyright © 2015 Paul Evans. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-#import "FPLocalDaoImpl.h"
+@import Foundation;
+
+#import <PELocal-Data/PELMDefs.h>
+
+@protocol FPLocalDao;
+@class FPVehicle;
+@class FPUser;
+@class FPFuelStation;
+@class FPFuelPurchaseLog;
+@class FPEnvironmentLog;
 
 @interface FPStats : NSObject
 
 #pragma mark - Initializers
 
-- (id)initWithLocalDao:(FPLocalDaoImpl *)localDao errorBlk:(PELMDaoErrorBlk)errorBlk;
+- (id)initWithLocalDao:(id<FPLocalDao>)localDao errorBlk:(PELMDaoErrorBlk)errorBlk;
 
 #pragma mark - Sinces since last odometer log
 

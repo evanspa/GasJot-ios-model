@@ -6,8 +6,7 @@
 //  Copyright (c) 2014 Paul Evans. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-#import "PELMDDL.h"
+@import Foundation;
 
 //##############################################################################
 // Shared columns

@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Paul Evans. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+@import Foundation;
 #import "PEAuthTokenDelegate.h"
 
 @interface FPAuthTokenDelegateForTesting : NSObject <PEAuthTokenDelegate>

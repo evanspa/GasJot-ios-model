@@ -7,7 +7,6 @@
 //
 
 #import "PELMMainSupport.h"
-#import "FPFuelPurchaseLog.h"
 
 FOUNDATION_EXPORT NSString * const FPVehicleNameField;
 FOUNDATION_EXPORT NSString * const FPVehicleDefaultOctaneField;

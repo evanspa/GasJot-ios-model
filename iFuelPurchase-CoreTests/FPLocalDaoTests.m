@@ -14,6 +14,7 @@
 #import <CocoaLumberjack/DDLog.h>
 #import <CocoaLumberjack/DDASLLogger.h>
 #import <CocoaLumberjack/DDTTYLogger.h>
+#import "FPEnvironmentLog.h"
 #import <Kiwi/Kiwi.h>
 
 //static const int ddLogLevel = LOG_LEVEL_VERBOSE;

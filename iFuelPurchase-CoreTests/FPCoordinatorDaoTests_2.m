@@ -12,11 +12,13 @@
 #import <CocoaLumberjack/DDASLLogger.h>
 #import <CocoaLumberjack/DDTTYLogger.h>
 #import <PEObjc-Commons/PEUtils.h>
+#import <PELocal-Data/PELMDDL.h>
 #import "FPUser.h"
 #import "FPVehicle.h"
 #import "FPDDLUtils.h"
 #import "FPToggler.h"
 #import "FPCoordDaoTestContext.h"
+#import "FPFuelPurchaseLog.h"
 #import <Kiwi/Kiwi.h>
 
 SPEC_BEGIN(FPCoordinatorDaoSpec_2)

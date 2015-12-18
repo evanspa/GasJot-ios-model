@@ -18,6 +18,7 @@
 #import "FPToggler.h"
 #import "FPCoordDaoTestContext.h"
 #import <PEHateoas-Client/HCUtils.h>
+#import "PEUserCoordinatorDao.h"
 #import <Kiwi/Kiwi.h>
 
 SPEC_BEGIN(FPCoordinatorDaoSpec_10)

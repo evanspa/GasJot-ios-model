@@ -8,6 +8,15 @@
 
 #import <CoreLocation/CoreLocation.h>
 #import <CocoaLumberjack/DDLog.h>
+#import <PEObjc-Commons/PEUtils.h>
+#import <PEHateoas-Client/HCRelation.h>
+#import <PEHateoas-Client/HCMediaType.h>
+
+#import "FPUser.h"
+#import "FPVehicle.h"
+#import "FPFuelStation.h"
+#import "FPFuelPurchaseLog.h"
+#import "FPEnvironmentLog.h"
 #import "FPCoordinatorDaoImpl.h"
 #import "FPErrorDomainsAndCodes.h"
 #import "FPLocalDaoImpl.h"
@@ -15,11 +24,21 @@
 #import "FPRemoteDaoErrorDomains.h"
 #import "PELMUtils.h"
 #import "FPKnownMediaTypes.h"
-#import <PEObjc-Commons/PEUtils.h>
 #import "PELMNotificationUtils.h"
 #import "FPLogging.h"
-#import <PEHateoas-Client/HCRelation.h>
 #import "PEUserCoordinatorDaoImpl.h"
+#import "FPChangelog.h"
+
+#import "PEChangelogSerializer.h"
+#import "PEUserSerializer.h"
+#import "PELoginSerializer.h"
+#import "PELogoutSerializer.h"
+#import "FPVehicleSerializer.h"
+#import "FPFuelStationSerializer.h"
+#import "FPFuelPurchaseLogSerializer.h"
+#import "FPEnvironmentLogSerializer.h"
+#import "PEResendVerificationEmailSerializer.h"
+#import "PEPasswordResetSerializer.h"
 
 @implementation FPCoordinatorDaoImpl {
   id<FPRemoteMasterDao> _remoteMasterDao;

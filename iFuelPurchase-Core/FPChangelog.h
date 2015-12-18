@@ -6,12 +6,13 @@
 //  Copyright (c) 2014 Paul Evans. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-#import "FPUser.h"
-#import "FPVehicle.h"
-#import "FPFuelStation.h"
-#import "FPEnvironmentLog.h"
 #import "PEChangelog.h"
+
+@class FPUser;
+@class FPVehicle;
+@class FPFuelStation;
+@class FPFuelPurchaseLog;
+@class FPEnvironmentLog;
 
 @interface FPChangelog : PEChangelog
 

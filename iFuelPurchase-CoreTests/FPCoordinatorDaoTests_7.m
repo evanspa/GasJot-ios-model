@@ -20,7 +20,9 @@
 #import <PEHateoas-Client/HCUtils.h>
 #import <PEHateoas-Client/HCRelation.h>
 #import <PEHateoas-Client/HCResource.h>
+#import <PEHateoas-Client/HCMediaType.h>
 #import "FPKnownMediaTypes.h"
+#import "PEUserCoordinatorDao.h"
 #import <Kiwi/Kiwi.h>
 
 SPEC_BEGIN(FPCoordinatorDaoSpec_7)

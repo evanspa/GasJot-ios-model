@@ -6,8 +6,11 @@
 //  Copyright (c) 2014 Paul Evans. All rights reserved.
 //
 
-#import "FPFuelStation.h"
+@import CoreLocation;
+
 #import <PEObjc-Commons/PEUtils.h>
+
+#import "FPFuelStation.h"
 #import "FPDDLUtils.h"
 
 NSString * const FPFuelstationNameField = @"FPFuelstationNameField";

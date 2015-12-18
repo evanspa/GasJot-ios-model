@@ -18,6 +18,7 @@
 #import "FPToggler.h"
 #import "FPCoordDaoTestContext.h"
 #import <UIKit/UIKit.h>
+#import "FPEnvironmentLog.h"
 #import <Kiwi/Kiwi.h>
 
 SPEC_BEGIN(FPCoordinatorDaoSpec_1)

@@ -8,17 +8,20 @@
 
 #import "FPStats.h"
 #import "PEUtils.h"
+#import "FPFuelPurchaseLog.h"
+#import "FPEnvironmentLog.h"
+#import "FPLocalDao.h"
 
 typedef id (^FPValueBlock)(void);
 
 @implementation FPStats {
-  FPLocalDaoImpl *_localDao;
+  id<FPLocalDao> _localDao;
   PELMDaoErrorBlk _errorBlk;
 }
 
 #pragma mark - Initializers
 
-- (id)initWithLocalDao:(FPLocalDaoImpl *)localDao errorBlk:(PELMDaoErrorBlk)errorBlk {
+- (id)initWithLocalDao:(id<FPLocalDao>)localDao errorBlk:(PELMDaoErrorBlk)errorBlk {
   self = [super init];
   if (self) {
     _localDao = localDao;

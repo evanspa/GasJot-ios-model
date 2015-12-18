@@ -7,7 +7,8 @@
 //
 
 #import "PELMMainSupport.h"
-#import <CoreLocation/CoreLocation.h>
+
+@class CLLocation;
 
 FOUNDATION_EXPORT NSString * const FPFuelstationNameField;
 FOUNDATION_EXPORT NSString * const FPFuelstationStreetField;

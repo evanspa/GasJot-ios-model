@@ -17,6 +17,7 @@
 #import "FPDDLUtils.h"
 #import "FPToggler.h"
 #import "FPCoordDaoTestContext.h"
+#import "PEUserCoordinatorDao.h"
 #import <Kiwi/Kiwi.h>
 
 SPEC_BEGIN(FPCoordinatorDaoSpec_9)

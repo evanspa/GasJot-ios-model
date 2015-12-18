@@ -6,7 +6,7 @@
 //  Copyright (c) 2015 Paul Evans. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+@import Foundation;
 #import "FPUser.h"
 #import "FPCoordinatorDaoImpl.h"
 #import "FPToggler.h"

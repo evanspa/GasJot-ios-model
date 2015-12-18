@@ -6,6 +6,6 @@
 //  Copyright (c) 2015 Paul Evans. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+@import Foundation;
 
 FOUNDATION_EXPORT const int ddLogLevel;

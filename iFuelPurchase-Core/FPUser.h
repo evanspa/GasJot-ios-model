@@ -6,11 +6,14 @@
 //  Copyright (c) 2014 Paul Evans. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-#import "PELMUser.h"
-#import "FPVehicle.h"
-#import "FPFuelStation.h"
-#import "FPEnvironmentLog.h"
+#import <PELocal-Data/PELMUser.h>
+
+@class HCMediaType;
+@class FPUser;
+@class FPVehicle;
+@class FPFuelStation;
+@class FPFuelPurchaseLog;
+@class FPEnvironmentLog;
 
 FOUNDATION_EXPORT NSString * const FPChangelogRelation;
 FOUNDATION_EXPORT NSString * const FPVehiclesRelation;

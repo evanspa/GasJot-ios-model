@@ -6,21 +6,21 @@
 //  Copyright (c) 2014 Paul Evans. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-#import <PEHateoas-Client/HCMediaType.h>
-#import <PEHateoas-Client/HCCharset.h>
-#import "FPRemoteMasterDao.h"
-#import "PEChangelogSerializer.h"
-#import "PEUserSerializer.h"
-#import "PELoginSerializer.h"
-#import "PELogoutSerializer.h"
-#import "FPVehicleSerializer.h"
-#import "FPFuelStationSerializer.h"
-#import "FPFuelPurchaseLogSerializer.h"
-#import "FPEnvironmentLogSerializer.h"
-#import "PEResendVerificationEmailSerializer.h"
-#import "PEPasswordResetSerializer.h"
+@import Foundation;
+
 #import "PERestRemoteMasterDao.h"
+#import "FPRemoteMasterDao.h"
+
+@class PEChangelogSerializer;
+@class PEUserSerializer;
+@class PELoginSerializer;
+@class PELogoutSerializer;
+@class FPVehicleSerializer;
+@class FPFuelStationSerializer;
+@class FPFuelPurchaseLogSerializer;
+@class FPEnvironmentLogSerializer;
+@class PEPasswordResetSerializer;
+@class PEResendVerificationEmailSerializer;
 
 @interface FPRestRemoteMasterDao : PERestRemoteMasterDao <FPRemoteMasterDao>
 

@@ -6,13 +6,15 @@
 //  Copyright © 2015 Paul Evans. All rights reserved.
 //
 
-#import "PELocalDao.h"
-#import "PELMUtils.h"
-#import "FPUser.h"
-#import "FPVehicle.h"
-#import "FPFuelStation.h"
-#import "FPFuelPurchaseLog.h"
-#import "FPEnvironmentLog.h"
+#import <PELocal-Data/PELMDefs.h>
+
+@class CLLocation;
+@protocol PELocalDao;
+@class FPUser;
+@class FPVehicle;
+@class FPFuelStation;
+@class FPFuelPurchaseLog;
+@class FPEnvironmentLog;
 
 @protocol FPLocalDao <PELocalDao>
 

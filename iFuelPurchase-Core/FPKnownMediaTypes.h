@@ -6,8 +6,9 @@
 //  Copyright (c) 2014 Paul Evans. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-#import <PEHateoas-Client/HCMediaType.h>
+@import Foundation;
+
+@class HCMediaType;
 
 @interface FPKnownMediaTypes : NSObject
 

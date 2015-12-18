@@ -17,6 +17,8 @@
 #import "FPAuthTokenDelegateForTesting.h"
 #import "FPCoordinatorDao+AdditionsForTesting.h"
 #import "FPLogging.h"
+#import "PEUserCoordinatorDao.h"
+#import <PEHateoas-Client/HCCharset.h>
 
 @implementation FPCoordDaoTestContext {
   __block BOOL _authTokenReceived;

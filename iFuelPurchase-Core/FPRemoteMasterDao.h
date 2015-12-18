@@ -6,16 +6,17 @@
 //  Copyright (c) 2014 Paul Evans. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-#import <PEHateoas-Client/HCAuthentication.h>
-#import "FPChangelog.h"
-#import "FPUser.h"
-#import "FPVehicle.h"
-#import "FPFuelStation.h"
-#import "FPFuelPurchaseLog.h"
-#import "FPEnvironmentLog.h"
-#import "PELMUtils.h"
-#import "PERemoteMasterDao.h"
+@import Foundation;
+#import <PELocal-Data/PELMDefs.h>
+
+@class HCAuthentication;
+@protocol PERemoteMasterDao;
+@class FPChangelog;
+@class FPUser;
+@class FPVehicle;
+@class FPFuelStation;
+@class FPFuelPurchaseLog;
+@class FPEnvironmentLog;
 
 @protocol FPRemoteMasterDao <PERemoteMasterDao>
 

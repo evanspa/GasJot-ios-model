@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Paul Evans. All rights reserved.
 //
 
+#import <PELocal-Data/PELMDDL.h>
+
 #import "FPDDLUtils.h"
 
 //##############################################################################

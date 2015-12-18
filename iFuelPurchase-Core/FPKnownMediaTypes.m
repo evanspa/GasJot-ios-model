@@ -8,6 +8,8 @@
 
 #import "FPKnownMediaTypes.h"
 
+#import <PEHateoas-Client/HCMediaType.h>
+
 NSString * const fpApplicationType = @"application/";
 NSString * const fpApplicationSubtypePrefix = @"vnd.fp.";
 NSString * const fpJsonSubtypePostfix = @"+json";
