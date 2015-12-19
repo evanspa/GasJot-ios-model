@@ -123,6 +123,8 @@
 
 - (void)markAsSyncCompleteForUpdatedVehicle:(FPVehicle *)vehicle error:(PELMDaoErrorBlk)errorBlk;
 
+- (FPVehicle *)vehicleWithMostRecentLogForUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk;
+
 #pragma mark - Fuel Station
 
 - (FPFuelStation *)masterFuelstationWithId:(NSNumber *)fuelstationId error:(PELMDaoErrorBlk)errorBlk;

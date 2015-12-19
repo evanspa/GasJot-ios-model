@@ -890,6 +890,34 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                                       error:errorBlk];
 }
 
+- (FPVehicle *)vehicleWithMostRecentLogForUser:(FPUser *)user error:(PELMDaoErrorBlk)errorBlk {
+  __block FPVehicle *vehicle = nil;
+  [self.databaseQueue inDatabase:^(FMDatabase *db) {
+    FPFuelPurchaseLog *fplog = [self mostRecentFuelPurchaseLogForUser:user db:db error:errorBlk];
+    FPEnvironmentLog *envlog = [self mostRecentEnvironmentLogForUser:user db:db error:errorBlk];
+    if (fplog && ![PEUtils isNil:fplog.purchasedAt]) {
+      if (envlog && ![PEUtils isNil:envlog.logDate]) {
+        NSComparisonResult compareResult = [fplog.purchasedAt compare:envlog.logDate];
+        if ((compareResult == NSOrderedSame) || (compareResult == NSOrderedAscending)) {
+          vehicle = [self vehicleForEnvironmentLog:envlog db:db error:errorBlk];
+        } else {
+          vehicle = [self vehicleForFuelPurchaseLog:fplog db:db error:errorBlk];
+        }
+      } else {
+        vehicle = [self vehicleForFuelPurchaseLog:fplog db:db error:errorBlk];
+      }
+    } else if (envlog) {
+      vehicle = [self vehicleForEnvironmentLog:envlog db:db error:errorBlk];
+    } else {
+      NSArray *vehicles = [self vehiclesForUser:user db:db error:errorBlk];
+      if (vehicles.count >= 1) {
+        vehicle = vehicles[0];
+      }
+    }
+  }];
+  return vehicle;
+}
+
 #pragma mark - Fuel Station
 
 - (void)deleteFuelstationsOfUser:(FPUser *)user db:(FMDatabase *)db error:(PELMDaoErrorBlk)errorBlk {
