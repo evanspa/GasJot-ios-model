@@ -16,6 +16,7 @@
   <body>
     <![CDATA[
       { "fpfuelstation/name": "Exxon Station @Piper Glen",
+        "fpfuelstation/type-id": 0,
         "fpfuelstation/city": "Charlotte",
         "fpfuelstation/state": "NC",
         "fpfuelstation/zip": "28277",

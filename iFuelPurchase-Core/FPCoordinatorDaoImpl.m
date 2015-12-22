@@ -106,7 +106,7 @@
     FPVehicleSerializer *vehicleSerializer =
       [self vehicleSerializerForCharset:acceptCharset];
     FPFuelStationSerializer *fuelStationSerializer =
-      [self fuelStationSerializerForCharset:acceptCharset];
+      [self fuelStationSerializerForCharset:acceptCharset error:errorBlk];
     PEUserSerializer *userSerializer =
       [self userSerializerForCharset:acceptCharset
                    vehicleSerializer:vehicleSerializer
@@ -202,11 +202,14 @@
                                     actionsForEmbeddedResources:@{}];
 }
 
-- (FPFuelStationSerializer *)fuelStationSerializerForCharset:(HCCharset *)charset {
+- (FPFuelStationSerializer *)fuelStationSerializerForCharset:(HCCharset *)charset
+                                                       error:(PELMDaoErrorBlk)errorBlk {
   return [[FPFuelStationSerializer alloc] initWithMediaType:[FPKnownMediaTypes fuelStationMediaTypeWithVersion:_fuelStationResMtVersion]
                                                     charset:charset
                             serializersForEmbeddedResources:@{}
-                                actionsForEmbeddedResources:@{}];
+                                actionsForEmbeddedResources:@{}
+                                             coordinatorDao:self
+                                                      error:errorBlk];
 }
 
 - (FPVehicleSerializer *)vehicleSerializerForCharset:(HCCharset *)charset {
@@ -731,6 +734,7 @@
 #pragma mark - Fuel Station
 
 - (FPFuelStation *)fuelStationWithName:(NSString *)name
+                                  type:(FPFuelStationType *)type
                                 street:(NSString *)street
                                   city:(NSString *)city
                                  state:(NSString *)state
@@ -738,6 +742,7 @@
                               latitude:(NSDecimalNumber *)latitude
                              longitude:(NSDecimalNumber *)longitude {
   return [FPFuelStation fuelStationWithName:name
+                                       type:type
                                      street:street
                                        city:city
                                       state:state

@@ -36,6 +36,16 @@ FOUNDATION_EXPORT NSString * const COL_VEH_VIN;
 FOUNDATION_EXPORT NSString * const COL_VEH_PLATE;
 
 //##############################################################################
+// Fuel Station Type
+//##############################################################################
+// ----Table names--------------------------------------------------------------
+FOUNDATION_EXPORT NSString * const TBL_FUEL_STATION_TYPE;
+// ----Columns------------------------------------------------------------------
+FOUNDATION_EXPORT NSString * const COL_FUELSTTYP_ID;
+FOUNDATION_EXPORT NSString * const COL_FUELSTTYP_NAME;
+FOUNDATION_EXPORT NSString * const COL_FUELSTTYP_ICON_IMG_NAME;
+
+//##############################################################################
 // Fuel Station Entity (main and master)
 //##############################################################################
 // ----Table names--------------------------------------------------------------
@@ -43,6 +53,7 @@ FOUNDATION_EXPORT NSString * const TBL_MASTER_FUEL_STATION;
 FOUNDATION_EXPORT NSString * const TBL_MAIN_FUEL_STATION;
 // ----Columns------------------------------------------------------------------
 FOUNDATION_EXPORT NSString * const COL_FUELST_NAME;
+FOUNDATION_EXPORT NSString * const COL_FUELST_TYPE_ID;
 FOUNDATION_EXPORT NSString * const COL_FUELST_STREET;
 FOUNDATION_EXPORT NSString * const COL_FUELST_CITY;
 FOUNDATION_EXPORT NSString * const COL_FUELST_STATE;
@@ -79,8 +90,6 @@ FOUNDATION_EXPORT NSString * const COL_ENVL_MPH_READING;
 FOUNDATION_EXPORT NSString * const COL_ENVL_OUTSIDE_TEMP_READING;
 FOUNDATION_EXPORT NSString * const COL_ENVL_LOG_DT;
 FOUNDATION_EXPORT NSString * const COL_ENVL_DTE;
-// ----Aliases used in SELECT statements----------------------------------------
-//FOUNDATION_EXPORT NSString * const ENVL_ALIAS_VEHICLE_MAIN_IDENTIFIER;
 
 @interface FPDDLUtils : NSObject
 
@@ -95,6 +104,10 @@ FOUNDATION_EXPORT NSString * const COL_ENVL_DTE;
 + (NSString *)masterFuelPurchaseLogDDL;
 
 + (NSString *)mainFuelPurchaseLogDDL;
+
+#pragma mark - Fuel Station Type entity
+
++ (NSString *)fuelStationTypeDDL;
 
 #pragma mark - Master and Main Fuel Station entities
 

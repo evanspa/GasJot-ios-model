@@ -19,6 +19,7 @@
 #import "FPToggler.h"
 #import "FPCoordDaoTestContext.h"
 #import "FPFuelPurchaseLog.h"
+#import "FPFuelStationType.h"
 #import <Kiwi/Kiwi.h>
 
 SPEC_BEGIN(FPCoordinatorDaoSpec_2)
@@ -66,6 +67,7 @@ describe(@"FPCoordinatorDao", ^{
       [_coordDao saveNewVehicle:vehicle forUser:user error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       FPFuelStation *fuelStation =
         [_coordDao fuelStationWithName:@"Exxon Mobile"
+                                  type:[[FPFuelStationType alloc] initWithIdentifier:@(0) name:@"Other" iconImgName:@""]
                                 street:nil
                                   city:@"Charlotte"
                                  state:@"NC"

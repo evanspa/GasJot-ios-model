@@ -15,9 +15,11 @@
 #import "FPUser.h"
 #import "FPVehicle.h"
 #import "FPDDLUtils.h"
+#import "FPFuelstationType.h"
 #import "FPToggler.h"
 #import "FPCoordDaoTestContext.h"
 #import "FPStats.h"
+#import "FPFuelStationType.h"
 #import <Kiwi/Kiwi.h>
 
 SPEC_BEGIN(FPStatsSpec)
@@ -61,7 +63,14 @@ describe(@"FPStats", ^{
                                  vin:nil
                                plate:nil];
     [_coordDao saveNewVehicle:_v1 forUser:_user error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
-    _fs1 = [_coordDao fuelStationWithName:@"Exxon" street:nil city:nil state:nil zip:nil latitude:nil longitude:nil];
+    _fs1 = [_coordDao fuelStationWithName:@"Exxon"
+                                     type:[[FPFuelStationType alloc] initWithIdentifier:@(0) name:@"Other" iconImgName:@""]
+                                   street:nil
+                                     city:nil
+                                    state:nil
+                                      zip:nil
+                                 latitude:nil
+                                longitude:nil];
     [_coordDao saveNewFuelStation:_fs1 forUser:_user error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
   };
   
@@ -422,7 +431,14 @@ describe(@"FPStats", ^{
       saveOdometerLog(v2, @"5094", nil, nil, 40, [NSString stringWithFormat:@"01/02/%ld", (long)comps.year], nil);
       saveGasLog(v2, _fs1, @"16.0", 87, @"10584", @"3.559", NO, @"0.08", [NSString stringWithFormat:@"01/03/%ld", (long)comps.year]);   // 56.944
       
-      fs2 = [_coordDao fuelStationWithName:@"Sunoco" street:nil city:nil state:nil zip:nil latitude:nil longitude:nil];
+      fs2 = [_coordDao fuelStationWithName:@"Sunoco"
+                                      type:[[FPFuelStationType alloc] initWithIdentifier:@(0) name:@"Other" iconImgName:@""]
+                                    street:nil
+                                      city:nil
+                                     state:nil
+                                       zip:nil
+                                  latitude:nil
+                                 longitude:nil];
       [_coordDao saveNewFuelStation:fs2 forUser:_user error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       v3 = [_coordDao vehicleWithName:@"M5"
                         defaultOctane:@93

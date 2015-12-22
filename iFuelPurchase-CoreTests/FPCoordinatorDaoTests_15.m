@@ -14,6 +14,7 @@
 #import <PEObjc-Commons/PEUtils.h>
 #import "FPUser.h"
 #import "FPVehicle.h"
+#import "FPFuelStationType.h"
 #import "FPDDLUtils.h"
 #import "FPToggler.h"
 #import "FPCoordDaoTestContext.h"
@@ -62,6 +63,7 @@ describe(@"FPCoordinatorDao", ^{
       [_coordDao saveNewVehicle:vehicle forUser:user error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
       FPFuelStation *fuelStation =
         [_coordDao fuelStationWithName:@"Exxon Mobile"
+                                  type:[[FPFuelStationType alloc] initWithIdentifier:@(0) name:@"Other" iconImgName:@""]
                                 street:nil
                                   city:@"Charlotte"
                                  state:@"NC"

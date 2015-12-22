@@ -15,6 +15,7 @@
 @class HCCharset;
 @class FPUser;
 @class FPVehicle;
+@class FPFuelStationType;
 @class FPFuelStation;
 @class FPFuelPurchaseLog;
 @class FPEnvironmentLog;
@@ -168,6 +169,7 @@
 #pragma mark - Fuel Station
 
 - (FPFuelStation *)fuelStationWithName:(NSString *)name
+                                  type:(FPFuelStationType *)type
                                 street:(NSString *)street
                                   city:(NSString *)city
                                  state:(NSString *)state

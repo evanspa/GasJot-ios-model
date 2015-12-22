@@ -13,6 +13,7 @@
 @class FPUser;
 @class FPVehicle;
 @class FPFuelStation;
+@class FPFuelStationType;
 @class FPFuelPurchaseLog;
 @class FPEnvironmentLog;
 
@@ -195,6 +196,9 @@
 
 - (void)markAsSyncCompleteForUpdatedFuelStation:(FPFuelStation *)fuelStation
                                           error:(PELMDaoErrorBlk)errorBlk;
+
+- (FPFuelStationType *)fuelstationTypeForIdentifier:(NSNumber *)identifier
+                                              error:(PELMDaoErrorBlk)errorBlk;
 
 #pragma mark - Fuel Purchase Log
 

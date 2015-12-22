@@ -38,6 +38,16 @@ NSString * const COL_VEH_VIN = @"vin";
 NSString * const COL_VEH_PLATE = @"plate";
 
 //##############################################################################
+// Fuel Station Type
+//##############################################################################
+// ----Table names--------------------------------------------------------------
+NSString * const TBL_FUEL_STATION_TYPE = @"fuelstation_type";
+// ----Columns------------------------------------------------------------------
+NSString * const COL_FUELSTTYP_ID = @"type_id";
+NSString * const COL_FUELSTTYP_NAME = @"name";
+NSString * const COL_FUELSTTYP_ICON_IMG_NAME = @"icon_img_name";
+
+//##############################################################################
 // Fuel Station Entity (main and master)
 //##############################################################################
 // ----Table names--------------------------------------------------------------
@@ -45,6 +55,7 @@ NSString * const TBL_MASTER_FUEL_STATION = @"master_fuelstation";
 NSString * const TBL_MAIN_FUEL_STATION = @"main_fuelstation";
 // ----Columns------------------------------------------------------------------
 NSString * const COL_FUELST_NAME = @"name";
+NSString * const COL_FUELST_TYPE_ID = @"type_id";
 NSString * const COL_FUELST_STREET = @"street";
 NSString * const COL_FUELST_CITY = @"city";
 NSString * const COL_FUELST_STATE = @"state";
@@ -288,6 +299,18 @@ FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MAIN_FUELPURCHASE_LOG,
                    COL_MAIN_FUELSTATION_ID,                 // fk3, col1
                    TBL_MAIN_FUEL_STATION,                   // fk3, tbl-ref
                    COL_LOCAL_ID];                           // fk3, tbl-ref col1
+}
+
+#pragma mark - Fuel Station Type entity
+
++ (NSString *)fuelStationTypeDDL {
+  return [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS %@ (\
+          %@ INTEGER PRIMARY KEY, \
+          %@ TEXT, \
+          %@ TEXT)", TBL_FUEL_STATION_TYPE,
+          COL_FUELSTTYP_ID,   // col1
+          COL_FUELSTTYP_NAME, // col2
+          COL_FUELSTTYP_ICON_IMG_NAME]; // col3
 }
 
 #pragma mark - Master and Main Fuel Station entities

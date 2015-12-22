@@ -7,7 +7,19 @@
 //
 
 #import <PEHateoas-Client/HCHalJsonSerializerExtensionSupport.h>
+#import <PELocal-Data/PELMDefs.h>
+
+@protocol FPCoordinatorDao;
 
 @interface FPFuelStationSerializer : HCHalJsonSerializerExtensionSupport
+
+#pragma mark - Initializers
+
+- (id)initWithMediaType:(HCMediaType *)mediaType
+                charset:(HCCharset *)charset
+serializersForEmbeddedResources:(NSDictionary *)embeddedSerializers
+actionsForEmbeddedResources:(NSDictionary *)actions
+         coordinatorDao:(id<FPCoordinatorDao>)coordinatorDao
+                  error:(PELMDaoErrorBlk)errorBlk;
 
 @end

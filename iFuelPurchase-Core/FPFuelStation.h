@@ -9,6 +9,7 @@
 #import <PELocal-Data/PELMMainSupport.h>
 
 @class CLLocation;
+@class FPFuelStationType;
 
 FOUNDATION_EXPORT NSString * const FPFuelstationNameField;
 FOUNDATION_EXPORT NSString * const FPFuelstationStreetField;
@@ -39,6 +40,7 @@ FOUNDATION_EXPORT NSString * const FPFuelstationLongitudeField;
                       syncErrMask:(NSNumber *)syncErrMask
                       syncRetryAt:(NSDate *)syncRetryAt
                              name:(NSString *)name
+                             type:(FPFuelStationType *)type
                            street:(NSString *)street
                              city:(NSString *)city
                             state:(NSString *)state
@@ -49,6 +51,7 @@ FOUNDATION_EXPORT NSString * const FPFuelstationLongitudeField;
 #pragma mark - Creation Functions
 
 + (FPFuelStation *)fuelStationWithName:(NSString *)name
+                                  type:(FPFuelStationType *)type
                                 street:(NSString *)street
                                   city:(NSString *)city
                                  state:(NSString *)state
@@ -58,6 +61,7 @@ FOUNDATION_EXPORT NSString * const FPFuelstationLongitudeField;
                              mediaType:(HCMediaType *)mediaType;
 
 + (FPFuelStation *)fuelStationWithName:(NSString *)name
+                                  type:(FPFuelStationType *)type
                                 street:(NSString *)street
                                   city:(NSString *)city
                                  state:(NSString *)state
@@ -92,6 +96,8 @@ FOUNDATION_EXPORT NSString * const FPFuelstationLongitudeField;
 #pragma mark - Properties
 
 @property (nonatomic) NSString *name;
+
+@property (nonatomic) FPFuelStationType *type;
 
 @property (nonatomic) NSString *street;
 

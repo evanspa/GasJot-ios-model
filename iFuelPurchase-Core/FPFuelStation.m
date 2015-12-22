@@ -9,11 +9,12 @@
 @import CoreLocation;
 
 #import <PEObjc-Commons/PEUtils.h>
-
 #import "FPFuelStation.h"
 #import "FPDDLUtils.h"
+#import "FPFuelStationType.h"
 
 NSString * const FPFuelstationNameField = @"FPFuelstationNameField";
+NSString * const FPFuelstationTypeField = @"FPFuelstationTypeField";
 NSString * const FPFuelstationStreetField = @"FPFuelstationStreetField";
 NSString * const FPFuelstationCityField = @"FPFuelstationCityField";
 NSString * const FPFuelstationStateField = @"FPFuelstationStateField";
@@ -42,6 +43,7 @@ NSString * const FPFuelstationLongitudeField = @"FPFuelstationLongitudeField";
                       syncErrMask:(NSNumber *)syncErrMask
                       syncRetryAt:(NSDate *)syncRetryAt
                              name:(NSString *)name
+                             type:(FPFuelStationType *)type
                            street:(NSString *)street
                              city:(NSString *)city
                             state:(NSString *)state
@@ -68,6 +70,7 @@ NSString * const FPFuelstationLongitudeField = @"FPFuelstationLongitudeField";
                                 syncRetryAt:syncRetryAt];
   if (self) {
     _name = name;
+    _type = type;
     _street = street;
     _city = city;
     _state = state;
@@ -98,6 +101,7 @@ NSString * const FPFuelstationLongitudeField = @"FPFuelstationLongitudeField";
                                                                syncErrMask:[self syncErrMask]
                                                                syncRetryAt:[self syncRetryAt]
                                                                       name:_name
+                                                                      type:_type
                                                                     street:_street
                                                                       city:_city
                                                                      state:_state
@@ -110,6 +114,7 @@ NSString * const FPFuelstationLongitudeField = @"FPFuelstationLongitudeField";
 #pragma mark - Creation Functions
 
 + (FPFuelStation *)fuelStationWithName:(NSString *)name
+                                  type:(FPFuelStationType *)type
                                 street:(NSString *)street
                                   city:(NSString *)city
                                  state:(NSString *)state
@@ -118,6 +123,7 @@ NSString * const FPFuelstationLongitudeField = @"FPFuelstationLongitudeField";
                              longitude:(NSDecimalNumber *)longitude
                              mediaType:(HCMediaType *)mediaType {
   return [FPFuelStation fuelStationWithName:name
+                                       type:type
                                      street:street
                                        city:city
                                       state:state
@@ -133,6 +139,7 @@ NSString * const FPFuelstationLongitudeField = @"FPFuelstationLongitudeField";
 }
 
 + (FPFuelStation *)fuelStationWithName:(NSString *)name
+                                  type:(FPFuelStationType *)type
                                 street:(NSString *)street
                                   city:(NSString *)city
                                  state:(NSString *)state
@@ -162,6 +169,7 @@ NSString * const FPFuelstationLongitudeField = @"FPFuelstationLongitudeField";
                                                 syncErrMask:nil
                                                 syncRetryAt:nil
                                                        name:name
+                                                       type:type
                                                      street:street
                                                        city:city
                                                       state:state
@@ -188,6 +196,7 @@ NSString * const FPFuelstationLongitudeField = @"FPFuelstationLongitudeField";
                                                 syncErrMask:nil
                                                 syncRetryAt:nil
                                                        name:nil
+                                                       type:nil
                                                      street:nil
                                                        city:nil
                                                       state:nil
@@ -209,6 +218,11 @@ NSString * const FPFuelstationLongitudeField = @"FPFuelstationLongitudeField";
                                         ^(SEL getter, id obj1, id obj2) {return [PEUtils isStringProperty:getter equalFor:obj1 and:obj2];},
                                         ^(FPFuelStation * localObject, FPFuelStation * remoteObject) {[localObject setName:[remoteObject name]];},
                                         FPFuelstationNameField],
+                                      @[[NSValue valueWithPointer:@selector(type)],
+                                        [NSValue valueWithPointer:@selector(setType:)],
+                                        ^(SEL getter, id obj1, id obj2) {return [PEUtils isNumProperty:getter equalFor:obj1 and:obj2];},
+                                        ^(FPFuelStation * localObject, FPFuelStation * remoteObject) {[localObject setType:[remoteObject type]];},
+                                        FPFuelstationTypeField],
                                       @[[NSValue valueWithPointer:@selector(street)],
                                         [NSValue valueWithPointer:@selector(setStreet:)],
                                         ^(SEL getter, id obj1, id obj2) {return [PEUtils isStringProperty:getter equalFor:obj1 and:obj2];},
@@ -246,6 +260,7 @@ NSString * const FPFuelstationLongitudeField = @"FPFuelstationLongitudeField";
 - (void)overwriteDomainProperties:(FPFuelStation *)fuelstation {
   [super overwriteDomainProperties:fuelstation];
   [self setName:[fuelstation name]];
+  [self setType:[fuelstation type]];
   [self setStreet:[fuelstation street]];
   [self setCity:[fuelstation city]];
   [self setState:[fuelstation state]];
@@ -274,7 +289,8 @@ NSString * const FPFuelstationLongitudeField = @"FPFuelstationLongitudeField";
 - (BOOL)isEqualToFuelStation:(FPFuelStation *)fuelStation {
   if (!fuelStation) { return NO; }
   if ([super isEqualToMainSupport:fuelStation]) {
-    return [PEUtils isString:[self name] equalTo:[fuelStation name]];
+    return [PEUtils isString:[self name] equalTo:[fuelStation name]] &&
+      [[self type] isEqualToFuelStationType:[fuelStation type]];
   }
   return NO;
 }
@@ -290,6 +306,7 @@ NSString * const FPFuelstationLongitudeField = @"FPFuelstationLongitudeField";
 - (NSUInteger)hash {
   return [super hash] ^
   [[self name] hash] ^
+  [[self type] hash] ^
   [[self street] hash] ^
   [[self city] hash] ^
   [[self state] hash] ^
@@ -299,9 +316,9 @@ NSString * const FPFuelstationLongitudeField = @"FPFuelstationLongitudeField";
 }
 
 - (NSString *)description {
-  return [NSString stringWithFormat:@"%@, name: [%@], street: [%@], city: [%@], state: [%@], zip: [%@], latitude: [%@], \
+  return [NSString stringWithFormat:@"%@, name: [%@], type: [%@], street: [%@], city: [%@], state: [%@], zip: [%@], latitude: [%@], \
 longitude: [%@]]",
-          [super description], _name, _street, _city, _state, _zip, _latitude, _longitude];
+          [super description], _name, _type, _street, _city, _state, _zip, _latitude, _longitude];
 }
 
 @end

@@ -209,9 +209,7 @@
 }
 
 - (FPCoordinatorDaoImpl *)newStoreCoord {
-  NSURL *localSqlLiteDataFileUrl =
-  [_testBundle URLForResource:@"sqlite-datafile-for-testing"
-                withExtension:@"data"];
+  NSURL *localSqlLiteDataFileUrl = [_testBundle URLForResource:@"sqlite-datafile-for-testing" withExtension:@"data"];
   DDLogDebug(@"FPCoordinatorDaoTests SQLite data file: [%@]", localSqlLiteDataFileUrl);
   FPAuthTokenDelegateForTesting *authTokenDelegate =
   [[FPAuthTokenDelegateForTesting alloc]

@@ -15,6 +15,7 @@
 #import <CocoaLumberjack/DDASLLogger.h>
 #import <CocoaLumberjack/DDTTYLogger.h>
 #import "FPEnvironmentLog.h"
+#import "FPFuelStationType.h"
 #import <Kiwi/Kiwi.h>
 
 //static const int ddLogLevel = LOG_LEVEL_VERBOSE;
@@ -60,7 +61,14 @@ describe(@"FPLocalDao", ^{
                                  vin:nil
                                plate:nil];
     [_coordDao saveNewVehicle:_v1 forUser:_user error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
-    _fs1 = [_coordDao fuelStationWithName:@"Exxon" street:nil city:nil state:nil zip:nil latitude:nil longitude:nil];
+    _fs1 = [_coordDao fuelStationWithName:@"Exxon"
+                                     type:[[FPFuelStationType alloc] initWithIdentifier:@(0) name:@"Other" iconImgName:@""]
+                                   street:nil
+                                     city:nil
+                                    state:nil
+                                      zip:nil
+                                 latitude:nil
+                                longitude:nil];
     [_coordDao saveNewFuelStation:_fs1 forUser:_user error:[_coordTestCtx newLocalSaveErrBlkMaker]()];
   });
   
