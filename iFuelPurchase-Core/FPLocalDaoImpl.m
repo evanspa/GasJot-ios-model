@@ -154,6 +154,14 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   insertFSType(36, @"Mobile");
   insertFSType(37, @"Clark");
   insertFSType(38, @"ARCO");
+  void (^setFuelstationType)(NSString *) = ^(NSString *fstable) {
+    [PELMUtils doUpdate:[NSString stringWithFormat:@"UPDATE %@ SET %@ = ?", fstable, COL_FUELST_TYPE_ID]
+              argsArray:@[@(0)]
+                     db:db
+                  error:errorBlk];
+  };
+  setFuelstationType(TBL_MAIN_FUEL_STATION);
+  setFuelstationType(TBL_MASTER_FUEL_STATION);
 }
 
 #pragma mark - Schema version: version 2
