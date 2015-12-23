@@ -1440,6 +1440,21 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   return fstype;
 }
 
+- (NSArray *)fuelstationTypesWithError:(PELMDaoErrorBlk)errorBlk {
+  NSMutableArray *fsTypes = [NSMutableArray array];
+  [self.databaseQueue inDatabase:^(FMDatabase *db) {
+    FMResultSet *rs = [PELMUtils doQuery:[NSString stringWithFormat:@"SELECT * FROM %@", TBL_FUEL_STATION_TYPE]
+                               argsArray:@[]
+                                      db:db
+                                   error:errorBlk];
+    while ([rs next]) {
+      [fsTypes addObject:[self fuelStationTypeFromResultSet:rs]];
+    }
+    [rs close];
+  }];
+  return fsTypes;
+}
+
 #pragma mark - Fuel Purchase Log
 
 - (NSArray *)distinctOctanesForLogsBlk:(NSArray *(^)(void))logsBlk {

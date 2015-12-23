@@ -200,6 +200,8 @@
 - (FPFuelStationType *)fuelstationTypeForIdentifier:(NSNumber *)identifier
                                               error:(PELMDaoErrorBlk)errorBlk;
 
+- (NSArray *)fuelstationTypesWithError:(PELMDaoErrorBlk)errorBlk;
+
 #pragma mark - Fuel Purchase Log
 
 - (NSArray *)distinctOctanesForUser:(FPUser *)user
