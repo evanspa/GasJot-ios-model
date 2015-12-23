@@ -44,8 +44,9 @@ NSString * const COL_VEH_PLATE = @"plate";
 NSString * const TBL_FUEL_STATION_TYPE = @"fuelstation_type";
 // ----Columns------------------------------------------------------------------
 NSString * const COL_FUELSTTYP_ID = @"type_id";
-NSString * const COL_FUELSTTYP_NAME = @"name";
-NSString * const COL_FUELSTTYP_ICON_IMG_NAME = @"icon_img_name";
+NSString * const COL_FUELSTTYP_NAME = @"type_name";
+NSString * const COL_FUELSTTYP_ICON_IMG_NAME = @"type_icon_img_name";
+NSString * const COL_FUELSTTYP_SORT_ORDER = @"type_sort_order";
 
 //##############################################################################
 // Fuel Station Entity (main and master)
@@ -307,10 +308,12 @@ FOREIGN KEY (%@) REFERENCES %@(%@))", TBL_MAIN_FUELPURCHASE_LOG,
   return [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS %@ (\
           %@ INTEGER PRIMARY KEY, \
           %@ TEXT, \
-          %@ TEXT)", TBL_FUEL_STATION_TYPE,
+          %@ TEXT, \
+          %@ INTEGER)", TBL_FUEL_STATION_TYPE,
           COL_FUELSTTYP_ID,   // col1
           COL_FUELSTTYP_NAME, // col2
-          COL_FUELSTTYP_ICON_IMG_NAME]; // col3
+          COL_FUELSTTYP_ICON_IMG_NAME, // col3
+          COL_FUELSTTYP_SORT_ORDER]; // col4
 }
 
 #pragma mark - Master and Main Fuel Station entities

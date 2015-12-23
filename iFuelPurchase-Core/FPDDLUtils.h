@@ -44,6 +44,7 @@ FOUNDATION_EXPORT NSString * const TBL_FUEL_STATION_TYPE;
 FOUNDATION_EXPORT NSString * const COL_FUELSTTYP_ID;
 FOUNDATION_EXPORT NSString * const COL_FUELSTTYP_NAME;
 FOUNDATION_EXPORT NSString * const COL_FUELSTTYP_ICON_IMG_NAME;
+FOUNDATION_EXPORT NSString * const COL_FUELSTTYP_SORT_ORDER;
 
 //##############################################################################
 // Fuel Station Entity (main and master)

@@ -105,55 +105,59 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                        COL_FUELSTTYP_ID]
                    db:db
                 error:errorBlk];
-  void (^insertFSType)(NSInteger, NSString *) = ^(NSInteger identifierVal, NSString *name) {
+  void (^insertFSType)(NSInteger, NSString *, NSInteger) = ^(NSInteger identifierVal, NSString *name, NSInteger sortOrder) {
     NSNumber *identifier = @(identifierVal);
-    NSString *insertStmt = [NSString stringWithFormat:@"INSERT INTO %@ (%@, %@, %@) values (?, ?, ?)",
+    NSString *insertStmt = [NSString stringWithFormat:@"INSERT INTO %@ (%@, %@, %@, %@) values (?, ?, ?, ?)",
                             TBL_FUEL_STATION_TYPE,
                             COL_FUELSTTYP_ID,
                             COL_FUELSTTYP_NAME,
-                            COL_FUELSTTYP_ICON_IMG_NAME];
+                            COL_FUELSTTYP_ICON_IMG_NAME,
+                            COL_FUELSTTYP_SORT_ORDER];
     NSString *iconImgName = [NSString stringWithFormat:@"fstype-%@", identifier];
-    [PELMUtils doUpdate:insertStmt argsArray:@[identifier, name, iconImgName] db:db error:errorBlk];
+    [PELMUtils doUpdate:insertStmt argsArray:@[identifier, name, iconImgName, @(sortOrder)] db:db error:errorBlk];
   };
-  insertFSType(0,  @"Other");
-  insertFSType(1,  @"Exxon");
-  insertFSType(2,  @"Marathon");
-  insertFSType(3,  @"Shell");
-  insertFSType(4,  @"BP");
-  insertFSType(5,  @"Sam's Club");
-  insertFSType(6,  @"BJ's");
-  insertFSType(7,  @"CITGO");
-  insertFSType(8,  @"GULF");
-  insertFSType(9,  @"QuikTrip");
-  insertFSType(10, @"Friendship Xpress");
-  insertFSType(11, @"Murphy USA");
-  insertFSType(12, @"7-Eleven");
-  insertFSType(13, @"Chevron");
-  insertFSType(14, @"Circle K");
-  insertFSType(15, @"Stewart's");
-  insertFSType(16, @"Sunoco");
-  insertFSType(17, @"Cumberland Farms");
-  insertFSType(18, @"Getty");
-  insertFSType(19, @"Go-Mart");
-  insertFSType(20, @"Costco");
-  insertFSType(21, @"Clark");
-  insertFSType(22, @"Hess");
-  insertFSType(23, @"Sheetz");
-  insertFSType(24, @"Kwik Trip");
-  insertFSType(25, @"Texaco");
-  insertFSType(26, @"Valero");
-  insertFSType(27, @"Sinclair");
-  insertFSType(28, @"Pilot");
-  insertFSType(29, @"Love's");
-  insertFSType(30, @"Royal Farms");
-  insertFSType(31, @"Kroger");
-  insertFSType(32, @"Rutter's");
-  insertFSType(33, @"76");
-  insertFSType(34, @"Speedway");
-  insertFSType(35, @"Kum & Go");
-  insertFSType(36, @"Mobile");
-  insertFSType(37, @"Clark");
-  insertFSType(38, @"ARCO");
+  insertFSType(0,  @"Other",    0);
+  insertFSType(1,  @"Exxon",    1);
+  insertFSType(2,  @"Marathon", 2);
+  insertFSType(3,  @"Shell",    3);
+  insertFSType(4,  @"BP",       4);
+  insertFSType(5,  @"7-Eleven", 5);
+  insertFSType(6,  @"Chevron",  6);
+  insertFSType(7,  @"Hess",     7);
+  insertFSType(8,  @"Sunoco",   8);
+  insertFSType(9,  @"CITGO",    9);
+  insertFSType(10, @"GULF",     10);
+  
+  insertFSType(11,  @"Sam's Club", 11);
+  insertFSType(12,  @"BJ's",       12);
+  insertFSType(13,  @"Costco",     13);
+  
+  insertFSType(14, @"Sheetz",   14);
+  insertFSType(15, @"Texaco",   15);
+  insertFSType(16, @"Valero",   16);
+  insertFSType(17, @"76",       17);
+  insertFSType(18, @"Circle K", 18);
+  insertFSType(19, @"Getty",    19);
+  
+  insertFSType(20, @"QuikTrip",          20);
+  insertFSType(21, @"Friendship Xpress", 21);
+  insertFSType(22, @"Murphy USA",        22);
+  insertFSType(23, @"Stewart's",         23);
+  insertFSType(24, @"Cumberland Farms",  24);
+  insertFSType(25, @"Go-Mart",           25);
+  insertFSType(26, @"Clark",             26);
+  insertFSType(27, @"Kwik Trip",         27);
+  insertFSType(28, @"Sinclair",          28);
+  insertFSType(29, @"Pilot",             29);
+  insertFSType(30, @"Love's",            30);
+  insertFSType(31, @"Royal Farms",       31);
+  insertFSType(32, @"Kroger",            32);
+  insertFSType(33, @"Rutter's",          33);
+  insertFSType(34, @"Speedway",          34);
+  insertFSType(35, @"Kum & Go",          35);
+  insertFSType(36, @"Mobile",            36);
+  insertFSType(37, @"Clark",             37);
+  insertFSType(38, @"ARCO",              38);
   void (^setFuelstationType)(NSString *) = ^(NSString *fstable) {
     [PELMUtils doUpdate:[NSString stringWithFormat:@"UPDATE %@ SET %@ = ?", fstable, COL_FUELST_TYPE_ID]
               argsArray:@[@(0)]
@@ -1443,7 +1447,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
 - (NSArray *)fuelstationTypesWithError:(PELMDaoErrorBlk)errorBlk {
   NSMutableArray *fsTypes = [NSMutableArray array];
   [self.databaseQueue inDatabase:^(FMDatabase *db) {
-    FMResultSet *rs = [PELMUtils doQuery:[NSString stringWithFormat:@"SELECT * FROM %@", TBL_FUEL_STATION_TYPE]
+    FMResultSet *rs = [PELMUtils doQuery:[NSString stringWithFormat:@"SELECT * FROM %@ ORDER BY %@ ASC", TBL_FUEL_STATION_TYPE, COL_FUELSTTYP_SORT_ORDER]
                                argsArray:@[]
                                       db:db
                                    error:errorBlk];
