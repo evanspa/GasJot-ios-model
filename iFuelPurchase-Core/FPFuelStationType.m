@@ -24,6 +24,12 @@
   return self;
 }
 
+#pragma mark - PELMIdentifiable Protocol
+
+- (BOOL)doesHaveEqualIdentifiers:(id<PELMIdentifiable>)entity {
+  return [_identifier isEqualToNumber:[((FPFuelStationType *)entity) identifier]];
+}
+
 #pragma mark - Equality
 
 - (BOOL)isEqualToFuelStationType:(FPFuelStationType *)fuelStationType {

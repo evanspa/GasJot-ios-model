@@ -8,7 +8,9 @@
 
 @import Foundation;
 
-@interface FPFuelStationType : NSObject
+#import <PELocal-Data/PELMIdentifiable.h>
+
+@interface FPFuelStationType : NSObject<PELMIdentifiable>
 
 #pragma mark - Initializers
 
