@@ -37,13 +37,19 @@ typedef void(^FPAddColumnBlk)(NSString *, NSString *, NSString *);
 
 uint32_t const FP_REQUIRED_SCHEMA_VERSION = 4;
 
-@implementation FPLocalDaoImpl
+@implementation FPLocalDaoImpl {
+  NSArray *_fuelstationTypeJoinTables;
+}
 
 #pragma mark - Initializers
 
 - (id)initWithSqliteDataFilePath:(NSString *)sqliteDataFilePath {
-  return [super initWithSqliteDataFilePath:sqliteDataFilePath
+  self = [super initWithSqliteDataFilePath:sqliteDataFilePath
                          concreteUserClass:[FPUser class]];
+  if (self) {
+    _fuelstationTypeJoinTables = @[@[@"typ", TBL_FUEL_STATION_TYPE, COL_FUELST_TYPE_ID, COL_FUELSTTYP_ID]];
+  }
+  return self;
 }
 
 #pragma mark - Schema Helpers
@@ -636,11 +642,14 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   [self.databaseQueue inDatabase:^(FMDatabase *db) {
     numVehicles = [PELMUtils numEntitiesForParentEntity:user
                                   parentEntityMainTable:TBL_MAIN_USER
+                         addlJoinParentEntityMainTables:nil
                             parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainUserFromResultSet:rs];}
                              parentEntityMasterIdColumn:COL_MASTER_USER_ID
                                parentEntityMainIdColumn:COL_MAIN_USER_ID
                                       entityMasterTable:TBL_MASTER_VEHICLE
+                             addlJoinEntityMasterTables:nil
                                         entityMainTable:TBL_MAIN_VEHICLE
+                               addlJoinEntityMainTables:nil
                                                      db:db
                                                   error:errorBlk];
   }];
@@ -678,14 +687,16 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                error:(PELMDaoErrorBlk)errorBlk {
   return [PELMUtils unsyncedEntitiesForParentEntity:user
                               parentEntityMainTable:TBL_MAIN_USER
+                     addlJoinParentEntityMainTables:nil
                         parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainUserFromResultSet:rs];}
                          parentEntityMasterIdColumn:COL_MASTER_USER_ID
                            parentEntityMainIdColumn:COL_MAIN_USER_ID
                                            pageSize:nil
                                   entityMasterTable:TBL_MASTER_VEHICLE
-                                     addlJoinTables:nil
+                         addlJoinEntityMasterTables:nil
                      masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterVehicleFromResultSet:rs];}
                                     entityMainTable:TBL_MAIN_VEHICLE
+                           addlJoinEntityMainTables:nil
                        mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainVehicleFromResultSet:rs];}
                                   comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPVehicle *)o1 name] compare:[(FPVehicle *)o2 name]];}
                                 orderByDomainColumn:COL_VEH_NAME
@@ -699,6 +710,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                        error:(PELMDaoErrorBlk)errorBlk {
   return [PELMUtils entitiesForParentEntity:user
                       parentEntityMainTable:TBL_MAIN_USER
+             addlJoinParentEntityMainTables:nil
                 parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainUserFromResultSet:rs];}
                  parentEntityMasterIdColumn:COL_MASTER_USER_ID
                    parentEntityMainIdColumn:COL_MAIN_USER_ID
@@ -706,9 +718,10 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                    whereBlk:nil
                                   whereArgs:nil
                           entityMasterTable:TBL_MASTER_VEHICLE
-                             addlJoinTables:nil
+                 addlJoinEntityMasterTables:nil
              masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterVehicleFromResultSet:rs];}
                             entityMainTable:TBL_MAIN_VEHICLE
+                   addlJoinEntityMainTables:nil
                mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainVehicleFromResultSet:rs];}
                           comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPVehicle *)o1 name] compare:[(FPVehicle *)o2 name]];}
                         orderByDomainColumn:COL_VEH_NAME
@@ -722,6 +735,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                              error:(PELMDaoErrorBlk)errorBlk {
   return [PELMUtils entitiesForParentEntity:user
                       parentEntityMainTable:TBL_MAIN_USER
+             addlJoinParentEntityMainTables:nil
                 parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainUserFromResultSet:rs];}
                  parentEntityMasterIdColumn:COL_MASTER_USER_ID
                    parentEntityMainIdColumn:COL_MAIN_USER_ID
@@ -733,9 +747,10 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                    }
                                   whereArgs:nil
                           entityMasterTable:TBL_MASTER_VEHICLE
-                             addlJoinTables:nil
+                 addlJoinEntityMasterTables:nil
              masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterVehicleFromResultSet:rs];}
                             entityMainTable:TBL_MAIN_VEHICLE
+                   addlJoinEntityMainTables:nil
                mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainVehicleFromResultSet:rs];}
                           comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPVehicle *)o1 name] compare:[(FPVehicle *)o2 name]];}
                         orderByDomainColumn:COL_VEH_NAME
@@ -759,12 +774,15 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   return (FPUser *)
   [PELMUtils parentForChildEntity:vehicle
             parentEntityMainTable:TBL_MAIN_USER
+   addlJoinParentEntityMainTables:nil
           parentEntityMasterTable:TBL_MASTER_USER
+ addlJoinParentEntityMasterTables:nil
          parentEntityMainFkColumn:COL_MAIN_USER_ID
        parentEntityMasterFkColumn:COL_MASTER_USER_ID
       parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainUserFromResultSet:rs];}
     parentEntityMasterRsConverter:^(FMResultSet *rs){return [self masterUserFromResultSet:rs];}
              childEntityMainTable:TBL_MAIN_VEHICLE
+    addlJoinChildEntityMainTables:nil
        childEntityMainRsConverter:^(FMResultSet *rs){return [self mainVehicleFromResultSet:rs];}
            childEntityMasterTable:TBL_MASTER_VEHICLE
                                db:db
@@ -835,6 +853,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
     returnVal = [PELMUtils prepareEntityForEdit:vehicle
                                              db:db
                                       mainTable:TBL_MAIN_VEHICLE
+                       addlJoinEntityMainTables:nil
                             entityFromResultSet:^(FMResultSet *rs){return [self mainVehicleFromResultSet:rs];}
                              mainEntityInserter:^(PELMMainSupport *entity, FMDatabase *db, PELMDaoErrorBlk errorBlk) {
                                [self insertIntoMainVehicle:vehicle forUser:user db:db error:errorBlk];}
@@ -877,9 +896,10 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
 - (void)reloadVehicle:(FPVehicle *)vehicle
                 error:(PELMDaoErrorBlk)errorBlk {
   [self.localModelUtils reloadEntity:vehicle
-                   fromMainTable:TBL_MAIN_VEHICLE
-                     rsConverter:^(FMResultSet *rs){return [self mainVehicleFromResultSet:rs];}
-                           error:errorBlk];
+                       fromMainTable:TBL_MAIN_VEHICLE
+                      addlJoinTables:nil
+                         rsConverter:^(FMResultSet *rs){return [self mainVehicleFromResultSet:rs];}
+                               error:errorBlk];
 }
 
 - (void)cancelEditOfVehicle:(FPVehicle *)vehicle
@@ -896,10 +916,11 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
 - (NSArray *)markVehiclesAsSyncInProgressForUser:(FPUser *)user
                                            error:(PELMDaoErrorBlk)errorBlk {
   return [self.localModelUtils markEntitiesAsSyncInProgressInMainTable:TBL_MAIN_VEHICLE
-                                               entityFromResultSet:^(FMResultSet *rs){return [self mainVehicleFromResultSet:rs];}
-                                                        updateStmt:[self updateStmtForMainVehicle]
-                                                     updateArgsBlk:^NSArray *(PELMMainSupport *entity){return [self updateArgsForMainVehicle:(FPVehicle *)entity];}
-                                                             error:errorBlk];
+                                              addlJoinEntityMainTables:nil
+                                                   entityFromResultSet:^(FMResultSet *rs){return [self mainVehicleFromResultSet:rs];}
+                                                            updateStmt:[self updateStmtForMainVehicle]
+                                                         updateArgsBlk:^NSArray *(PELMMainSupport *entity){return [self updateArgsForMainVehicle:(FPVehicle *)entity];}
+                                                                 error:errorBlk];
 }
 
 - (void)cancelSyncForVehicle:(FPVehicle *)vehicle
@@ -1017,12 +1038,16 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   }
 }
 
-- (FPFuelStation *)masterFuelstationWithId:(NSNumber *)fuelstationId
-                                     error:(PELMDaoErrorBlk)errorBlk {
+- (FPFuelStation *)masterFuelstationWithId:(NSNumber *)fuelstationId error:(PELMDaoErrorBlk)errorBlk {
   NSString *fuelstationTable = TBL_MASTER_FUEL_STATION;
   __block FPFuelStation *fuelstation = nil;
-  [self.databaseQueue inDatabase:^(FMDatabase *db) {
-    fuelstation = [PELMUtils entityFromQuery:[NSString stringWithFormat:@"SELECT * FROM %@ WHERE %@ = ?", fuelstationTable, COL_LOCAL_ID]
+  [self.databaseQueue inDatabase:^(FMDatabase *db) {    
+    NSMutableString *selectClause = [NSMutableString stringWithString:@"SELECT mstr.*"];
+    NSMutableString *fromClause   = [NSMutableString stringWithFormat:@" FROM %@ mstr", fuelstationTable];
+    NSMutableString *whereClause  = [NSMutableString stringWithFormat:@" WHERE mstr.%@ = ?", COL_LOCAL_ID];
+    [PELMUtils incorporateJoinTables:_fuelstationTypeJoinTables intoSelectClause:selectClause fromClause:fromClause whereClause:whereClause entityTablePrefix:@"mstr"];
+    NSString *qry = [NSString stringWithFormat:@"%@%@%@", selectClause, fromClause, whereClause];
+    fuelstation = [PELMUtils entityFromQuery:qry
                                  entityTable:fuelstationTable
                                localIdGetter:^NSNumber *(PELMModelSupport *entity) { return [entity localMasterIdentifier]; }
                                    argsArray:@[fuelstationId]
@@ -1037,12 +1062,16 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   return fuelstation;
 }
 
-- (FPFuelStation *)masterFuelstationWithGlobalId:(NSString *)globalId
-                                           error:(PELMDaoErrorBlk)errorBlk {
+- (FPFuelStation *)masterFuelstationWithGlobalId:(NSString *)globalId error:(PELMDaoErrorBlk)errorBlk {
   NSString *fuelstationTable = TBL_MASTER_FUEL_STATION;
   __block FPFuelStation *fuelstation = nil;
   [self.databaseQueue inDatabase:^(FMDatabase *db) {
-    fuelstation = [PELMUtils entityFromQuery:[NSString stringWithFormat:@"SELECT * FROM %@ WHERE %@ = ?", fuelstationTable, COL_GLOBAL_ID]
+    NSMutableString *selectClause = [NSMutableString stringWithString:@"SELECT mstr.*"];
+    NSMutableString *fromClause   = [NSMutableString stringWithFormat:@" FROM %@ mstr", fuelstationTable];
+    NSMutableString *whereClause  = [NSMutableString stringWithFormat:@" WHERE mstr.%@ = ?", COL_GLOBAL_ID];
+    [PELMUtils incorporateJoinTables:_fuelstationTypeJoinTables intoSelectClause:selectClause fromClause:fromClause whereClause:whereClause entityTablePrefix:@"mstr"];
+    NSString *qry = [NSString stringWithFormat:@"%@%@%@", selectClause, fromClause, whereClause];
+    fuelstation = [PELMUtils entityFromQuery:qry
                                  entityTable:fuelstationTable
                                localIdGetter:^NSNumber *(PELMModelSupport *entity) { return [entity localMasterIdentifier]; }
                                    argsArray:@[globalId]
@@ -1083,11 +1112,14 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   [self.databaseQueue inDatabase:^(FMDatabase *db) {
     numFuelStations = [PELMUtils numEntitiesForParentEntity:user
                                       parentEntityMainTable:TBL_MAIN_USER
+                             addlJoinParentEntityMainTables:nil
                                 parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainUserFromResultSet:rs];}
                                  parentEntityMasterIdColumn:COL_MASTER_USER_ID
                                    parentEntityMainIdColumn:COL_MAIN_USER_ID
                                           entityMasterTable:TBL_MASTER_FUEL_STATION
+                                 addlJoinEntityMasterTables:nil
                                             entityMainTable:TBL_MAIN_FUEL_STATION
+                                   addlJoinEntityMainTables:nil
                                                          db:db
                                                       error:errorBlk];
   }];
@@ -1107,6 +1139,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                            error:(PELMDaoErrorBlk)errorBlk {
   return [PELMUtils entitiesForParentEntity:user
                       parentEntityMainTable:TBL_MAIN_USER
+             addlJoinParentEntityMainTables:nil
                 parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainUserFromResultSet:rs];}
                  parentEntityMasterIdColumn:COL_MASTER_USER_ID
                    parentEntityMainIdColumn:COL_MAIN_USER_ID
@@ -1114,9 +1147,10 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                    whereBlk:nil
                                   whereArgs:nil
                           entityMasterTable:TBL_MASTER_FUEL_STATION
-                             addlJoinTables:@[@[@"typ", TBL_FUEL_STATION_TYPE, COL_FUELST_TYPE_ID, COL_FUELSTTYP_ID]]
+                 addlJoinEntityMasterTables:_fuelstationTypeJoinTables
              masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelStationFromResultSet:rs];}
                             entityMainTable:TBL_MAIN_FUEL_STATION
+                   addlJoinEntityMainTables:_fuelstationTypeJoinTables
                mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainFuelStationFromResultSet:rs];}
                           comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPFuelStation *)o1 name] compare:[(FPFuelStation *)o2 name]];}
                         orderByDomainColumn:COL_FUELST_NAME
@@ -1139,14 +1173,16 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                    error:(PELMDaoErrorBlk)errorBlk {
   return [PELMUtils unsyncedEntitiesForParentEntity:user
                               parentEntityMainTable:TBL_MAIN_USER
+                     addlJoinParentEntityMainTables:nil
                         parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainUserFromResultSet:rs];}
                          parentEntityMasterIdColumn:COL_MASTER_USER_ID
                            parentEntityMainIdColumn:COL_MAIN_USER_ID
                                            pageSize:nil
                                   entityMasterTable:TBL_MASTER_FUEL_STATION
-                                     addlJoinTables:@[@[@"typ", TBL_FUEL_STATION_TYPE, COL_FUELST_TYPE_ID, COL_FUELSTTYP_ID]]
+                         addlJoinEntityMasterTables:_fuelstationTypeJoinTables
                      masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelStationFromResultSet:rs];}
                                     entityMainTable:TBL_MAIN_FUEL_STATION
+                           addlJoinEntityMainTables:_fuelstationTypeJoinTables
                        mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainFuelStationFromResultSet:rs];}
                                   comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPFuelStation *)o1 name] compare:[(FPFuelStation *)o2 name]];}
                                 orderByDomainColumn:COL_FUELST_NAME
@@ -1160,6 +1196,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                              error:(PELMDaoErrorBlk)errorBlk {
   return [PELMUtils entitiesForParentEntity:user
                       parentEntityMainTable:TBL_MAIN_USER
+             addlJoinParentEntityMainTables:nil
                 parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainUserFromResultSet:rs];}
                  parentEntityMasterIdColumn:COL_MASTER_USER_ID
                    parentEntityMainIdColumn:COL_MAIN_USER_ID
@@ -1173,9 +1210,10 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                    }
                                   whereArgs:nil
                           entityMasterTable:TBL_MASTER_FUEL_STATION
-                             addlJoinTables:@[@[@"typ", TBL_FUEL_STATION_TYPE, COL_FUELST_TYPE_ID, COL_FUELSTTYP_ID]]
+                 addlJoinEntityMasterTables:_fuelstationTypeJoinTables
              masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelStationFromResultSet:rs];}
                             entityMainTable:TBL_MAIN_FUEL_STATION
+                   addlJoinEntityMainTables:_fuelstationTypeJoinTables
                mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainFuelStationFromResultSet:rs];}
                                          db:db
                                       error:errorBlk];
@@ -1195,12 +1233,15 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   return (FPUser *)
   [PELMUtils parentForChildEntity:fuelStation
             parentEntityMainTable:TBL_MAIN_USER
+   addlJoinParentEntityMainTables:nil
           parentEntityMasterTable:TBL_MASTER_USER
+ addlJoinParentEntityMasterTables:nil
          parentEntityMainFkColumn:COL_MAIN_USER_ID
        parentEntityMasterFkColumn:COL_MASTER_USER_ID
       parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainUserFromResultSet:rs];}
     parentEntityMasterRsConverter:^(FMResultSet *rs){return [self masterUserFromResultSet:rs];}
              childEntityMainTable:TBL_MAIN_FUEL_STATION
+    addlJoinChildEntityMainTables:_fuelstationTypeJoinTables
        childEntityMainRsConverter:^(FMResultSet *rs){return [self mainFuelStationFromResultSet:rs];}
            childEntityMasterTable:TBL_MASTER_FUEL_STATION
                                db:db
@@ -1270,6 +1311,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   return [PELMUtils prepareEntityForEdit:fuelStation
                                       db:db
                                mainTable:TBL_MAIN_FUEL_STATION
+                addlJoinEntityMainTables:_fuelstationTypeJoinTables
                      entityFromResultSet:^(FMResultSet *rs){return [self mainFuelStationFromResultSet:rs];}
                       mainEntityInserter:^(PELMMainSupport *entity, FMDatabase *db, PELMDaoErrorBlk errorBlk) {
                         [self insertIntoMainFuelStation:fuelStation forUser:user db:db error:errorBlk];}
@@ -1324,30 +1366,31 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
 - (void)reloadFuelStation:(FPFuelStation *)fuelStation
                     error:(PELMDaoErrorBlk)errorBlk {
   [self.localModelUtils reloadEntity:fuelStation
-                   fromMainTable:TBL_MAIN_FUEL_STATION
-                     rsConverter:^(FMResultSet *rs){return [self mainFuelStationFromResultSet:rs];}
-                           error:errorBlk];
+                       fromMainTable:TBL_MAIN_FUEL_STATION
+                      addlJoinTables:_fuelstationTypeJoinTables
+                         rsConverter:^(FMResultSet *rs){return [self mainFuelStationFromResultSet:rs];}
+                               error:errorBlk];
 }
 
 - (void)cancelEditOfFuelStation:(FPFuelStation *)fuelStation
                           error:(PELMDaoErrorBlk)errorBlk {
   [self.localModelUtils cancelEditOfEntity:fuelStation
-                             mainTable:TBL_MAIN_FUEL_STATION
-                        mainUpdateStmt:[self updateStmtForMainFuelStation]
-                     mainUpdateArgsBlk:^NSArray *(PELMMainSupport *entity){return [self updateArgsForMainFuelStation:(FPFuelStation *)entity];}
-                           masterTable:TBL_MASTER_FUEL_STATION
-                           rsConverter:^(FMResultSet *rs){return [self masterFuelStationFromResultSet:rs];}
-                                 error:errorBlk];
+                                 mainTable:TBL_MAIN_FUEL_STATION
+                            mainUpdateStmt:[self updateStmtForMainFuelStation]
+                         mainUpdateArgsBlk:^NSArray *(PELMMainSupport *entity){return [self updateArgsForMainFuelStation:(FPFuelStation *)entity];}
+                               masterTable:TBL_MASTER_FUEL_STATION
+                               rsConverter:^(FMResultSet *rs){return [self masterFuelStationFromResultSet:rs];}
+                                     error:errorBlk];
 }
 
 - (NSArray *)markFuelStationsAsSyncInProgressForUser:(FPUser *)user
                                                error:(PELMDaoErrorBlk)errorBlk {
-  return
-    [self.localModelUtils markEntitiesAsSyncInProgressInMainTable:TBL_MAIN_FUEL_STATION
-                                          entityFromResultSet:^(FMResultSet *rs){return [self mainFuelStationFromResultSet:rs];}
-                                                   updateStmt:[self updateStmtForMainFuelStation]
-                                                updateArgsBlk:^NSArray *(PELMMainSupport *entity){return [self updateArgsForMainFuelStation:(FPFuelStation *)entity];}
-                                                        error:errorBlk];
+  return [self.localModelUtils markEntitiesAsSyncInProgressInMainTable:TBL_MAIN_FUEL_STATION
+                                              addlJoinEntityMainTables:_fuelstationTypeJoinTables
+                                                   entityFromResultSet:^(FMResultSet *rs){return [self mainFuelStationFromResultSet:rs];}
+                                                            updateStmt:[self updateStmtForMainFuelStation]
+                                                         updateArgsBlk:^NSArray *(PELMMainSupport *entity){return [self updateArgsForMainFuelStation:(FPFuelStation *)entity];}
+                                                                 error:errorBlk];
 }
 
 - (void)cancelSyncForFuelStation:(FPFuelStation *)fuelStation
@@ -1486,6 +1529,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   [self.databaseQueue inDatabase:^(FMDatabase *db) {
     fplogs = [PELMUtils entitiesForParentEntity:user
                           parentEntityMainTable:TBL_MAIN_USER
+                 addlJoinParentEntityMainTables:nil
                     parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainUserFromResultSet:rs];}
                      parentEntityMasterIdColumn:COL_MASTER_USER_ID
                        parentEntityMainIdColumn:COL_MAIN_USER_ID
@@ -1493,9 +1537,10 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                        whereBlk:[self fpLogDieselWhereBlk]
                                       whereArgs:nil
                               entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
-                                 addlJoinTables:nil
+                     addlJoinEntityMasterTables:nil
                  masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
                                 entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                       addlJoinEntityMainTables:nil
                    mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSet:rs];}
                                              db:db
                                           error:errorBlk];
@@ -1514,6 +1559,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   [self.databaseQueue inDatabase:^(FMDatabase *db) {
     fplogs = [PELMUtils entitiesForParentEntity:vehicle
                           parentEntityMainTable:TBL_MAIN_VEHICLE
+                 addlJoinParentEntityMainTables:nil
                     parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainVehicleFromResultSet:rs];}
                      parentEntityMasterIdColumn:COL_MASTER_VEHICLE_ID
                        parentEntityMainIdColumn:COL_MAIN_VEHICLE_ID
@@ -1521,9 +1567,10 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                        whereBlk:[self fpLogDieselWhereBlk]
                                       whereArgs:nil
                               entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
-                                 addlJoinTables:nil
+                     addlJoinEntityMasterTables:nil
                  masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
                                 entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                       addlJoinEntityMainTables:nil
                    mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSet:rs];}
                                              db:db
                                           error:errorBlk];
@@ -1542,6 +1589,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   [self.databaseQueue inDatabase:^(FMDatabase *db) {
     fplogs = [PELMUtils entitiesForParentEntity:fuelstation
                           parentEntityMainTable:TBL_MAIN_FUEL_STATION
+                 addlJoinParentEntityMainTables:nil
                     parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainFuelStationFromResultSet:rs];}
                      parentEntityMasterIdColumn:COL_MASTER_FUELSTATION_ID
                        parentEntityMainIdColumn:COL_MAIN_FUELSTATION_ID
@@ -1549,9 +1597,10 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                        whereBlk:[self fpLogDieselWhereBlk]
                                       whereArgs:nil
                               entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
-                                 addlJoinTables:nil
+                     addlJoinEntityMasterTables:nil
                  masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
                                 entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                       addlJoinEntityMainTables:nil
                    mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSet:rs];}
                                              db:db
                                           error:errorBlk];
@@ -1565,6 +1614,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   [self.databaseQueue inDatabase:^(FMDatabase *db) {
     fplogs = [PELMUtils entitiesForParentEntity:fuelstation
                           parentEntityMainTable:TBL_MAIN_FUEL_STATION
+                 addlJoinParentEntityMainTables:_fuelstationTypeJoinTables
                     parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainFuelStationFromResultSet:rs];}
                      parentEntityMasterIdColumn:COL_MASTER_FUELSTATION_ID
                        parentEntityMainIdColumn:COL_MAIN_FUELSTATION_ID
@@ -1572,9 +1622,10 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                        whereBlk:nil
                                       whereArgs:nil
                               entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
-                                 addlJoinTables:nil
+                     addlJoinEntityMasterTables:nil
                  masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
                                 entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                       addlJoinEntityMainTables:nil
                    mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSet:rs];}
                                              db:db
                                           error:errorBlk];
@@ -1590,6 +1641,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   [self.databaseQueue inDatabase:^(FMDatabase *db) {
     fplogs = [PELMUtils entitiesForParentEntity:fuelstation
                           parentEntityMainTable:TBL_MAIN_FUEL_STATION
+                 addlJoinParentEntityMainTables:_fuelstationTypeJoinTables
                     parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainFuelStationFromResultSet:rs];}
                      parentEntityMasterIdColumn:COL_MASTER_FUELSTATION_ID
                        parentEntityMainIdColumn:COL_MAIN_FUELSTATION_ID
@@ -1598,9 +1650,10 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                       whereArgs:@[[PEUtils millisecondsFromDate:beforeDate],
                                                   [PEUtils millisecondsFromDate:onOrAfterDate]]
                               entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
-                                 addlJoinTables:nil
+                     addlJoinEntityMasterTables:nil
                  masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
                                 entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                       addlJoinEntityMainTables:nil
                    mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSet:rs];}
                                              db:db
                                           error:errorBlk];
@@ -1617,6 +1670,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   [self.databaseQueue inDatabase:^(FMDatabase *db) {
     fplogs = [PELMUtils entitiesForParentEntity:fuelstation
                           parentEntityMainTable:TBL_MAIN_FUEL_STATION
+                 addlJoinParentEntityMainTables:_fuelstationTypeJoinTables
                     parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainFuelStationFromResultSet:rs];}
                      parentEntityMasterIdColumn:COL_MASTER_FUELSTATION_ID
                        parentEntityMainIdColumn:COL_MAIN_FUELSTATION_ID
@@ -1626,9 +1680,10 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                                   [PEUtils millisecondsFromDate:onOrAfterDate],
                                                   octane]
                               entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
-                                 addlJoinTables:nil
+                     addlJoinEntityMasterTables:nil
                  masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
                                 entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                       addlJoinEntityMainTables:nil
                    mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSet:rs];}
                                              db:db
                                           error:errorBlk];
@@ -1644,6 +1699,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   [self.databaseQueue inDatabase:^(FMDatabase *db) {
     fplogs = [PELMUtils entitiesForParentEntity:fuelstation
                           parentEntityMainTable:TBL_MAIN_FUEL_STATION
+                 addlJoinParentEntityMainTables:_fuelstationTypeJoinTables
                     parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainFuelStationFromResultSet:rs];}
                      parentEntityMasterIdColumn:COL_MASTER_FUELSTATION_ID
                        parentEntityMainIdColumn:COL_MAIN_FUELSTATION_ID
@@ -1652,9 +1708,10 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                       whereArgs:@[[PEUtils millisecondsFromDate:beforeDate],
                                                   [PEUtils millisecondsFromDate:onOrAfterDate]]
                               entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
-                                 addlJoinTables:nil
+                     addlJoinEntityMasterTables:nil
                  masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
                                 entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                       addlJoinEntityMainTables:nil
                    mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSet:rs];}
                                              db:db
                                           error:errorBlk];
@@ -1669,6 +1726,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   [self.databaseQueue inDatabase:^(FMDatabase *db) {
     fplogs = [PELMUtils entitiesForParentEntity:fuelstation
                           parentEntityMainTable:TBL_MAIN_FUEL_STATION
+                 addlJoinParentEntityMainTables:_fuelstationTypeJoinTables
                     parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainFuelStationFromResultSet:rs];}
                      parentEntityMasterIdColumn:COL_MASTER_FUELSTATION_ID
                        parentEntityMainIdColumn:COL_MAIN_FUELSTATION_ID
@@ -1676,9 +1734,10 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                        whereBlk:[self fpLogOctaneWhereBlk]
                                       whereArgs:@[octane]
                               entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
-                                 addlJoinTables:nil
+                     addlJoinEntityMasterTables:nil
                  masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
                                 entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                       addlJoinEntityMainTables:nil
                    mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSet:rs];}
                                              db:db
                                           error:errorBlk];
@@ -1692,6 +1751,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   [self.databaseQueue inDatabase:^(FMDatabase *db) {
     fplogs = [PELMUtils entitiesForParentEntity:fuelstation
                           parentEntityMainTable:TBL_MAIN_FUEL_STATION
+                 addlJoinParentEntityMainTables:_fuelstationTypeJoinTables
                     parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainFuelStationFromResultSet:rs];}
                      parentEntityMasterIdColumn:COL_MASTER_FUELSTATION_ID
                        parentEntityMainIdColumn:COL_MAIN_FUELSTATION_ID
@@ -1699,9 +1759,10 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                        whereBlk:[self fpLogDieselWhereBlk]
                                       whereArgs:nil
                               entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
-                                 addlJoinTables:nil
+                     addlJoinEntityMasterTables:nil
                  masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
                                 entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                       addlJoinEntityMainTables:nil
                    mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSet:rs];}
                                              db:db
                                           error:errorBlk];
@@ -2210,6 +2271,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   [self.databaseQueue inDatabase:^(FMDatabase *db) {
     fplogs = [PELMUtils entitiesForParentEntity:vehicle
                           parentEntityMainTable:TBL_MAIN_VEHICLE
+                 addlJoinParentEntityMainTables:nil
                     parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainVehicleFromResultSet:rs];}
                      parentEntityMasterIdColumn:COL_MASTER_VEHICLE_ID
                        parentEntityMainIdColumn:COL_MAIN_VEHICLE_ID
@@ -2217,9 +2279,10 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                        whereBlk:nil
                                       whereArgs:nil
                               entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
-                                 addlJoinTables:nil
+                     addlJoinEntityMasterTables:nil
                  masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
                                 entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                       addlJoinEntityMainTables:nil
                    mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSet:rs];}
                                              db:db
                                           error:errorBlk];
@@ -2235,6 +2298,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   [self.databaseQueue inDatabase:^(FMDatabase *db) {
     fplogs = [PELMUtils entitiesForParentEntity:vehicle
                           parentEntityMainTable:TBL_MAIN_VEHICLE
+                 addlJoinParentEntityMainTables:nil
                     parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainVehicleFromResultSet:rs];}
                      parentEntityMasterIdColumn:COL_MASTER_VEHICLE_ID
                        parentEntityMainIdColumn:COL_MAIN_VEHICLE_ID
@@ -2243,9 +2307,10 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                       whereArgs:@[[PEUtils millisecondsFromDate:beforeDate],
                                                   [PEUtils millisecondsFromDate:onOrAfterDate]]
                               entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
-                                 addlJoinTables:nil
+                     addlJoinEntityMasterTables:nil
                  masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
                                 entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                       addlJoinEntityMainTables:nil
                    mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSet:rs];}
                                              db:db
                                           error:errorBlk];
@@ -2261,6 +2326,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   [self.databaseQueue inDatabase:^(FMDatabase *db) {
     fplogs = [PELMUtils entitiesForParentEntity:vehicle
                           parentEntityMainTable:TBL_MAIN_VEHICLE
+                 addlJoinParentEntityMainTables:nil
                     parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainVehicleFromResultSet:rs];}
                      parentEntityMasterIdColumn:COL_MASTER_VEHICLE_ID
                        parentEntityMainIdColumn:COL_MAIN_VEHICLE_ID
@@ -2269,9 +2335,10 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                       whereArgs:@[[PEUtils millisecondsFromDate:beforeDate],
                                                   [PEUtils millisecondsFromDate:afterDate]]
                               entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
-                                 addlJoinTables:nil
+                     addlJoinEntityMasterTables:nil
                  masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
                                 entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                       addlJoinEntityMainTables:nil
                    mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSet:rs];}
                                              db:db
                                           error:errorBlk];
@@ -2288,6 +2355,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   [self.databaseQueue inDatabase:^(FMDatabase *db) {
     fplogs = [PELMUtils entitiesForParentEntity:vehicle
                           parentEntityMainTable:TBL_MAIN_VEHICLE
+                 addlJoinParentEntityMainTables:nil
                     parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainVehicleFromResultSet:rs];}
                      parentEntityMasterIdColumn:COL_MASTER_VEHICLE_ID
                        parentEntityMainIdColumn:COL_MAIN_VEHICLE_ID
@@ -2297,9 +2365,10 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                                   [PEUtils millisecondsFromDate:onOrAfterDate],
                                                   octane]
                               entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
-                                 addlJoinTables:nil
+                     addlJoinEntityMasterTables:nil
                  masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
                                 entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                       addlJoinEntityMainTables:nil
                    mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSet:rs];}
                                              db:db
                                           error:errorBlk];
@@ -2315,6 +2384,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   [self.databaseQueue inDatabase:^(FMDatabase *db) {
     fplogs = [PELMUtils entitiesForParentEntity:vehicle
                           parentEntityMainTable:TBL_MAIN_VEHICLE
+                 addlJoinParentEntityMainTables:nil
                     parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainVehicleFromResultSet:rs];}
                      parentEntityMasterIdColumn:COL_MASTER_VEHICLE_ID
                        parentEntityMainIdColumn:COL_MAIN_VEHICLE_ID
@@ -2323,9 +2393,10 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                       whereArgs:@[[PEUtils millisecondsFromDate:beforeDate],
                                                   [PEUtils millisecondsFromDate:onOrAfterDate]]
                               entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
-                                 addlJoinTables:nil
+                     addlJoinEntityMasterTables:nil
                  masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
                                 entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                       addlJoinEntityMainTables:nil
                    mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSet:rs];}
                                              db:db
                                           error:errorBlk];
@@ -2342,6 +2413,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   [self.databaseQueue inDatabase:^(FMDatabase *db) {
     fplogs = [PELMUtils entitiesForParentEntity:vehicle
                           parentEntityMainTable:TBL_MAIN_VEHICLE
+                 addlJoinParentEntityMainTables:nil
                     parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainVehicleFromResultSet:rs];}
                      parentEntityMasterIdColumn:COL_MASTER_VEHICLE_ID
                        parentEntityMainIdColumn:COL_MAIN_VEHICLE_ID
@@ -2351,9 +2423,10 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                                   [PEUtils millisecondsFromDate:afterDate],
                                                   octane]
                               entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
-                                 addlJoinTables:nil
+                     addlJoinEntityMasterTables:nil
                  masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
                                 entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                       addlJoinEntityMainTables:nil
                    mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSet:rs];}
                                              db:db
                                           error:errorBlk];
@@ -2369,6 +2442,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   [self.databaseQueue inDatabase:^(FMDatabase *db) {
     fplogs = [PELMUtils entitiesForParentEntity:vehicle
                           parentEntityMainTable:TBL_MAIN_VEHICLE
+                 addlJoinParentEntityMainTables:nil
                     parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainVehicleFromResultSet:rs];}
                      parentEntityMasterIdColumn:COL_MASTER_VEHICLE_ID
                        parentEntityMainIdColumn:COL_MAIN_VEHICLE_ID
@@ -2377,9 +2451,10 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                       whereArgs:@[[PEUtils millisecondsFromDate:beforeDate],
                                                   [PEUtils millisecondsFromDate:afterDate]]
                               entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
-                                 addlJoinTables:nil
+                     addlJoinEntityMasterTables:nil
                  masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
                                 entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                       addlJoinEntityMainTables:nil
                    mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSet:rs];}
                                              db:db
                                           error:errorBlk];
@@ -2394,6 +2469,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   [self.databaseQueue inDatabase:^(FMDatabase *db) {
     fplogs = [PELMUtils entitiesForParentEntity:vehicle
                           parentEntityMainTable:TBL_MAIN_VEHICLE
+                 addlJoinParentEntityMainTables:nil
                     parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainVehicleFromResultSet:rs];}
                      parentEntityMasterIdColumn:COL_MASTER_VEHICLE_ID
                        parentEntityMainIdColumn:COL_MAIN_VEHICLE_ID
@@ -2401,9 +2477,10 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                        whereBlk:[self fpLogOctaneWhereBlk]
                                       whereArgs:@[octane]
                               entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
-                                 addlJoinTables:nil
+                     addlJoinEntityMasterTables:nil
                  masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
                                 entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                       addlJoinEntityMainTables:nil
                    mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSet:rs];}
                                              db:db
                                           error:errorBlk];
@@ -2417,6 +2494,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   [self.databaseQueue inDatabase:^(FMDatabase *db) {
     fplogs = [PELMUtils entitiesForParentEntity:vehicle
                           parentEntityMainTable:TBL_MAIN_VEHICLE
+                 addlJoinParentEntityMainTables:nil
                     parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainVehicleFromResultSet:rs];}
                      parentEntityMasterIdColumn:COL_MASTER_VEHICLE_ID
                        parentEntityMainIdColumn:COL_MAIN_VEHICLE_ID
@@ -2424,9 +2502,10 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                        whereBlk:[self fpLogDieselWhereBlk]
                                       whereArgs:nil
                               entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
-                                 addlJoinTables:nil
+                     addlJoinEntityMasterTables:nil
                  masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
                                 entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                       addlJoinEntityMainTables:nil
                    mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSet:rs];}
                                              db:db
                                           error:errorBlk];
@@ -2440,6 +2519,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   [self.databaseQueue inDatabase:^(FMDatabase *db) {
     fplogs = [PELMUtils entitiesForParentEntity:user
                           parentEntityMainTable:TBL_MAIN_USER
+                 addlJoinParentEntityMainTables:nil
                     parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainUserFromResultSet:rs];}
                      parentEntityMasterIdColumn:COL_MASTER_USER_ID
                        parentEntityMainIdColumn:COL_MAIN_USER_ID
@@ -2447,9 +2527,10 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                        whereBlk:nil
                                       whereArgs:nil
                               entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
-                                 addlJoinTables:nil
+                     addlJoinEntityMasterTables:nil
                  masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
                                 entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                       addlJoinEntityMainTables:nil
                    mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSet:rs];}
                                              db:db
                                           error:errorBlk];
@@ -2465,6 +2546,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   [self.databaseQueue inDatabase:^(FMDatabase *db) {
     fplogs = [PELMUtils entitiesForParentEntity:user
                           parentEntityMainTable:TBL_MAIN_USER
+                 addlJoinParentEntityMainTables:nil
                     parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainUserFromResultSet:rs];}
                      parentEntityMasterIdColumn:COL_MASTER_USER_ID
                        parentEntityMainIdColumn:COL_MAIN_USER_ID
@@ -2473,9 +2555,10 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                       whereArgs:@[[PEUtils millisecondsFromDate:beforeDate],
                                                   [PEUtils millisecondsFromDate:onOrAfterDate]]
                               entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
-                                 addlJoinTables:nil
+                     addlJoinEntityMasterTables:nil
                  masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
                                 entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                       addlJoinEntityMainTables:nil
                    mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSet:rs];}
                                              db:db
                                           error:errorBlk];
@@ -2492,6 +2575,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   [self.databaseQueue inDatabase:^(FMDatabase *db) {
     fplogs = [PELMUtils entitiesForParentEntity:user
                           parentEntityMainTable:TBL_MAIN_USER
+                 addlJoinParentEntityMainTables:nil
                     parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainUserFromResultSet:rs];}
                      parentEntityMasterIdColumn:COL_MASTER_USER_ID
                        parentEntityMainIdColumn:COL_MAIN_USER_ID
@@ -2501,9 +2585,10 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                                   [PEUtils millisecondsFromDate:onOrAfterDate],
                                                   octane]
                               entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
-                                 addlJoinTables:nil
+                     addlJoinEntityMasterTables:nil
                  masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
                                 entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                       addlJoinEntityMainTables:nil
                    mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSet:rs];}
                                              db:db
                                           error:errorBlk];
@@ -2519,6 +2604,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   [self.databaseQueue inDatabase:^(FMDatabase *db) {
     fplogs = [PELMUtils entitiesForParentEntity:user
                           parentEntityMainTable:TBL_MAIN_USER
+                 addlJoinParentEntityMainTables:nil
                     parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainUserFromResultSet:rs];}
                      parentEntityMasterIdColumn:COL_MASTER_USER_ID
                        parentEntityMainIdColumn:COL_MAIN_USER_ID
@@ -2527,9 +2613,10 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                       whereArgs:@[[PEUtils millisecondsFromDate:beforeDate],
                                                   [PEUtils millisecondsFromDate:onOrAfterDate]]
                               entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
-                                 addlJoinTables:nil
+                     addlJoinEntityMasterTables:nil
                  masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
                                 entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                       addlJoinEntityMainTables:nil
                    mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSet:rs];}
                                              db:db
                                           error:errorBlk];
@@ -2544,6 +2631,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   [self.databaseQueue inDatabase:^(FMDatabase *db) {
     fplogs = [PELMUtils entitiesForParentEntity:user
                           parentEntityMainTable:TBL_MAIN_USER
+                 addlJoinParentEntityMainTables:nil
                     parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainUserFromResultSet:rs];}
                      parentEntityMasterIdColumn:COL_MASTER_USER_ID
                        parentEntityMainIdColumn:COL_MAIN_USER_ID
@@ -2551,9 +2639,10 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                        whereBlk:[self fpLogOctaneWhereBlk]
                                       whereArgs:@[octane]
                               entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
-                                 addlJoinTables:nil
+                     addlJoinEntityMasterTables:nil
                  masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
                                 entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                       addlJoinEntityMainTables:nil
                    mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSet:rs];}
                                              db:db
                                           error:errorBlk];
@@ -2567,6 +2656,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   [self.databaseQueue inDatabase:^(FMDatabase *db) {
     fplogs = [PELMUtils entitiesForParentEntity:user
                           parentEntityMainTable:TBL_MAIN_USER
+                 addlJoinParentEntityMainTables:nil
                     parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainUserFromResultSet:rs];}
                      parentEntityMasterIdColumn:COL_MASTER_USER_ID
                        parentEntityMainIdColumn:COL_MAIN_USER_ID
@@ -2574,9 +2664,10 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                        whereBlk:[self fpLogDieselWhereBlk]
                                       whereArgs:nil
                               entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
-                                 addlJoinTables:nil
+                     addlJoinEntityMasterTables:nil
                  masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
                                 entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                       addlJoinEntityMainTables:nil
                    mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSet:rs];}
                                              db:db
                                           error:errorBlk];
@@ -2595,6 +2686,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   [self.databaseQueue inDatabase:^(FMDatabase *db) {
     NSArray *fplogs = [PELMUtils entitiesForParentEntity:user
                                    parentEntityMainTable:TBL_MAIN_USER
+                          addlJoinParentEntityMainTables:nil
                              parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainUserFromResultSet:rs];}
                               parentEntityMasterIdColumn:COL_MASTER_USER_ID
                                 parentEntityMainIdColumn:COL_MAIN_USER_ID
@@ -2602,9 +2694,10 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                                 whereBlk:whereBlk
                                                whereArgs:whereArgs
                                        entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
-                                          addlJoinTables:nil
+                              addlJoinEntityMasterTables:nil
                           masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
                                          entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                                addlJoinEntityMainTables:nil
                             mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSet:rs];}
                                        comparatorForSort:comparatorForSort
                                      orderByDomainColumn:orderByDomainColumn
@@ -2630,6 +2723,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   [self.databaseQueue inDatabase:^(FMDatabase *db) {
     NSArray *fplogs = [PELMUtils entitiesForParentEntity:vehicle
                                    parentEntityMainTable:TBL_MAIN_VEHICLE
+                          addlJoinParentEntityMainTables:nil
                              parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainVehicleFromResultSet:rs];}
                               parentEntityMasterIdColumn:COL_MASTER_VEHICLE_ID
                                 parentEntityMainIdColumn:COL_MAIN_VEHICLE_ID
@@ -2637,9 +2731,10 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                                 whereBlk:whereBlk
                                                whereArgs:whereArgs
                                        entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
-                                          addlJoinTables:nil
+                              addlJoinEntityMasterTables:nil
                           masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
                                          entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                                addlJoinEntityMainTables:nil
                             mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSet:rs];}
                                        comparatorForSort:comparatorForSort
                                      orderByDomainColumn:orderByDomainColumn
@@ -2665,6 +2760,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   [self.databaseQueue inDatabase:^(FMDatabase *db) {
     NSArray *fplogs = [PELMUtils entitiesForParentEntity:fuelstation
                                    parentEntityMainTable:TBL_MAIN_FUEL_STATION
+                          addlJoinParentEntityMainTables:nil
                              parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainFuelStationFromResultSet:rs];}
                               parentEntityMasterIdColumn:COL_MASTER_FUELSTATION_ID
                                 parentEntityMainIdColumn:COL_MAIN_FUELSTATION_ID
@@ -2672,9 +2768,10 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                                 whereBlk:whereBlk
                                                whereArgs:whereArgs
                                        entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
-                                          addlJoinTables:nil
+                              addlJoinEntityMasterTables:nil
                           masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
                                          entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                                addlJoinEntityMainTables:nil
                             mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSet:rs];}
                                        comparatorForSort:comparatorForSort
                                      orderByDomainColumn:orderByDomainColumn
@@ -3262,11 +3359,14 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   [self.databaseQueue inDatabase:^(FMDatabase *db) {
     numEntities = [PELMUtils numEntitiesForParentEntity:user
                                   parentEntityMainTable:TBL_MAIN_USER
+                         addlJoinParentEntityMainTables:nil
                             parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainUserFromResultSet:rs];}
                              parentEntityMasterIdColumn:COL_MASTER_USER_ID
                                parentEntityMainIdColumn:COL_MAIN_USER_ID
                                       entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
+                             addlJoinEntityMasterTables:nil
                                         entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                               addlJoinEntityMainTables:nil
                                                      db:db
                                                   error:errorBlk];
   }];
@@ -3280,11 +3380,14 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   [self.databaseQueue inDatabase:^(FMDatabase *db) {
     numEntities = [PELMUtils numEntitiesForParentEntity:user
                                   parentEntityMainTable:TBL_MAIN_USER
+                         addlJoinParentEntityMainTables:nil
                             parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainUserFromResultSet:rs];}
                              parentEntityMasterIdColumn:COL_MASTER_USER_ID
                                parentEntityMainIdColumn:COL_MAIN_USER_ID
                                       entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
+                             addlJoinEntityMasterTables:nil
                                         entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                               addlJoinEntityMainTables:nil
                                                   where:[NSString stringWithFormat:@"%@ > ?", COL_FUELPL_PURCHASED_AT]
                                                whereArg:@([newerThan timeIntervalSince1970] * 1000)
                                                      db:db
@@ -3331,14 +3434,16 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                        error:(PELMDaoErrorBlk)errorBlk {
   return [PELMUtils unsyncedEntitiesForParentEntity:user
                               parentEntityMainTable:TBL_MAIN_USER
+                     addlJoinParentEntityMainTables:nil
                         parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainUserFromResultSet:rs];}
                          parentEntityMasterIdColumn:COL_MASTER_USER_ID
                            parentEntityMainIdColumn:COL_MAIN_USER_ID
                                            pageSize:nil
                                   entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
-                                     addlJoinTables:nil
+                         addlJoinEntityMasterTables:nil
                      masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
                                     entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                           addlJoinEntityMainTables:nil
                        mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSet:rs];}
                                   comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPFuelPurchaseLog *)o2 purchasedAt] compare:[(FPFuelPurchaseLog *)o1 purchasedAt]];}
                                 orderByDomainColumn:COL_FUELPL_PURCHASED_AT
@@ -3353,11 +3458,14 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   [self.databaseQueue inDatabase:^(FMDatabase *db) {
     numEntities = [PELMUtils numEntitiesForParentEntity:vehicle
                                   parentEntityMainTable:TBL_MAIN_VEHICLE
+                         addlJoinParentEntityMainTables:nil
                             parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainVehicleFromResultSet:rs];}
                              parentEntityMasterIdColumn:COL_MASTER_VEHICLE_ID
                                parentEntityMainIdColumn:COL_MAIN_VEHICLE_ID
                                       entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
+                             addlJoinEntityMasterTables:nil
                                         entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                               addlJoinEntityMainTables:nil
                                                      db:db
                                                   error:errorBlk];
   }];
@@ -3371,11 +3479,14 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   [self.databaseQueue inDatabase:^(FMDatabase *db) {
     numEntities = [PELMUtils numEntitiesForParentEntity:vehicle
                                   parentEntityMainTable:TBL_MAIN_VEHICLE
+                         addlJoinParentEntityMainTables:nil
                             parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainVehicleFromResultSet:rs];}
                              parentEntityMasterIdColumn:COL_MASTER_VEHICLE_ID
                                parentEntityMainIdColumn:COL_MAIN_VEHICLE_ID
                                       entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
+                             addlJoinEntityMasterTables:nil
                                         entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                               addlJoinEntityMainTables:nil
                                                   where:[NSString stringWithFormat:@"%@ > ?", COL_FUELPL_PURCHASED_AT]
                                                whereArg:@([newerThan timeIntervalSince1970] * 1000)
                                                      db:db
@@ -3414,11 +3525,14 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   [self.databaseQueue inDatabase:^(FMDatabase *db) {
     numEntities = [PELMUtils numEntitiesForParentEntity:fuelStation
                                   parentEntityMainTable:TBL_MAIN_FUEL_STATION
+                         addlJoinParentEntityMainTables:nil
                             parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainFuelStationFromResultSet:rs];}
                              parentEntityMasterIdColumn:COL_MASTER_FUELSTATION_ID
                                parentEntityMainIdColumn:COL_MAIN_FUELSTATION_ID
                                       entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
+                             addlJoinEntityMasterTables:nil
                                         entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                               addlJoinEntityMainTables:nil
                                                      db:db
                                                   error:errorBlk];
   }];
@@ -3432,11 +3546,14 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   [self.databaseQueue inDatabase:^(FMDatabase *db) {
     numEntities = [PELMUtils numEntitiesForParentEntity:fuelStation
                                   parentEntityMainTable:TBL_MAIN_FUEL_STATION
+                         addlJoinParentEntityMainTables:nil
                             parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainFuelStationFromResultSet:rs];}
                              parentEntityMasterIdColumn:COL_MASTER_FUELSTATION_ID
                                parentEntityMainIdColumn:COL_MAIN_FUELSTATION_ID
                                       entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
+                             addlJoinEntityMasterTables:nil
                                         entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                               addlJoinEntityMainTables:nil
                                                   where:[NSString stringWithFormat:@"%@ > ?", COL_FUELPL_PURCHASED_AT]
                                                whereArg:@([newerThan timeIntervalSince1970] * 1000)
                                                      db:db
@@ -3566,12 +3683,15 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                    error:(PELMDaoErrorBlk)errorBlk {
   return (FPVehicle *)[PELMUtils parentForChildEntity:fpLog
                                 parentEntityMainTable:TBL_MAIN_VEHICLE
+                       addlJoinParentEntityMainTables:nil
                               parentEntityMasterTable:TBL_MASTER_VEHICLE
+                     addlJoinParentEntityMasterTables:nil
                              parentEntityMainFkColumn:COL_MAIN_VEHICLE_ID
                            parentEntityMasterFkColumn:COL_MASTER_VEHICLE_ID
                           parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainVehicleFromResultSet:rs];}
                         parentEntityMasterRsConverter:^(FMResultSet *rs){return [self masterVehicleFromResultSet:rs];}
                                  childEntityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                        addlJoinChildEntityMainTables:nil
                            childEntityMainRsConverter:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSet:rs];}
                                childEntityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
                                                    db:db
@@ -3583,12 +3703,15 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                            error:(PELMDaoErrorBlk)errorBlk {
   return (FPFuelStation *) [PELMUtils parentForChildEntity:fpLog
                                      parentEntityMainTable:TBL_MAIN_FUEL_STATION
+                            addlJoinParentEntityMainTables:_fuelstationTypeJoinTables
                                    parentEntityMasterTable:TBL_MASTER_FUEL_STATION
+                          addlJoinParentEntityMasterTables:_fuelstationTypeJoinTables
                                   parentEntityMainFkColumn:COL_MAIN_FUELSTATION_ID
                                 parentEntityMasterFkColumn:COL_MASTER_FUELSTATION_ID
                                parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainFuelStationFromResultSet:rs];}
                              parentEntityMasterRsConverter:^(FMResultSet *rs){return [self masterFuelStationFromResultSet:rs];}
                                       childEntityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                             addlJoinChildEntityMainTables:nil
                                 childEntityMainRsConverter:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSet:rs];}
                                     childEntityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
                                                         db:db
@@ -3630,6 +3753,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                      error:(PELMDaoErrorBlk)errorBlk {
   return (FPVehicle *) [PELMUtils masterParentForMasterChildEntity:fplog
                                            parentEntityMasterTable:TBL_MASTER_VEHICLE
+                                  addlJoinParentEntityMasterTables:nil
                                         parentEntityMasterFkColumn:COL_MASTER_VEHICLE_ID
                                      parentEntityMasterRsConverter:^(FMResultSet *rs){return [self masterVehicleFromResultSet:rs];}
                                             childEntityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
@@ -3651,6 +3775,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                              error:(PELMDaoErrorBlk)errorBlk {
   return (FPFuelStation *)[PELMUtils masterParentForMasterChildEntity:fplog
                                               parentEntityMasterTable:TBL_MASTER_FUEL_STATION
+                                     addlJoinParentEntityMasterTables:_fuelstationTypeJoinTables
                                            parentEntityMasterFkColumn:COL_MASTER_FUELSTATION_ID
                                         parentEntityMasterRsConverter:^(FMResultSet *rs){return [self masterFuelStationFromResultSet:rs];}
                                                childEntityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
@@ -3772,6 +3897,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                        error:(PELMDaoErrorBlk)errorBlk {
   return [PELMUtils entitiesForParentEntity:parentEntity
                       parentEntityMainTable:parentEntityMainTable
+             addlJoinParentEntityMainTables:nil
                 parentEntityMainRsConverter:parentEntityMainRsConverter
                  parentEntityMasterIdColumn:parentEntityMasterIdCol
                    parentEntityMainIdColumn:parentEntityMainIdCol
@@ -3779,9 +3905,10 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                           pageBoundaryWhere:[NSString stringWithFormat:@"%@ < ?", COL_FUELPL_PURCHASED_AT]
                             pageBoundaryArg:[PEUtils millisecondsFromDate:beforeDateLogged]
                           entityMasterTable:TBL_MASTER_FUELPURCHASE_LOG
-                             addlJoinTables:nil
+                 addlJoinEntityMasterTables:nil
              masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterFuelPurchaseLogFromResultSet:rs];}
                             entityMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                   addlJoinEntityMainTables:nil
                mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSet:rs];}
                           comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPFuelPurchaseLog *)o2 purchasedAt] compare:[(FPFuelPurchaseLog *)o1 purchasedAt]];}
                         orderByDomainColumn:COL_FUELPL_PURCHASED_AT
@@ -3910,6 +4037,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   return [PELMUtils prepareEntityForEdit:fuelPurchaseLog
                                       db:db
                                mainTable:TBL_MAIN_FUELPURCHASE_LOG
+                addlJoinEntityMainTables:nil
                      entityFromResultSet:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSet:rs];}
                       mainEntityInserter:^(PELMMainSupport *entity, FMDatabase *db, PELMDaoErrorBlk errorBlk) {
                         [self insertIntoMainFuelPurchaseLog:fuelPurchaseLog
@@ -3988,9 +4116,10 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
 - (void)reloadFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
                         error:(PELMDaoErrorBlk)errorBlk {
   [self.localModelUtils reloadEntity:fuelPurchaseLog
-                   fromMainTable:TBL_MAIN_FUELPURCHASE_LOG
-                     rsConverter:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSet:rs];}
-                           error:errorBlk];
+                       fromMainTable:TBL_MAIN_FUELPURCHASE_LOG
+                      addlJoinTables:nil
+                         rsConverter:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSet:rs];}
+                               error:errorBlk];
 }
 
 - (void)cancelEditOfFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
@@ -4007,10 +4136,11 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
 - (NSArray *)markFuelPurchaseLogsAsSyncInProgressForUser:(FPUser *)user
                                                    error:(PELMDaoErrorBlk)errorBlk {
   return [self.localModelUtils markEntitiesAsSyncInProgressInMainTable:TBL_MAIN_FUELPURCHASE_LOG
-                                               entityFromResultSet:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSetForSync:rs];}
-                                                        updateStmt:[self updateStmtForMainFuelPurchaseLogSansVehicleFuelStationFks]
-                                                     updateArgsBlk:^NSArray *(PELMMainSupport *entity){return [self updateArgsForMainFuelPurchaseLog:(FPFuelPurchaseLog *)entity];}
-                                                             error:errorBlk];
+                                              addlJoinEntityMainTables:nil
+                                                   entityFromResultSet:^(FMResultSet *rs){return [self mainFuelPurchaseLogFromResultSetForSync:rs];}
+                                                            updateStmt:[self updateStmtForMainFuelPurchaseLogSansVehicleFuelStationFks]
+                                                         updateArgsBlk:^NSArray *(PELMMainSupport *entity){return [self updateArgsForMainFuelPurchaseLog:(FPFuelPurchaseLog *)entity];}
+                                                                 error:errorBlk];
 }
 
 - (void)cancelSyncForFuelPurchaseLog:(FPFuelPurchaseLog *)fuelPurchaseLog
@@ -4412,6 +4542,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   [self.databaseQueue inDatabase:^(FMDatabase *db) {
     envlogs = [PELMUtils entitiesForParentEntity:vehicle
                            parentEntityMainTable:TBL_MAIN_VEHICLE
+                  addlJoinParentEntityMainTables:nil
                      parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainVehicleFromResultSet:rs];}
                       parentEntityMasterIdColumn:COL_MASTER_VEHICLE_ID
                         parentEntityMainIdColumn:COL_MAIN_VEHICLE_ID
@@ -4419,9 +4550,10 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                         whereBlk:nil
                                        whereArgs:nil
                                entityMasterTable:TBL_MASTER_ENV_LOG
-                                  addlJoinTables:nil
+                      addlJoinEntityMasterTables:nil
                   masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterEnvironmentLogFromResultSet:rs];}
                                  entityMainTable:TBL_MAIN_ENV_LOG
+                        addlJoinEntityMainTables:nil
                     mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainEnvironmentLogFromResultSet:rs];}
                                               db:db
                                            error:errorBlk];
@@ -4437,6 +4569,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   [self.databaseQueue inDatabase:^(FMDatabase *db) {
     envlogs = [PELMUtils entitiesForParentEntity:vehicle
                            parentEntityMainTable:TBL_MAIN_VEHICLE
+                  addlJoinParentEntityMainTables:nil
                      parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainVehicleFromResultSet:rs];}
                       parentEntityMasterIdColumn:COL_MASTER_VEHICLE_ID
                         parentEntityMainIdColumn:COL_MAIN_VEHICLE_ID
@@ -4445,9 +4578,10 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                        whereArgs:@[[PEUtils millisecondsFromDate:beforeDate],
                                                    [PEUtils millisecondsFromDate:onOrAfterDate]]
                                entityMasterTable:TBL_MASTER_ENV_LOG
-                                  addlJoinTables:nil
+                      addlJoinEntityMasterTables:nil
                   masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterEnvironmentLogFromResultSet:rs];}
                                  entityMainTable:TBL_MAIN_ENV_LOG
+                        addlJoinEntityMainTables:nil
                     mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainEnvironmentLogFromResultSet:rs];}
                                               db:db
                                            error:errorBlk];
@@ -4464,6 +4598,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   [self.databaseQueue inDatabase:^(FMDatabase *db) {
     envlogs = [PELMUtils entitiesForParentEntity:vehicle
                            parentEntityMainTable:TBL_MAIN_VEHICLE
+                  addlJoinParentEntityMainTables:nil
                      parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainVehicleFromResultSet:rs];}
                       parentEntityMasterIdColumn:COL_MASTER_VEHICLE_ID
                         parentEntityMainIdColumn:COL_MAIN_VEHICLE_ID
@@ -4472,9 +4607,10 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                        whereArgs:@[[PEUtils millisecondsFromDate:beforeDate],
                                                    [PEUtils millisecondsFromDate:afterDate]]
                                entityMasterTable:TBL_MASTER_ENV_LOG
-                                  addlJoinTables:nil
+                      addlJoinEntityMasterTables:nil
                   masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterEnvironmentLogFromResultSet:rs];}
                                  entityMainTable:TBL_MAIN_ENV_LOG
+                        addlJoinEntityMainTables:nil
                     mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainEnvironmentLogFromResultSet:rs];}
                                               db:db
                                            error:errorBlk];
@@ -4488,6 +4624,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   [self.databaseQueue inDatabase:^(FMDatabase *db) {
     envlogs = [PELMUtils entitiesForParentEntity:user
                            parentEntityMainTable:TBL_MAIN_USER
+                  addlJoinParentEntityMainTables:nil
                      parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainUserFromResultSet:rs];}
                       parentEntityMasterIdColumn:COL_MASTER_USER_ID
                         parentEntityMainIdColumn:COL_MAIN_USER_ID
@@ -4495,9 +4632,10 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                         whereBlk:nil
                                        whereArgs:nil
                                entityMasterTable:TBL_MASTER_ENV_LOG
-                                  addlJoinTables:nil
+                      addlJoinEntityMasterTables:nil
                   masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterEnvironmentLogFromResultSet:rs];}
                                  entityMainTable:TBL_MAIN_ENV_LOG
+                        addlJoinEntityMainTables:nil
                     mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainEnvironmentLogFromResultSet:rs];}
                                               db:db
                                            error:errorBlk];
@@ -4513,6 +4651,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   [self.databaseQueue inDatabase:^(FMDatabase *db) {
     envlogs = [PELMUtils entitiesForParentEntity:user
                            parentEntityMainTable:TBL_MAIN_USER
+                  addlJoinParentEntityMainTables:nil
                      parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainUserFromResultSet:rs];}
                       parentEntityMasterIdColumn:COL_MASTER_USER_ID
                         parentEntityMainIdColumn:COL_MAIN_USER_ID
@@ -4521,9 +4660,10 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                        whereArgs:@[[PEUtils millisecondsFromDate:beforeDate],
                                                    [PEUtils millisecondsFromDate:onOrAfterDate]]
                                entityMasterTable:TBL_MASTER_ENV_LOG
-                                  addlJoinTables:nil
+                      addlJoinEntityMasterTables:nil
                   masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterEnvironmentLogFromResultSet:rs];}
                                  entityMainTable:TBL_MAIN_ENV_LOG
+                        addlJoinEntityMainTables:nil
                     mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainEnvironmentLogFromResultSet:rs];}
                                               db:db
                                            error:errorBlk];
@@ -4542,6 +4682,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   [self.databaseQueue inDatabase:^(FMDatabase *db) {
     NSArray *envlogs = [PELMUtils entitiesForParentEntity:user
                                     parentEntityMainTable:TBL_MAIN_USER
+                           addlJoinParentEntityMainTables:nil
                               parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainUserFromResultSet:rs];}
                                parentEntityMasterIdColumn:COL_MASTER_USER_ID
                                  parentEntityMainIdColumn:COL_MAIN_USER_ID
@@ -4549,9 +4690,10 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                                  whereBlk:whereBlk
                                                 whereArgs:whereArgs
                                         entityMasterTable:TBL_MASTER_ENV_LOG
-                                           addlJoinTables:nil
+                               addlJoinEntityMasterTables:nil
                            masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterEnvironmentLogFromResultSet:rs];}
                                           entityMainTable:TBL_MAIN_ENV_LOG
+                                 addlJoinEntityMainTables:nil
                              mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainEnvironmentLogFromResultSet:rs];}
                                         comparatorForSort:comparatorForSort
                                       orderByDomainColumn:orderByDomainColumn
@@ -4577,6 +4719,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   [self.databaseQueue inDatabase:^(FMDatabase *db) {
     NSArray *envlogs = [PELMUtils entitiesForParentEntity:vehicle
                                     parentEntityMainTable:TBL_MAIN_VEHICLE
+                           addlJoinParentEntityMainTables:nil
                               parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainVehicleFromResultSet:rs];}
                                parentEntityMasterIdColumn:COL_MASTER_VEHICLE_ID
                                  parentEntityMainIdColumn:COL_MAIN_VEHICLE_ID
@@ -4584,9 +4727,10 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                                  whereBlk:whereBlk
                                                 whereArgs:whereArgs
                                         entityMasterTable:TBL_MASTER_ENV_LOG
-                                           addlJoinTables:nil
+                               addlJoinEntityMasterTables:nil
                            masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterEnvironmentLogFromResultSet:rs];}
                                           entityMainTable:TBL_MAIN_ENV_LOG
+                                 addlJoinEntityMainTables:nil
                              mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainEnvironmentLogFromResultSet:rs];}
                                         comparatorForSort:comparatorForSort
                                       orderByDomainColumn:orderByDomainColumn
@@ -4845,11 +4989,14 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   [self.databaseQueue inDatabase:^(FMDatabase *db) {
     numEntities = [PELMUtils numEntitiesForParentEntity:user
                                   parentEntityMainTable:TBL_MAIN_USER
+                         addlJoinParentEntityMainTables:nil
                             parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainUserFromResultSet:rs];}
                              parentEntityMasterIdColumn:COL_MASTER_USER_ID
                                parentEntityMainIdColumn:COL_MAIN_USER_ID
                                       entityMasterTable:TBL_MASTER_ENV_LOG
+                             addlJoinEntityMasterTables:nil
                                         entityMainTable:TBL_MAIN_ENV_LOG
+                               addlJoinEntityMainTables:nil
                                                      db:db
                                                   error:errorBlk];
   }];
@@ -4863,11 +5010,14 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   [self.databaseQueue inDatabase:^(FMDatabase *db) {
     numEntities = [PELMUtils numEntitiesForParentEntity:user
                                   parentEntityMainTable:TBL_MAIN_USER
+                         addlJoinParentEntityMainTables:nil
                             parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainUserFromResultSet:rs];}
                              parentEntityMasterIdColumn:COL_MASTER_USER_ID
                                parentEntityMainIdColumn:COL_MAIN_USER_ID
                                       entityMasterTable:TBL_MASTER_ENV_LOG
+                             addlJoinEntityMasterTables:nil
                                         entityMainTable:TBL_MAIN_ENV_LOG
+                               addlJoinEntityMainTables:nil
                                                   where:[NSString stringWithFormat:@"%@ > ?", COL_ENVL_LOG_DT]
                                                whereArg:@([newerThan timeIntervalSince1970] * 1000)
                                                      db:db
@@ -4914,14 +5064,16 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                       error:(PELMDaoErrorBlk)errorBlk {
   return [PELMUtils unsyncedEntitiesForParentEntity:user
                               parentEntityMainTable:TBL_MAIN_USER
+                     addlJoinParentEntityMainTables:nil
                         parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainUserFromResultSet:rs];}
                          parentEntityMasterIdColumn:COL_MASTER_USER_ID
                            parentEntityMainIdColumn:COL_MAIN_USER_ID
                                            pageSize:nil
                                   entityMasterTable:TBL_MASTER_ENV_LOG
-                                     addlJoinTables:nil
+                         addlJoinEntityMasterTables:nil
                      masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterEnvironmentLogFromResultSet:rs];}
                                     entityMainTable:TBL_MAIN_ENV_LOG
+                           addlJoinEntityMainTables:nil
                        mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainEnvironmentLogFromResultSet:rs];}
                                   comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPEnvironmentLog *)o2 logDate] compare:[(FPEnvironmentLog *)o1 logDate]];}
                                 orderByDomainColumn:COL_ENVL_LOG_DT
@@ -4936,11 +5088,14 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   [self.databaseQueue inDatabase:^(FMDatabase *db) {
     numEntities = [PELMUtils numEntitiesForParentEntity:vehicle
                                   parentEntityMainTable:TBL_MAIN_VEHICLE
+                         addlJoinParentEntityMainTables:nil
                             parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainVehicleFromResultSet:rs];}
                              parentEntityMasterIdColumn:COL_MASTER_VEHICLE_ID
                                parentEntityMainIdColumn:COL_MAIN_VEHICLE_ID
                                       entityMasterTable:TBL_MASTER_ENV_LOG
+                             addlJoinEntityMasterTables:nil
                                         entityMainTable:TBL_MAIN_ENV_LOG
+                               addlJoinEntityMainTables:nil
                                                      db:db
                                                   error:errorBlk];
   }];
@@ -4954,11 +5109,14 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   [self.databaseQueue inDatabase:^(FMDatabase *db) {
     numEntities = [PELMUtils numEntitiesForParentEntity:vehicle
                                   parentEntityMainTable:TBL_MAIN_VEHICLE
+                         addlJoinParentEntityMainTables:nil
                             parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainVehicleFromResultSet:rs];}
                              parentEntityMasterIdColumn:COL_MASTER_VEHICLE_ID
                                parentEntityMainIdColumn:COL_MAIN_VEHICLE_ID
                                       entityMasterTable:TBL_MASTER_ENV_LOG
+                             addlJoinEntityMasterTables:nil
                                         entityMainTable:TBL_MAIN_ENV_LOG
+                               addlJoinEntityMainTables:nil
                                                   where:[NSString stringWithFormat:@"%@ > ?", COL_ENVL_LOG_DT]
                                                whereArg:@([newerThan timeIntervalSince1970] * 1000)
                                                      db:db
@@ -5038,6 +5196,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                       error:(PELMDaoErrorBlk)errorBlk {
   return (FPVehicle *) [PELMUtils masterParentForMasterChildEntity:envlog
                                            parentEntityMasterTable:TBL_MASTER_VEHICLE
+                                  addlJoinParentEntityMasterTables:nil
                                         parentEntityMasterFkColumn:COL_MASTER_VEHICLE_ID
                                      parentEntityMasterRsConverter:^(FMResultSet *rs){return [self masterVehicleFromResultSet:rs];}
                                             childEntityMasterTable:TBL_MASTER_ENV_LOG
@@ -5059,12 +5218,15 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                   error:(PELMDaoErrorBlk)errorBlk {
   return (FPVehicle *) [PELMUtils parentForChildEntity:envLog
                                  parentEntityMainTable:TBL_MAIN_VEHICLE
+                        addlJoinParentEntityMainTables:nil
                                parentEntityMasterTable:TBL_MASTER_VEHICLE
+                      addlJoinParentEntityMasterTables:nil
                               parentEntityMainFkColumn:COL_MAIN_VEHICLE_ID
                             parentEntityMasterFkColumn:COL_MASTER_VEHICLE_ID
                            parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainVehicleFromResultSet:rs];}
                          parentEntityMasterRsConverter:^(FMResultSet *rs){return [self masterVehicleFromResultSet:rs];}
                                   childEntityMainTable:TBL_MAIN_ENV_LOG
+                         addlJoinChildEntityMainTables:nil
                             childEntityMainRsConverter:^(FMResultSet *rs){return [self mainEnvironmentLogFromResultSet:rs];}
                                 childEntityMasterTable:TBL_MASTER_ENV_LOG
                                                     db:db
@@ -5160,6 +5322,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                       error:(PELMDaoErrorBlk)errorBlk {
   return [PELMUtils entitiesForParentEntity:parentEntity
                       parentEntityMainTable:parentEntityMainTable
+             addlJoinParentEntityMainTables:nil
                 parentEntityMainRsConverter:parentEntityMainRsConverter
                  parentEntityMasterIdColumn:parentEntityMasterIdCol
                    parentEntityMainIdColumn:parentEntityMainIdCol
@@ -5167,9 +5330,10 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                           pageBoundaryWhere:[NSString stringWithFormat:@"%@ < ?", COL_ENVL_LOG_DT]
                             pageBoundaryArg:[PEUtils millisecondsFromDate:beforeDateLogged]
                           entityMasterTable:TBL_MASTER_ENV_LOG
-                             addlJoinTables:nil
+                 addlJoinEntityMasterTables:nil
              masterEntityResultSetConverter:^(FMResultSet *rs){return [self masterEnvironmentLogFromResultSet:rs];}
                             entityMainTable:TBL_MAIN_ENV_LOG
+                   addlJoinEntityMainTables:nil
                mainEntityResultSetConverter:^(FMResultSet *rs){return [self mainEnvironmentLogFromResultSet:rs];}
                           comparatorForSort:^NSComparisonResult(id o1,id o2){return [[(FPEnvironmentLog *)o2 logDate] compare:[(FPEnvironmentLog *)o1 logDate]];}
                         orderByDomainColumn:COL_ENVL_LOG_DT
@@ -5277,6 +5441,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   return [PELMUtils prepareEntityForEdit:environmentLog
                                       db:db
                                mainTable:TBL_MAIN_ENV_LOG
+                addlJoinEntityMainTables:nil
                      entityFromResultSet:^(FMResultSet *rs){return [self mainEnvironmentLogFromResultSet:rs];}
                       mainEntityInserter:^(PELMMainSupport *entity, FMDatabase *db, PELMDaoErrorBlk errorBlk) {
                         [self insertIntoMainEnvironmentLog:environmentLog
@@ -5348,9 +5513,10 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
 - (void)reloadEnvironmentLog:(FPEnvironmentLog *)environmentLog
                        error:(PELMDaoErrorBlk)errorBlk {
   [self.localModelUtils reloadEntity:environmentLog
-                   fromMainTable:TBL_MAIN_ENV_LOG
-                     rsConverter:^(FMResultSet *rs){return [self mainEnvironmentLogFromResultSet:rs];}
-                           error:errorBlk];
+                       fromMainTable:TBL_MAIN_ENV_LOG
+                      addlJoinTables:nil
+                         rsConverter:^(FMResultSet *rs){return [self mainEnvironmentLogFromResultSet:rs];}
+                               error:errorBlk];
 }
 
 - (void)cancelEditOfEnvironmentLog:(FPEnvironmentLog *)environmentLog
@@ -5367,10 +5533,11 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
 - (NSArray *)markEnvironmentLogsAsSyncInProgressForUser:(FPUser *)user
                                                   error:(PELMDaoErrorBlk)errorBlk {
   return [self.localModelUtils markEntitiesAsSyncInProgressInMainTable:TBL_MAIN_ENV_LOG
-                                               entityFromResultSet:^(FMResultSet *rs){return [self mainEnvironmentLogFromResultSet:rs];}
-                                                        updateStmt:[self updateStmtForMainEnvironmentLogSansVehicleFks]
-                                                     updateArgsBlk:^NSArray *(PELMMainSupport *entity){return [self updateArgsForMainEnvironmentLog:(FPEnvironmentLog *)entity];}
-                                                             error:errorBlk];
+                                              addlJoinEntityMainTables:nil
+                                                   entityFromResultSet:^(FMResultSet *rs){return [self mainEnvironmentLogFromResultSet:rs];}
+                                                            updateStmt:[self updateStmtForMainEnvironmentLogSansVehicleFks]
+                                                         updateArgsBlk:^NSArray *(PELMMainSupport *entity){return [self updateArgsForMainEnvironmentLog:(FPEnvironmentLog *)entity];}
+                                                                 error:errorBlk];
 }
 
 - (void)cancelSyncForEnvironmentLog:(FPEnvironmentLog *)environmentLog
