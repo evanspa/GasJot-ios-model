@@ -1117,9 +1117,9 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                  parentEntityMasterIdColumn:COL_MASTER_USER_ID
                                    parentEntityMainIdColumn:COL_MAIN_USER_ID
                                           entityMasterTable:TBL_MASTER_FUEL_STATION
-                                 addlJoinEntityMasterTables:nil
+                                 addlJoinEntityMasterTables:_fuelstationTypeJoinTables
                                             entityMainTable:TBL_MAIN_FUEL_STATION
-                                   addlJoinEntityMainTables:nil
+                                   addlJoinEntityMainTables:_fuelstationTypeJoinTables
                                                          db:db
                                                       error:errorBlk];
   }];
@@ -1589,7 +1589,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   [self.databaseQueue inDatabase:^(FMDatabase *db) {
     fplogs = [PELMUtils entitiesForParentEntity:fuelstation
                           parentEntityMainTable:TBL_MAIN_FUEL_STATION
-                 addlJoinParentEntityMainTables:nil
+                 addlJoinParentEntityMainTables:_fuelstationTypeJoinTables
                     parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainFuelStationFromResultSet:rs];}
                      parentEntityMasterIdColumn:COL_MASTER_FUELSTATION_ID
                        parentEntityMainIdColumn:COL_MAIN_FUELSTATION_ID
@@ -2760,7 +2760,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   [self.databaseQueue inDatabase:^(FMDatabase *db) {
     NSArray *fplogs = [PELMUtils entitiesForParentEntity:fuelstation
                                    parentEntityMainTable:TBL_MAIN_FUEL_STATION
-                          addlJoinParentEntityMainTables:nil
+                          addlJoinParentEntityMainTables:_fuelstationTypeJoinTables
                              parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainFuelStationFromResultSet:rs];}
                               parentEntityMasterIdColumn:COL_MASTER_FUELSTATION_ID
                                 parentEntityMainIdColumn:COL_MAIN_FUELSTATION_ID
@@ -3525,7 +3525,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   [self.databaseQueue inDatabase:^(FMDatabase *db) {
     numEntities = [PELMUtils numEntitiesForParentEntity:fuelStation
                                   parentEntityMainTable:TBL_MAIN_FUEL_STATION
-                         addlJoinParentEntityMainTables:nil
+                         addlJoinParentEntityMainTables:_fuelstationTypeJoinTables
                             parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainFuelStationFromResultSet:rs];}
                              parentEntityMasterIdColumn:COL_MASTER_FUELSTATION_ID
                                parentEntityMainIdColumn:COL_MAIN_FUELSTATION_ID
@@ -3546,7 +3546,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   [self.databaseQueue inDatabase:^(FMDatabase *db) {
     numEntities = [PELMUtils numEntitiesForParentEntity:fuelStation
                                   parentEntityMainTable:TBL_MAIN_FUEL_STATION
-                         addlJoinParentEntityMainTables:nil
+                         addlJoinParentEntityMainTables:_fuelstationTypeJoinTables
                             parentEntityMainRsConverter:^(FMResultSet *rs){return [self mainFuelStationFromResultSet:rs];}
                              parentEntityMasterIdColumn:COL_MASTER_FUELSTATION_ID
                                parentEntityMainIdColumn:COL_MAIN_FUELSTATION_ID
