@@ -162,8 +162,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   insertFSType(34, @"Speedway",          34);
   insertFSType(35, @"Kum & Go",          35);
   insertFSType(36, @"Mobile",            36);
-  insertFSType(37, @"Clark",             37);
-  insertFSType(38, @"ARCO",              38);
+  insertFSType(37, @"ARCO",              38);
   void (^setFuelstationType)(NSString *) = ^(NSString *fstable) {
     [PELMUtils doUpdate:[NSString stringWithFormat:@"UPDATE %@ SET %@ = ?", fstable, COL_FUELST_TYPE_ID]
               argsArray:@[@(0)]
