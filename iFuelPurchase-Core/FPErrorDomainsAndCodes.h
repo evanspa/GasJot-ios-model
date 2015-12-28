@@ -101,7 +101,8 @@ typedef NS_OPTIONS(NSUInteger, FPSaveFuelPurchaseLogMsg) {
 typedef NS_OPTIONS(NSUInteger, FPSaveFuelStationMsg) {
   FPSaveFuelStationAnyIssues                 = 1 << 0,
   FPSaveFuelStationNameNotProvided           = 1 << 1, // ctx: Create/Edit fuel station
-  FPSaveFuelStationUserDoesNotExist          = 1 << 2
+  FPSaveFuelStationUserDoesNotExist          = 1 << 2,
+  FPSaveFuelStationNameContainsPurplex       = 1 << 3
 };
 
 /**

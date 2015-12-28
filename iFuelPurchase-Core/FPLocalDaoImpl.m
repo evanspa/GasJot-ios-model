@@ -132,7 +132,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   insertFSType(7,  @"Hess",     7);
   insertFSType(8,  @"Sunoco",   8);
   insertFSType(9,  @"CITGO",    9);
-  insertFSType(10, @"GULF",     10);
+  insertFSType(10, @"Gulf",     10);
   
   insertFSType(11,  @"Sam's Club", 11);
   insertFSType(12,  @"BJ's",       12);
