@@ -8,6 +8,9 @@
 
 #import "FPRestRemoteMasterDao.h"
 
+#import <PEObjc-Commons/PEUtils.h>
+#import <PEObjc-Commons/NSMutableDictionary+PEAdditions.h>
+
 #import <PEHateoas-Client/HCRelationExecutor.h>
 #import <PEHateoas-Client/HCUtils.h>
 #import <PEHateoas-Client/HCRelation.h>
@@ -38,12 +41,16 @@
 #import "FPFuelStationSerializer.h"
 #import "FPFuelPurchaseLogSerializer.h"
 #import "FPEnvironmentLogSerializer.h"
+#import "FPPriceEventStreamSerializer.h"
+
+NSString * const FPPriceEventStreamRelation = @"price-event-stream";
 
 @implementation FPRestRemoteMasterDao {
   FPVehicleSerializer *_vehicleSerializer;
   FPFuelStationSerializer *_fuelStationSerializer;
   FPFuelPurchaseLogSerializer *_fuelPurchaseLogSerializer;
   FPEnvironmentLogSerializer *_environmentLogSerializer;
+  FPPriceEventStreamSerializer *_priceEventStreamSerializer;
 }
 
 #pragma mark - Initializers
@@ -74,6 +81,7 @@ passwordResetSerializer:(PEPasswordResetSerializer *)passwordResetSerializer
       fuelStationSerializer:(FPFuelStationSerializer *)fuelStationSerializer
   fuelPurchaseLogSerializer:(FPFuelPurchaseLogSerializer *)fuelPurchaseLogSerializer
    environmentLogSerializer:(FPEnvironmentLogSerializer *)environmentLogSerializer
+ priceEventStreamSerializer:(FPPriceEventStreamSerializer *)priceEventStreamSerializer
    allowInvalidCertificates:(BOOL)allowInvalidCertificates {
   self = [super initWithAcceptCharset:acceptCharset
                        acceptLanguage:acceptLanguage
@@ -110,8 +118,41 @@ passwordResetSerializer:(PEPasswordResetSerializer *)passwordResetSerializer
     _fuelStationSerializer = fuelStationSerializer;
     _fuelPurchaseLogSerializer = fuelPurchaseLogSerializer;
     _environmentLogSerializer = environmentLogSerializer;
+    _priceEventStreamSerializer = priceEventStreamSerializer;
   }
   return self;
+}
+
+#pragma mark - Price Event Operations
+
+- (void)fetchPriceEventsNearLatitude:(NSDecimalNumber *)latitude
+                           longitude:(NSDecimalNumber *)longitude
+                              within:(NSDecimalNumber *)within
+                             timeout:(NSInteger)timeout
+                     remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
+                   completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
+  NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
+  [parameters setObjectIfNotNull:latitude forKey:@"latitude"];
+  [parameters setObjectIfNotNull:longitude forKey:@"longitude"];
+  [parameters setObjectIfNotNull:within forKey:@"within"];
+  HCRelation *priceStreamRealtion = self.restApiRelations[FPPriceEventStreamRelation];
+  [self.relationExecutor doGetForTargetResource:priceStreamRealtion.target
+                                     parameters:parameters
+                                ifModifiedSince:nil
+                               targetSerializer:_priceEventStreamSerializer
+                                   asynchronous:YES
+                                completionQueue:self.serialQueue
+                                  authorization:[self authorization]
+                                        success:[self newGetSuccessBlk:complHandler]
+                                    redirection:[self newRedirectionBlk:complHandler]
+                                    clientError:[self newClientErrBlk:complHandler]
+                         authenticationRequired:nil
+                                    serverError:[self newServerErrBlk:complHandler]
+                               unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
+                              connectionFailure:[self newConnFailureBlk:complHandler]
+                                        timeout:timeout
+                                    cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
+                                   otherHeaders:@{}];
 }
 
 #pragma mark - Vehicle Operations
@@ -183,6 +224,7 @@ passwordResetSerializer:(PEPasswordResetSerializer *)passwordResetSerializer
                     authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
                completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
   [self.relationExecutor doGetForURLString:globalId
+                                parameters:nil
                            ifModifiedSince:nil
                           targetSerializer:_vehicleSerializer
                               asynchronous:YES
@@ -202,7 +244,7 @@ passwordResetSerializer:(PEPasswordResetSerializer *)passwordResetSerializer
                                                                   value:ifModifiedSince]];
 }
 
-#pragma mark - FuelStation Operations
+#pragma mark - Fuel Station Operations
 
 - (void)saveNewFuelStation:(FPFuelStation *)fuelStation
                    forUser:(FPUser *)user
@@ -271,6 +313,7 @@ passwordResetSerializer:(PEPasswordResetSerializer *)passwordResetSerializer
                         authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
                    completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
   [self.relationExecutor doGetForURLString:globalId
+                                parameters:nil
                            ifModifiedSince:nil
                           targetSerializer:_fuelStationSerializer
                               asynchronous:YES
@@ -357,6 +400,7 @@ passwordResetSerializer:(PEPasswordResetSerializer *)passwordResetSerializer
                             authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
                        completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
   [self.relationExecutor doGetForURLString:globalId
+                                parameters:nil
                            ifModifiedSince:nil
                           targetSerializer:_fuelPurchaseLogSerializer
                               asynchronous:YES
@@ -443,6 +487,7 @@ passwordResetSerializer:(PEPasswordResetSerializer *)passwordResetSerializer
                            authRequired:(PELMRemoteMasterAuthReqdBlk)authRequired
                       completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
   [self.relationExecutor doGetForURLString:globalId
+                                parameters:nil
                            ifModifiedSince:nil
                           targetSerializer:_environmentLogSerializer
                               asynchronous:YES

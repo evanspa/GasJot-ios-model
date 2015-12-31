@@ -21,6 +21,7 @@
 @class FPEnvironmentLogSerializer;
 @class PEPasswordResetSerializer;
 @class PEResendVerificationEmailSerializer;
+@class FPPriceEventStreamSerializer;
 
 @interface FPRestRemoteMasterDao : PERestRemoteMasterDao <FPRemoteMasterDao>
 
@@ -52,6 +53,7 @@ resendVerificationEmailSerializer:(PEResendVerificationEmailSerializer *)resendV
       fuelStationSerializer:(FPFuelStationSerializer *)fuelStationSerializer
   fuelPurchaseLogSerializer:(FPFuelPurchaseLogSerializer *)fuelPurchaseLogSerializer
    environmentLogSerializer:(FPEnvironmentLogSerializer *)environmentLogSerializer
+ priceEventStreamSerializer:(FPPriceEventStreamSerializer *)priceEventStreamSerializer
    allowInvalidCertificates:(BOOL)allowInvalidCertificates;
 
 @end

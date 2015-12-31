@@ -12,6 +12,7 @@
 @class FPFuelStationType;
 
 FOUNDATION_EXPORT NSString * const FPFuelstationNameField;
+FOUNDATION_EXPORT NSString * const FPFuelstationTypeField;
 FOUNDATION_EXPORT NSString * const FPFuelstationStreetField;
 FOUNDATION_EXPORT NSString * const FPFuelstationCityField;
 FOUNDATION_EXPORT NSString * const FPFuelstationStateField;

@@ -40,7 +40,7 @@
 #import "FPFuelStationSerializer.h"
 #import "FPFuelPurchaseLogSerializer.h"
 #import "FPEnvironmentLogSerializer.h"
-
+#import "FPPriceEventStreamSerializer.h"
 
 @implementation FPCoordinatorDaoImpl {
   id<FPRemoteMasterDao> _remoteMasterDao;
@@ -54,6 +54,7 @@
   NSString *_fuelStationResMtVersion;
   NSString *_fuelPurchaseLogResMtVersion;
   NSString *_environmentLogResMtVersion;
+  NSString *_priceEventStreamResMtVersion;
   id<PEUserCoordinatorDao> _userCoordDao;
 }
 
@@ -84,6 +85,7 @@
          fuelStationResMtVersion:(NSString *)fuelStationResMtVersion
      fuelPurchaseLogResMtVersion:(NSString *)fuelPurchaseLogResMtVersion
       environmentLogResMtVersion:(NSString *)environmentLogResMtVersion
+    priceEventStreamResMtVersion:(NSString *)priceEventStreamResMtVersion
                authTokenDelegate:(id<PEAuthTokenDelegate>)authTokenDelegate
         allowInvalidCertificates:(BOOL)allowInvalidCertificates {
   self = [super initWithSqliteDataFilePath:sqliteDataFilePath];
@@ -98,31 +100,27 @@
     _fuelStationResMtVersion = fuelStationResMtVersion;
     _fuelPurchaseLogResMtVersion = fuelPurchaseLogResMtVersion;
     _environmentLogResMtVersion = environmentLogResMtVersion;
+    _priceEventStreamResMtVersion = priceEventStreamResMtVersion;
 
-    FPEnvironmentLogSerializer *environmentLogSerializer =
-      [self environmentLogSerializerForCharset:acceptCharset];
-    FPFuelPurchaseLogSerializer *fuelPurchaseLogSerializer =
-      [self fuelPurchaseLogSerializerForCharset:acceptCharset];
-    FPVehicleSerializer *vehicleSerializer =
-      [self vehicleSerializerForCharset:acceptCharset];
-    FPFuelStationSerializer *fuelStationSerializer =
-      [self fuelStationSerializerForCharset:acceptCharset error:errorBlk];
-    PEUserSerializer *userSerializer =
-      [self userSerializerForCharset:acceptCharset
-                   vehicleSerializer:vehicleSerializer
-               fuelStationSerializer:fuelStationSerializer
-           fuelPurchaseLogSerializer:fuelPurchaseLogSerializer
-            environmentLogSerializer:environmentLogSerializer];
+    FPPriceEventStreamSerializer *priceEventStreamSerializer = [self priceEventStreamSerializerForCharset:acceptCharset error:errorBlk];
+    FPEnvironmentLogSerializer *environmentLogSerializer = [self environmentLogSerializerForCharset:acceptCharset];
+    FPFuelPurchaseLogSerializer *fuelPurchaseLogSerializer = [self fuelPurchaseLogSerializerForCharset:acceptCharset];
+    FPVehicleSerializer *vehicleSerializer = [self vehicleSerializerForCharset:acceptCharset];
+    FPFuelStationSerializer *fuelStationSerializer = [self fuelStationSerializerForCharset:acceptCharset error:errorBlk];
+    PEUserSerializer *userSerializer = [self userSerializerForCharset:acceptCharset
+                                                    vehicleSerializer:vehicleSerializer
+                                                fuelStationSerializer:fuelStationSerializer
+                                            fuelPurchaseLogSerializer:fuelPurchaseLogSerializer
+                                             environmentLogSerializer:environmentLogSerializer];
     PEChangelogSerializer *changelogSerializer = [self changelogSerializerForCharset:acceptCharset
                                                                       userSerializer:userSerializer
                                                                    vehicleSerializer:vehicleSerializer
                                                                fuelStationSerializer:fuelStationSerializer
                                                            fuelPurchaseLogSerializer:fuelPurchaseLogSerializer
                                                             environmentLogSerializer:environmentLogSerializer];
-    PELoginSerializer *loginSerializer =
-      [[PELoginSerializer alloc] initWithMediaType:[FPKnownMediaTypes userMediaTypeWithVersion:_userResMtVersion]
-                                           charset:acceptCharset
-                                    userSerializer:userSerializer];
+    PELoginSerializer *loginSerializer = [[PELoginSerializer alloc] initWithMediaType:[FPKnownMediaTypes userMediaTypeWithVersion:_userResMtVersion]
+                                                                              charset:acceptCharset
+                                                                       userSerializer:userSerializer];
     PELogoutSerializer *logoutSerializer = [self logoutSerializerForCharset:acceptCharset];
     PEResendVerificationEmailSerializer *resendVerificationEmailSerializer = [self resendVerificationEmailSerializerForCharset:acceptCharset];
     PEPasswordResetSerializer *passwordResetSerializer = [self passwordResetSerializerForCharset:acceptCharset];
@@ -152,6 +150,7 @@
                                                       fuelStationSerializer:fuelStationSerializer
                                                   fuelPurchaseLogSerializer:fuelPurchaseLogSerializer
                                                    environmentLogSerializer:environmentLogSerializer
+                                                 priceEventStreamSerializer:priceEventStreamSerializer
                                                    allowInvalidCertificates:allowInvalidCertificates];
     _userCoordDao = [[PEUserCoordinatorDaoImpl alloc] initWithRemoteMasterDao:_remoteMasterDao
                                                                      localDao:self
@@ -210,6 +209,16 @@
                                 actionsForEmbeddedResources:@{}
                                              coordinatorDao:self
                                                       error:errorBlk];
+}
+
+- (FPPriceEventStreamSerializer *)priceEventStreamSerializerForCharset:(HCCharset *)charset
+                                                                 error:(PELMDaoErrorBlk)errorBlk {
+  return [[FPPriceEventStreamSerializer alloc] initWithMediaType:[FPKnownMediaTypes priceEventStreamMediaTypeWithVersion:_priceEventStreamResMtVersion]
+                                                         charset:charset
+                                 serializersForEmbeddedResources:@{}
+                                     actionsForEmbeddedResources:@{}
+                                                  coordinatorDao:self
+                                                           error:errorBlk];
 }
 
 - (FPVehicleSerializer *)vehicleSerializerForCharset:(HCCharset *)charset {
@@ -514,6 +523,38 @@
 
 - (BOOL)doesUserHaveAnyUnsyncedEntities:(FPUser *)user {
   return ([self totalNumUnsyncedEntitiesForUser:user] > 0);
+}
+
+#pragma mark - Price Event Operations
+
+- (void)fetchPriceEventsNearLatitude:(NSDecimalNumber *)latitude
+                           longitude:(NSDecimalNumber *)longitude
+                              within:(NSDecimalNumber *)within
+                             timeout:(NSInteger)timeout
+                 notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
+                          successBlk:(void(^)(NSArray *))successBlk
+                  remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
+                  tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk {
+  PELMRemoteMasterCompletionHandler remoteStoreComplHandler =
+  ^(NSString *newAuthTkn, NSString *relativeGlobalId, id resourceModel, NSDictionary *rels,
+    NSDate *lastModified, BOOL isConflict, BOOL gone, BOOL notFound, BOOL movedPermanently,
+    BOOL notModified, NSError *err, NSHTTPURLResponse *httpResp) {
+    if (movedPermanently) {
+      // ?
+    } else if (gone || notFound) {
+      notFoundOnServerBlk();
+    } else if (err) {
+      tempRemoteErrorBlk();
+    } else {
+      successBlk(resourceModel);
+    }
+  };
+  [_remoteMasterDao fetchPriceEventsNearLatitude:latitude
+                                       longitude:longitude
+                                          within:within
+                                         timeout:timeout
+                                 remoteStoreBusy:^(NSDate *retryAfter){if (remoteStoreBusyBlk) {remoteStoreBusyBlk(retryAfter);}}
+                               completionHandler:remoteStoreComplHandler];
 }
 
 #pragma mark - Vehicle

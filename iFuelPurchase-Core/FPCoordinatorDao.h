@@ -67,6 +67,7 @@
          fuelStationResMtVersion:(NSString *)fuelStationResMtVersion
      fuelPurchaseLogResMtVersion:(NSString *)fuelPurchaseLogResMtVersion
       environmentLogResMtVersion:(NSString *)environmentLogResMtVersion
+    priceEventStreamResMtVersion:(NSString *)priceEventStreamResMtVersion
                authTokenDelegate:(id<PEAuthTokenDelegate>)authTokenDelegate
         allowInvalidCertificates:(BOOL)allowInvalidCertifications;
 
@@ -90,6 +91,17 @@
 #pragma mark - Unsynced Entities Check
 
 - (BOOL)doesUserHaveAnyUnsyncedEntities:(FPUser *)user;
+
+#pragma mark - Price Event Operations
+
+- (void)fetchPriceEventsNearLatitude:(NSDecimalNumber *)latitude
+                           longitude:(NSDecimalNumber *)longitude
+                              within:(NSDecimalNumber *)within
+                             timeout:(NSInteger)timeout
+                 notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
+                          successBlk:(void(^)(NSArray *))successBlk
+                  remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
+                  tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk;
 
 #pragma mark - Vehicle
 

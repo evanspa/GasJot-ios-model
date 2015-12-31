@@ -24,6 +24,10 @@ NSString * (^fpMtBuilder)(NSString *, NSString *) = ^NSString *(NSString *mtId, 
   return [HCMediaType MediaTypeFromString:fpMtBuilder(@"api", version)];
 }
 
++ (HCMediaType *)priceEventStreamMediaTypeWithVersion:(NSString *)version {
+  return [HCMediaType MediaTypeFromString:fpMtBuilder(@"priceeventstream", version)];
+}
+
 + (HCMediaType *)changelogMediaTypeWithVersion:(NSString *)version {
   return [HCMediaType MediaTypeFromString:fpMtBuilder(@"changelog", version)];
 }

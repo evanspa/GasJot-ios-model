@@ -133,18 +133,15 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   insertFSType(8,  @"Sunoco",   8);
   insertFSType(9,  @"CITGO",    9);
   insertFSType(10, @"Gulf",     10);
-  
-  insertFSType(11,  @"Sam's Club", 11);
-  insertFSType(12,  @"BJ's",       12);
-  insertFSType(13,  @"Costco",     13);
-  
+  insertFSType(11, @"Sam's Club", 11);
+  insertFSType(12, @"BJ's",       12);
+  insertFSType(13, @"Costco",     13);
   insertFSType(14, @"Sheetz",   14);
   insertFSType(15, @"Texaco",   15);
   insertFSType(16, @"Valero",   16);
   insertFSType(17, @"76",       17);
   insertFSType(18, @"Circle K", 18);
   insertFSType(19, @"Getty",    19);
-  
   insertFSType(20, @"QuikTrip",          20);
   insertFSType(21, @"Friendship Xpress", 21);
   insertFSType(22, @"Murphy USA",        22);
@@ -161,7 +158,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   insertFSType(33, @"Rutter's",          33);
   insertFSType(34, @"Speedway",          34);
   insertFSType(35, @"Kum & Go",          35);
-  insertFSType(36, @"Mobile",            36);
+  insertFSType(36, @"Mobil",             36);
   insertFSType(37, @"ARCO",              38);
   void (^setFuelstationType)(NSString *) = ^(NSString *fstable) {
     [PELMUtils doUpdate:[NSString stringWithFormat:@"UPDATE %@ SET %@ = ?", fstable, COL_FUELST_TYPE_ID]
@@ -1458,8 +1455,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                              error:errorBlk];
 }
 
-- (void)markAsSyncCompleteForUpdatedFuelStation:(FPFuelStation *)fuelStation
-                                          error:(PELMDaoErrorBlk)errorBlk {
+- (void)markAsSyncCompleteForUpdatedFuelStation:(FPFuelStation *)fuelStation error:(PELMDaoErrorBlk)errorBlk {
   [self.localModelUtils markAsSyncCompleteForUpdatedEntityInTxn:fuelStation
                                                   mainTable:TBL_MAIN_FUEL_STATION
                                                 masterTable:TBL_MASTER_FUEL_STATION
@@ -1470,8 +1466,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                                       error:errorBlk];
 }
 
-- (FPFuelStationType *)fuelstationTypeForIdentifier:(NSNumber *)identifier
-                                              error:(PELMDaoErrorBlk)errorBlk {
+- (FPFuelStationType *)fuelstationTypeForIdentifier:(NSNumber *)identifier error:(PELMDaoErrorBlk)errorBlk {
   __block FPFuelStationType *fstype = nil;
   [self.databaseQueue inDatabase:^(FMDatabase *db) {
     FMResultSet *rs = [PELMUtils doQuery:[NSString stringWithFormat:@"SELECT * FROM %@ WHERE %@ = ?", TBL_FUEL_STATION_TYPE, COL_FUELSTTYP_ID]
@@ -1489,7 +1484,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
 - (NSArray *)fuelstationTypesWithError:(PELMDaoErrorBlk)errorBlk {
   NSMutableArray *fsTypes = [NSMutableArray array];
   [self.databaseQueue inDatabase:^(FMDatabase *db) {
-    FMResultSet *rs = [PELMUtils doQuery:[NSString stringWithFormat:@"SELECT * FROM %@ ORDER BY %@ ASC", TBL_FUEL_STATION_TYPE, COL_FUELSTTYP_SORT_ORDER]
+    FMResultSet *rs = [PELMUtils doQuery:[NSString stringWithFormat:@"SELECT * FROM %@ ORDER BY %@ ASC", TBL_FUEL_STATION_TYPE, COL_FUELSTTYP_NAME]
                                argsArray:@[]
                                       db:db
                                    error:errorBlk];

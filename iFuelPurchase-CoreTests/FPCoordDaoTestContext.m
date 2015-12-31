@@ -247,7 +247,8 @@
                                           vehicleResMtVersion:@"0.0.1"
                                       fuelStationResMtVersion:@"0.0.1"
                                   fuelPurchaseLogResMtVersion:@"0.0.1"
-                                   environmentLogResMtVersion:@"0.0.1"                                        
+                                   environmentLogResMtVersion:@"0.0.1"
+                                 priceEventStreamResMtVersion:@"0.0.1"
                                             authTokenDelegate:authTokenDelegate
                                      allowInvalidCertificates:NO];
   [coordDao initializeDatabaseWithError:[self newLocalSaveErrBlkMaker]()];

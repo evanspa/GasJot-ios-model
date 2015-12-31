@@ -220,7 +220,7 @@ NSString * const FPFuelstationLongitudeField = @"FPFuelstationLongitudeField";
                                         FPFuelstationNameField],
                                       @[[NSValue valueWithPointer:@selector(type)],
                                         [NSValue valueWithPointer:@selector(setType:)],
-                                        ^(SEL getter, id obj1, id obj2) {return [PEUtils isNumProperty:getter equalFor:obj1 and:obj2];},
+                                        ^(SEL getter, FPFuelStation *obj1, FPFuelStation *obj2) {return [obj1.type isEqualToFuelStationType:obj2.type];},
                                         ^(FPFuelStation * localObject, FPFuelStation * remoteObject) {[localObject setType:[remoteObject type]];},
                                         FPFuelstationTypeField],
                                       @[[NSValue valueWithPointer:@selector(street)],

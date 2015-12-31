@@ -2,4 +2,5 @@
     "users": { "href": "http://example.com/gasjot/d/users" },
     "login": { "href": "http://example.com/gasjot/d/login" },
     "light-login": { "href": "http://example.com/gasjot/d/light-login" },
-    "send-password-reset-email" : { "href": "http://example.com/gasjot/d/password-reset" }}}
+    "send-password-reset-email" : { "href": "http://example.com/gasjot/d/password-reset" },
+    "price-event-stream" : { "href": "http://example.com/gasjot/d/price-event-stream"}}}

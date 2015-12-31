@@ -49,4 +49,8 @@
   return [super hash] ^ [[self identifier] hash];
 }
 
+- (NSString *)description {
+  return [NSString stringWithFormat:@"identifier: %@, name: %@, iconImgName: %@", _identifier, _name, _iconImgName];
+}
+
 @end

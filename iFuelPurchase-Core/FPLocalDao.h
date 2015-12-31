@@ -194,11 +194,9 @@
                                     forUser:(FPUser *)user
                                       error:(PELMDaoErrorBlk)errorBlk;
 
-- (void)markAsSyncCompleteForUpdatedFuelStation:(FPFuelStation *)fuelStation
-                                          error:(PELMDaoErrorBlk)errorBlk;
+- (void)markAsSyncCompleteForUpdatedFuelStation:(FPFuelStation *)fuelStation error:(PELMDaoErrorBlk)errorBlk;
 
-- (FPFuelStationType *)fuelstationTypeForIdentifier:(NSNumber *)identifier
-                                              error:(PELMDaoErrorBlk)errorBlk;
+- (FPFuelStationType *)fuelstationTypeForIdentifier:(NSNumber *)identifier error:(PELMDaoErrorBlk)errorBlk;
 
 - (NSArray *)fuelstationTypesWithError:(PELMDaoErrorBlk)errorBlk;
 

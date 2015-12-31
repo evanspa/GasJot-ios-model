@@ -17,8 +17,18 @@
 @class FPFuelStation;
 @class FPFuelPurchaseLog;
 @class FPEnvironmentLog;
+@class FPPriceEvent;
 
 @protocol FPRemoteMasterDao <PERemoteMasterDao>
+
+#pragma mark - Price Event Operations
+
+- (void)fetchPriceEventsNearLatitude:(NSDecimalNumber *)latitude
+                           longitude:(NSDecimalNumber *)longitude
+                              within:(NSDecimalNumber *)within
+                             timeout:(NSInteger)timeout
+                     remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
+                   completionHandler:(PELMRemoteMasterCompletionHandler)complHandler;
 
 #pragma mark - Vehicle Operations
 
