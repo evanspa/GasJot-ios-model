@@ -530,7 +530,6 @@
 - (void)fetchPriceEventsNearLatitude:(NSDecimalNumber *)latitude
                            longitude:(NSDecimalNumber *)longitude
                               within:(NSDecimalNumber *)within
-                             timeout:(NSInteger)timeout
                  notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
                           successBlk:(void(^)(NSArray *))successBlk
                   remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
@@ -552,7 +551,7 @@
   [_remoteMasterDao fetchPriceEventsNearLatitude:latitude
                                        longitude:longitude
                                           within:within
-                                         timeout:timeout
+                                         timeout:_timeout
                                  remoteStoreBusy:^(NSDate *retryAfter){if (remoteStoreBusyBlk) {remoteStoreBusyBlk(retryAfter);}}
                                completionHandler:remoteStoreComplHandler];
 }

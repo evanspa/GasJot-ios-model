@@ -97,7 +97,6 @@
 - (void)fetchPriceEventsNearLatitude:(NSDecimalNumber *)latitude
                            longitude:(NSDecimalNumber *)longitude
                               within:(NSDecimalNumber *)within
-                             timeout:(NSInteger)timeout
                  notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
                           successBlk:(void(^)(NSArray *))successBlk
                   remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk

@@ -51,7 +51,6 @@ describe(@"FPCoordinatorDao", ^{
       [_coordDao fetchPriceEventsNearLatitude:nil
                                     longitude:nil
                                        within:nil
-                                      timeout:30
                           notFoundOnServerBlk:nil
                                    successBlk:^(NSArray *innerPriceEventStream) {
                                      success = YES;
