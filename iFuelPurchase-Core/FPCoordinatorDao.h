@@ -92,15 +92,25 @@
 
 - (BOOL)doesUserHaveAnyUnsyncedEntities:(FPUser *)user;
 
-#pragma mark - Price Event Operations
+#pragma mark - Price Stream Operations
 
-- (void)fetchPriceEventsNearLatitude:(NSDecimalNumber *)latitude
-                           longitude:(NSDecimalNumber *)longitude
-                              within:(NSDecimalNumber *)within
-                 notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
-                          successBlk:(void(^)(NSArray *))successBlk
-                  remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
-                  tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk;
+- (void)fetchPriceStreamSortedByPriceDistanceNearLat:(NSDecimalNumber *)latitude
+                                                long:(NSDecimalNumber *)longitude
+                                      distanceWithin:(NSInteger)distanceWithin
+                                          maxResults:(NSInteger)maxResults
+                                 notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
+                                          successBlk:(void(^)(NSArray *))successBlk
+                                  remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
+                                  tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk;
+
+- (void)fetchPriceStreamSortedByDistancePriceNearLat:(NSDecimalNumber *)latitude
+                                                long:(NSDecimalNumber *)longitude
+                                      distanceWithin:(NSInteger)distanceWithin
+                                          maxResults:(NSInteger)maxResults
+                                 notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
+                                          successBlk:(void(^)(NSArray *))successBlk
+                                  remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
+                                  tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk;
 
 #pragma mark - Vehicle
 

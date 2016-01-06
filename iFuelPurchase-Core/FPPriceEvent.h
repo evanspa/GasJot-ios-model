@@ -20,7 +20,8 @@
                                isDiesel:(BOOL)isDiesel
                                    date:(NSDate *)date
                                latitude:(NSDecimalNumber *)latitude
-                              longitude:(NSDecimalNumber *)longitude;
+                              longitude:(NSDecimalNumber *)longitude
+                               distance:(NSDecimalNumber *)distance;
 
 #pragma mark - Properties
 
@@ -37,5 +38,7 @@
 @property (nonatomic, readonly) NSDecimalNumber *latitude;
 
 @property (nonatomic, readonly) NSDecimalNumber *longitude;
+
+@property (nonatomic, readonly) NSDecimalNumber *distance;
 
 @end

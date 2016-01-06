@@ -45,19 +45,20 @@ describe(@"FPCoordinatorDao", ^{
   
   context(@"Tests", ^{
     it(@"Price stream fetch is working", ^{
-      _mocker(@"http-response.priceeventstream.GET.200", 0, 0);
+      _mocker(@"http-response.pricestream.POST.200", 0, 0);
       __block BOOL success = NO;
       __block NSArray *priceEventStream = nil;
-      [_coordDao fetchPriceEventsNearLatitude:nil
-                                    longitude:nil
-                                       within:nil
-                          notFoundOnServerBlk:nil
-                                   successBlk:^(NSArray *innerPriceEventStream) {
-                                     success = YES;
-                                     priceEventStream = innerPriceEventStream;
-                                   }
-                           remoteStoreBusyBlk:[_coordTestCtx newRemoteStoreBusyBlkMaker]()
-                           tempRemoteErrorBlk:nil];
+      [_coordDao fetchPriceStreamSortedByPriceDistanceNearLat:nil
+                                                         long:nil
+                                               distanceWithin:0
+                                                   maxResults:0
+                                          notFoundOnServerBlk:nil
+                                                   successBlk:^(NSArray *innerPriceEventStream) {
+                                                     success = YES;
+                                                     priceEventStream = innerPriceEventStream;
+                                                   }
+                                           remoteStoreBusyBlk:[_coordTestCtx newRemoteStoreBusyBlkMaker]()
+                                           tempRemoteErrorBlk:nil];
       [[expectFutureValue(theValue(success)) shouldEventuallyBeforeTimingOutAfter(5)] beYes];
       [priceEventStream shouldNotBeNil];
       [[priceEventStream should] haveCountOf:1];
@@ -66,6 +67,7 @@ describe(@"FPCoordinatorDao", ^{
         [fsType shouldNotBeNil];
         [[fsType.identifier should] equal:@(5)];
         [[priceEvent.price should] equal:[NSDecimalNumber decimalNumberWithString:@"2.999"]];
+        [[priceEvent.distance should] equal:[NSDecimalNumber decimalNumberWithString:@"50"]];
         [[theValue(priceEvent.isDiesel) should] equal:theValue(NO)];
         [[priceEvent.date should] equal:[NSDate dateWithTimeIntervalSince1970:1409644992.000]];
         [[priceEvent.latitude should] equal:[NSDecimalNumber decimalNumberWithString:@"35.0125209215553"]];

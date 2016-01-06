@@ -14,7 +14,7 @@
 
 + (HCMediaType *)apiMediaTypeWithVersion:(NSString *)version;
 
-+ (HCMediaType *)priceEventStreamMediaTypeWithVersion:(NSString *)version;
++ (HCMediaType *)priceStreamMediaTypeWithVersion:(NSString *)version;
 
 + (HCMediaType *)changelogMediaTypeWithVersion:(NSString *)version;
 

@@ -5,10 +5,10 @@
               port="80"
               scheme="http"
               uri-path="/gasjot/d/price-event-stream"
-              request-method="GET">This is the description for this mock response.</annotation>
+              request-method="POST">This is the description for this mock response.</annotation>
   <headers>
     <header name="Cache-Control" value="no-cache" />
-    <header name="Content-Type" value="application/vnd.fp.priceeventstream-v0.0.1+json" />
+    <header name="Content-Type" value="application/vnd.fp.pricestream-v0.0.1+json" />
     <header name="Content-Language" value="en-US" />
   </headers>
   <body>
@@ -18,7 +18,8 @@
         "price-event/price": 2.999,
         "price-event/octane": 87,
         "price-event/is-diesel": false,
-        "price-event/date": 1409644992000,
+        "price-event/distance": 50,
+        "price-event/event-date": 1409644992000,
         "price-event/latitude": 35.0125209215553,
         "price-event/longitude": -80.8517863328359 }]}
     ]]>

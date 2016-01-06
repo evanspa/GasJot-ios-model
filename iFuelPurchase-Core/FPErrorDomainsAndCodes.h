@@ -71,7 +71,13 @@ typedef NS_OPTIONS(NSUInteger, FPSaveEnvironmentLogMsg) {
   FPSaveEnvironmentLogOdometerNotProvided       = 1 << 2,
   FPSaveEnvironmentLogOdometerNegative          = 1 << 3,
   FPSaveEnvironmentLogUserDoesNotExist          = 1 << 4,
-  FPSaveEnvironmentLogVehicleDoesNotExist       = 1 << 5
+  FPSaveEnvironmentLogVehicleDoesNotExist       = 1 << 5,
+  FPSaveEnvironmentLogOdometerNotNumeric        = 1 << 6,
+  FPSaveEnvironmentLogAvgMpgNotNumeric          = 1 << 7,
+  FPSaveEnvironmentLogAvgMpgNegative            = 1 << 8,
+  FPSaveEnvironmentLogAvgMphNotNumeric          = 1 << 9,
+  FPSaveEnvironmentLogAvgMphNegative            = 1 << 10,
+  FPSaveEnvironmentLogOutsideTempNotNumeric     = 1 << 11
 };
 
 /**
@@ -91,7 +97,11 @@ typedef NS_OPTIONS(NSUInteger, FPSaveFuelPurchaseLogMsg) {
   FPSaveFuelPurchaseLogVehicleDoesNotExist       = 1 << 9,
   FPSaveFuelPurchaseLogFuelStationDoesNotExist   = 1 << 10,
   FPSaveFuelPurchaseLogOdometerNotProvided       = 1 << 11,
-  FPSaveFuelPurchaseLogOdometerNegative          = 1 << 12
+  FPSaveFuelPurchaseLogOdometerNegative          = 1 << 12,
+  FPSaveFuelPurchaseLogOdometerNotNumeric        = 1 << 13,
+  FPSaveFuelPurchaseLogOctaneNotNumeric          = 1 << 14,
+  FPSaveFuelPurchaseLogNumGallonsNotNumeric      = 1 << 15,
+  FPSaveFuelPurchaseLogGallonPriceNotNumeric     = 1 << 16
 };
 
 /**
@@ -102,7 +112,9 @@ typedef NS_OPTIONS(NSUInteger, FPSaveFuelStationMsg) {
   FPSaveFuelStationAnyIssues                 = 1 << 0,
   FPSaveFuelStationNameNotProvided           = 1 << 1, // ctx: Create/Edit fuel station
   FPSaveFuelStationUserDoesNotExist          = 1 << 2,
-  FPSaveFuelStationNameContainsPurplex       = 1 << 3
+  FPSaveFuelStationNameContainsPurplex       = 1 << 3,
+  FPSaveFuelStationLatitudeNotNumeric        = 1 << 4,
+  FPSaveFuelStationLongitudeNotNumeric       = 1 << 5
 };
 
 /**
@@ -110,12 +122,13 @@ typedef NS_OPTIONS(NSUInteger, FPSaveFuelStationMsg) {
  domain.
  */
 typedef NS_OPTIONS(NSUInteger, FPSaveVehicleMsg) {
-  FPSaveVehicleAnyIssues              = 1 << 0,
-  FPSaveVehicleNameNotProvided        = 1 << 1, // ctx: Create/Edit vehicle
-  FPSaveVehicleVehicleAlreadyExists   = 1 << 2, // ctx: Create vehicle
-  FPSaveVehicleNameContainsPurple     = 1 << 3,
-  FPSaveVehicleNameContainsRed        = 1 << 4,
-  FPSaveVehicleUserDoesNotExist       = 1 << 5
+  FPSaveVehicleAnyIssues                   = 1 << 0,
+  FPSaveVehicleNameNotProvided             = 1 << 1, // ctx: Create/Edit vehicle
+  FPSaveVehicleVehicleAlreadyExists        = 1 << 2, // ctx: Create vehicle
+  FPSaveVehicleNameContainsPurple          = 1 << 3,
+  FPSaveVehicleNameContainsRed             = 1 << 4,
+  FPSaveVehicleUserDoesNotExist            = 1 << 5,
+  FPSaveVehicleCannotBeBothDieselAndOctane = 1 << 6
 };
 
 /**

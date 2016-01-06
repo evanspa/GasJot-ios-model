@@ -18,7 +18,8 @@
                                isDiesel:(BOOL)isDiesel
                                    date:(NSDate *)date
                                latitude:(NSDecimalNumber *)latitude
-                              longitude:(NSDecimalNumber *)longitude {
+                              longitude:(NSDecimalNumber *)longitude
+                               distance:(NSDecimalNumber *)distance {
   self = [super init];
   if (self) {
     _fsType = fsType;
@@ -28,6 +29,7 @@
     _date = date;
     _latitude = latitude;
     _longitude = longitude;
+    _distance = distance;
   }
   return self;
 }

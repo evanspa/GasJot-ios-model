@@ -213,7 +213,7 @@
 
 - (FPPriceEventStreamSerializer *)priceEventStreamSerializerForCharset:(HCCharset *)charset
                                                                  error:(PELMDaoErrorBlk)errorBlk {
-  return [[FPPriceEventStreamSerializer alloc] initWithMediaType:[FPKnownMediaTypes priceEventStreamMediaTypeWithVersion:_priceEventStreamResMtVersion]
+  return [[FPPriceEventStreamSerializer alloc] initWithMediaType:[FPKnownMediaTypes priceStreamMediaTypeWithVersion:_priceEventStreamResMtVersion]
                                                          charset:charset
                                  serializersForEmbeddedResources:@{}
                                      actionsForEmbeddedResources:@{}
@@ -525,15 +525,16 @@
   return ([self totalNumUnsyncedEntitiesForUser:user] > 0);
 }
 
-#pragma mark - Price Event Operations
+#pragma mark - Price Stream Operations
 
-- (void)fetchPriceEventsNearLatitude:(NSDecimalNumber *)latitude
-                           longitude:(NSDecimalNumber *)longitude
-                              within:(NSDecimalNumber *)within
-                 notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
-                          successBlk:(void(^)(NSArray *))successBlk
-                  remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
-                  tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk {
+- (void)fetchPriceStreamSortedByPriceDistanceNearLat:(NSDecimalNumber *)latitude
+                                                long:(NSDecimalNumber *)longitude
+                                      distanceWithin:(NSInteger)distanceWithin
+                                          maxResults:(NSInteger)maxResults
+                                 notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
+                                          successBlk:(void(^)(NSArray *))successBlk
+                                  remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
+                                  tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk {
   PELMRemoteMasterCompletionHandler remoteStoreComplHandler =
   ^(NSString *newAuthTkn, NSString *relativeGlobalId, id resourceModel, NSDictionary *rels,
     NSDate *lastModified, BOOL isConflict, BOOL gone, BOOL notFound, BOOL movedPermanently,
@@ -548,12 +549,44 @@
       successBlk(resourceModel);
     }
   };
-  [_remoteMasterDao fetchPriceEventsNearLatitude:latitude
-                                       longitude:longitude
-                                          within:within
-                                         timeout:_timeout
-                                 remoteStoreBusy:^(NSDate *retryAfter){if (remoteStoreBusyBlk) {remoteStoreBusyBlk(retryAfter);}}
-                               completionHandler:remoteStoreComplHandler];
+  [_remoteMasterDao fetchPriceStreamSortedByPriceDistanceNearLat:latitude
+                                                            long:longitude
+                                                  distanceWithin:distanceWithin
+                                                      maxResults:maxResults
+                                                         timeout:_timeout
+                                                 remoteStoreBusy:^(NSDate *retryAfter){if (remoteStoreBusyBlk) {remoteStoreBusyBlk(retryAfter);}}
+                                               completionHandler:remoteStoreComplHandler];
+}
+
+- (void)fetchPriceStreamSortedByDistancePriceNearLat:(NSDecimalNumber *)latitude
+                                                long:(NSDecimalNumber *)longitude
+                                      distanceWithin:(NSInteger)distanceWithin
+                                          maxResults:(NSInteger)maxResults
+                                 notFoundOnServerBlk:(void(^)(void))notFoundOnServerBlk
+                                          successBlk:(void(^)(NSArray *))successBlk
+                                  remoteStoreBusyBlk:(PELMRemoteMasterBusyBlk)remoteStoreBusyBlk
+                                  tempRemoteErrorBlk:(void(^)(void))tempRemoteErrorBlk {
+  PELMRemoteMasterCompletionHandler remoteStoreComplHandler =
+  ^(NSString *newAuthTkn, NSString *relativeGlobalId, id resourceModel, NSDictionary *rels,
+    NSDate *lastModified, BOOL isConflict, BOOL gone, BOOL notFound, BOOL movedPermanently,
+    BOOL notModified, NSError *err, NSHTTPURLResponse *httpResp) {
+    if (movedPermanently) {
+      // ?
+    } else if (gone || notFound) {
+      notFoundOnServerBlk();
+    } else if (err) {
+      tempRemoteErrorBlk();
+    } else {
+      successBlk(resourceModel);
+    }
+  };
+  [_remoteMasterDao fetchPriceStreamSortedByDistancePriceNearLat:latitude
+                                                            long:longitude
+                                                  distanceWithin:distanceWithin
+                                                      maxResults:maxResults
+                                                         timeout:_timeout
+                                                 remoteStoreBusy:^(NSDate *retryAfter){if (remoteStoreBusyBlk) {remoteStoreBusyBlk(retryAfter);}}
+                                               completionHandler:remoteStoreComplHandler];
 }
 
 #pragma mark - Vehicle

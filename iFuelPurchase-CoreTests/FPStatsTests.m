@@ -613,11 +613,12 @@ describe(@"FPStats", ^{
     __block FPFuelPurchaseLog *fplog;
     __block FPEnvironmentLog *envlog2;
     beforeAll(^{
+      NSInteger currentYear = [PEUtils currentYear];
       resetUser();
-       saveOdometerLog(_v1, @"1008", nil, nil, 60, _d(@"01/01/2015"), nil);
-      fplog = saveGasLog(_v1, _fs1, @"15.2", 87, @"10582", @"3.85", NO, @"0.08", _d(@"01/02/2015"));
-      envlog2= saveOdometerLog(_v1, @"1324", nil, nil, 60, _d(@"01/03/2015"), nil);
-      saveOdometerLog(_v1, @"1324", nil, nil, 60, _d(@"01/04/2015"), nil);
+       saveOdometerLog(_v1, @"1008", nil, nil, 60, _d([NSString stringWithFormat:@"01/01/%ld", currentYear]), nil);
+      fplog = saveGasLog(_v1, _fs1, @"15.2", 87, @"10582", @"3.85", NO, @"0.08", _d([NSString stringWithFormat:@"01/02/%ld", currentYear]));
+      envlog2= saveOdometerLog(_v1, @"1324", nil, nil, 60, _d([NSString stringWithFormat:@"01/03/%ld", currentYear]), nil);
+      saveOdometerLog(_v1, @"1324", nil, nil, 60, _d([NSString stringWithFormat:@"01/04/%ld", currentYear]), nil);
     });
     
     it(@"Days between fillups stats work", ^{
@@ -649,10 +650,11 @@ describe(@"FPStats", ^{
     
     it(@"YTD and overall gas cost per mile data sets for vehicle", ^{
       NSArray *ds = [_stats yearToDateAvgGasCostPerMileDataSetForVehicle:_v1];
+      NSInteger currentYear = [PEUtils currentYear];
       [ds shouldNotBeNil];
       [[ds should] haveCountOf:1];
       NSArray *dp1 = ds[0];
-      [[dp1[0] should] equal:_d(@"01/01/2015")];
+      [[dp1[0] should] equal:_d([NSString stringWithFormat:@"01/01/%ld", currentYear])];
       [[dp1[1] should] equal:[NSDecimalNumber decimalNumberWithString:@"0.185189873417721518987341772151898734177"]];
     });
   });

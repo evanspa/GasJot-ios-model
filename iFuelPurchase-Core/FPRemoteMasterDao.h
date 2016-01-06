@@ -21,14 +21,23 @@
 
 @protocol FPRemoteMasterDao <PERemoteMasterDao>
 
-#pragma mark - Price Event Operations
+#pragma mark - Price Stream Operations
 
-- (void)fetchPriceEventsNearLatitude:(NSDecimalNumber *)latitude
-                           longitude:(NSDecimalNumber *)longitude
-                              within:(NSDecimalNumber *)within
-                             timeout:(NSInteger)timeout
-                     remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
-                   completionHandler:(PELMRemoteMasterCompletionHandler)complHandler;
+- (void)fetchPriceStreamSortedByPriceDistanceNearLat:(NSDecimalNumber *)latitude
+                                                long:(NSDecimalNumber *)longitude
+                                      distanceWithin:(NSInteger)distanceWithin
+                                          maxResults:(NSInteger)maxResults
+                                             timeout:(NSInteger)timeout
+                                     remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
+                                   completionHandler:(PELMRemoteMasterCompletionHandler)complHandler;
+
+- (void)fetchPriceStreamSortedByDistancePriceNearLat:(NSDecimalNumber *)latitude
+                                                long:(NSDecimalNumber *)longitude
+                                      distanceWithin:(NSInteger)distanceWithin
+                                          maxResults:(NSInteger)maxResults
+                                             timeout:(NSInteger)timeout
+                                     remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
+                                   completionHandler:(PELMRemoteMasterCompletionHandler)complHandler;
 
 #pragma mark - Vehicle Operations
 

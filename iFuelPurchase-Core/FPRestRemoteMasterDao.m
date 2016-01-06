@@ -36,6 +36,7 @@
 #import "FPFuelStation.h"
 #import "FPFuelPurchaseLog.h"
 #import "FPEnvironmentLog.h"
+#import "FPPriceStreamFilterCriteria.h"
 
 #import "FPVehicleSerializer.h"
 #import "FPFuelStationSerializer.h"
@@ -123,36 +124,71 @@ passwordResetSerializer:(PEPasswordResetSerializer *)passwordResetSerializer
   return self;
 }
 
-#pragma mark - Price Event Operations
+#pragma mark - Price Stream Helpers
 
-- (void)fetchPriceEventsNearLatitude:(NSDecimalNumber *)latitude
-                           longitude:(NSDecimalNumber *)longitude
-                              within:(NSDecimalNumber *)within
-                             timeout:(NSInteger)timeout
-                     remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
-                   completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
-  NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
-  [parameters setObjectIfNotNull:latitude forKey:@"latitude"];
-  [parameters setObjectIfNotNull:longitude forKey:@"longitude"];
-  [parameters setObjectIfNotNull:within forKey:@"within"];
+- (void)fetchPriceStreamNearLat:(NSDecimalNumber *)latitude
+                           long:(NSDecimalNumber *)longitude
+                 distanceWithin:(NSInteger)distanceWithin
+                     maxResults:(NSInteger)maxResults
+                         sortBy:(NSArray *)sortBy
+                        timeout:(NSInteger)timeout
+                remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
+              completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
   HCRelation *priceStreamRealtion = self.restApiRelations[FPPriceEventStreamRelation];
-  [self.relationExecutor doGetForTargetResource:priceStreamRealtion.target
-                                     parameters:parameters
-                                ifModifiedSince:nil
-                               targetSerializer:_priceEventStreamSerializer
-                                   asynchronous:YES
-                                completionQueue:self.serialQueue
-                                  authorization:[self authorization]
-                                        success:[self newGetSuccessBlk:complHandler]
-                                    redirection:[self newRedirectionBlk:complHandler]
-                                    clientError:[self newClientErrBlk:complHandler]
-                         authenticationRequired:nil
-                                    serverError:[self newServerErrBlk:complHandler]
-                               unavailableError:[FPRestRemoteMasterDao serverUnavailableBlk:busyHandler]
-                              connectionFailure:[self newConnFailureBlk:complHandler]
-                                        timeout:timeout
-                                    cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
-                                   otherHeaders:@{}];
+  FPPriceStreamFilterCriteria *filterCriteria =
+  [[FPPriceStreamFilterCriteria alloc] initWithNearLatitude:latitude
+                                              nearLongitude:longitude
+                                             distanceWithin:distanceWithin
+                                                 maxResults:maxResults
+                                                     sortBy:sortBy];
+  [self doPostToRelation:priceStreamRealtion
+      resourceModelParam:filterCriteria
+              serializer:_priceEventStreamSerializer
+                 timeout:timeout
+         remoteStoreBusy:busyHandler
+            authRequired:nil
+       completionHandler:complHandler
+            otherHeaders:@{}];
+}
+
+#pragma mark - Price Stream Operations
+
+- (void)fetchPriceStreamSortedByPriceDistanceNearLat:(NSDecimalNumber *)latitude
+                                                long:(NSDecimalNumber *)longitude
+                                      distanceWithin:(NSInteger)distanceWithin
+                                          maxResults:(NSInteger)maxResults
+                                             timeout:(NSInteger)timeout
+                                     remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
+                                   completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
+  [self fetchPriceStreamNearLat:latitude
+                           long:longitude
+                 distanceWithin:distanceWithin
+                     maxResults:maxResults
+                         sortBy:@[@{@"f.gallon_price": @"asc"},
+                                  @{@"distance":       @"asc"},
+                                  @{@"f.purchased_at": @"desc"}]
+                        timeout:timeout
+                remoteStoreBusy:busyHandler
+              completionHandler:complHandler];
+}
+
+- (void)fetchPriceStreamSortedByDistancePriceNearLat:(NSDecimalNumber *)latitude
+                                                long:(NSDecimalNumber *)longitude
+                                      distanceWithin:(NSInteger)distanceWithin
+                                          maxResults:(NSInteger)maxResults
+                                             timeout:(NSInteger)timeout
+                                     remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
+                                   completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
+  [self fetchPriceStreamNearLat:latitude
+                           long:longitude
+                 distanceWithin:distanceWithin
+                     maxResults:maxResults
+                         sortBy:@[@{@"distance":       @"asc"},
+                                  @{@"f.gallon_price": @"asc"},
+                                  @{@"f.purchased_at": @"desc"}]
+                        timeout:timeout
+                remoteStoreBusy:busyHandler
+              completionHandler:complHandler];
 }
 
 #pragma mark - Vehicle Operations

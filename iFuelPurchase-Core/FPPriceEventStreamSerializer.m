@@ -14,15 +14,25 @@
 #import "FPLocalDao.h"
 #import "FPPriceEventStreamSerializer.h"
 #import "FPPriceEvent.h"
+#import "FPPriceStreamFilterCriteria.h"
 
+// request keys
+NSString * const FPPriceStreamFilterLatitudeKey       = @"price-stream-filter/latitude";
+NSString * const FPPriceStreamFilterLongitudeKey      = @"price-stream-filter/longitude";
+NSString * const FPPriceStreamFilterDistanceWithinKey = @"price-stream-filter/distance-within";
+NSString * const FPPriceStreamFilterMaxResultsKey     = @"price-stream-filter/max-results";
+NSString * const FPPriceStreamFilterSortByKey         = @"price-stream-filter/sort-by";
+
+// response keys
 NSString * const FPPriceEventStreamKey    = @"price-event-stream";
 NSString * const FPPriceEventFsTypeIdKey  = @"price-event/fs-type-id";
 NSString * const FPPriceEventPriceKey     = @"price-event/price";
 NSString * const FPPriceEventOctaneKey    = @"price-event/octane";
 NSString * const FPPriceEventIsDieselKey  = @"price-event/is-diesel";
-NSString * const FPPriceEventDateKey      = @"price-event/date";
+NSString * const FPPriceEventDateKey      = @"price-event/event-date";
 NSString * const FPPriceEventLatitudeKey  = @"price-event/latitude";
 NSString * const FPPriceEventLongitudeKey = @"price-event/longitude";
+NSString * const FPPriceEventDistanceKey  = @"price-event/distance";
 
 @implementation FPPriceEventStreamSerializer {
   id<FPCoordinatorDao> _coordDao;
@@ -50,7 +60,16 @@ actionsForEmbeddedResources:(NSDictionary *)actions
 
 #pragma mark - Serialization (Resource Model -> JSON Dictionary)
 
-- (NSDictionary *)dictionaryWithResourceModel:(id)resourceModel { return @{}; }
+- (NSDictionary *)dictionaryWithResourceModel:(id)resourceModel {
+  FPPriceStreamFilterCriteria *filterCriteria = (FPPriceStreamFilterCriteria *)resourceModel;
+  NSMutableDictionary *filterCriteriaDict = [NSMutableDictionary dictionary];
+  [filterCriteriaDict setObjectIfNotNull:filterCriteria.latitude forKey:FPPriceStreamFilterLatitudeKey];
+  [filterCriteriaDict setObjectIfNotNull:filterCriteria.longitude forKey:FPPriceStreamFilterLatitudeKey];
+  [filterCriteriaDict setObject:@(filterCriteria.distanceWithin) forKey:FPPriceStreamFilterDistanceWithinKey];
+  [filterCriteriaDict setObject:@(filterCriteria.maxResults) forKey:FPPriceStreamFilterMaxResultsKey];
+  [filterCriteriaDict setObjectIfNotNull:filterCriteria.sortBy forKey:FPPriceStreamFilterSortByKey];
+  return filterCriteriaDict;
+}
 
 #pragma mark - Deserialization (JSON Dictionary -> Resource Model)
 
@@ -69,7 +88,8 @@ actionsForEmbeddedResources:(NSDictionary *)actions
                                                                 isDiesel:[priceEventDict boolForKey:FPPriceEventIsDieselKey]
                                                                     date:[priceEventDict dateSince1970ForKey:FPPriceEventDateKey]
                                                                 latitude:[PEUtils nullSafeDecimalNumberFromString:[[priceEventDict objectForKey:FPPriceEventLatitudeKey] description]]
-                                                               longitude:[PEUtils nullSafeDecimalNumberFromString:[[priceEventDict objectForKey:FPPriceEventLongitudeKey] description]]]];
+                                                               longitude:[PEUtils nullSafeDecimalNumberFromString:[[priceEventDict objectForKey:FPPriceEventLongitudeKey] description]]
+                                                                distance:[PEUtils nullSafeDecimalNumberFromString:[[priceEventDict objectForKey:FPPriceEventDistanceKey] description]]]];
   }
   return priceEvents;
 }
