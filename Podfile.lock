@@ -52,7 +52,7 @@ PODS:
     - OHHTTPStubs/Core (= 3.1.12)
   - OHHTTPStubs/Core (3.1.12)
   - PEFuelPurchase-Common (1.0.12)
-  - PEHateoas-Client (1.0.15):
+  - PEHateoas-Client (1.0.16):
     - AFNetworking (~> 2.6.3)
     - CocoaLumberjack (~> 1.9)
     - PEObjc-Commons (~> 1.0.104)
@@ -83,7 +83,7 @@ DEPENDENCIES:
   - Kiwi (~> 2.3.1)
   - OHHTTPStubs (~> 3.1.12)
   - PEFuelPurchase-Common (~> 1.0.12)
-  - PEHateoas-Client (~> 1.0.15)
+  - PEHateoas-Client (~> 1.0.16)
   - PELocal-Data (~> 0.0.16)
   - PEObjc-Commons (~> 1.0.104)
   - PEWire-Control (~> 1.0.4)
@@ -99,7 +99,7 @@ SPEC CHECKSUMS:
   Kiwi: f038a6c61f7a9e4d7766bff5717aa3b3fdb75f55
   OHHTTPStubs: 8cf0cfe6f34f13fc88fdf5b2a1b2c2536e8c0261
   PEFuelPurchase-Common: 8b4ed986a89d064914a44d8a922078c9d622f445
-  PEHateoas-Client: 29ffdf23a1fa97feb2cb80127e4331902f6ad81a
+  PEHateoas-Client: 88b0bd43b97b8bd508da903863a5b1b6f5a83702
   PELocal-Data: 1f03f10c46939eb03bcb01ec68e4a1e522d86bd4
   PEObjc-Commons: ef43f73252e2ca083254cc1f371e1fd0ab3260bd
   PEWire-Control: c2d18d4261d025182513466da9c6ed80e596f526
