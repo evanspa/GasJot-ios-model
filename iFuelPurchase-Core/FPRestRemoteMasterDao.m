@@ -164,9 +164,9 @@ passwordResetSerializer:(PEPasswordResetSerializer *)passwordResetSerializer
                            long:longitude
                  distanceWithin:distanceWithin
                      maxResults:maxResults
-                         sortBy:@[@{@"f.gallon_price": @"asc"},
-                                  @{@"distance":       @"asc"},
-                                  @{@"f.purchased_at": @"desc"}]
+                         sortBy:@[@[@"f.gallon_price", @"asc"],
+                                  @[@"distance",       @"asc"],
+                                  @[@"f.purchased_at", @"desc"]]
                         timeout:timeout
                 remoteStoreBusy:busyHandler
               completionHandler:complHandler];
@@ -183,9 +183,9 @@ passwordResetSerializer:(PEPasswordResetSerializer *)passwordResetSerializer
                            long:longitude
                  distanceWithin:distanceWithin
                      maxResults:maxResults
-                         sortBy:@[@{@"distance":       @"asc"},
-                                  @{@"f.gallon_price": @"asc"},
-                                  @{@"f.purchased_at": @"desc"}]
+                         sortBy:@[@[@"distance",       @"asc"],
+                                  @[@"f.gallon_price", @"asc"],
+                                  @[@"f.purchased_at", @"desc"]]
                         timeout:timeout
                 remoteStoreBusy:busyHandler
               completionHandler:complHandler];

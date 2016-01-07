@@ -1468,16 +1468,18 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
 
 - (FPFuelStationType *)fuelstationTypeForIdentifier:(NSNumber *)identifier error:(PELMDaoErrorBlk)errorBlk {
   __block FPFuelStationType *fstype = nil;
-  [self.databaseQueue inDatabase:^(FMDatabase *db) {
-    FMResultSet *rs = [PELMUtils doQuery:[NSString stringWithFormat:@"SELECT * FROM %@ WHERE %@ = ?", TBL_FUEL_STATION_TYPE, COL_FUELSTTYP_ID]
-                               argsArray:@[identifier]
-                                      db:db
-                                   error:errorBlk];
-    while ([rs next]) {
-      fstype = [self fuelStationTypeFromResultSet:rs];
-    }
-    [rs close];
-  }];
+  if (identifier) {
+    [self.databaseQueue inDatabase:^(FMDatabase *db) {
+      FMResultSet *rs = [PELMUtils doQuery:[NSString stringWithFormat:@"SELECT * FROM %@ WHERE %@ = ?", TBL_FUEL_STATION_TYPE, COL_FUELSTTYP_ID]
+                                 argsArray:@[identifier]
+                                        db:db
+                                     error:errorBlk];
+      while ([rs next]) {
+        fstype = [self fuelStationTypeFromResultSet:rs];
+      }
+      [rs close];
+    }];
+  }
   return fstype;
 }
 

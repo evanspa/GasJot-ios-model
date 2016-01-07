@@ -64,7 +64,7 @@ actionsForEmbeddedResources:(NSDictionary *)actions
   FPPriceStreamFilterCriteria *filterCriteria = (FPPriceStreamFilterCriteria *)resourceModel;
   NSMutableDictionary *filterCriteriaDict = [NSMutableDictionary dictionary];
   [filterCriteriaDict setObjectIfNotNull:filterCriteria.latitude forKey:FPPriceStreamFilterLatitudeKey];
-  [filterCriteriaDict setObjectIfNotNull:filterCriteria.longitude forKey:FPPriceStreamFilterLatitudeKey];
+  [filterCriteriaDict setObjectIfNotNull:filterCriteria.longitude forKey:FPPriceStreamFilterLongitudeKey];
   [filterCriteriaDict setObject:@(filterCriteria.distanceWithin) forKey:FPPriceStreamFilterDistanceWithinKey];
   [filterCriteriaDict setObject:@(filterCriteria.maxResults) forKey:FPPriceStreamFilterMaxResultsKey];
   [filterCriteriaDict setObjectIfNotNull:filterCriteria.sortBy forKey:FPPriceStreamFilterSortByKey];
