@@ -122,47 +122,47 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
     NSString *iconImgName = [NSString stringWithFormat:@"fstype-%@", identifier];
     [PELMUtils doUpdate:insertStmt argsArray:@[identifier, name, iconImgName, @(sortOrder)] db:db error:errorBlk];
   };
-  insertFSType(0,  @"Other",    0);
-  insertFSType(1,  @"Exxon",    1);
-  insertFSType(2,  @"Marathon", 2);
-  insertFSType(3,  @"Shell",    3);
-  insertFSType(4,  @"BP",       4);
-  insertFSType(5,  @"7-Eleven", 5);
-  insertFSType(6,  @"Chevron",  6);
-  insertFSType(7,  @"Hess",     7);
-  insertFSType(8,  @"Sunoco",   8);
-  insertFSType(9,  @"CITGO",    9);
-  insertFSType(10, @"Gulf",     10);
-  insertFSType(11, @"Sam's Club", 11);
-  insertFSType(12, @"BJ's",       12);
-  insertFSType(13, @"Costco",     13);
-  insertFSType(14, @"Sheetz",   14);
-  insertFSType(15, @"Texaco",   15);
-  insertFSType(16, @"Valero",   16);
-  insertFSType(17, @"76",       17);
-  insertFSType(18, @"Circle K", 18);
-  insertFSType(19, @"Getty",    19);
-  insertFSType(20, @"QuikTrip",          20);
-  insertFSType(21, @"Friendship Xpress", 21);
-  insertFSType(22, @"Murphy USA",        22);
-  insertFSType(23, @"Stewart's",         23);
-  insertFSType(24, @"Cumberland Farms",  24);
-  insertFSType(25, @"Go-Mart",           25);
-  insertFSType(26, @"Clark",             26);
-  insertFSType(27, @"Kwik Trip",         27);
-  insertFSType(28, @"Sinclair",          28);
-  insertFSType(29, @"Pilot",             29);
-  insertFSType(30, @"Love's",            30);
-  insertFSType(31, @"Royal Farms",       31);
-  insertFSType(32, @"Kroger",            32);
-  insertFSType(33, @"Rutter's",          33);
-  insertFSType(34, @"Speedway",          34);
-  insertFSType(35, @"Kum & Go",          35);
-  insertFSType(36, @"Mobil",             36);
-  insertFSType(37, @"ARCO",              38);
+  insertFSType(0,  @"Other",             -1);
+  insertFSType(5,  @"7-Eleven",          0);
+  insertFSType(17, @"76",                1);
+  insertFSType(38, @"ARCO",              2);
+  insertFSType(12, @"BJ's",              3);
+  insertFSType(4,  @"BP",                4);
+  insertFSType(9,  @"CITGO",             5);
+  insertFSType(6,  @"Chevron",           6);
+  insertFSType(18, @"Circle K",          7);
+  insertFSType(26, @"Clark",             8);
+  insertFSType(13, @"Costco",            9);
+  insertFSType(24, @"Cumberland Farms",  10);
+  insertFSType(1,  @"Exxon",             11);
+  insertFSType(21, @"Friendship Xpress", 12);
+  insertFSType(19, @"Getty",             13);
+  insertFSType(25, @"Go-Mart",           14);
+  insertFSType(10, @"Gulf",              15);
+  insertFSType(7,  @"Hess",              16);
+  insertFSType(32, @"Kroger",            17);
+  insertFSType(35, @"Kum & Go",          18);
+  insertFSType(27, @"Kwik Trip",         19);
+  insertFSType(30, @"Love's",            20);
+  insertFSType(2,  @"Marathon",          21);
+  insertFSType(36, @"Mobil",             22);
+  insertFSType(22, @"Murphy USA",        23);
+  insertFSType(29, @"Pilot",             25);
+  insertFSType(20, @"QuikTrip",          26);
+  insertFSType(31, @"Royal Farms",       27);
+  insertFSType(33, @"Rutter's",          28);
+  insertFSType(11, @"Sam's Club",        29);
+  insertFSType(14, @"Sheetz",            30);
+  insertFSType(3,  @"Shell",             31);
+  insertFSType(28, @"Sinclair",          32);
+  insertFSType(34, @"Speedway",          33);
+  insertFSType(23, @"Stewart's",         34);
+  insertFSType(8,  @"Sunoco",            35);
+  insertFSType(15, @"Texaco",            36);
+  insertFSType(16, @"Valero",            37);
   void (^setFuelstationType)(NSString *) = ^(NSString *fstable) {
     [PELMUtils doUpdate:[NSString stringWithFormat:@"UPDATE %@ SET %@ = ?", fstable, COL_FUELST_TYPE_ID]
-              argsArray:@[@(0)]
+              argsArray:@[@(0)] // 'Other' type-id
                      db:db
                   error:errorBlk];
   };
@@ -182,13 +182,13 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
 
   addColumn(@"INTEGER", TBL_MAIN_VEHICLE, COL_VEH_HAS_DTE_READOUT);
   addColumn(@"INTEGER", TBL_MASTER_VEHICLE, COL_VEH_HAS_DTE_READOUT);
-  
+
   addColumn(@"INTEGER", TBL_MAIN_VEHICLE, COL_VEH_HAS_MPG_READOUT);
   addColumn(@"INTEGER", TBL_MASTER_VEHICLE, COL_VEH_HAS_MPG_READOUT);
-  
+
   addColumn(@"INTEGER", TBL_MAIN_VEHICLE, COL_VEH_HAS_MPH_READOUT);
   addColumn(@"INTEGER", TBL_MASTER_VEHICLE, COL_VEH_HAS_MPH_READOUT);
-  
+
   addColumn(@"INTEGER", TBL_MAIN_VEHICLE, COL_VEH_HAS_OUTSIDE_TEMP_READOUT);
   addColumn(@"INTEGER", TBL_MASTER_VEHICLE, COL_VEH_HAS_OUTSIDE_TEMP_READOUT);
 
@@ -219,7 +219,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   void (^makeIndex)(NSString *, NSString *, NSString *) = ^(NSString *entity, NSString *col, NSString *name) {
     applyDDL([PELMDDL indexDDLForEntity:entity unique:NO column:col indexName:name]);
   };
-  
+
   // ###########################################################################
   // User DDL
   // ###########################################################################
@@ -230,7 +230,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   applyDDL([FPDDLUtils mainUserDDL]);
   applyDDL([FPDDLUtils mainUserUniqueIndex1]);
   makeRelTable(TBL_MAIN_USER);
-  
+
   // ###########################################################################
   // Vehicle DDL
   // ###########################################################################
@@ -243,7 +243,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   applyDDL([FPDDLUtils mainVehicleDDL]);
   applyDDL([FPDDLUtils mainVehicleUniqueIndex1]);
   makeRelTable(TBL_MAIN_VEHICLE);
-  
+
   // ###########################################################################
   // Fuel Station DDL
   // ###########################################################################
@@ -254,7 +254,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   // ------- main fuel station -------------------------------------------------
   applyDDL([FPDDLUtils mainFuelStationDDL]);
   makeRelTable(TBL_MAIN_FUEL_STATION);
-  
+
   // ###########################################################################
   // Fuel Purchase Log DDL
   // ###########################################################################
@@ -268,7 +268,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
   makeIndex(TBL_MAIN_FUELPURCHASE_LOG, COL_FUELPL_PURCHASED_AT, @"idx_man_fplog_log_dt");
   makeIndex(TBL_MAIN_FUELPURCHASE_LOG, COL_FUELPL_OCTANE, @"idx_man_fplog_octane");
   makeRelTable(TBL_MAIN_FUELPURCHASE_LOG);
-  
+
   // ###########################################################################
   // Environment Log DDL
   // ###########################################################################
@@ -325,7 +325,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
       [csvWriter finishLine];
     }
     [csvWriter closeStream];
-    
+
     // Export the gas stations
     csvWriter = [[CHCSVWriter alloc] initForWritingToCSVFile:gasStationsFile];
     [csvWriter writeField:@"Gas Station Name"];
@@ -348,7 +348,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
       [csvWriter finishLine];
     }
     [csvWriter closeStream];
-    
+
     // Export gas logs
     csvWriter = [[CHCSVWriter alloc] initForWritingToCSVFile:gasLogsFile];
     [csvWriter writeField:@"Vehicle"];
@@ -379,7 +379,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
       [csvWriter finishLine];
     }
     [csvWriter closeStream];
-    
+
     // Export odometer logs
     csvWriter = [[CHCSVWriter alloc] initForWritingToCSVFile:odometerLogsFile];
     [csvWriter writeField:@"Vehicle"];
@@ -1037,7 +1037,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
 - (FPFuelStation *)masterFuelstationWithId:(NSNumber *)fuelstationId error:(PELMDaoErrorBlk)errorBlk {
   NSString *fuelstationTable = TBL_MASTER_FUEL_STATION;
   __block FPFuelStation *fuelstation = nil;
-  [self.databaseQueue inDatabase:^(FMDatabase *db) {    
+  [self.databaseQueue inDatabase:^(FMDatabase *db) {
     NSMutableString *selectClause = [NSMutableString stringWithString:@"SELECT mstr.*"];
     NSMutableString *fromClause   = [NSMutableString stringWithFormat:@" FROM %@ mstr", fuelstationTable];
     NSMutableString *whereClause  = [NSMutableString stringWithFormat:@" WHERE mstr.%@ = ?", COL_LOCAL_ID];
@@ -1486,7 +1486,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
 - (NSArray *)fuelstationTypesWithError:(PELMDaoErrorBlk)errorBlk {
   NSMutableArray *fsTypes = [NSMutableArray array];
   [self.databaseQueue inDatabase:^(FMDatabase *db) {
-    FMResultSet *rs = [PELMUtils doQuery:[NSString stringWithFormat:@"SELECT * FROM %@ ORDER BY %@ ASC", TBL_FUEL_STATION_TYPE, COL_FUELSTTYP_NAME]
+    FMResultSet *rs = [PELMUtils doQuery:[NSString stringWithFormat:@"SELECT * FROM %@ ORDER BY %@ ASC", TBL_FUEL_STATION_TYPE, COL_FUELSTTYP_SORT_ORDER]
                                argsArray:@[]
                                       db:db
                                    error:errorBlk];
@@ -2700,7 +2700,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                             orderByDomainColumnDirection:orderByDomainColumnDirection
                                                       db:db
                                                    error:errorBlk];
-    
+
     if ([fplogs count] > 0) {
       fplog = fplogs[0];
     }
@@ -2737,7 +2737,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                             orderByDomainColumnDirection:orderByDomainColumnDirection
                                                       db:db
                                                    error:errorBlk];
-    
+
     if ([fplogs count] > 0) {
       fplog = fplogs[0];
     }
@@ -2774,7 +2774,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                             orderByDomainColumnDirection:orderByDomainColumnDirection
                                                       db:db
                                                    error:errorBlk];
-    
+
     if ([fplogs count] > 0) {
       fplog = fplogs[0];
     }
@@ -4583,7 +4583,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                            error:errorBlk];
   }];
   return envlogs;
-  
+
 }
 
 - (NSArray *)unorderedEnvironmentLogsForVehicle:(FPVehicle *)vehicle
@@ -4696,7 +4696,7 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                              orderByDomainColumnDirection:orderByDomainColumnDirection
                                                        db:db
                                                     error:errorBlk];
-    
+
     if ([envlogs count] > 0) {
       envlog = envlogs[0];
     }
