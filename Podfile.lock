@@ -61,7 +61,7 @@ PODS:
     - FMDB (~> 2.5)
     - PEHateoas-Client (~> 1.0.15)
     - PEObjc-Commons (~> 1.0.101)
-  - PEObjc-Commons (1.0.104):
+  - PEObjc-Commons (1.0.108):
     - BlocksKit (~> 2.2.5)
   - PEWire-Control (1.0.5):
     - KissXML (~> 5.0)
@@ -85,7 +85,7 @@ DEPENDENCIES:
   - PEFuelPurchase-Common (~> 1.0.12)
   - PEHateoas-Client (~> 1.0.17)
   - PELocal-Data (~> 0.0.16)
-  - PEObjc-Commons (~> 1.0.104)
+  - PEObjc-Commons (~> 1.0.107)
   - PEWire-Control (~> 1.0.4)
   - UICKeyChainStore (~> 2.0.4)
 
@@ -101,7 +101,7 @@ SPEC CHECKSUMS:
   PEFuelPurchase-Common: 8b4ed986a89d064914a44d8a922078c9d622f445
   PEHateoas-Client: 6885138dfb01bfbe98299bf6c4c0373b8e62d75c
   PELocal-Data: 1f03f10c46939eb03bcb01ec68e4a1e522d86bd4
-  PEObjc-Commons: ef43f73252e2ca083254cc1f371e1fd0ab3260bd
+  PEObjc-Commons: e200afbc387a5fbec2724f9f5844ed43843c95c5
   PEWire-Control: c2d18d4261d025182513466da9c6ed80e596f526
   PEXML-Utils: d36d0ab7337b92c120ec49b84f99e7b923bf8a24
   UICKeyChainStore: 696cd35083f7c8fb5e201d909b7e6aea6b478575

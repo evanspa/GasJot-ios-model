@@ -13,23 +13,31 @@
 #pragma mark - Initializers
 
 - (instancetype)initWithFuelstationType:(FPFuelStationType *)fsType
+                               fsStreet:(NSString *)fsStreet
+                                 fsCity:(NSString *)fsCity
+                                fsState:(NSString *)fsState
+                                  fsZip:(NSString *)fsZip
+                             fsLatitude:(NSDecimalNumber *)fsLatitude
+                            fsLongitude:(NSDecimalNumber *)fsLongitude
+                             fsDistance:(NSDecimalNumber *)fsDistance
                                   price:(NSDecimalNumber *)price
                                  octane:(NSNumber *)octane
                                isDiesel:(BOOL)isDiesel
-                                   date:(NSDate *)date
-                               latitude:(NSDecimalNumber *)latitude
-                              longitude:(NSDecimalNumber *)longitude
-                               distance:(NSDecimalNumber *)distance {
+                                   date:(NSDate *)date {
   self = [super init];
   if (self) {
     _fsType = fsType;
+    _fsStreet = fsStreet;
+    _fsCity = fsCity;
+    _fsState = fsState;
+    _fsZip = fsZip;
+    _fsLatitude = fsLatitude;
+    _fsLongitude = fsLongitude;
+    _fsDistance = fsDistance;
     _price = price;
     _octane = octane;
     _isDiesel = isDiesel;
     _date = date;
-    _latitude = latitude;
-    _longitude = longitude;
-    _distance = distance;
   }
   return self;
 }

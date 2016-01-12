@@ -15,13 +15,17 @@
     <![CDATA[
     {"price-event-stream": [
       { "price-event/fs-type-id": 5,
+        "price-event/fs-street": "110 Old Harbor Dr",
+        "price-event/fs-city": "Halfmoon",
+        "price-event/fs-state": "WI",
+        "price-event/fs-zip": "38201",
         "price-event/price": 2.999,
         "price-event/octane": 87,
         "price-event/is-diesel": false,
-        "price-event/distance": 50,
+        "price-event/fs-distance": 50,
         "price-event/event-date": 1409644992000,
-        "price-event/latitude": 35.0125209215553,
-        "price-event/longitude": -80.8517863328359 }]}
+        "price-event/fs-latitude": 35.0125209215553,
+        "price-event/fs-longitude": -80.8517863328359 }]}
     ]]>
   </body>
 </http-response>

@@ -15,17 +15,35 @@
 #pragma mark - Initializers
 
 - (instancetype)initWithFuelstationType:(FPFuelStationType *)fsType
+                               fsStreet:(NSString *)fsStreet
+                                 fsCity:(NSString *)fsCity
+                                fsState:(NSString *)fsState
+                                  fsZip:(NSString *)fsZip
+                             fsLatitude:(NSDecimalNumber *)fsLatitude
+                            fsLongitude:(NSDecimalNumber *)fsLongitude
+                             fsDistance:(NSDecimalNumber *)fsDistance
                                   price:(NSDecimalNumber *)price
                                  octane:(NSNumber *)octane
                                isDiesel:(BOOL)isDiesel
-                                   date:(NSDate *)date
-                               latitude:(NSDecimalNumber *)latitude
-                              longitude:(NSDecimalNumber *)longitude
-                               distance:(NSDecimalNumber *)distance;
+                                   date:(NSDate *)date;
 
 #pragma mark - Properties
 
 @property (nonatomic, readonly) FPFuelStationType *fsType;
+
+@property (nonatomic, readonly) NSString *fsStreet;
+
+@property (nonatomic, readonly) NSString *fsCity;
+
+@property (nonatomic, readonly) NSString *fsState;
+
+@property (nonatomic, readonly) NSString *fsZip;
+
+@property (nonatomic, readonly) NSDecimalNumber *fsLatitude;
+
+@property (nonatomic, readonly) NSDecimalNumber *fsLongitude;
+
+@property (nonatomic, readonly) NSDecimalNumber *fsDistance;
 
 @property (nonatomic, readonly) NSDecimalNumber *price;
 
@@ -34,11 +52,5 @@
 @property (nonatomic, readonly) BOOL isDiesel;
 
 @property (nonatomic, readonly) NSDate *date;
-
-@property (nonatomic, readonly) NSDecimalNumber *latitude;
-
-@property (nonatomic, readonly) NSDecimalNumber *longitude;
-
-@property (nonatomic, readonly) NSDecimalNumber *distance;
 
 @end

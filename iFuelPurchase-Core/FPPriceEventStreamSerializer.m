@@ -17,22 +17,26 @@
 #import "FPPriceStreamFilterCriteria.h"
 
 // request keys
-NSString * const FPPriceStreamFilterLatitudeKey       = @"price-stream-filter/latitude";
-NSString * const FPPriceStreamFilterLongitudeKey      = @"price-stream-filter/longitude";
-NSString * const FPPriceStreamFilterDistanceWithinKey = @"price-stream-filter/distance-within";
+NSString * const FPPriceStreamFilterFsLatitudeKey       = @"price-stream-filter/fs-latitude";
+NSString * const FPPriceStreamFilterFsLongitudeKey      = @"price-stream-filter/fs-longitude";
+NSString * const FPPriceStreamFilterFsDistanceWithinKey = @"price-stream-filter/fs-distance-within";
 NSString * const FPPriceStreamFilterMaxResultsKey     = @"price-stream-filter/max-results";
 NSString * const FPPriceStreamFilterSortByKey         = @"price-stream-filter/sort-by";
 
 // response keys
-NSString * const FPPriceEventStreamKey    = @"price-event-stream";
-NSString * const FPPriceEventFsTypeIdKey  = @"price-event/fs-type-id";
-NSString * const FPPriceEventPriceKey     = @"price-event/price";
-NSString * const FPPriceEventOctaneKey    = @"price-event/octane";
-NSString * const FPPriceEventIsDieselKey  = @"price-event/is-diesel";
-NSString * const FPPriceEventDateKey      = @"price-event/event-date";
-NSString * const FPPriceEventLatitudeKey  = @"price-event/latitude";
-NSString * const FPPriceEventLongitudeKey = @"price-event/longitude";
-NSString * const FPPriceEventDistanceKey  = @"price-event/distance";
+NSString * const FPPriceEventStreamKey      = @"price-event-stream";
+NSString * const FPPriceEventFsTypeIdKey    = @"price-event/fs-type-id";
+NSString * const FPPriceEventFsStreetKey    = @"price-event/fs-street";
+NSString * const FPPriceEventFsCityKey      = @"price-event/fs-city";
+NSString * const FPPriceEventFsStateKey     = @"price-event/fs-state";
+NSString * const FPPriceEventFsZipKey       = @"price-event/fs-zip";
+NSString * const FPPriceEventFsLatitudeKey  = @"price-event/fs-latitude";
+NSString * const FPPriceEventFsLongitudeKey = @"price-event/fs-longitude";
+NSString * const FPPriceEventFsDistanceKey  = @"price-event/fs-distance";
+NSString * const FPPriceEventPriceKey       = @"price-event/price";
+NSString * const FPPriceEventOctaneKey      = @"price-event/octane";
+NSString * const FPPriceEventIsDieselKey    = @"price-event/is-diesel";
+NSString * const FPPriceEventDateKey        = @"price-event/event-date";
 
 @implementation FPPriceEventStreamSerializer {
   id<FPCoordinatorDao> _coordDao;
@@ -63,9 +67,9 @@ actionsForEmbeddedResources:(NSDictionary *)actions
 - (NSDictionary *)dictionaryWithResourceModel:(id)resourceModel {
   FPPriceStreamFilterCriteria *filterCriteria = (FPPriceStreamFilterCriteria *)resourceModel;
   NSMutableDictionary *filterCriteriaDict = [NSMutableDictionary dictionary];
-  [filterCriteriaDict setObjectIfNotNull:filterCriteria.latitude forKey:FPPriceStreamFilterLatitudeKey];
-  [filterCriteriaDict setObjectIfNotNull:filterCriteria.longitude forKey:FPPriceStreamFilterLongitudeKey];
-  [filterCriteriaDict setObject:@(filterCriteria.distanceWithin) forKey:FPPriceStreamFilterDistanceWithinKey];
+  [filterCriteriaDict setObjectIfNotNull:filterCriteria.latitude forKey:FPPriceStreamFilterFsLatitudeKey];
+  [filterCriteriaDict setObjectIfNotNull:filterCriteria.longitude forKey:FPPriceStreamFilterFsLongitudeKey];
+  [filterCriteriaDict setObject:@(filterCriteria.distanceWithin) forKey:FPPriceStreamFilterFsDistanceWithinKey];
   [filterCriteriaDict setObject:@(filterCriteria.maxResults) forKey:FPPriceStreamFilterMaxResultsKey];
   [filterCriteriaDict setObjectIfNotNull:filterCriteria.sortBy forKey:FPPriceStreamFilterSortByKey];
   return filterCriteriaDict;
@@ -83,13 +87,17 @@ actionsForEmbeddedResources:(NSDictionary *)actions
   NSMutableArray *priceEvents = [NSMutableArray arrayWithCapacity:priceEventsJsonArray.count];
   for (NSDictionary *priceEventDict in priceEventsJsonArray) {
     [priceEvents addObject:[[FPPriceEvent alloc] initWithFuelstationType:[_coordDao fuelstationTypeForIdentifier:priceEventDict[FPPriceEventFsTypeIdKey] error:_errorBlk]
+                                                                fsStreet:priceEventDict[FPPriceEventFsStreetKey]
+                                                                  fsCity:priceEventDict[FPPriceEventFsCityKey]
+                                                                 fsState:priceEventDict[FPPriceEventFsStateKey]
+                                                                   fsZip:priceEventDict[FPPriceEventFsZipKey]
+                                                              fsLatitude:[PEUtils nullSafeDecimalNumberFromString:[[priceEventDict objectForKey:FPPriceEventFsLatitudeKey] description]]
+                                                             fsLongitude:[PEUtils nullSafeDecimalNumberFromString:[[priceEventDict objectForKey:FPPriceEventFsLongitudeKey] description]]
+                                                              fsDistance:[PEUtils nullSafeDecimalNumberFromString:[[priceEventDict objectForKey:FPPriceEventFsDistanceKey] description]]
                                                                    price:[PEUtils nullSafeDecimalNumberFromString:[priceEventDict[FPPriceEventPriceKey] description]]
                                                                   octane:priceEventDict[FPPriceEventOctaneKey]
                                                                 isDiesel:[priceEventDict boolForKey:FPPriceEventIsDieselKey]
-                                                                    date:[priceEventDict dateSince1970ForKey:FPPriceEventDateKey]
-                                                                latitude:[PEUtils nullSafeDecimalNumberFromString:[[priceEventDict objectForKey:FPPriceEventLatitudeKey] description]]
-                                                               longitude:[PEUtils nullSafeDecimalNumberFromString:[[priceEventDict objectForKey:FPPriceEventLongitudeKey] description]]
-                                                                distance:[PEUtils nullSafeDecimalNumberFromString:[[priceEventDict objectForKey:FPPriceEventDistanceKey] description]]]];
+                                                                    date:[priceEventDict dateSince1970ForKey:FPPriceEventDateKey]]];
   }
   return priceEvents;
 }

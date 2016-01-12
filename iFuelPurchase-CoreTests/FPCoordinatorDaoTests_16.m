@@ -67,11 +67,15 @@ describe(@"FPCoordinatorDao", ^{
         [fsType shouldNotBeNil];
         [[fsType.identifier should] equal:@(5)];
         [[priceEvent.price should] equal:[NSDecimalNumber decimalNumberWithString:@"2.999"]];
-        [[priceEvent.distance should] equal:[NSDecimalNumber decimalNumberWithString:@"50"]];
+        [[priceEvent.fsDistance should] equal:[NSDecimalNumber decimalNumberWithString:@"50"]];
         [[theValue(priceEvent.isDiesel) should] equal:theValue(NO)];
         [[priceEvent.date should] equal:[NSDate dateWithTimeIntervalSince1970:1409644992.000]];
-        [[priceEvent.latitude should] equal:[NSDecimalNumber decimalNumberWithString:@"35.0125209215553"]];
-        [[priceEvent.longitude should] equal:[NSDecimalNumber decimalNumberWithString:@"-80.8517863328359 "]];
+        [[priceEvent.fsLatitude should] equal:[NSDecimalNumber decimalNumberWithString:@"35.0125209215553"]];
+        [[priceEvent.fsLongitude should] equal:[NSDecimalNumber decimalNumberWithString:@"-80.8517863328359 "]];
+        [[priceEvent.fsStreet should] equal:@"110 Old Harbor Dr"];
+        [[priceEvent.fsCity should] equal:@"Halfmoon"];
+        [[priceEvent.fsState should] equal:@"WI"];
+        [[priceEvent.fsZip should] equal:@"38201"];
       }
     });
   });
