@@ -16,7 +16,7 @@
                        nearLongitude:(NSDecimalNumber *)longitude
                       distanceWithin:(NSInteger)distanceWithin
                           maxResults:(NSInteger)maxResults
-                              sortBy:(NSArray *)sortBy {
+                              sortBy:(NSString *)sortBy {
   self = [super init];
   if (self) {
     _latitude = latitude;

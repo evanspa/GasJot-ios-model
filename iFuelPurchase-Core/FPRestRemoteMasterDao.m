@@ -130,7 +130,7 @@ passwordResetSerializer:(PEPasswordResetSerializer *)passwordResetSerializer
                            long:(NSDecimalNumber *)longitude
                  distanceWithin:(NSInteger)distanceWithin
                      maxResults:(NSInteger)maxResults
-                         sortBy:(NSArray *)sortBy
+                         sortBy:(NSString *)sortBy
                         timeout:(NSInteger)timeout
                 remoteStoreBusy:(PELMRemoteMasterBusyBlk)busyHandler
               completionHandler:(PELMRemoteMasterCompletionHandler)complHandler {
@@ -164,9 +164,7 @@ passwordResetSerializer:(PEPasswordResetSerializer *)passwordResetSerializer
                            long:longitude
                  distanceWithin:distanceWithin
                      maxResults:maxResults
-                         sortBy:@[@[@"f.gallon_price", @"asc"],
-                                  @[@"distance",       @"asc"],
-                                  @[@"f.purchased_at", @"desc"]]
+                         sortBy:@"price"
                         timeout:timeout
                 remoteStoreBusy:busyHandler
               completionHandler:complHandler];
@@ -183,9 +181,7 @@ passwordResetSerializer:(PEPasswordResetSerializer *)passwordResetSerializer
                            long:longitude
                  distanceWithin:distanceWithin
                      maxResults:maxResults
-                         sortBy:@[@[@"distance",       @"asc"],
-                                  @[@"f.gallon_price", @"asc"],
-                                  @[@"f.purchased_at", @"desc"]]
+                         sortBy:@"distance"
                         timeout:timeout
                 remoteStoreBusy:busyHandler
               completionHandler:complHandler];
