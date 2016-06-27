@@ -2,7 +2,7 @@ source 'https://github.com/CocoaPods/Specs.git'
 
 platform :ios, '8.4'
 
-pod 'PEObjc-Commons', '~> 1.0.107', :inhibit_warnings => true
+pod 'PEObjc-Commons', '~> 1.0.109', :inhibit_warnings => true
 pod 'PELocal-Data', '~> 0.0.16', :inhibit_warnings => true
 pod 'PEFuelPurchase-Common', '~> 1.0.12', :inhibit_warnings => true
 pod 'FMDB', '~> 2.5', :inhibit_warnings => true

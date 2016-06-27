@@ -16,7 +16,7 @@
                        nearLongitude:(NSDecimalNumber *)longitude
                       distanceWithin:(NSInteger)distanceWithin
                           maxResults:(NSInteger)maxResults
-                              sortBy:(NSArray *)sortBy;
+                              sortBy:(NSString *)sortBy;
 
 #pragma mark - Properties
 
@@ -28,6 +28,6 @@
 
 @property (nonatomic, readonly) NSInteger maxResults;
 
-@property (nonatomic, readonly) NSArray *sortBy;
+@property (nonatomic, readonly) NSString *sortBy;
 
 @end
