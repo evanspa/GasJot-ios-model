@@ -579,9 +579,18 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
 
 - (FPVehicle *)masterVehicleWithGlobalId:(NSString *)globalId
                                    error:(PELMDaoErrorBlk)errorBlk {
-  NSString *vehicleTable = TBL_MASTER_VEHICLE;
-  __block FPVehicle *vehicle = nil;
-  [self.databaseQueue inDatabase:^(FMDatabase *db) {
+    __block FPVehicle *vehicle = nil;
+    [self.databaseQueue inDatabase:^(FMDatabase *db) {
+        vehicle = [self masterVehicleWithGlobalId:globalId db:db error:errorBlk];
+    }];
+    return vehicle;
+}
+
+- (FPVehicle *)masterVehicleWithGlobalId:(NSString *)globalId
+                                      db:(FMDatabase *)db
+                                   error:(PELMDaoErrorBlk)errorBlk {
+    NSString *vehicleTable = TBL_MASTER_VEHICLE;
+    FPVehicle *vehicle = nil;
     vehicle = [PELMUtils entityFromQuery:[NSString stringWithFormat:@"SELECT * FROM %@ WHERE %@ = ?", vehicleTable, COL_GLOBAL_ID]
                              entityTable:vehicleTable
                            localIdGetter:^NSNumber *(PELMModelSupport *entity) { return [entity localMasterIdentifier]; }
@@ -591,10 +600,9 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                    error:errorBlk];
     NSNumber *localMainId = [PELMUtils localMainIdentifierForEntity:vehicle mainTable:TBL_MAIN_VEHICLE db:db error:errorBlk];
     if (localMainId) {
-      [vehicle setLocalMainIdentifier:localMainId];
+        [vehicle setLocalMainIdentifier:localMainId];
     }
-  }];
-  return vehicle;
+    return vehicle;
 }
 
 - (void)deleteVehicle:(FPVehicle *)vehicle error:(PELMDaoErrorBlk)errorBlk {
@@ -1059,9 +1067,18 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
 }
 
 - (FPFuelStation *)masterFuelstationWithGlobalId:(NSString *)globalId error:(PELMDaoErrorBlk)errorBlk {
-  NSString *fuelstationTable = TBL_MASTER_FUEL_STATION;
   __block FPFuelStation *fuelstation = nil;
   [self.databaseQueue inDatabase:^(FMDatabase *db) {
+      fuelstation = [self masterFuelstationWithGlobalId:globalId db:db error:errorBlk];
+  }];
+  return fuelstation;
+}
+
+- (FPFuelStation *)masterFuelstationWithGlobalId:(NSString *)globalId
+                                              db:(FMDatabase *)db
+                                           error:(PELMDaoErrorBlk)errorBlk {
+    NSString *fuelstationTable = TBL_MASTER_FUEL_STATION;
+    FPFuelStation *fuelstation = nil;
     NSMutableString *selectClause = [NSMutableString stringWithString:@"SELECT mstr.*"];
     NSMutableString *fromClause   = [NSMutableString stringWithFormat:@" FROM %@ mstr", fuelstationTable];
     NSMutableString *whereClause  = [NSMutableString stringWithFormat:@" WHERE mstr.%@ = ?", COL_GLOBAL_ID];
@@ -1076,10 +1093,9 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                        error:errorBlk];
     NSNumber *localMainId = [PELMUtils localMainIdentifierForEntity:fuelstation mainTable:TBL_MAIN_FUEL_STATION db:db error:errorBlk];
     if (localMainId) {
-      [fuelstation setLocalMainIdentifier:localMainId];
+        [fuelstation setLocalMainIdentifier:localMainId];
     }
-  }];
-  return fuelstation;
+    return fuelstation;
 }
 
 - (void)deleteFuelstation:(FPFuelStation *)fuelstation error:(PELMDaoErrorBlk)errorBlk {
@@ -4157,15 +4173,17 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                                             forUser:(FPUser *)user
                                                                  db:(FMDatabase *)db
                                                               error:(PELMDaoErrorBlk)errorBlk {
+  FPVehicle *vehicle = [self masterVehicleWithGlobalId:fplog.vehicleGlobalIdentifier db:db error:errorBlk];
+  FPFuelStation *fuelstation = [self masterFuelstationWithGlobalId:fplog.fuelStationGlobalIdentifier db:db error:errorBlk];
   return [PELMUtils saveNewOrExistingMasterEntity:fplog
                                       masterTable:TBL_MASTER_FUELPURCHASE_LOG
                                   masterInsertBlk:^(id entity, FMDatabase *db){[self insertIntoMasterFuelPurchaseLog:(FPFuelPurchaseLog *)entity forUser:user db:db error:errorBlk];}
                                  masterUpdateStmt:[self updateStmtForMasterFuelPurchaseLog]
-                              masterUpdateArgsBlk:^NSArray * (FPFuelPurchaseLog *theFplog) {return [self updateArgsForMasterFuelPurchaseLog:theFplog];}
+                              masterUpdateArgsBlk:^NSArray * (FPFuelPurchaseLog *theFplog) {return [self updateArgsForMasterFuelPurchaseLog:theFplog vehicle:vehicle fuelStation:fuelstation];}
                                         mainTable:TBL_MAIN_FUELPURCHASE_LOG
                           mainEntityFromResultSet:^FPFuelPurchaseLog * (FMResultSet *rs) {return [self mainFuelPurchaseLogFromResultSet:rs];}
                                    mainUpdateStmt:[self updateStmtForMainFuelPurchaseLog]
-                                mainUpdateArgsBlk:^NSArray * (FPFuelPurchaseLog *theFplog) {return [self updateArgsForMainFuelPurchaseLog:theFplog];}
+                                mainUpdateArgsBlk:^NSArray * (FPFuelPurchaseLog *theFplog) {return [self updateArgsForMainFuelPurchaseLog:theFplog vehicle:vehicle fuelStation:fuelstation];}
                                                db:db
                                             error:errorBlk];
 }
@@ -5554,15 +5572,16 @@ Required schema version: %d.", currentSchemaVersion, FP_REQUIRED_SCHEMA_VERSION)
                                                            forUser:(FPUser *)user
                                                                 db:(FMDatabase *)db
                                                              error:(PELMDaoErrorBlk)errorBlk {
+  FPVehicle *vehicle = [self masterVehicleWithGlobalId:envlog.vehicleGlobalIdentifier db:db error:errorBlk];
   return [PELMUtils saveNewOrExistingMasterEntity:envlog
                                       masterTable:TBL_MASTER_ENV_LOG
                                   masterInsertBlk:^(id entity, FMDatabase *db){[self insertIntoMasterEnvironmentLog:(FPEnvironmentLog *)entity forUser:user db:db error:errorBlk];}
                                  masterUpdateStmt:[self updateStmtForMasterEnvironmentLog]
-                              masterUpdateArgsBlk:^NSArray * (FPEnvironmentLog *theEnvlog) {return [self updateArgsForMasterEnvironmentLog:theEnvlog];}
+                              masterUpdateArgsBlk:^NSArray * (FPEnvironmentLog *theEnvlog) {return [self updateArgsForMasterEnvironmentLog:theEnvlog vehicle:vehicle];}
                                         mainTable:TBL_MAIN_ENV_LOG
                           mainEntityFromResultSet:^FPEnvironmentLog * (FMResultSet *rs) {return [self mainEnvironmentLogFromResultSet:rs];}
                                    mainUpdateStmt:[self updateStmtForMainEnvironmentLog]
-                                mainUpdateArgsBlk:^NSArray * (FPEnvironmentLog *theEnvlog) {return [self updateArgsForMainEnvironmentLog:theEnvlog];}
+                                mainUpdateArgsBlk:^NSArray * (FPEnvironmentLog *theEnvlog) {return [self updateArgsForMainEnvironmentLog:theEnvlog vehicle:vehicle];}
                                                db:db
                                             error:errorBlk];
 }
