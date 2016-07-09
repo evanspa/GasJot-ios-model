@@ -69,7 +69,7 @@ NSString * const FPFuelPurchaseLogDeletedAtKey                = @"fplog/deleted-
                                             octane:resDict[FPFuelPurchaseLogOctaneKey]
                                           odometer:resDict[FPFuelPurchaseLogOdometerKey]
                                        gallonPrice:[PEUtils nullSafeDecimalNumberFromString:[resDict[FPFuelPurchaseLogGallonPriceKey] description]]
-                                        gotCarWash:[resDict[FPFuelPurchaseLogGotCarWashKey] boolValue]
+                                        gotCarWash:[resDict boolForKey:FPFuelPurchaseLogGotCarWashKey]
                           carWashPerGallonDiscount:[PEUtils nullSafeDecimalNumberFromString:[resDict[FPFuelPurchaseLogCarWashPerGallonDiscountKey] description]]
                                        purchasedAt:[resDict dateSince1970ForKey:FPFuelPurchaseLogPurchasedAtKey]
                                           isDiesel:[resDict boolForKey:FPFuelPurchaseLogIsDieselKey]
